@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>唯普汽车 · 开屏</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; margin: 0; }
+  .phone-shell { max-width: 420px; margin: 0 auto; height: 100vh; background: #000; position: relative; overflow: hidden; }
+  @media (min-width: 768px) { body { background: #f5f5f7; padding: 24px 0; } .phone-shell { height: calc(100vh - 48px); border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); } }
+  [v-cloak] { display:none; }
+
+  .splash-vision {
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(253,224,71,.25) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 70%, rgba(236,72,153,.3) 0%, transparent 50%),
+      linear-gradient(160deg, #1e1b4b 0%, #312e81 30%, #4c1d95 65%, #6b21a8 100%);
+  }
+  .splash-vision::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 22% 18%, rgba(255,255,255,.9) 50%, transparent),
+      radial-gradient(1px 1px at 68% 28%, rgba(255,255,255,.7) 50%, transparent),
+      radial-gradient(1px 1px at 40% 52%, rgba(255,255,255,.6) 50%, transparent),
+      radial-gradient(1.5px 1.5px at 80% 55%, rgba(253,224,71,.9) 50%, transparent),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,.8) 50%, transparent),
+      radial-gradient(1px 1px at 55% 82%, rgba(255,255,255,.6) 50%, transparent);
+    animation: twinkle 3.5s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes twinkle { from { opacity: .5 } to { opacity: 1 } }
+
+  .splash-progress {
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(167,139,250,.3) 0%, transparent 50%),
+      linear-gradient(160deg, #082f49 0%, #1e3a8a 40%, #4c1d95 100%);
+  }
+
+  @keyframes floatUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes shine { 0% { background-position: -200% 50% } 100% { background-position: 200% 50% } }
+  .float-in { animation: floatUp .7s ease-out both; }
+  .delay-1 { animation-delay: .15s } .delay-2 { animation-delay: .3s } .delay-3 { animation-delay: .45s } .delay-4 { animation-delay: .6s }
+
+  .title-shine {
+    background: linear-gradient(90deg, #fde047 0%, #fff 30%, #fde047 60%, #fff 90%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+  }
+
+  .skip-btn { backdrop-filter: blur(10px); background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.25); }
+  .chip { background: rgba(255,255,255,.14); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.2); }
+  .cta-gold { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); box-shadow: 0 10px 30px rgba(251,191,36,.35), 0 0 0 1px rgba(251,191,36,.3); }
+  .cta-gold:active { transform: scale(.98); }
+
+  @keyframes pFill { from { width: 0 } to { width: 33.3% } }
+  .p-fill { animation: pFill 1.2s ease-out .8s both; }
+
+  .ring { transform: rotate(-90deg); }
+  .ring circle { transition: stroke-dashoffset 1s linear; }
+
+  .dev-switch { backdrop-filter: blur(10px); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- 未登录版 -->
+  <div v-show="view === 'vision'" class="splash-vision absolute inset-0 flex flex-col text-white">
+    <div class="flex items-center justify-between px-5 py-2 text-white/90 text-sm relative z-20">
+      <span>9:41</span>
+      <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+    </div>
+
+    <button @click="goNext" class="skip-btn absolute top-10 right-4 z-30 flex items-center gap-1.5 text-white text-xs px-3 py-1.5 rounded-full">
+      <svg class="ring" width="18" height="18" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <circle cx="10" cy="10" r="8" fill="none" stroke="#fde047" stroke-width="2" stroke-dasharray="50.27" :stroke-dashoffset="ringOffset"/>
+      </svg>
+      <span>跳过 {{ secondsLeft }}s</span>
+    </button>
+
+    <div class="flex-1 flex flex-col items-center justify-center px-8 relative z-10">
+      <div class="float-in mb-5">
+        <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-900 px-3 py-1.5 rounded-full" style="background:linear-gradient(135deg,#fde047,#f59e0b);box-shadow:0 6px 20px rgba(245,158,11,.4)">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>重磅上线
+        </span>
+      </div>
+      <div class="float-in delay-1 mb-6 relative">
+        <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-300 to-yellow-500 flex items-center justify-center text-amber-900 shadow-2xl">
+          <i data-lucide="crown" class="w-12 h-12"></i>
+        </div>
+        <span class="absolute -top-2 -right-2 text-pink-300"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
+        <span class="absolute -bottom-1 -left-3 text-amber-200"><i data-lucide="star" class="w-4 h-4"></i></span>
+      </div>
+      <div class="float-in delay-2 text-center">
+        <div class="text-3xl font-black tracking-tight title-shine leading-tight">唯普商户<br>会员体系</div>
+        <div class="text-xl font-black text-white mt-1">重磅上线!</div>
+      </div>
+      <div class="float-in delay-3 text-center mt-5 text-[13px] text-indigo-100/90 leading-relaxed px-2">
+        成交即获金币 · 最高享 <span class="text-amber-300 font-bold">8 折</span>权益兑换<br>
+        更有<span class="text-amber-300 font-bold">无偿退车</span>1 次,省下每一分经营钱
+      </div>
+      <div class="float-in delay-3 flex items-center gap-2 mt-5">
+        <span class="chip text-[11px] px-3 py-1 rounded-full">4 级成长</span>
+        <span class="chip text-[11px] px-3 py-1 rounded-full">金币奖励</span>
+        <span class="chip text-[11px] px-3 py-1 rounded-full">上门代送</span>
+      </div>
+    </div>
+
+    <div class="float-in delay-4 px-8 pb-10 relative z-10">
+      <a href="landing.html" class="cta-gold block w-full py-3.5 text-amber-900 rounded-full text-center text-base font-black">
+        查看更多权益 ›
+      </a>
+      <div class="text-center text-[11px] text-white/50 mt-4 tracking-widest">唯普汽车 · 您身边的二手车经纪人</div>
+    </div>
+  </div>
+
+  <!-- 已登录版 -->
+  <div v-show="view === 'progress'" class="splash-progress absolute inset-0 flex flex-col text-white">
+    <div class="flex items-center justify-between px-5 py-2 text-white/90 text-sm relative z-20">
+      <span>9:41</span>
+      <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+    </div>
+
+    <button @click="goNext" class="skip-btn absolute top-10 right-4 z-30 flex items-center gap-1.5 text-white text-xs px-3 py-1.5 rounded-full">
+      <svg class="ring" width="18" height="18" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <circle cx="10" cy="10" r="8" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="50.27" :stroke-dashoffset="ringOffset"/>
+      </svg>
+      <span>跳过 {{ secondsLeft }}s</span>
+    </button>
+
+    <div class="flex-1 flex flex-col items-center justify-center px-8 relative z-10">
+      <div class="float-in mb-5 flex items-center gap-2">
+        <div class="px-3 py-1 rounded-full bg-sky-500/30 border border-sky-400/40 text-[11px] font-bold text-sky-100">当前 V1 普通</div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-white/40"></i>
+        <div class="px-3 py-1 rounded-full bg-amber-300 text-amber-900 text-[11px] font-black">目标 V2 银卡</div>
+      </div>
+      <div class="float-in delay-1 mb-6 relative">
+        <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-violet-300 to-purple-600 flex items-center justify-center text-white shadow-2xl">
+          <i data-lucide="shield-check" class="w-12 h-12"></i>
+        </div>
+        <span class="absolute -top-2 -right-2 w-9 h-9 rounded-full bg-slate-900/80 border-2 border-amber-300 flex items-center justify-center shadow-lg">
+          <i data-lucide="lock" class="w-4 h-4 text-amber-300"></i>
+        </span>
+      </div>
+      <div class="float-in delay-2 text-center">
+        <div class="text-2xl font-black tracking-tight leading-tight">您距离 <span class="text-amber-300">V2 银卡</span></div>
+        <div class="text-[32px] font-black mt-1 leading-none">仅差 <span class="title-shine">2 台</span> 成交</div>
+      </div>
+      <div class="float-in delay-3 w-full mt-6 max-w-xs">
+        <div class="flex items-center justify-between text-[11px] text-white/70 mb-2">
+          <span>V1 普通</span>
+          <span class="text-amber-300 font-bold">1 / 3 台</span>
+          <span>V2 银卡</span>
+        </div>
+        <div class="h-2 rounded-full bg-white/15 overflow-hidden">
+          <div class="h-full rounded-full bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 p-fill shadow-[0_0_12px_rgba(251,191,36,.6)]"></div>
+        </div>
+      </div>
+      <div class="float-in delay-3 mt-5 text-center text-[12px] text-sky-100/85 leading-relaxed">
+        升级即解锁:<span class="text-amber-300 font-bold">上门取送车服务</span> + <span class="text-amber-300 font-bold">无偿退车</span>特权
+      </div>
+    </div>
+
+    <div class="float-in delay-4 px-8 pb-10 relative z-10">
+      <a href="home.html" class="cta-gold block w-full py-3.5 text-amber-900 rounded-full text-center text-base font-black">
+        去成交领奖励 ›
+      </a>
+      <div class="text-center text-[11px] text-white/50 mt-4 tracking-widest">唯普汽车 · 您的成长伙伴</div>
+    </div>
+  </div>
+
+  <!-- Demo 切换器 -->
+  <div class="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex gap-1 dev-switch rounded-full p-1 text-[10px] text-white/80">
+    <button @click="switchView('vision')"   :class="['px-3 py-1 rounded-full', view === 'vision' ? 'bg-white/20' : '']">未登录版</button>
+    <button @click="switchView('progress')" :class="['px-3 py-1 rounded-full', view === 'progress' ? 'bg-white/20' : '']">已登录版</button>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted, onUnmounted } = Vue;
+
+createApp({
+  setup() {
+    const TOTAL = 5;
+    const RING_C = 50.27;
+
+    const view = ref('vision');
+    const secondsLeft = ref(TOTAL);
+    let timer = null;
+
+    const ringOffset = computed(() => RING_C * (1 - secondsLeft.value / TOTAL));
+
+    function startCountdown() {
+      stopCountdown();
+      secondsLeft.value = TOTAL;
+      timer = setInterval(() => {
+        secondsLeft.value--;
+        if (secondsLeft.value <= 0) {
+          stopCountdown();
+          goNext();
+        }
+      }, 1000);
+    }
+    function stopCountdown() { if (timer) { clearInterval(timer); timer = null; } }
+
+    function switchView(v) {
+      view.value = v;
+      startCountdown();
+      nextTick(() => window.lucide && lucide.createIcons());
+    }
+
+    function goNext() {
+      window.location.href = (view.value === 'vision') ? 'landing.html' : 'home.html';
+    }
+
+    watch(view, () => nextTick(() => window.lucide && lucide.createIcons()));
+
+    onMounted(() => {
+      lucide.createIcons();
+      startCountdown();
+    });
+    onUnmounted(stopCountdown);
+
+    return { view, secondsLeft, ringOffset, switchView, goNext };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

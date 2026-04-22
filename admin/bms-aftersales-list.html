@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>售后列表 · 服务中心 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+
+  /* Sider */
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #fff; background: #409eff; }
+
+  /* Header */
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+
+  /* Card / Form */
+  .ant-card { background: #fff; border-radius: 2px; }
+  .el-input, .el-select { position: relative; display: inline-flex; align-items: center; width: 100%; }
+  .el-input input, .el-select select { width: 100%; height: 30px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 3px; background: #fff; color: #606266; font-size: 12px; line-height: 30px; outline: none; box-sizing: border-box; }
+  .el-input input:focus, .el-select select:focus { border-color: #409eff; }
+  .el-input input::placeholder { color: #c0c4cc; }
+  .el-label { color: #606266; font-size: 12px; line-height: 30px; padding-right: 6px; white-space: nowrap; flex-shrink: 0; }
+  .date-sep { color: #c0c4cc; padding: 0 4px; font-size: 12px; }
+  .el-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 30px; padding: 0 18px; border-radius: 3px; font-size: 12px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
+  .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
+  .el-btn-primary:hover { background: #66b1ff; border-color: #66b1ff; }
+  .el-btn-icon { width: 30px; padding: 0; }
+
+  /* Filter grid: 7 columns */
+  .filter-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px 12px; }
+  .filter-cell { display: flex; align-items: center; }
+  .filter-cell .el-label { min-width: 64px; text-align: right; }
+  .filter-cell.date-cell .el-input { flex: 1; min-width: 0; }
+
+  /* Table */
+  .el-table { width: 100%; border-collapse: collapse; font-size: 12px; color: #606266; }
+  .el-table thead th { background: #f5f7fa; color: #303133; font-weight: 500; padding: 9px 8px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
+  .el-table tbody td { padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; }
+  .el-table tbody tr { cursor: pointer; }
+  .el-table tbody tr:hover { background: #f5f7fa; }
+  .el-table tbody tr.row-hl { background: #ecf5ff; }
+
+  .buyer-cell { display: inline-flex; align-items: center; gap: 4px; justify-content: flex-start; }
+  .col-buyer { text-align: left !important; }
+  .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #fff; line-height: 15px; font-style: italic; letter-spacing: .3px; }
+
+  .status-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+  .status-review { background: #ecf5ff; color: #409eff; border: 1px solid #b3d8ff; }
+  .status-done { background: #f0f9eb; color: #67c23a; border: 1px solid #c2e7b0; }
+  .status-closed { background: #f4f4f5; color: #909399; border: 1px solid #e9e9eb; }
+
+  .link { color: #409eff; cursor: pointer; }
+  .link:hover { text-decoration: underline; }
+  .col-config { max-width: 170px; white-space: normal; line-height: 1.5; }
+  .col-store { max-width: 160px; white-space: normal; line-height: 1.5; }
+  .col-detail { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #409eff; cursor: pointer; font-size: 11px; }
+
+  .loss-neg { color: #f56c6c; }
+
+  /* Pagination */
+  .el-pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; color: #606266; font-size: 13px; }
+  .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; }
+  .pager-btn.active { background: #409eff; color: #fff; }
+  .pager-arrow { min-width: 28px; height: 28px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; }
+  .page-size-select { height: 28px; border: 1px solid #dcdfe6; border-radius: 3px; padding: 0 8px; background: #fff; color: #606266; font-size: 12px; outline: none; }
+  .page-jump-input { width: 44px; height: 28px; border: 1px solid #dcdfe6; border-radius: 3px; padding: 0 6px; text-align: center; font-size: 12px; color: #606266; outline: none; }
+</style>
+</head>
+<body>
+
+<div class="flex min-h-screen">
+
+  <!-- Sider -->
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item" onclick="location.href='bms-sales-orders.html'"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item open"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <div class="sub-item">车辆签注列表</div>
+        <div class="sub-item">过户服务</div>
+        <div class="sub-item">订单管理</div>
+        <div class="sub-item">衍生服务订单</div>
+        <div class="sub-item active" onclick="location.href='bms-aftersales.html'">售后服务</div>
+      </div>
+      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Header -->
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-4 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+        <div class="flex items-center gap-1">
+          <span>首页</span>
+          <span class="text-slate-300 mx-1">/</span>
+          <i data-lucide="headphones" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span class="ml-1">服务中心</span>
+          <span class="text-slate-300 mx-1">/</span>
+          <span class="cursor-pointer" onclick="location.href='bms-aftersales.html'">售后服务</span>
+          <span class="text-slate-300 mx-1">/</span>
+          <span class="font-medium text-slate-700">售后列表</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+          </div>
+          <span class="text-sm text-slate-600">ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-3 overflow-auto">
+      <!-- Filter form -->
+      <div class="ant-card p-4 mb-3">
+        <div class="filter-grid">
+          <div class="filter-cell">
+            <span class="el-label">车牌</span>
+            <div class="el-input"><input placeholder="车牌..." /></div>
+            <button class="el-btn el-btn-primary el-btn-icon" style="margin-left:-1px; border-radius:0 3px 3px 0;"><i data-lucide="search" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">VIN</span>
+            <div class="el-input"><input placeholder="仅支持精准查询" /></div>
+            <button class="el-btn el-btn-primary el-btn-icon" style="margin-left:-1px; border-radius:0 3px 3px 0;"><i data-lucide="search" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <div class="filter-cell date-cell">
+            <span class="el-label">发起日期</span>
+            <div class="el-input"><input type="date" value="2026-04-01" /></div>
+          </div>
+          <div class="filter-cell date-cell">
+            <span class="el-label">----</span>
+            <span class="el-label">结束日期</span>
+            <div class="el-input"><input type="date" /></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">发起人</span>
+            <div class="el-input"><input placeholder="姓名/登录账号/手机号码.." /></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">成交人</span>
+            <div class="el-input"><input placeholder="姓名/登录账号/手机号码.." /></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">状态</span>
+            <div class="el-select"><select id="statusFilter"><option value="">请选择...</option><option value="审核中">审核中</option><option value="已执行">已执行</option><option value="已关闭">已关闭</option></select></div>
+          </div>
+
+          <div class="filter-cell">
+            <span class="el-label">类型</span>
+            <div class="el-select"><select><option>请选择...</option><option>售后类</option><option>退车</option><option>优惠减免</option></select></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">来源</span>
+            <div class="el-select"><select><option>请选择...</option><option>后台</option><option>APP</option><option>小程序</option></select></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">当前审核人</span>
+            <div class="el-input"><input placeholder="姓名/登录账号/手机号码.." /></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">门店</span>
+            <div class="el-input"><input placeholder="支持门店名称模糊搜索" /></div>
+            <button class="el-btn el-btn-primary el-btn-icon" style="margin-left:-1px; border-radius:0 3px 3px 0;"><i data-lucide="search" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">原因</span>
+            <div class="el-select"><select><option>请选择</option><option>车况申诉类</option><option>手续类</option><option>信息差异类</option><option>买家违约类</option></select></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">处理方式</span>
+            <div class="el-select"><select><option>请选择...</option><option>直接退车</option><option>更换买家</option><option>优惠减免</option></select></div>
+          </div>
+          <div class="filter-cell">
+            <span class="el-label">会员等级</span>
+            <div class="el-select"><select id="levelFilter"><option value="">请选择...</option><option value="V0">V0</option><option value="V1">V1</option><option value="V2">V2</option><option value="V3">V3</option></select></div>
+          </div>
+
+          <div class="filter-cell" style="grid-column: 7 / 8; justify-content: flex-end;">
+            <button id="searchBtn" class="el-btn el-btn-primary" style="padding: 0 28px;">查询</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="ant-card">
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th>车牌</th>
+              <th>成交时间</th>
+              <th class="col-buyer">成交人</th>
+              <th>车辆配置</th>
+              <th>门店</th>
+              <th>发起时间</th>
+              <th>发起人</th>
+              <th>责任方</th>
+              <th>状态</th>
+              <th>来源</th>
+              <th>处理方式</th>
+              <th>原因</th>
+              <th>详情</th>
+              <th>唯普损失</th>
+            </tr>
+          </thead>
+          <tbody id="afsBody"></tbody>
+        </table>
+        <div class="el-pagination">
+          <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+          <button class="pager-btn active">1</button>
+          <button class="pager-btn">2</button>
+          <button class="pager-btn">3</button>
+          <span>···</span>
+          <button class="pager-btn">12</button>
+          <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          <select class="page-size-select">
+            <option>10 条/页</option>
+            <option>20 条/页</option>
+            <option>50 条/页</option>
+          </select>
+          <span>跳至</span>
+          <input class="page-jump-input" value="1" />
+          <span>页</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="fixed top-2 right-4 z-50">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+
+<script src="../shared/member-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  lucide.createIcons();
+
+  const lvColor = (code) => {
+    try { return window.MEMBER_CONFIG.getLevelByCode(code).color; } catch(e) { return "#94a3b8"; }
+  };
+
+  const rows = [
+    { plate:"粤S29DC0", dealAt:"2026-04-19 14:21", buyer:"胡文志", lv:"V2", config:"本田 雅阁 2018款 锐·混动 2.0L 锐领版", store:"东莞市合信汽车销售服务有限公司", startAt:"2026-04-21 13:02:11.0", initiator:"唯普-小珂", duty:"买家", status:"审核中", source:"后台", handle:"直接退车", reason:"车况申诉类-泡水展示争议", detail:"基础信息:车牌:粤S29DC0;成...", loss:800 },
+    { plate:"粤C7M007", dealAt:"2026-04-17 15:07", buyer:"阿尔巴特·艾尼瓦尔", lv:"V3", config:"奔驰 G级(进口) 2017款 G500", store:"珠海长久世达汽车销售服务有限公司", startAt:"2026-04-21 12:29:43.0", initiator:"唯普-小珂", duty:"检测评估中心(李辉耀(外部查验))", status:"审核中", source:"后台", handle:"直接退车", reason:"车况申诉类-事故展示争议", detail:"基础信息:车牌:粤C7M007;...", loss:0, hl:true },
+    { plate:"粤DVD659", dealAt:"2026-04-20 14:00", buyer:"李景霞", lv:"V1", config:"丰田 花冠 2013款 1.6L 自动 豪华版", store:"汕头市广物昱达汽车销售服务有限公司", startAt:"2026-04-21 11:46:23.0", initiator:"唯普-小珂", duty:"门店(汽贸)", status:"审核中", source:"后台", handle:"直接退车", reason:"车况申诉类-事故展示争议", detail:"基础信息:车牌:粤DVD659;...", loss:0 },
+    { plate:"粤A1D0B0", dealAt:"2026-03-30 15:07", buyer:"李金明", lv:"V2", config:"日产 天籁 2016款 2.0L XE时尚版", store:"广州盛昊城汽车销售服务有限公司-比亚迪", startAt:"2026-04-21 10:14:09.0", initiator:"唯普-小婷", duty:"门店(非汽贸)", status:"已执行", source:"后台", handle:"直接退车", reason:"信息差异类-里程数争议", detail:"基础信息:车牌:粤A1D0B0;...", loss:-2600 },
+    { plate:"粤LDM2915", dealAt:"2026-04-20 14:01", buyer:"惠州市辉达实业有限公司", lv:"V3", config:"领克 Z10 2025款 95kWh 702km四驱智驾Ultra", store:"惠州市辉达星悦二手车交易服务有限公司", startAt:"2026-04-21 09:59:12.0", initiator:"唯普-小婷", duty:"", status:"审核中", source:"后台", handle:"直接退车", reason:"零售/门店订单-申请退车", detail:"基础信息:车牌:粤LDM2915;...", loss:0 },
+    { plate:"粤LD31982", dealAt:"2026-04-20 14:00", buyer:"惠州市生不息企业管理咨询有限公司", lv:"V2", config:"众泰 云100 2018款 PLUS 智行型", store:"惠州市辉达星悦二手车交易服务有限公司", startAt:"2026-04-21 09:58:02.0", initiator:"唯普-小婷", duty:"", status:"审核中", source:"后台", handle:"直接退车", reason:"零售/门店订单-申请退车", detail:"基础信息:车牌:粤LD31982;...", loss:0 },
+    { plate:"粤J18U52", dealAt:"2026-04-17 14:00", buyer:"黄文凯", lv:"V2", config:"长安 CS75 2016款 1.8T 自动精英型", store:"江门市广晟汽车贸易有限公司-比亚迪", startAt:"2026-04-20 17:18:43.0", initiator:"唯普-小婷", duty:"买家", status:"已执行", source:"后台", handle:"直接退车", reason:"车况申诉类-动力展示争议", detail:"基础信息:车牌:粤J18U52;...", loss:800 },
+    { plate:"粤B9YX89", dealAt:"2026-04-20 14:11", buyer:"广物汇和零售中心采购", lv:"V3", config:"奔驰 S级(进口) 2014款 S600L", store:"岳阳市汇宏二手车交易有限公司", startAt:"2026-04-20 16:42:37.0", initiator:"唯普-小婷", duty:"", status:"审核中", source:"后台", handle:"直接退车", reason:"零售/门店订单-申请退车", detail:"基础信息:车牌:粤B9YX89;...", loss:0 },
+    { plate:"粤E8A5X2", dealAt:"2026-04-17 14:30", buyer:"陈丽萍(佛山君奥)", lv:"V1", config:"奥迪 S4(进口) 2023款 S4 Avant 3.0TFSI", store:"佛山市广物君奥汽车贸易有限公司", startAt:"2026-04-20 16:40:25.0", initiator:"唯普-小婷", duty:"", status:"已执行", source:"后台", handle:"直接退车", reason:"零售/门店订单-申请退车", detail:"基础信息:车牌:粤E8A5X2;...", loss:0 },
+    { plate:"粤E3D62H", dealAt:"2026-04-12 15:00", buyer:"广物汇和零售中心采购", lv:"V3", config:"奥迪 Q5L 2026款 2.0T 双离合 千万用户专享版", store:"广东君奥汽车贸易有限公司", startAt:"2026-04-20 16:19:30.0", initiator:"唯普-小婷", duty:"", status:"已执行", source:"后台", handle:"更换买家", reason:"零售/门店订单-更换买家", detail:"基础信息:车牌:粤E3D62H;...", loss:0 },
+  ];
+
+  const statusCls = (s) => s === "审核中" ? "status-review" : s === "已执行" ? "status-done" : "status-closed";
+
+  const toDetailUrl = (r) => {
+    const params = new URLSearchParams({
+      plate: r.plate, model: r.config, deal: r.dealAt,
+      buyer: r.buyer, buyerLevel: r.lv,
+      payStatus: "已收车款", orderStatus: "已完成已清算"
+    });
+    return `bms-order-detail.html?${params.toString()}`;
+  };
+
+  function render(list) {
+    document.getElementById("afsBody").innerHTML = list.map((r, i) => `
+      <tr class="${r.hl ? 'row-hl' : ''}" onclick="location.href='${toDetailUrl(r)}'">
+        <td>${r.plate}</td>
+        <td>${r.dealAt}</td>
+        <td class="col-buyer">
+          <span class="buyer-cell">
+            <span class="lv-pill" style="background:${lvColor(r.lv)}">${r.lv}</span>
+            <span>${r.buyer}</span>
+          </span>
+        </td>
+        <td class="col-config">${r.config}</td>
+        <td class="col-store">${r.store}</td>
+        <td>${r.startAt}</td>
+        <td>${r.initiator}</td>
+        <td>${r.duty || ''}</td>
+        <td><span class="status-tag ${statusCls(r.status)}">${r.status}</span></td>
+        <td>${r.source}</td>
+        <td>${r.handle}</td>
+        <td>${r.reason}</td>
+        <td class="col-detail" title="${r.detail}">${r.detail}</td>
+        <td class="${r.loss < 0 ? 'loss-neg' : ''}">${r.loss}</td>
+      </tr>
+    `).join("");
+    lucide.createIcons();
+  }
+
+  render(rows);
+
+  function applyFilter() {
+    const lv = document.getElementById("levelFilter").value;
+    const st = document.getElementById("statusFilter").value;
+    render(rows.filter(r => (!lv || r.lv === lv) && (!st || r.status === st)));
+  }
+  document.getElementById("searchBtn").addEventListener("click", applyFilter);
+  document.getElementById("levelFilter").addEventListener("change", applyFilter);
+  document.getElementById("statusFilter").addEventListener("change", applyFilter);
+</script>
+</body>
+</html>

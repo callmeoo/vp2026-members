@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户详情 · 业务数据 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+
+  /* Sider */
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+
+  /* Header */
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+  .breadcrumb-current { color: #f56c6c; }
+
+  /* Card */
+  .ant-card { background: #fff; border-radius: 2px; }
+
+  /* Summary block dividers */
+  .summary-row { display: grid; grid-template-columns: 1.1fr 1fr 1.1fr 1fr; }
+  .summary-cell { padding: 20px 24px; border-right: 1px solid #ebeef5; min-height: 128px; display: flex; flex-direction: column; justify-content: center; }
+  .summary-cell:last-child { border-right: none; }
+
+  .sc-label { color: #909399; font-size: 13px; }
+  .sc-link { color: #409eff; font-size: 13px; cursor: pointer; }
+  .sc-link:hover { text-decoration: underline; }
+  .sc-value { color: #303133; font-size: 14px; }
+  .sc-ver { color: #67c23a; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+  .sc-amount { color: #409eff; font-size: 28px; font-weight: 600; }
+  .sc-total-label { color: #909399; font-size: 13px; text-align: center; margin-top: 8px; }
+  .bank-star { color: #e6a23c; font-size: 14px; margin-right: 4px; }
+
+  /* Tabs */
+  .el-tabs { border-bottom: 1px solid #e4e7ed; padding: 0 12px; }
+  .el-tab { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; font-size: 14px; color: #606266; cursor: pointer; position: relative; }
+  .el-tab:hover { color: #409eff; }
+  .el-tab.active { color: #409eff; font-weight: 500; }
+  .el-tab.active::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: -1px; height: 2px; background: #409eff; }
+
+  /* Form info rows */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; padding: 24px 28px; }
+  .info-row { display: flex; align-items: center; padding: 10px 0; }
+  .info-row .lbl { color: #606266; width: 84px; text-align: left; padding-right: 8px; flex-shrink: 0; }
+  .info-row .val { color: #303133; flex: 1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .info-row .edit { color: #409eff; font-size: 13px; cursor: pointer; }
+  .info-row .edit:hover { text-decoration: underline; }
+
+  /* Radio */
+  .el-radio { display: inline-flex; align-items: center; gap: 6px; margin-right: 24px; cursor: pointer; color: #606266; }
+  .el-radio .dot { width: 14px; height: 14px; border: 1px solid #dcdfe6; border-radius: 50%; display: inline-block; position: relative; box-sizing: border-box; }
+  .el-radio.checked .dot { border-color: #409eff; background: #409eff; }
+  .el-radio.checked .dot::after { content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 4px; height: 4px; background: #fff; border-radius: 50%; }
+  .el-radio.checked { color: #303133; }
+
+  .lock-hint { color: #f56c6c; font-size: 12px; margin-top: 4px; padding-left: 84px; line-height: 1.6; }
+
+  /* Toggle trajectory */
+  .traj-toggle { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 0; color: #409eff; cursor: pointer; font-size: 13px; border-top: 1px solid #ebeef5; }
+  .traj-toggle:hover { text-decoration: underline; }
+
+  /* Trajectory table */
+  .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; }
+  .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 12px 16px; border-bottom: 1px solid #ebeef5; text-align: left; white-space: nowrap; }
+  .el-table tbody td { padding: 14px 16px; border-bottom: 1px solid #ebeef5; text-align: left; vertical-align: top; }
+  .el-table tbody tr:hover { background: #fafafa; }
+
+  .cap-line { display: flex; align-items: baseline; gap: 10px; }
+  .cap-line .cap-label { color: #606266; font-size: 13px; }
+  .cap-line .cap-value { color: #303133; font-size: 13px; }
+
+  .user-tag { display: inline-flex; padding: 2px 10px; border-radius: 3px; background: #ecf5ff; color: #409eff; border: 1px solid #d9ecff; font-size: 12px; }
+
+  .cert-type { color: #303133; font-size: 14px; }
+  .bank-account { color: #303133; font-size: 14px; font-weight: 500; margin-top: 4px; }
+
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .panel-empty { padding: 60px 20px; text-align: center; color: #909399; font-size: 13px; }
+  .panel-empty i { width: 36px; height: 36px; color: #dcdfe6; margin: 0 auto 8px; display: block; }
+
+  /* Section */
+  .panel-section { padding: 20px 24px; }
+  .panel-section + .panel-section { border-top: 1px solid #ebeef5; }
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #303133; margin-bottom: 14px; }
+  .section-title .mini-label { font-size: 12px; color: #909399; font-weight: 400; }
+
+  .el-btn-sm { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 12px; border-radius: 4px; font-size: 12px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; }
+  .el-btn-sm:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .el-btn-primary-sm { background: #409eff; color: #fff; border-color: #409eff; }
+  .el-btn-primary-sm:hover { background: #66b1ff; color: #fff; border-color: #66b1ff; }
+  .el-btn-danger-sm { color: #f56c6c; border-color: #fbc4c4; }
+  .el-btn-danger-sm:hover { color: #fff; background: #f56c6c; border-color: #f56c6c; }
+
+  /* Level banner */
+  .lv-banner { border-radius: 6px; padding: 20px 24px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .lv-banner .lv-short { font-size: 40px; font-weight: 700; letter-spacing: 2px; line-height: 1; }
+  .lv-banner .lv-name { font-size: 16px; font-weight: 500; margin-top: 4px; }
+  .lv-banner .lv-sub { font-size: 12px; opacity: .8; margin-top: 6px; }
+  .lv-banner .lv-right { text-align: right; font-size: 12px; line-height: 1.8; opacity: .95; }
+  .lv-banner .lv-right .k { opacity: .7; margin-right: 6px; }
+
+  /* Metric cards */
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .metric-card { background: #f8fafc; border: 1px solid #ebeef5; border-radius: 4px; padding: 14px 16px; }
+  .metric-card .m-lbl { color: #909399; font-size: 12px; }
+  .metric-card .m-val { color: #303133; font-size: 22px; font-weight: 600; margin-top: 6px; }
+  .metric-card .m-val.accent { color: #409eff; }
+  .metric-card .m-val.warn { color: #e6a23c; }
+  .metric-card .m-val.danger { color: #f56c6c; }
+  .metric-card .m-sub { color: #909399; font-size: 11px; margin-top: 4px; }
+  .metric-card .m-val small { font-size: 12px; color: #909399; font-weight: 400; margin-left: 4px; }
+
+  /* Progress */
+  .prog-bar { height: 8px; background: #f0f2f5; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .prog-bar .prog-fill { height: 100%; background: linear-gradient(90deg, #409eff, #8b5cf6); border-radius: 4px; transition: width .4s; }
+  .prog-meta { display: flex; justify-content: space-between; font-size: 12px; color: #909399; margin-top: 6px; }
+
+  /* kv list */
+  .kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 40px; }
+  .kv-row { display: flex; padding: 6px 0; font-size: 13px; }
+  .kv-row .kv-k { color: #909399; width: 100px; flex-shrink: 0; }
+  .kv-row .kv-v { color: #303133; flex: 1; }
+  .kv-row .kv-v .ok { color: #67c23a; }
+
+  /* benefit list — full width, one per line */
+  .benefit-list { display: flex; flex-direction: column; }
+  .benefit-row { display: flex; align-items: baseline; padding: 8px 0; font-size: 13px; border-bottom: 1px dashed #f0f0f0; }
+  .benefit-row:last-child { border-bottom: none; }
+  .benefit-row .benefit-k { color: #303133; font-weight: 500; min-width: 180px; flex-shrink: 0; }
+  .benefit-row .benefit-v { color: #606266; flex: 1; }
+
+  /* Level rule modal — wider, comparison table inside */
+  .modal.modal-lg { width: 920px; max-height: 86vh; display: flex; flex-direction: column; }
+  .modal.modal-lg .modal-body { overflow-y: auto; padding: 0; }
+  .rule-intro { padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid #ebeef5; color: #606266; font-size: 12px; line-height: 1.8; }
+  .rule-intro b { color: #303133; }
+  .rule-table-wrap { padding: 16px 20px 20px; }
+  .rule-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .rule-table th, .rule-table td { border: 1px solid #ebeef5; padding: 10px 12px; text-align: center; vertical-align: middle; line-height: 1.55; }
+  .rule-table thead th { color: #fff; font-size: 13px; font-weight: 600; padding: 12px 10px; }
+  .rule-table thead th.dim-th { background: #f5f7fa; color: #909399; font-weight: 500; width: 132px; }
+  .rule-table thead th .lv-short { display: block; font-size: 16px; line-height: 1.2; letter-spacing: 1px; }
+  .rule-table thead th .lv-name { display: block; font-size: 11px; opacity: .9; margin-top: 2px; font-weight: 400; }
+  .rule-table thead th.cur::after { content: " ★ 当前等级"; display: block; font-size: 10px; opacity: .95; margin-top: 2px; font-weight: 500; }
+  .rule-table tbody td.dim { background: #fafafa; color: #303133; font-weight: 500; text-align: left; padding-left: 14px; width: 132px; }
+  .rule-table tbody td.dim small { display: block; color: #909399; font-weight: 400; font-size: 11px; margin-top: 2px; }
+  .rule-table tbody td.col-cur { background: #f0f9ff; }
+  .rule-table tbody td.has { color: #303133; }
+  .rule-table tbody td.has .ok-mark { color: #67c23a; font-size: 14px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+  .rule-table tbody td.has .ok-desc { color: #606266; font-size: 11px; line-height: 1.5; }
+  .rule-table tbody td.miss { color: #c0c4cc; background: #fafafa; }
+  .rule-table tbody td.text-l { text-align: left; padding-left: 14px; padding-right: 14px; }
+
+  /* coin type tag */
+  .type-tag { display: inline-flex; padding: 1px 8px; border-radius: 3px; font-size: 12px; font-weight: 500; }
+  .type-plus { background: #f0f9eb; color: #67c23a; border: 1px solid #e1f3d8; }
+  .type-minus { background: #fef0f0; color: #f56c6c; border: 1px solid #fde2e2; }
+  .type-expire { background: #fdf6ec; color: #e6a23c; border: 1px solid #faecd8; }
+
+  .expire-alert { background: #fdf6ec; border: 1px solid #faecd8; border-radius: 4px; padding: 10px 14px; color: #e6a23c; font-size: 12px; display: flex; align-items: flex-start; gap: 8px; }
+  .expire-alert .alert-title { font-weight: 600; }
+  .expire-alert .alert-desc { color: #b88231; line-height: 1.7; margin-top: 2px; }
+  .expire-alert .alert-channel { display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; margin: 0 4px; border-radius: 3px; background: #fff; border: 1px solid #faecd8; color: #e6a23c; font-size: 11px; }
+
+  /* Modal */
+  .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; align-items: center; justify-content: center; }
+  .modal-mask.open { display: flex; }
+  .modal { width: 420px; background: #fff; border-radius: 4px; box-shadow: 0 6px 30px rgba(0,0,0,.15); overflow: hidden; }
+  .modal-head { padding: 14px 20px; border-bottom: 1px solid #ebeef5; display: flex; align-items: center; justify-content: space-between; }
+  .modal-head .m-title { font-size: 15px; color: #303133; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .modal-head .m-close { color: #c0c4cc; cursor: pointer; }
+  .modal-head .m-close:hover { color: #606266; }
+  .modal-body { padding: 20px; }
+  .modal-body .form-row { display: flex; align-items: flex-start; margin-bottom: 14px; }
+  .modal-body .form-row:last-child { margin-bottom: 0; }
+  .modal-body .form-row .f-lbl { width: 72px; color: #606266; font-size: 13px; padding-top: 8px; text-align: right; padding-right: 12px; flex-shrink: 0; }
+  .modal-body .form-row .f-lbl.req::before { content: "*"; color: #f56c6c; margin-right: 2px; }
+  .modal-body .form-row .f-ctl { flex: 1; }
+  .modal-body input[type=number], .modal-body input[type=text], .modal-body textarea { width: 100%; padding: 6px 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; color: #303133; outline: none; box-sizing: border-box; }
+  .modal-body input:focus, .modal-body textarea:focus { border-color: #409eff; }
+  .modal-body textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+  .modal-body .hint { color: #909399; font-size: 12px; margin-top: 4px; }
+  .modal-foot { padding: 12px 20px; background: #fafafa; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #ebeef5; }
+  .form-err { color: #f56c6c; font-size: 12px; margin-top: 4px; display: none; }
+  .form-err.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="flex min-h-screen">
+
+  <!-- Sider -->
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+
+      <div class="menu-item open"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <div class="sub-item">业务首页</div>
+        <div class="sub-item">拍卖管理</div>
+        <div class="sub-item active" onclick="location.href='bms-users.html'">用户管理</div>
+      </div>
+
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">销售首页</div>
+        <div class="sub-item">客户等级管理</div>
+        <div class="sub-item" onclick="location.href='bms-sales-buyers.html'">买家管理</div>
+        <div class="sub-item">B2C零售</div>
+        <div class="sub-item">门店奖励</div>
+        <div class="sub-item" onclick="location.href='sales-orders.html'">销售订单</div>
+      </div>
+      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Header -->
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-4 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+        <div class="flex items-center gap-1">
+          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+          <a href="bms-users.html" class="hover:text-blue-500">首页</a>
+          <span class="text-slate-300">/</span>
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
+          <a href="bms-users.html" class="hover:text-blue-500">业务数据</a>
+          <span class="text-slate-300">/</span>
+          <a href="bms-users.html" class="hover:text-blue-500">用户管理</a>
+          <span class="text-slate-300">/</span>
+          <a href="bms-users.html" class="hover:text-blue-500">用户列表</a>
+          <span class="text-slate-300">/</span>
+          <span class="breadcrumb-current font-medium">用户详情</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+          </div>
+          <span class="text-sm text-slate-600">ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-4 overflow-auto">
+
+      <!-- Summary card -->
+      <div class="ant-card mb-3">
+        <div class="summary-row">
+          <!-- 用户基础 -->
+          <div class="summary-cell">
+            <div class="flex items-start gap-3">
+              <span class="sc-link" style="width:56px">用户</span>
+              <span id="userCode" class="sc-value">m_2714160846677737</span>
+            </div>
+            <div class="flex items-start gap-3 mt-4">
+              <span class="sc-link" style="width:56px">绑定手机号</span>
+              <span class="sc-value flex items-center gap-1">
+                <span id="userPhoneFmt">138 2433 6622</span>
+                <i data-lucide="link" class="w-3 h-3 text-slate-400"></i>
+              </span>
+            </div>
+            <div class="mt-3" style="padding-left:56px">
+              <span class="sc-ver">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                已验证
+              </span>
+            </div>
+          </div>
+
+          <!-- 总金额 -->
+          <div class="summary-cell items-center" style="align-items:center">
+            <div class="text-center w-full">
+              <div id="totalAmount" class="sc-amount">35,184.00</div>
+              <div class="sc-total-label">总金额(元)</div>
+            </div>
+          </div>
+
+          <!-- 可出价台数 -->
+          <div class="summary-cell items-center" style="align-items:center">
+            <div class="text-center w-full">
+              <div class="cert-type">可出价台数</div>
+              <div class="cap-line mt-3" style="justify-content:center"><span class="cap-label">12万内</span><span class="cap-value">2 台</span></div>
+              <div class="cap-line mt-2" style="justify-content:center"><span class="cap-label">25万内</span><span class="cap-value">1 台</span></div>
+              <div class="cap-line mt-2" style="justify-content:center"><span class="cap-label">25万以上</span><span class="cap-value">0 台</span></div>
+            </div>
+          </div>
+
+          <!-- 认证 + 银行 -->
+          <div class="summary-cell items-center" style="align-items:center">
+            <div class="text-center w-full">
+              <div class="cert-type">认证性质:<span id="certType">企业</span></div>
+              <div class="bank-account"><span class="bank-star">★</span><span id="bankNo">9912409242822</span></div>
+              <div class="sc-total-label" style="margin-top:6px">银行账号</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs card -->
+      <div class="ant-card">
+        <div class="el-tabs">
+          <div class="el-tab active" data-tab="basic">基础信息</div>
+          <div class="el-tab" data-tab="auth">实名认证信息</div>
+          <div class="el-tab" data-tab="bank">银行卡信息</div>
+          <div class="el-tab" data-tab="account">账户信息</div>
+          <div class="el-tab" data-tab="level">会员等级</div>
+          <div class="el-tab" data-tab="coin">积分/唯金币</div>
+          <div class="el-tab" data-tab="tag">客户标签</div>
+        </div>
+
+        <!-- Panel: 基础信息 -->
+        <div class="tab-panel active" data-panel="basic">
+        <div class="info-grid">
+          <div>
+            <div class="info-row">
+              <span class="lbl">用户状态:</span>
+              <div class="val">
+                <span class="el-radio checked" id="radioNormal"><span class="dot"></span>正常</span>
+                <span class="el-radio" id="radioLocked"><span class="dot"></span>锁定</span>
+              </div>
+            </div>
+            <div class="lock-hint">锁定后,该用户可能无法正常使用服务车商小程序、唯车查查小程序</div>
+
+            <div class="info-row">
+              <span class="lbl">企业名称:</span>
+              <div class="val">
+                <span id="userName" style="max-width:240px;line-height:1.5">广东运通报废车辆回收拆解有限公司</span>
+                <span class="edit">编辑</span>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="lbl">电话:</span>
+              <div class="val">
+                <span id="userPhone">13824336622</span>
+                <span class="edit">编辑</span>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="lbl">密码:</span>
+              <div class="val">
+                <span>******</span>
+                <span class="edit">编辑</span>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="lbl">地址:</span>
+              <div class="val">
+                <span></span>
+                <span class="edit">编辑</span>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="lbl">用户标签:</span>
+              <div class="val">
+                <span class="user-tag">普通用户</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="info-row">
+              <span class="lbl">经办人:</span>
+              <div class="val">
+                <span>巫宗华</span>
+                <span class="edit">变更经办人</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="lbl">证件号:</span>
+              <div class="val"><span>440981199505114418</span></div>
+            </div>
+            <div class="info-row">
+              <span class="lbl">性别:</span>
+              <div class="val"><span>男</span></div>
+            </div>
+            <div class="info-row">
+              <span class="lbl">生日:</span>
+              <div class="val"><span>1995-05-11</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggle -->
+        <div class="traj-toggle" id="trajToggle">
+          <span>查看轨迹</span>
+          <i data-lucide="chevron-up" class="w-4 h-4" id="trajIcon"></i>
+        </div>
+
+        <!-- Trajectory table -->
+        <div id="trajTable">
+          <table class="el-table">
+            <thead>
+              <tr>
+                <th style="width:24%">操作人</th>
+                <th style="width:22%">记录时间</th>
+                <th style="width:22%">操作</th>
+                <th>详情</th>
+              </tr>
+            </thead>
+            <tbody id="trajBody"></tbody>
+          </table>
+        </div>
+        </div><!-- /panel basic -->
+
+        <!-- Panel: 实名认证信息 -->
+        <div class="tab-panel" data-panel="auth">
+          <div class="panel-empty">
+            <i data-lucide="shield-check"></i>
+            <div>实名认证信息(演示占位)</div>
+          </div>
+        </div>
+
+        <!-- Panel: 银行卡信息 -->
+        <div class="tab-panel" data-panel="bank">
+          <div class="panel-empty">
+            <i data-lucide="credit-card"></i>
+            <div>银行卡信息(演示占位)</div>
+          </div>
+        </div>
+
+        <!-- Panel: 账户信息 -->
+        <div class="tab-panel" data-panel="account">
+          <div class="panel-empty">
+            <i data-lucide="wallet"></i>
+            <div>账户信息(演示占位)</div>
+          </div>
+        </div>
+
+        <!-- Panel: 会员等级 -->
+        <div class="tab-panel" data-panel="level">
+          <!-- If user is not 买家, show notice. Otherwise show full content. -->
+          <div id="levelContent"></div>
+        </div>
+
+        <!-- Panel: 积分/唯金币 -->
+        <div class="tab-panel" data-panel="coin">
+          <div id="coinContent"></div>
+        </div>
+
+        <!-- Panel: 客户标签 -->
+        <div class="tab-panel" data-panel="tag">
+          <div class="panel-empty">
+            <i data-lucide="tags"></i>
+            <div>客户标签(演示占位)</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="fixed top-2 right-4 z-50">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+
+<!-- Level rule modal -->
+<div class="modal-mask" id="ruleModal">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="m-title"><i data-lucide="book-open" class="w-4 h-4"></i><span>会员等级规则</span></div>
+      <i data-lucide="x" class="w-4 h-4 m-close" id="ruleModalClose"></i>
+    </div>
+    <div class="modal-body" id="ruleModalBody"></div>
+    <div class="modal-foot">
+      <button class="el-btn-sm el-btn-primary-sm" id="ruleModalOk">我知道了</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coin adjustment modal (shared by 手动新增 / 手动扣减 / 冻结金币) -->
+<div class="modal-mask" id="coinModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="m-title"><i data-lucide="coins" class="w-4 h-4" id="modalIcon"></i><span id="modalTitle">手动新增金币</span></div>
+      <i data-lucide="x" class="w-4 h-4 m-close" id="modalClose"></i>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="f-lbl">用户</div>
+        <div class="f-ctl" style="padding-top:8px;color:#303133"><span id="modalUser">-</span></div>
+      </div>
+      <div class="form-row">
+        <div class="f-lbl">当前余额</div>
+        <div class="f-ctl" style="padding-top:8px;color:#303133"><span id="modalBalance">0</span> 金币</div>
+      </div>
+      <div class="form-row">
+        <div class="f-lbl req"><span id="modalAmountLbl">新增数量</span></div>
+        <div class="f-ctl">
+          <input type="number" id="modalAmount" min="1" step="1" placeholder="请输入金币数量(正整数)" />
+          <div class="hint" id="modalAmountHint">按实际业务补偿或活动奖励数量填写</div>
+          <div class="form-err" id="modalAmountErr">请输入大于 0 的整数</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="f-lbl req">原因</div>
+        <div class="f-ctl">
+          <textarea id="modalReason" placeholder="请填写操作原因,将记入流水备注(必填)"></textarea>
+          <div class="form-err" id="modalReasonErr">原因不能为空</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="f-lbl">操作人</div>
+        <div class="f-ctl" style="padding-top:8px;color:#303133">管理员·ylj</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="el-btn-sm" id="modalCancel">取消</button>
+      <button class="el-btn-sm el-btn-primary-sm" id="modalSubmit">确认</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/member-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  const qs = new URLSearchParams(location.search);
+  const get = (k, def) => qs.get(k) || def;
+
+  const code = get("code", "m_2714160846677737");
+  const name = get("name", "广东运通报废车辆回收拆解有限公司");
+  const phone = get("phone", "13824336622");
+  const total = get("total", "35184");
+  const certType = get("certType", "企业");
+  const bankNo = get("bankNo", "9912409242822");
+  const role = get("role", "买家");            // 买家 / 卖家 / 双边
+  const levelCode = get("level", "LV3");        // "" for non-buyer
+  const coinBalance = Number(get("coin", "520"));
+
+  const fmtMoney = (n) => Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtPhone = (p) => (p && p.length === 11) ? `${p.slice(0,3)} ${p.slice(3,7)} ${p.slice(7)}` : p;
+
+  document.getElementById("userCode").textContent = code;
+  document.getElementById("userName").textContent = name;
+  document.getElementById("userPhone").textContent = phone;
+  document.getElementById("userPhoneFmt").textContent = fmtPhone(phone);
+  document.getElementById("totalAmount").textContent = fmtMoney(total);
+  document.getElementById("certType").textContent = certType;
+  document.getElementById("bankNo").textContent = bankNo;
+
+  // Trajectory data (keyed off the user code so different users show different history;
+  // defaults to the screenshot example for the highlighted enterprise).
+  const trajByUser = {
+    "m_2714160846677737": [
+      { op: "广东运通报废车辆回收拆解有限公司", at: "2025-05-08 11:36:57", act: "更改所在地", detail: "->广东深圳市" },
+      { op: "唯普-小欣", at: "2024-09-24 11:18:38", act: "更改生日", detail: "null->1995-05-11" },
+      { op: "唯普-小欣", at: "2024-09-24 11:18:38", act: "更改性别", detail: "保密->男" },
+    ]
+  };
+  const traj = trajByUser[code] || [
+    { op: name, at: "2025-05-08 11:36:57", act: "更新资料", detail: "基础信息变更" },
+    { op: "唯普-小欣", at: "2024-09-24 11:18:38", act: "创建账户", detail: "-" },
+  ];
+
+  document.getElementById("trajBody").innerHTML = traj.map(r => `
+    <tr>
+      <td>${r.op}</td>
+      <td>${r.at}</td>
+      <td>${r.act}</td>
+      <td>${r.detail}</td>
+    </tr>
+  `).join("");
+
+  // Status radio toggle (visual only)
+  const normal = document.getElementById("radioNormal");
+  const locked = document.getElementById("radioLocked");
+  normal.addEventListener("click", () => { normal.classList.add("checked"); locked.classList.remove("checked"); });
+  locked.addEventListener("click", () => { locked.classList.add("checked"); normal.classList.remove("checked"); });
+
+  // Trajectory toggle
+  const trajToggle = document.getElementById("trajToggle");
+  const trajTable = document.getElementById("trajTable");
+  const trajIcon = document.getElementById("trajIcon");
+  let trajOpen = true;
+  trajToggle.addEventListener("click", () => {
+    trajOpen = !trajOpen;
+    trajTable.style.display = trajOpen ? "" : "none";
+    trajIcon.setAttribute("data-lucide", trajOpen ? "chevron-up" : "chevron-down");
+    lucide.createIcons();
+  });
+
+  // Tab switching — swap both the tab header and the content panel
+  document.querySelectorAll(".el-tab").forEach(t => {
+    t.addEventListener("click", () => {
+      const key = t.dataset.tab;
+      document.querySelectorAll(".el-tab").forEach(x => x.classList.toggle("active", x === t));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.dataset.panel === key));
+      lucide.createIcons();
+    });
+  });
+
+  // ─────────────────────────────────────────────
+  // 会员等级 Tab
+  // ─────────────────────────────────────────────
+  (function renderLevelPanel() {
+    const host = document.getElementById("levelContent");
+    // Only 买家 users are eligible for membership levels
+    if (role === "卖家" || !levelCode) {
+      host.innerHTML = `
+        <div class="panel-empty">
+          <i data-lucide="info"></i>
+          <div>该用户当前角色为「${role || "卖家"}」,会员等级仅适用于买家用户</div>
+          <div style="margin-top:10px">
+            <button class="el-btn-sm">变更为买家 / 双边</button>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const cfg = window.MEMBER_CONFIG;
+    const lv = cfg.getLevelByCode(levelCode);
+    const lvIdx = cfg.levels.findIndex(x => x.code === lv.code);
+    const nextLv = cfg.levels[lvIdx + 1];
+
+    // Demo metrics — period: rolling 3-month window ending current month
+    const periodStart = "2026-02";
+    const periodEnd = "2026-04";
+    const nextEvalDate = "2026-05-01";
+    const dealsByLevel = { LV0: 0, LV1: 2, LV2: 5, LV3: 12 };
+    const deals = dealsByLevel[lv.code] || 0;
+    const nextNeed = nextLv ? Math.max(0, nextLv.threshold.dealsMin - deals) : 0;
+    const progressTo = nextLv ? Math.min(100, Math.round((deals / nextLv.threshold.dealsMin) * 100)) : 100;
+
+    const history = {
+      LV0: [
+        { at: "2026-02-01", type: "周期评级", from: "-",  to: "V0", reason: "新用户评级", op: "系统" }
+      ],
+      LV1: [
+        { at: "2026-02-01", type: "周期评级", from: "V0", to: "V1", reason: "近 3 月成交 2 台(门槛 1 台)", op: "系统" },
+        { at: "2025-11-01", type: "周期评级", from: "V0", to: "V0", reason: "近 3 月无成交",               op: "系统" }
+      ],
+      LV2: [
+        { at: "2026-02-01", type: "周期评级", from: "V1", to: "V2", reason: "近 3 月成交 5 台(门槛 3 台)",  op: "系统" },
+        { at: "2025-11-01", type: "周期评级", from: "V0", to: "V1", reason: "近 3 月成交 2 台",               op: "系统" },
+        { at: "2025-08-01", type: "注册",     from: "-",  to: "V0", reason: "新用户注册",                     op: "系统" }
+      ],
+      LV3: [
+        { at: "2026-02-01", type: "周期评级", from: "V2", to: "V3", reason: "近 3 月成交 12 台(门槛 10 台)", op: "系统" },
+        { at: "2025-11-01", type: "周期评级", from: "V2", to: "V2", reason: "维持 V2(成交 5 台)",           op: "系统" },
+        { at: "2025-08-01", type: "周期评级", from: "V1", to: "V2", reason: "近 3 月成交 4 台",               op: "系统" },
+        { at: "2025-05-01", type: "人工调整", from: "V0", to: "V1", reason: "VIP 客户特批",                   op: "管理员 · 王经理" }
+      ]
+    }[lv.code];
+
+    host.innerHTML = `
+      <div class="panel-section">
+        <div class="lv-banner" style="background:linear-gradient(135deg, ${lv.gradient[0]}, ${lv.gradient[1]})">
+          <div>
+            <div class="lv-short">${lv.short}</div>
+            <div class="lv-name">${lv.name}</div>
+            <div class="lv-sub">${lv.thresholdText}</div>
+          </div>
+          <div class="lv-right">
+            <div><span class="k">用户角色</span>${role}</div>
+            <div><span class="k">当前定级周期</span>${periodStart} ~ ${periodEnd}</div>
+            <div><span class="k">下次评级</span>${nextEvalDate}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="m-lbl">本周期成交台数</div>
+            <div class="m-val accent">${deals}<small>台</small></div>
+            <div class="m-sub">门槛 ${lv.threshold.dealsMin || 0} 台 · 已达标</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-lbl">距离下一等级</div>
+            <div class="m-val ${nextLv ? '' : 'warn'}">${nextLv ? `还差 ${nextNeed}` : '已最高级'}<small>${nextLv ? '台' : ''}</small></div>
+            <div class="m-sub">${nextLv ? `下一级: ${nextLv.short} ${nextLv.name}` : `当前已是平台最高等级 V3`}</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-lbl">账户金额门槛</div>
+            <div class="m-val">≥ ${lv.threshold.accountMin || 0}<small>元</small></div>
+            <div class="m-sub"><span style="color:#67c23a">✓ 已满足</span>(总金额 ${fmtMoney(total)} 元)</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-lbl">等级稳定性</div>
+            <div class="m-val">连续 2 周期</div>
+            <div class="m-sub">维持在 ${lv.short} 及以上</div>
+          </div>
+        </div>
+        ${nextLv ? `
+          <div style="margin-top:16px">
+            <div class="prog-meta"><span>${lv.short} · ${lv.name}</span><span>${nextLv.short} · ${nextLv.name}</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:${progressTo}%"></div></div>
+            <div class="prog-meta"><span>已成交 ${deals} 台</span><span>门槛 ${nextLv.threshold.dealsMin} 台</span></div>
+          </div>` : ''}
+      </div>
+
+      <div class="panel-section">
+        <div class="section-title">
+          <i data-lucide="shield-check" class="w-4 h-4 text-blue-500"></i>
+          当前等级权益
+          <span class="mini-label">· 共 ${lv.benefits.length} 项</span>
+        </div>
+        <div class="benefit-list">
+          ${lv.benefits.map(b => `
+            <div class="benefit-row">
+              <span class="benefit-k"><i data-lucide="${b.icon}" class="w-3.5 h-3.5 inline mr-1 text-violet-500"></i>${b.label}</span>
+              <span class="benefit-v">${b.desc}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-title">
+          <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
+          等级变化历史
+          <span class="mini-label">· 含系统自动评级与管理员人工调整</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="el-btn-sm" id="btnLevelRule"><i data-lucide="book-open" class="w-3 h-3"></i>查看等级规则</button>
+          </div>
+        </div>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="width:18%">变更时间</th>
+              <th style="width:14%">变更类型</th>
+              <th style="width:12%">原等级</th>
+              <th style="width:12%">新等级</th>
+              <th>原因</th>
+              <th style="width:18%">操作人</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${history.map(h => `
+              <tr>
+                <td>${h.at}</td>
+                <td>${h.type}</td>
+                <td>${h.from}</td>
+                <td><strong style="color:${cfg.getLevelByCode(h.to === '-' ? 'LV0' : ('LV' + h.to.replace('V',''))).color}">${h.to}</strong></td>
+                <td>${h.reason}</td>
+                <td>${h.op}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Wire 查看等级规则 button (re-rendered each call)
+    const ruleBtn = document.getElementById("btnLevelRule");
+    if (ruleBtn) ruleBtn.addEventListener("click", openRuleModal);
+  })();
+
+  // ─────────────────────────────────────────────
+  // 等级规则弹窗
+  // ─────────────────────────────────────────────
+  const ruleModal = document.getElementById("ruleModal");
+  function openRuleModal() {
+    const cfg = window.MEMBER_CONFIG;
+    const body = document.getElementById("ruleModalBody");
+    const cur = cfg.getLevelByCode(levelCode || "LV0");
+
+    // Map benefit ids that share a "dimension" so 唯金币兑换的 1:1/95折/8折 在同一行对比
+    const dimGroupMap = { "coin_exchange_": "唯金币兑换" };
+    const dimKeyOf = (id) => {
+      for (const p in dimGroupMap) if (id.startsWith(p)) return p;
+      return id;
+    };
+    const dimNameOf = (key, fallback) => dimGroupMap[key] || fallback;
+
+    // Build benefit rows: union of all levels' benefits, in first-seen order
+    const dims = [];
+    const seen = new Set();
+    cfg.levels.forEach(l => l.benefits.forEach(b => {
+      const k = dimKeyOf(b.id);
+      if (!seen.has(k)) { seen.add(k); dims.push({ key: k, name: dimNameOf(k, b.label) }); }
+    }));
+
+    const colCurClass = (l) => l.code === cur.code ? "col-cur" : "";
+
+    body.innerHTML = `
+      <div class="rule-intro">
+        <div><b>定级周期</b>:每月 1 日按"近 3 个月成交台数 + 账户金额"重新评级,生效后维持本月。</div>
+        <div><b>金币规则</b>:1 金币 = ¥ ${cfg.coin.unitYuan} · 自获得当月起 ${cfg.coin.validityMonths} 个自然月内有效。</div>
+        <div><b>当前用户等级</b>:<span style="color:${cur.color};font-weight:600">${cur.short} ${cur.name}</span> · 浅蓝色列表示当前等级所在列</div>
+      </div>
+      <div class="rule-table-wrap">
+        <table class="rule-table">
+          <thead>
+            <tr>
+              <th class="dim-th">对比维度</th>
+              ${cfg.levels.map(l => `
+                <th class="${l.code === cur.code ? 'cur' : ''}" style="background:${l.color}">
+                  <span class="lv-short">${l.short}</span>
+                  <span class="lv-name">${l.name}</span>
+                </th>
+              `).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dim">定级门槛<small>账户金额或近 3 月成交</small></td>
+              ${cfg.levels.map(l => `<td class="text-l ${colCurClass(l)}">${l.thresholdText}</td>`).join("")}
+            </tr>
+            <tr>
+              <td class="dim">商户特征</td>
+              ${cfg.levels.map(l => `<td class="text-l ${colCurClass(l)}">${l.feature}</td>`).join("")}
+            </tr>
+            ${dims.map(d => `
+              <tr>
+                <td class="dim">${d.name}</td>
+                ${cfg.levels.map(l => {
+                  const b = l.benefits.find(x => dimKeyOf(x.id) === d.key);
+                  const curCls = colCurClass(l);
+                  if (!b) return `<td class="miss ${curCls}">—</td>`;
+                  // For grouped 唯金币兑换 dimension, prefer label (差异化的折扣)
+                  const isGrouped = !!dimGroupMap[d.key];
+                  return `<td class="has ${curCls}">
+                    <div class="ok-mark">✓</div>
+                    <div class="ok-desc">${isGrouped ? b.label : b.desc}</div>
+                  </td>`;
+                }).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+    ruleModal.classList.add("open");
+    lucide.createIcons();
+  }
+  function closeRuleModal() { ruleModal.classList.remove("open"); }
+  // Use delegation on the stable modal container — lucide.createIcons() replaces
+  // the <i data-lucide="x"> with a fresh <svg>, so a listener attached to the
+  // original <i> would be lost.
+  ruleModal.addEventListener("click", (e) => {
+    if (e.target === ruleModal
+        || e.target.closest("#ruleModalClose")
+        || e.target.closest("#ruleModalOk")) closeRuleModal();
+  });
+
+  // ─────────────────────────────────────────────
+  // 积分/唯金币 Tab
+  // 类型 3 种: add(新增) / deduct(扣减) / expire(过期)
+  // ─────────────────────────────────────────────
+  const coinState = {
+    balance: coinBalance,
+    ledger: [
+      { at: "2026-04-15 14:23", type: "add",    amt:  +10, src: "有效出价参与竞拍",   ref: "鲁AF64114",      note: "出价 +10" },
+      { at: "2026-04-13 10:37", type: "add",    amt:  +50, src: "完成车辆交易",       ref: "鲁AF64114",      note: "成交奖励" },
+      { at: "2026-04-10 09:15", type: "deduct", amt: -200, src: "兑换权益卡",         ref: "碰撞报告查询卡", note: "" },
+      { at: "2026-03-28 11:22", type: "add",    amt:  +50, src: "完成车辆交易",       ref: "粤BC5432",       note: "成交奖励" },
+      { at: "2026-03-15 16:40", type: "add",    amt:   +5, src: "完善账户银行卡信息", ref: "首次完善",       note: "一次性奖励" },
+      { at: "2026-03-02 18:02", type: "add",    amt:  +20, src: "管理员手动新增",     ref: "补偿活动异常",   note: "操作人: 管理员·王经理" },
+      { at: "2026-02-08 09:31", type: "expire", amt:  -15, src: "金币过期",           ref: "2025-02 批次",   note: "系统自动清理" }
+    ]
+  };
+
+  const typeMap = {
+    add:    { tag: '<span class="type-tag type-plus">新增</span>',  amtCls: "color:#67c23a", sign: "+" },
+    deduct: { tag: '<span class="type-tag type-minus">扣减</span>', amtCls: "color:#f56c6c", sign: "" },
+    expire: { tag: '<span class="type-tag type-expire">过期</span>',amtCls: "color:#e6a23c", sign: "" }
+  };
+
+  function renderCoinPanel() {
+    const host = document.getElementById("coinContent");
+    const cfg = window.MEMBER_CONFIG;
+    const unit = cfg.coin.unitYuan;
+
+    // Running balance (walk backwards from current balance)
+    let running = coinState.balance;
+    const ledger = coinState.ledger.map(e => {
+      const row = { ...e, balance: running };
+      running = running - e.amt;
+      return row;
+    });
+
+    const earned = coinState.ledger.filter(e => e.type === "add").reduce((s, e) => s + e.amt, 0);
+    const consumed = -coinState.ledger.filter(e => e.type !== "add").reduce((s, e) => s + e.amt, 0);
+    const expiringSoon = Math.min(coinState.balance, Math.round(coinState.balance * 0.18));
+
+    host.innerHTML = `
+      <div class="panel-section">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="m-lbl">当前余额</div>
+            <div class="m-val accent">${coinState.balance.toLocaleString()}<small>金币</small></div>
+            <div class="m-sub">约 ¥ ${(coinState.balance * unit).toFixed(2)}</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-lbl">累计获得</div>
+            <div class="m-val">${earned.toLocaleString()}<small>金币</small></div>
+            <div class="m-sub">含成交 / 出价 / 活动 / 手动新增</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-lbl">累计消耗</div>
+            <div class="m-val">${consumed.toLocaleString()}<small>金币</small></div>
+            <div class="m-sub">含兑换 / 扣减 / 过期</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-lbl">30 天内将过期</div>
+            <div class="m-val warn">${expiringSoon.toLocaleString()}<small>金币</small></div>
+            <div class="m-sub">${expiringSoon > 0 ? '系统已安排自动提醒' : '无即将过期金币'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-title">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-blue-500"></i>
+          管理操作
+          <span class="mini-label">· 所有调整均记入流水,操作人与原因必填</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="el-btn-sm el-btn-primary-sm" data-action="add"><i data-lucide="plus" class="w-3 h-3"></i>手动新增</button>
+            <button class="el-btn-sm el-btn-danger-sm" data-action="deduct"><i data-lucide="minus" class="w-3 h-3"></i>手动扣减</button>
+            <button class="el-btn-sm" data-action="freeze"><i data-lucide="snowflake" class="w-3 h-3"></i>冻结金币</button>
+          </div>
+        </div>
+
+        <div class="kv-grid">
+          <div class="kv-row"><span class="kv-k">金币单价</span><span class="kv-v">1 金币 = ¥ ${unit}</span></div>
+          <div class="kv-row"><span class="kv-k">有效期</span><span class="kv-v">${cfg.coin.validityDesc}</span></div>
+          <div class="kv-row"><span class="kv-k">等级折扣</span><span class="kv-v">${(levelCode === 'LV2') ? '95 折(银卡专享)' : (levelCode === 'LV3' ? '8 折(金卡专享)' : '1:1 等值兑换')}</span></div>
+          <div class="kv-row"><span class="kv-k">风控状态</span><span class="kv-v"><span class="ok">✓ 正常</span>(无刷分 / 套利异常)</span></div>
+        </div>
+      </div>
+
+      ${expiringSoon > 0 ? `
+      <div class="panel-section" style="padding-top:0">
+        <div class="expire-alert">
+          <i data-lucide="alert-triangle" class="w-4 h-4" style="margin-top:3px;flex-shrink:0"></i>
+          <div style="flex:1">
+            <div class="alert-title">该用户有 ${expiringSoon} 金币将于 30 天内过期(约 ¥ ${(expiringSoon * unit).toFixed(2)})</div>
+            <div class="alert-desc">
+              系统自动推送,无需人工操作 —— 过期前 <strong>T-30 / T-7 / T-1</strong> 天分别通过
+              <span class="alert-channel"><i data-lucide="smartphone" class="w-3 h-3"></i>唯车拍 App 小程序站内消息</span>
+              和
+              <span class="alert-channel"><i data-lucide="message-square" class="w-3 h-3"></i>短信</span>
+              推送给买家。
+            </div>
+          </div>
+        </div>
+      </div>` : ''}
+
+      <div class="panel-section">
+        <div class="section-title">
+          <i data-lucide="list" class="w-4 h-4 text-slate-500"></i>
+          金币流水明细
+          <span class="mini-label">· 近 6 个月 · 类型分新增 / 扣减 / 过期</span>
+        </div>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="width:16%">时间</th>
+              <th style="width:10%">类型</th>
+              <th style="width:10%;text-align:right">变动</th>
+              <th style="width:10%;text-align:right">余额</th>
+              <th style="width:20%">来源 / 用途</th>
+              <th style="width:16%">关联业务</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${ledger.map(e => {
+              const m = typeMap[e.type];
+              return `
+                <tr>
+                  <td>${e.at}</td>
+                  <td>${m.tag}</td>
+                  <td style="text-align:right;${m.amtCls};font-weight:600">${m.sign}${e.amt}</td>
+                  <td style="text-align:right">${e.balance.toLocaleString()}</td>
+                  <td>${e.src}</td>
+                  <td>${e.ref}</td>
+                  <td style="color:#909399">${e.note || '-'}</td>
+                </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Wire up admin action buttons after render
+    host.querySelectorAll("button[data-action]").forEach(btn => {
+      btn.addEventListener("click", () => handleCoinAction(btn.dataset.action));
+    });
+
+    lucide.createIcons();
+  }
+
+  // ── Modal handling for 手动新增 / 手动扣减 / 冻结金币 ──
+  const modal = document.getElementById("coinModal");
+  let modalAction = null;   // "add" | "deduct" | "freeze"
+
+  function handleCoinAction(action) {
+    modalAction = action;
+    const cfgMap = {
+      add:    { title: "手动新增金币", icon: "plus",      amtLbl: "新增数量", hint: "按实际业务补偿或活动奖励数量填写" },
+      deduct: { title: "手动扣减金币", icon: "minus",     amtLbl: "扣减数量", hint: `本次最多可扣减 ${coinState.balance} 金币(当前余额)` },
+      freeze: { title: "冻结部分金币", icon: "snowflake", amtLbl: "冻结数量", hint: "冻结金币从余额扣除并锁定,解除冻结时再返还;演示版等同于手动扣减" }
+    };
+    const c = cfgMap[action];
+    document.getElementById("modalTitle").textContent = c.title;
+    document.getElementById("modalIcon").setAttribute("data-lucide", c.icon);
+    document.getElementById("modalAmountLbl").textContent = c.amtLbl;
+    document.getElementById("modalAmountHint").textContent = c.hint;
+    document.getElementById("modalUser").textContent = `${name} · ${code}`;
+    document.getElementById("modalBalance").textContent = coinState.balance.toLocaleString();
+    document.getElementById("modalAmount").value = "";
+    document.getElementById("modalReason").value = "";
+    document.getElementById("modalAmountErr").classList.remove("show");
+    document.getElementById("modalReasonErr").classList.remove("show");
+    modal.classList.add("open");
+    lucide.createIcons();
+    setTimeout(() => document.getElementById("modalAmount").focus(), 50);
+  }
+
+  function closeModal() { modal.classList.remove("open"); modalAction = null; }
+
+  // Delegation on the stable mask — lucide.createIcons() rebuilds the × <svg>,
+  // so listeners attached directly to <i data-lucide="x"> would be lost.
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal
+        || e.target.closest("#modalClose")
+        || e.target.closest("#modalCancel")) closeModal();
+  });
+
+  document.getElementById("modalSubmit").addEventListener("click", () => {
+    const amtEl = document.getElementById("modalAmount");
+    const reasonEl = document.getElementById("modalReason");
+    const amtErr = document.getElementById("modalAmountErr");
+    const reasonErr = document.getElementById("modalReasonErr");
+
+    const amount = Math.floor(Number(amtEl.value));
+    const reason = reasonEl.value.trim();
+    let valid = true;
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      amtErr.textContent = "请输入大于 0 的整数";
+      amtErr.classList.add("show"); valid = false;
+    } else if ((modalAction === "deduct" || modalAction === "freeze") && amount > coinState.balance) {
+      amtErr.textContent = `不能超过当前余额 ${coinState.balance} 金币`;
+      amtErr.classList.add("show"); valid = false;
+    } else {
+      amtErr.classList.remove("show");
+    }
+
+    if (!reason) { reasonErr.classList.add("show"); valid = false; }
+    else { reasonErr.classList.remove("show"); }
+
+    if (!valid) return;
+
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    const entryMap = {
+      add:    { type: "add",    amt:  amount, src: "管理员手动新增", ref: "后台调整" },
+      deduct: { type: "deduct", amt: -amount, src: "管理员手动扣减", ref: "后台调整" },
+      freeze: { type: "deduct", amt: -amount, src: "管理员冻结金币", ref: "冻结锁定" }
+    };
+    const base = entryMap[modalAction];
+
+    coinState.balance += base.amt;
+    coinState.ledger.unshift({
+      at: ts,
+      type: base.type,
+      amt: base.amt,
+      src: base.src,
+      ref: base.ref,
+      note: `操作人: 管理员·ylj · 原因: ${reason}`
+    });
+
+    closeModal();
+    renderCoinPanel();
+  });
+
+  renderCoinPanel();
+
+  document.title = `用户详情 · ${code} · 唯普汽车`;
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>设置 · 唯车拍</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6f8; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f5f6f8; position: relative; }
+  @media (min-width: 768px) { body { background: #f5f5f7; padding: 24px 0; } .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; } }
+  [v-cloak] { display:none; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <div class="flex items-center justify-between px-5 py-2 text-slate-800 text-sm bg-white">
+    <span>13:30</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <div class="bg-white flex items-center justify-between px-5 py-4 border-b border-slate-100">
+    <button @click="back" class="text-slate-800"><i data-lucide="chevron-left" class="w-6 h-6" style="stroke-width:2"></i></button>
+    <span class="text-lg font-bold text-slate-900">设置</span>
+    <span class="w-6"></span>
+  </div>
+
+  <div class="mt-3 bg-white">
+    <template v-for="(row, i) in rows" :key="row.label">
+      <a :class="['flex items-center justify-between px-5 py-4', i < rows.length - 1 ? 'border-b border-slate-100' : '']">
+        <span class="text-base text-slate-800">{{ row.label }}</span>
+        <div v-if="row.badge" class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-sky-500 text-white text-[10px] flex items-center justify-center font-bold">文<sub>A</sub></span>
+        </div>
+        <i v-else data-lucide="chevron-right" class="w-5 h-5 text-slate-300"></i>
+      </a>
+    </template>
+  </div>
+
+  <div class="mt-3 bg-white">
+    <a href="profile.html" class="flex items-center justify-center px-5 py-4 text-red-500 font-semibold">退出登录</a>
+  </div>
+
+  <div class="mt-3 bg-white">
+    <a class="flex items-center justify-center px-5 py-4 text-slate-400">注销</a>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script>
+const { createApp, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const rows = [
+      { label:'隐私协议' },
+      { label:'用户协议', badge:true },
+      { label:'关于我们' }
+    ];
+
+    function back() { smartBack('profile-loggedin.html'); }
+
+    onMounted(() => lucide.createIcons());
+
+    return { rows, back };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

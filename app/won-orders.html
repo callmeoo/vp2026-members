@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>买到的车 · 唯车拍</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  .tab { position: relative; padding: 6px 4px; color: #4b5563; font-size: 14px; }
+  .tab.active { color: #111827; font-weight: 600; }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    width: 28px; height: 3px; background: #111827; border-radius: 3px;
+  }
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 34px; padding: 0 18px; border-radius: 999px;
+    background: #f1f3f5; color: #6b7280; font-size: 13px;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 34px; padding: 0 18px; border-radius: 999px;
+    background: #fde2e2; color: #ef4444; font-size: 13px; font-weight: 500;
+  }
+  .status-label { color: #2563eb; font-size: 13px; }
+  .scrap-stamp {
+    position: absolute; right: 14px; bottom: 14px;
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 2px solid #ef4444; color: #ef4444;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    transform: rotate(-12deg);
+    background: rgba(255,255,255,.6);
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-shell pb-6">
+
+  <!-- 状态栏 -->
+  <div class="flex items-center justify-between px-5 pt-2 text-[13px] text-slate-700">
+    <span>11:31</span>
+    <span class="flex items-center gap-1 opacity-70">
+      <i data-lucide="bell-off" class="w-3.5 h-3.5"></i>
+      <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+      <i data-lucide="battery-full" class="w-3.5 h-3.5"></i>
+      <span class="text-xs">64</span>
+    </span>
+  </div>
+
+  <!-- 头部 -->
+  <div class="flex items-center justify-between px-4 py-3 bg-white">
+    <button type="button" onclick="smartBack('profile-loggedin.html')" class="text-slate-800">
+      <i data-lucide="chevron-left" class="w-6 h-6"></i>
+    </button>
+    <span class="text-[17px] font-semibold text-slate-900">买到的车</span>
+    <span class="w-6"></span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="bg-white px-6 border-b border-slate-100">
+    <div class="flex justify-between py-3">
+      <span class="tab active" onclick="filterTab('all', this)">全部</span>
+      <span class="tab" onclick="filterTab('pending', this)">待付款</span>
+      <span class="tab" onclick="filterTab('confirm', this)">待确认</span>
+      <span class="tab" onclick="filterTab('done', this)">已完成</span>
+    </div>
+  </div>
+
+  <!-- 列表 -->
+  <div class="px-3 pt-3 space-y-3">
+
+    <!-- 已完成订单 -->
+    <a href="won-order-detail.html?id=ORD20260306001&status=done&plate=粤A78546&total=31300&img=bmw" class="block bg-white rounded-2xl p-4 shadow-sm">
+      <div class="status-label mb-2">已完成订单</div>
+      <div class="flex gap-3">
+        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=400&q=70"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-24 h-20 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0',innerHTML:'<i data-lucide=\u0027car\u0027 class=\u0027w-8 h-8 text-slate-400\u0027></i>'}));lucide.createIcons();"
+             class="w-24 h-20 rounded-lg object-cover flex-shrink-0" alt="bmw">
+        <div class="flex-1 min-w-0">
+          <div class="text-[14px] text-slate-900 leading-snug line-clamp-2">宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型</div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-xs text-slate-400">粤A78546 |</span>
+            <span class="text-[15px] font-semibold text-slate-900">¥31300.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-3" onclick="event.stopPropagation()">
+        <button class="btn-outline">提车与授权</button>
+        <button class="btn-primary">提交过户资料</button>
+      </div>
+    </a>
+
+    <!-- 待支付订单 1 -->
+    <a href="won-order-detail.html?id=9026030672789758632&status=pending&plate=粤HSB009&total=3000&img=panamera1" class="block bg-white rounded-2xl p-4 shadow-sm">
+      <div class="status-label mb-2">待支付订单</div>
+      <div class="flex gap-3">
+        <img src="https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=400&q=70"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-24 h-20 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0',innerHTML:'<i data-lucide=\u0027car\u0027 class=\u0027w-8 h-8 text-slate-400\u0027></i>'}));lucide.createIcons();"
+             class="w-24 h-20 rounded-lg object-cover flex-shrink-0" alt="panamera">
+        <div class="flex-1 min-w-0">
+          <div class="text-[14px] text-slate-900 leading-snug">保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T</div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-xs text-slate-400">粤HSB009 |</span>
+            <span class="text-[15px] font-semibold text-slate-900">¥3000.00</span>
+          </div>
+          <div class="text-[12px] text-rose-500 mt-1.5">剩余时间:支付超时</div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-3" onclick="event.stopPropagation()">
+        <button class="btn-outline">确认过户对象</button>
+        <button class="btn-primary">立即支付</button>
+      </div>
+    </a>
+
+    <!-- 待支付订单 2 -->
+    <a href="won-order-detail.html?id=9026030672789758633&status=pending&plate=闽A12345&total=7366&img=panamera2" class="block bg-white rounded-2xl p-4 shadow-sm">
+      <div class="status-label mb-2">待支付订单</div>
+      <div class="flex gap-3">
+        <img src="https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?auto=format&fit=crop&w=400&q=70"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-24 h-20 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0',innerHTML:'<i data-lucide=\u0027car\u0027 class=\u0027w-8 h-8 text-slate-400\u0027></i>'}));lucide.createIcons();"
+             class="w-24 h-20 rounded-lg object-cover flex-shrink-0" alt="panamera">
+        <div class="flex-1 min-w-0">
+          <div class="text-[14px] text-slate-900 leading-snug">保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T</div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-xs text-slate-400">闽A12345 |</span>
+            <span class="text-[15px] font-semibold text-slate-900">¥7366.00</span>
+          </div>
+          <div class="text-[12px] text-rose-500 mt-1.5">剩余时间:支付超时</div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-3" onclick="event.stopPropagation()">
+        <button class="btn-outline">确认过户对象</button>
+        <button class="btn-primary">立即支付</button>
+      </div>
+    </a>
+
+    <!-- 待支付订单 3:报废车 -->
+    <a href="won-order-detail.html?id=9026030672789758634&status=pending&plate=闽AB6688&total=1700&img=buick" class="relative block bg-white rounded-2xl p-4 shadow-sm">
+      <div class="status-label mb-2">待支付订单</div>
+      <div class="flex gap-3">
+        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=400&q=70"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-24 h-20 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0',innerHTML:'<i data-lucide=\u0027car\u0027 class=\u0027w-8 h-8 text-slate-400\u0027></i>'}));lucide.createIcons();"
+             class="w-24 h-20 rounded-lg object-cover flex-shrink-0" alt="buick">
+        <div class="flex-1 min-w-0">
+          <div class="text-[14px] text-slate-900 leading-snug">别克 E4 2023款 智享版</div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-xs text-slate-400">闽AB6688 |</span>
+            <span class="text-[15px] font-semibold text-slate-900">¥1700.00</span>
+          </div>
+          <div class="text-[12px] text-rose-500 mt-1.5">剩余时间:支付超时</div>
+        </div>
+      </div>
+      <div class="scrap-stamp">报废车</div>
+    </a>
+
+  </div>
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script>
+  lucide.createIcons();
+  function filterTab(_, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

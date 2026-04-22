@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>售后申请 · 唯普审批</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 24px; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  .top-bar { background: #4ba1f5; color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .top-bar .title { font-size: 17px; font-weight: 500; }
+  .search-wrap { padding: 10px 12px; background: #fff; }
+  .search-box { background: #f4f5f7; border-radius: 999px; padding: 8px 14px; display: flex; align-items: center; justify-content: center; gap: 6px; color: #94a3b8; font-size: 13px; }
+  .afs-card { background: #fff; padding: 14px 16px; margin-bottom: 8px; }
+  .afs-card .role { display: flex; align-items: center; gap: 6px; }
+  .afs-card .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ba1f5; flex-shrink: 0; }
+  .afs-card .role-name { color: #4b5563; font-size: 14px; font-weight: 500; }
+  .afs-card .store { color: #94a3b8; font-size: 12px; }
+  .afs-card .veh { color: #111827; font-size: 15px; font-weight: 500; margin-top: 6px; line-height: 1.4; }
+  .afs-card .meta { color: #6b7280; font-size: 13px; margin-top: 4px; }
+  .afs-card .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; color: #94a3b8; font-size: 12px; }
+  .afs-card .plate { color: #4b5563; font-weight: 500; }
+  .empty-tip { text-align: center; color: #94a3b8; font-size: 13px; padding: 20px 0; background: #f4f5f7; }
+</style>
+</head>
+<body>
+<div class="phone-shell">
+
+  <!-- 状态栏 -->
+  <div class="flex items-center justify-between px-5 pt-2 pb-1 text-[13px] text-slate-700">
+    <span>12:10</span>
+    <span class="flex items-center gap-1 opacity-70">
+      <i data-lucide="bell-off" class="w-3.5 h-3.5"></i>
+      <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+      <i data-lucide="battery-full" class="w-3.5 h-3.5"></i>
+      <span class="text-xs">60</span>
+    </span>
+  </div>
+
+  <!-- 顶部栏 -->
+  <div class="top-bar">
+    <button onclick="history.back()" class="flex items-center gap-1 text-white text-[15px]">
+      <i data-lucide="chevron-left" class="w-5 h-5"></i>
+      <span>返回</span>
+    </button>
+    <span class="title">售后申请</span>
+    <i data-lucide="menu" class="w-5 h-5"></i>
+  </div>
+
+  <!-- 搜索框 -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <i data-lucide="search" class="w-4 h-4"></i>
+      <span>请输入车牌/关键字</span>
+    </div>
+  </div>
+
+  <!-- 列表 -->
+  <div id="afsList"></div>
+
+  <div class="empty-tip">没有更多数据</div>
+
+</div>
+
+<div class="fixed top-2 right-4 z-50" id="demoNav">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+
+<script>if (window !== window.parent) document.getElementById('demoNav').style.display = 'none';</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  const list = [
+    {
+      id: 'su-a3333', plate: '苏A3333', store: '演示门店', role: '客服主管',
+      vehicle: '大众 朗逸 2017款 1.6L 自动风尚版',
+      reason: '买家违约类-买家反悔', applicant: '产品测试1', applyAt: '2025-04-25 17:37:28',
+      useNoReason: true
+    }
+  ];
+
+  document.getElementById('afsList').innerHTML = list.map(a => `
+    <div class="afs-card cursor-pointer" onclick="location.href='aftersale-approval-detail.html?id=${a.id}'">
+      <div class="flex justify-between items-center">
+        <div class="role"><span class="dot"></span><span class="role-name">${a.role}</span></div>
+        <span class="store">${a.store}</span>
+      </div>
+      <div class="veh">${a.vehicle}</div>
+      <div class="meta">申请原因:${a.reason}</div>
+      <div class="foot">
+        <span class="plate">${a.plate}</span>
+        <span>申请人:${a.applicant}</span>
+        <span>${a.applyAt}</span>
+      </div>
+    </div>
+  `).join('');
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单详情 · 业务数据 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+  .breadcrumb-current { color: #303133; font-weight: 500; }
+
+  .ant-card { background: #fff; border-radius: 2px; }
+
+  .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 14px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
+  .el-btn:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+
+  .info-label { color: #909399; font-size: 13px; }
+  .info-value { color: #303133; font-size: 13px; }
+  .info-link { color: #409eff; cursor: pointer; }
+  .info-link:hover { text-decoration: underline; }
+
+  .el-tabs { border-bottom: 1px solid #e4e7ed; }
+  .el-tab { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; font-size: 14px; color: #303133; cursor: pointer; position: relative; }
+  .el-tab:hover { color: #409eff; }
+  .el-tab.active { color: #409eff; font-weight: 500; }
+  .el-tab.active::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: -1px; height: 2px; background: #409eff; }
+
+  .fee-label { color: #909399; font-size: 13px; }
+  .fee-value { color: #303133; font-size: 20px; font-weight: 500; margin-top: 8px; }
+  .fee-value-large { color: #303133; font-size: 24px; font-weight: 500; margin-top: 8px; }
+
+  .tooltip-wrap { position: relative; cursor: pointer; }
+  .tooltip-wrap .tooltip-body { display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #fff; border: 1px solid #ebeef5; border-radius: 4px; padding: 12px 16px; box-shadow: 0 2px 12px 0 rgba(0,0,0,.1); z-index: 10; white-space: nowrap; font-size: 13px; line-height: 22px; color: #606266; }
+  .tooltip-wrap.open .tooltip-body { display: block; }
+
+  .party-label { color: #909399; }
+  .party-value { color: #303133; font-size: 22px; font-weight: 500; }
+
+  .tag-after { display: inline-flex; align-items: center; padding: 2px 10px; font-size: 12px; color: #606266; background: #f4f4f5; border: 1px solid #e9e9eb; border-radius: 4px; }
+  .tag-verified { color: #67c23a; font-size: 12px; }
+  .tag-unverified { color: #67c23a; font-size: 12px; }
+
+  .dropdown-wrap { position: relative; }
+  .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: #fff; border: 1px solid #ebeef5; border-radius: 4px; box-shadow: 0 2px 12px 0 rgba(0,0,0,.1); min-width: 140px; z-index: 10; padding: 6px 0; }
+  .dropdown-wrap.open .dropdown-menu { display: block; }
+  .dropdown-menu a { display: block; padding: 8px 16px; color: #606266; font-size: 13px; cursor: pointer; }
+  .dropdown-menu a:hover { background: #ecf5ff; color: #409eff; }
+
+  .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #fff; line-height: 16px; }
+
+  /* Member benefits block */
+  .mb-block { background: #fff; border-radius: 2px; padding: 20px; }
+  .mb-head { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .mb-head .mb-title { font-size: 15px; font-weight: 600; color: #303133; }
+  .mb-head .mb-sub { font-size: 12px; color: #909399; }
+  .mb-col-title { font-size: 13px; color: #909399; margin-bottom: 10px; font-weight: 500; }
+  .mb-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #f0f0f0; }
+  .mb-item:last-child { border-bottom: none; }
+  .mb-item .mb-check { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .mb-item .mb-check.used { background: #e1f3d8; color: #67c23a; }
+  .mb-item .mb-check.unused { background: #f4f4f5; color: #c0c4cc; }
+  .mb-item .mb-label { font-size: 13px; color: #303133; font-weight: 500; }
+  .mb-item .mb-desc { font-size: 11px; color: #909399; margin-top: 2px; line-height: 1.5; }
+  .mb-item.faded .mb-label { color: #909399; font-weight: 400; }
+  .mb-tag { display: inline-flex; padding: 1px 7px; font-size: 11px; border-radius: 3px; margin-left: 6px; }
+  .mb-tag-amber { background: #fdf6ec; color: #e6a23c; border: 1px solid #faecd8; }
+  .mb-tag-violet { background: #f3e8ff; color: #8b5cf6; border: 1px solid #e9d5ff; }
+  .mb-tag-green { background: #f0f9eb; color: #67c23a; border: 1px solid #e1f3d8; }
+
+  .mb-quota { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #f0f0f0; }
+  .mb-quota:last-child { border-bottom: none; }
+  .mb-quota-label { font-size: 13px; color: #303133; }
+  .mb-quota-desc { font-size: 11px; color: #909399; margin-top: 2px; }
+  .mb-quota-value { font-size: 13px; color: #303133; font-weight: 500; }
+  .mb-quota-value .mb-remain { color: #e6a23c; font-weight: 600; }
+
+  /* Modal */
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: none; align-items: center; justify-content: center; }
+  .modal-mask.open { display: flex; }
+  .modal { background: #fff; border-radius: 4px; width: 720px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+  .modal-wide { width: 880px; }
+  .m-head { padding: 12px 18px; border-bottom: 1px solid #ebeef5; display: flex; justify-content: space-between; align-items: center; background: #f5f7fa; }
+  .m-title { font-size: 14px; font-weight: 500; color: #303133; }
+  .m-close { color: #909399; cursor: pointer; }
+  .m-close:hover { color: #606266; }
+  .m-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+  .m-foot { padding: 12px 20px; border-top: 1px solid #ebeef5; display: flex; justify-content: center; gap: 10px; background: #fafafa; }
+
+  /* Form */
+  .fm-row { display: flex; align-items: flex-start; margin-bottom: 14px; }
+  .fm-label { width: 80px; flex-shrink: 0; text-align: right; padding-right: 10px; font-size: 13px; color: #606266; line-height: 32px; }
+  .fm-ctrl { flex: 1; min-width: 0; }
+  .fm-radio { display: inline-flex; align-items: center; gap: 4px; margin-right: 22px; cursor: pointer; font-size: 13px; color: #606266; }
+  .fm-input, .fm-select { width: 100%; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; font-size: 13px; outline: none; box-sizing: border-box; color: #606266; }
+  .fm-input:focus, .fm-select:focus { border-color: #409eff; }
+  .fm-textarea { width: 100%; min-height: 56px; padding: 6px 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; box-sizing: border-box; resize: vertical; font-family: inherit; color: #606266; }
+  .fm-add { color: #409eff; font-size: 12px; cursor: pointer; }
+  .fm-del { color: #f56c6c; font-size: 12px; cursor: pointer; margin-left: 10px; }
+  .fm-upload { width: 90px; height: 90px; border: 1px dashed #dcdfe6; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #c0c4cc; cursor: pointer; font-size: 11px; gap: 4px; }
+  .fm-line { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .fm-line .fm-select, .fm-line .fm-input { flex: 1; }
+  .fm-btn { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 18px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; }
+  .fm-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
+  .fm-btn-primary:hover { background: #66b1ff; border-color: #66b1ff; }
+  .fm-btn-success { background: #67c23a; color: #fff; border-color: #67c23a; }
+  .fm-checkbox { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: #606266; }
+
+  /* 无理由退车权益 提示条 */
+  .benefit-bar { padding: 10px 14px; background: #fff7e6; border: 1px solid #ffe7ba; border-radius: 4px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .benefit-bar.disabled { background: #f4f4f5; border-color: #e9e9eb; }
+  .benefit-bar .b-icon { color: #e6a23c; }
+  .benefit-bar.disabled .b-icon { color: #c0c4cc; }
+  .benefit-bar .b-title { font-size: 13px; color: #d46b08; font-weight: 500; }
+  .benefit-bar.disabled .b-title { color: #909399; }
+  .benefit-bar .b-desc { font-size: 11px; color: #ad6800; margin-top: 2px; }
+  .benefit-bar.disabled .b-desc { color: #c0c4cc; }
+  .benefit-bar .b-remain { background: #fff; color: #e6a23c; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid #ffe7ba; margin-left: 4px; }
+
+  /* View modal */
+  .view-grid { display: grid; grid-template-columns: 1fr 300px; gap: 0; min-height: 460px; }
+  .view-left { padding: 18px 22px; border-right: 1px solid #ebeef5; overflow-y: auto; }
+  .view-right { padding: 16px 18px; background: #fafbfc; overflow-y: auto; }
+  .view-row { display: flex; margin-bottom: 12px; font-size: 13px; }
+  .view-row .vl { width: 60px; color: #909399; flex-shrink: 0; }
+  .view-row .vv { flex: 1; color: #303133; line-height: 1.7; }
+  .view-status { color: #409eff; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; }
+  .afs-photos { display: flex; gap: 8px; margin: 4px 0; flex-wrap: wrap; }
+  .afs-photo { width: 90px; height: 72px; background: linear-gradient(135deg,#e9ecef,#ced4da); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 11px; }
+
+  .audit-title { text-align: center; color: #909399; font-size: 12px; margin-bottom: 14px; }
+  .audit-flow { position: relative; padding-left: 20px; }
+  .audit-flow::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px; background: #e4e7ed; }
+  .audit-step { position: relative; margin-bottom: 16px; }
+  .audit-step::before { content: ""; position: absolute; left: -18px; top: 4px; width: 11px; height: 11px; border-radius: 50%; background: #fff; border: 1.5px solid #c0c4cc; box-sizing: border-box; }
+  .audit-step.done::before { border-color: #67c23a; background: #67c23a; }
+  .audit-step.current::before { border-color: #409eff; background: #409eff; }
+  .audit-step .as-title { font-size: 12px; color: #303133; font-weight: 500; }
+  .audit-step.current .as-title { color: #f56c6c; }
+  .audit-step .as-meta { font-size: 11px; color: #909399; margin-top: 2px; line-height: 1.7; }
+  .audit-step .as-benefit { background: #fff7e6; border: 1px solid #ffe7ba; color: #d46b08; padding: 3px 8px; border-radius: 3px; font-size: 11px; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
+  .audit-divider { text-align: center; color: #909399; font-size: 12px; margin: 18px 0 12px; padding-top: 12px; border-top: 1px dashed #e4e7ed; }
+  .audit-record { font-size: 12px; color: #606266; padding: 4px 0; display: flex; justify-content: space-between; align-items: center; }
+  .audit-record .ar-link { color: #409eff; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="flex min-h-screen flex-col">
+
+  <!-- Header -->
+  <header class="ant-header flex items-center justify-between px-4">
+    <div class="flex items-center gap-4 text-sm text-slate-600">
+      <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+      <div class="flex items-center gap-1">
+        <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+        <a href="bms-orders.html" class="hover:text-blue-500">首页</a>
+        <span class="text-slate-300">/</span>
+        <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
+        <a href="bms-orders.html" class="hover:text-blue-500">业务数据</a>
+        <span class="text-slate-300">/</span>
+        <a href="bms-orders.html" class="hover:text-blue-500">订单列表</a>
+        <span class="text-slate-300">/</span>
+        <span class="breadcrumb-current">订单详情</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+      <div class="flex items-center gap-2 cursor-pointer">
+        <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+          <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+        </div>
+        <span class="text-sm text-slate-600">cpylj</span>
+        <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 p-4 overflow-auto">
+
+    <!-- Top header card -->
+    <div class="ant-card p-5 mb-3">
+      <div class="flex items-start justify-between">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded flex items-center justify-center" style="background:#fbbf24">
+            <i data-lucide="file-text" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-4">
+              <h1 id="hdrPlate" class="text-xl font-semibold text-slate-800">鲁AF64114</h1>
+              <span id="hdrDeal" class="text-sm text-slate-400">2026-04-13 10:37</span>
+            </div>
+            <div id="hdrModel" class="text-sm text-slate-500 mt-1">坦克 坦克400新能源 2.0T DHT Hi4</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="dropdown-wrap" id="moreWrap">
+            <button class="el-btn" onclick="document.getElementById('moreWrap').classList.toggle('open')">
+              更多<i data-lucide="chevron-down" class="w-3 h-3"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a>复制订单号</a>
+              <a>作废订单</a>
+              <a>导出详情</a>
+            </div>
+          </div>
+          <button class="el-btn">查看拍卖页面</button>
+          <button class="el-btn">查看合同</button>
+          <button class="el-btn">打印收款单</button>
+          <button class="el-btn">打印成交确认书</button>
+        </div>
+      </div>
+
+      <!-- Summary row -->
+      <div class="grid grid-cols-4 gap-6 mt-6">
+        <!-- 订单状态 -->
+        <div>
+          <div class="info-label mb-2">订单状态</div>
+          <div id="orderStatus" class="text-2xl font-semibold text-slate-800">未付款</div>
+        </div>
+
+        <!-- 基础信息 -->
+        <div>
+          <div class="info-label mb-3">基础信息</div>
+          <div class="space-y-2">
+            <div class="flex"><span class="info-label w-20">门店:</span><span class="info-link">长城02</span></div>
+            <div class="flex"><span class="info-label w-20">门店类型:</span><span class="info-value">合营</span></div>
+            <div class="flex"><span class="info-label w-20">评估师:</span><span class="info-value">查验经理001</span></div>
+            <div class="flex"><span class="info-label w-20">检测员:</span><span class="info-value"></span></div>
+            <div class="flex"><span class="info-label w-20">销售渠道:</span><span class="info-value">拍卖大厅</span></div>
+          </div>
+        </div>
+
+        <!-- 过户信息 -->
+        <div>
+          <div class="info-label mb-3">过户信息</div>
+          <div class="space-y-2">
+            <div class="flex"><span class="info-label w-24">过户状态:</span><span class="info-value">未接收</span></div>
+            <div class="flex"><span class="info-label w-24">过户服务站:</span><span class="info-value">唯普白云服务中心</span></div>
+            <div class="flex"><span class="info-label w-24">预约过户时间:</span><span class="info-value"></span></div>
+            <div class="flex mt-2"><span class="info-link">过户详情</span></div>
+          </div>
+        </div>
+
+        <!-- 售后信息 -->
+        <div>
+          <div class="info-label mb-3">售后信息</div>
+          <div class="mb-4 flex items-center gap-2 flex-wrap" id="afsTagsRow">
+            <span class="tag-after cursor-pointer" onclick="openViewAfsModal('demo')">04-15 售后</span>
+            <button class="el-btn" style="height:24px;padding:0 10px;font-size:12px;color:#409eff;border-color:#c6e2ff;background:#ecf5ff" onclick="openApplyAfsModal()">+ 申请售后</button>
+          </div>
+          <div class="info-label mb-2">调账信息</div>
+          <div><span class="info-link">发起调账</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs card -->
+    <div class="ant-card mb-3">
+      <div class="el-tabs px-2">
+        <div class="el-tab active">款项信息</div>
+        <div class="el-tab">基本信息</div>
+        <div class="el-tab">拍卖信息</div>
+        <div class="el-tab">车辆照片</div>
+        <div class="el-tab">收车信息</div>
+        <div class="el-tab">查看记录</div>
+        <div class="el-tab">出价记录</div>
+      </div>
+    </div>
+
+    <!-- Fees row -->
+    <div class="grid grid-cols-12 gap-3 mb-3">
+      <!-- 订单总价 -->
+      <div class="ant-card p-5 col-span-3 flex flex-col justify-between">
+        <div>
+          <div class="fee-label">订单总价</div>
+          <div id="totalPrice" class="fee-value-large">¥ 11,499.00</div>
+        </div>
+        <div class="mt-6"><span class="info-link">结算日志</span></div>
+      </div>
+
+      <!-- 明细 -->
+      <div class="ant-card p-5 col-span-9 relative">
+        <div class="grid grid-cols-5 gap-4">
+          <div>
+            <div class="fee-label">成交价</div>
+            <div id="dealPrice" class="fee-value">¥ 10,199.00</div>
+          </div>
+          <div>
+            <div class="fee-label">手续费</div>
+            <div class="fee-value">¥ 1,000.00</div>
+          </div>
+          <div>
+            <div class="fee-label">平台使用费</div>
+            <div class="fee-value">¥ 300.00</div>
+          </div>
+          <div>
+            <div class="fee-label">评估费</div>
+            <div class="fee-value">¥ 0.00</div>
+          </div>
+          <div class="tooltip-wrap open" id="compFeeWrap" onmouseenter="document.getElementById('compFeeWrap').classList.add('open')" onmouseleave="document.getElementById('compFeeWrap').classList.remove('open')">
+            <div class="fee-label flex items-center gap-1">综合服务费<i data-lucide="info" class="w-3 h-3 text-slate-400"></i></div>
+            <div class="fee-value">¥ 0.00</div>
+            <div class="tooltip-body">
+              <div>过户服务费:0.00元</div>
+              <div>查验费: 0.00元</div>
+              <div>交付费: 0.00元</div>
+              <div>交付服务费: 0.00元</div>
+              <div>其他费用:0.00元</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Parties row -->
+    <div class="grid grid-cols-5 gap-3">
+      <!-- 买家 -->
+      <div class="ant-card p-5">
+        <div class="text-slate-800 font-medium mb-4">买家</div>
+        <div class="party-label">应付款</div>
+        <div id="buyerPay" class="party-value mt-2">¥ 11,499.00</div>
+        <div class="mt-4 space-y-2 text-xs">
+          <div class="flex justify-between items-center">
+            <span><span class="info-label">买家:</span> <span id="buyerName" class="info-link">张三143</span> <span id="buyerLvPill" class="lv-pill ml-1"></span></span>
+            <span class="tag-verified">已验证</span>
+          </div>
+          <div><span class="info-label">唯金币余额:</span> <span id="buyerCoins" class="info-value" style="color:#e6a23c;font-weight:600">0 金币</span> <span id="buyerCoinsYuan" class="info-label">(≈ ¥ 0.00)</span></div>
+          <div><span class="info-label">可用余额:</span> <span class="info-value">48,000.00</span></div>
+          <div><span class="info-label">总金额:</span> <span class="info-value">50,000.00</span></div>
+          <div><span class="info-label">最近入金记录:</span> <span class="info-link">查看</span></div>
+        </div>
+        <div class="mt-4">
+          <button class="el-btn">买家付款</button>
+        </div>
+      </div>
+
+      <!-- 车主/卖家 -->
+      <div class="ant-card p-5">
+        <div class="text-slate-800 font-medium mb-4">车主/卖家</div>
+        <div class="party-label">应收款</div>
+        <div class="party-value mt-2">¥ 0.00</div>
+        <div class="mt-4 text-xs">
+          <div class="flex justify-between">
+            <span><span class="info-label">车主/卖家:</span> <span class="info-value">测试</span></span>
+            <span class="tag-unverified">未验证</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 门店 -->
+      <div class="ant-card p-5">
+        <div class="text-slate-800 font-medium mb-4">门店</div>
+        <div class="party-label">应收款</div>
+        <div id="storePay" class="party-value mt-2">¥ 10,199.00</div>
+        <div class="mt-4 text-xs">
+          <div><span class="info-label">门店:</span> <span class="info-link">CG02</span></div>
+        </div>
+        <div class="mt-6">
+          <button class="el-btn">结算方案</button>
+        </div>
+      </div>
+
+      <!-- 服务商 -->
+      <div class="ant-card p-5">
+        <div class="text-slate-800 font-medium mb-4">服务商</div>
+        <div class="party-label">应收款</div>
+        <div class="party-value mt-2">¥ 0.00</div>
+      </div>
+
+      <!-- 唯普毛利 -->
+      <div class="ant-card p-5">
+        <div class="text-slate-800 font-medium mb-4">唯普毛利</div>
+        <div class="party-label">应收款</div>
+        <div id="profit" class="party-value mt-2">¥ 1,300.00</div>
+      </div>
+    </div>
+
+    <!-- 本单享受的会员权益 -->
+    <div class="mb-block mt-3">
+      <div class="mb-head">
+        <i data-lucide="crown" class="w-5 h-5 text-violet-500"></i>
+        <span class="mb-title">会员权益使用</span>
+      </div>
+      <div class="grid grid-cols-2 gap-8">
+        <div>
+          <div class="mb-col-title">本单使用的权益</div>
+          <div id="mbUsedList"></div>
+        </div>
+        <div>
+          <div class="mb-col-title">本单可获得的积分/唯金币</div>
+          <div id="mbCoinReward"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- 申请售后 弹框 -->
+<div class="modal-mask" id="applyAfsMask">
+  <div class="modal">
+    <div class="m-head">
+      <span class="m-title">申请售后</span>
+      <i data-lucide="x" class="w-4 h-4 m-close" onclick="closeApplyAfsModal()"></i>
+    </div>
+    <div class="m-body">
+      <div class="fm-row">
+        <div class="fm-label">类型:</div>
+        <div class="fm-ctrl">
+          <label class="fm-radio"><input type="radio" name="afsType" value="优惠减免类" /> 优惠减免类</label>
+          <label class="fm-radio"><input type="radio" name="afsType" value="售后类" checked /> 售后类</label>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">原因:</div>
+        <div class="fm-ctrl">
+          <select class="fm-select" id="afsReason">
+            <option value="">请选择</option>
+            <option>车况申诉类-泡水展示争议</option>
+            <option>车况申诉类-事故展示争议</option>
+            <option>车况申诉类-动力展示争议</option>
+            <option>信息差异类-里程数争议</option>
+            <option>买家违约类-买家反悔</option>
+            <option>手续类-证件缺失</option>
+            <option>零售/门店订单-申请退车</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">处理结果:</div>
+        <div class="fm-ctrl">
+          <label class="fm-radio"><input type="radio" name="afsResult" value="不退车" /> 不退车</label>
+          <label class="fm-radio"><input type="radio" name="afsResult" value="直接退车" checked /> 直接退车</label>
+          <label class="fm-radio"><input type="radio" name="afsResult" value="更换买家" /> 更换买家</label>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">责任方:</div>
+        <div class="fm-ctrl">
+          <div style="margin-bottom:8px"><span class="fm-add">+ 添加责任人</span></div>
+          <div class="fm-line">
+            <select class="fm-select" id="dutyParty"><option value="">请选择</option><option>买家</option><option>门店</option><option>卖家</option><option>唯普</option></select>
+            <input class="fm-input" placeholder="责任人姓名,多个请用英文逗号隔开" />
+            <span class="fm-del">删除</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">款项:</div>
+        <div class="fm-ctrl">
+          <div style="margin-bottom:8px"><span class="fm-add">+ 添加款项</span></div>
+          <div class="fm-line">
+            <span style="font-size:13px;color:#606266">由</span>
+            <select class="fm-select"><option>请选择</option><option>买家</option><option>门店</option><option>唯普</option></select>
+            <span style="font-size:13px;color:#606266">支付给</span>
+            <select class="fm-select"><option>请选择</option><option>买家</option><option>门店</option><option>唯普</option></select>
+            <span style="font-size:13px;color:#606266">金额</span>
+            <input class="fm-input" placeholder="请输入" style="width:100px" />
+            <span style="font-size:13px;color:#606266">元</span>
+            <span class="fm-del">删除</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">附件:<br /><span style="font-size:11px;color:#909399">最多20张</span></div>
+        <div class="fm-ctrl">
+          <div class="fm-upload"><i data-lucide="plus" class="w-5 h-5"></i><span>点击或将图片拖<br/>拽至框内上传</span></div>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">基础信息:</div>
+        <div class="fm-ctrl">
+          <textarea class="fm-textarea" id="afsBaseInfo" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">情况说明:</div>
+        <div class="fm-ctrl">
+          <textarea class="fm-textarea" id="afsDesc" maxlength="500" placeholder=""></textarea>
+        </div>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label">处理方案:</div>
+        <div class="fm-ctrl">
+          <textarea class="fm-textarea" id="afsPlan" maxlength="500" placeholder=""></textarea>
+        </div>
+      </div>
+
+      <!-- 无理由退车权益 提示条 -->
+      <div class="benefit-bar" id="benefitBar">
+        <i data-lucide="shield-check" class="w-5 h-5 b-icon"></i>
+        <div class="flex-1">
+          <div class="b-title">买家「无理由退车权益」<span class="b-remain" id="afsRemain">剩余 1 次</span></div>
+        </div>
+        <label class="fm-checkbox"><input type="checkbox" id="useNoReason" onchange="onToggleNoReason()" /> 使用</label>
+      </div>
+
+      <div class="fm-row">
+        <div class="fm-label"></div>
+        <div class="fm-ctrl">
+          <label class="fm-checkbox"><input type="checkbox" checked /> 知会区域经理</label>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="fm-btn" onclick="closeApplyAfsModal()">取消</button>
+      <button class="fm-btn fm-btn-success">保存待办</button>
+      <button class="fm-btn fm-btn-primary" onclick="submitAfs()">下一步</button>
+    </div>
+  </div>
+</div>
+
+<!-- 售后信息 查看弹框 -->
+<div class="modal-mask" id="viewAfsMask">
+  <div class="modal modal-wide">
+    <div class="m-head">
+      <span class="m-title">售后信息</span>
+      <div class="flex items-center gap-3">
+        <button class="fm-btn fm-btn-primary" style="height:26px;padding:0 12px;font-size:12px" onclick="window.open('bms-aftersale-approval-list.html','_blank')"><i data-lucide="external-link" class="w-3 h-3"></i> 售后审批H5</button>
+        <i data-lucide="x" class="w-4 h-4 m-close" onclick="closeViewAfsModal()"></i>
+      </div>
+    </div>
+    <div class="m-body" style="padding:0">
+      <div class="view-grid">
+        <div class="view-left">
+          <div class="flex justify-end mb-2"><span class="view-status"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i><span id="vStatus">审核中</span></span></div>
+          <div class="view-row"><div class="vl">类型:</div><div class="vv" id="vType">售后类</div></div>
+          <div class="view-row"><div class="vl">原因:</div><div class="vv" id="vReason">车况申诉类-泡水展示争议</div></div>
+          <div class="view-row"><div class="vl">结果:</div><div class="vv" id="vResult">直接退车</div></div>
+          <div class="view-row"><div class="vl">责任方:</div><div class="vv" id="vDuty">买家</div></div>
+          <div class="view-row" id="vBenefitRow" style="display:none"><div class="vl">权益:</div><div class="vv"><span class="as-benefit"><i data-lucide="shield-check" class="w-3 h-3"></i>已使用「无理由退车权益」</span></div></div>
+          <div class="view-row"><div class="vl">附件:</div><div class="vv"><div class="afs-photos"><div class="afs-photo">车辆照片</div><div class="afs-photo">车辆照片</div><div class="afs-photo">车辆照片</div></div></div></div>
+          <div class="view-row"><div class="vl">基础信息:</div><div class="vv" id="vBase">车牌:粤S29DC0;成交日期:2026-04-19;门店:东莞市合信汽车销售服务有限公司;业务员:吴俊彬(兼职查验);区域经理:林家杰;买受人:胡志文。</div></div>
+          <div class="view-row"><div class="vl">情况说明:</div><div class="vv" id="vDesc">买受人提出车子有水泡,不是天窗漏水导致的,发动机拆修过,网页未告知,提出退车的诉求。经核查,该车发动机没大修,只是气门室盖螺丝动了,属于非承诺相;车内没看到泡水迹,情况不实。已驳回买家诉求。经协商,最终买家接受扣罚退车。</div></div>
+          <div class="view-row"><div class="vl">处理方案:</div><div class="vv" id="vPlan">现申请扣除买家2000元办理退车,1200元归门店,800元归唯普,请领导审批!。</div></div>
+        </div>
+        <div class="view-right">
+          <div class="audit-title">- 审批流程 -</div>
+          <div class="audit-flow" id="auditFlow"></div>
+          <div class="audit-divider">- 该订单售后记录 -</div>
+          <div id="auditRecords"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fixed top-2 right-4 z-50">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+
+<script src="../shared/member-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  // Populate from query params so each row in list opens its own detail
+  const qs = new URLSearchParams(location.search);
+  const get = (k, def) => qs.get(k) || def;
+  const fmt = (n) => "¥ " + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const plate = get("plate", "鲁AF64114");
+  const model = get("model", "坦克 坦克400新能源 2.0T DHT Hi4");
+  const deal = get("deal", "2026-04-13 10:37");
+  const total = Number(get("total", "11499.00"));
+  const price = Number(get("price", "10199.00"));
+  const fee = Number(get("fee", "1300.00"));
+  const payStatus = get("payStatus", "未收车款");
+  const orderStatus = get("orderStatus", "订单未完成");
+  const buyer = get("buyer", "张三143");
+  const buyerLevel = get("buyerLevel", "V2");
+  const buyerCoins = Number(get("buyerCoins", "850"));
+
+  document.getElementById("hdrPlate").textContent = plate;
+  document.getElementById("hdrModel").textContent = model;
+  document.getElementById("hdrDeal").textContent = deal;
+  document.getElementById("totalPrice").textContent = fmt(total);
+  document.getElementById("dealPrice").textContent = fmt(price);
+  document.getElementById("buyerPay").textContent = fmt(total);
+  document.getElementById("storePay").textContent = fmt(price);
+  document.getElementById("profit").textContent = fmt(fee);
+
+  // Order status display
+  let statusText = "未付款";
+  if (payStatus === "已收车款" && orderStatus === "已完成已清算") statusText = "已完成";
+  else if (payStatus === "已收车款") statusText = "已付款";
+  document.getElementById("orderStatus").textContent = statusText;
+
+  // ── Buyer card: level pill + coin balance ──
+  const lv = window.MEMBER_CONFIG.getLevelByCode(buyerLevel);
+  document.getElementById("buyerName").textContent = buyer;
+  const pill = document.getElementById("buyerLvPill");
+  pill.textContent = lv.short;
+  pill.style.background = lv.color;
+  const coinEl = document.getElementById("buyerCoins");
+  coinEl.textContent = `${buyerCoins.toLocaleString()} 金币`;
+  document.getElementById("buyerCoinsYuan").textContent = `(≈ ¥ ${window.MEMBER_CONFIG.yuanFromCoin(buyerCoins)})`;
+
+  // ── Member benefits on this order ──
+  // Compute what this order gets based on level + order completion state
+  const isCompleted = (payStatus === "已收车款" && orderStatus === "已完成已清算");
+  const coinReward = 50; // from config: 成交车辆 +50 金币
+  const coinExpireAt = (() => {
+    const d = new Date(deal.replace(/-/g, "/"));
+    d.setMonth(d.getMonth() + 12);
+    return d.toISOString().slice(0, 7);
+  })();
+
+  const used = [];
+  // 金币兑换折扣(根据等级)
+  if (buyerLevel === "V2") {
+    used.push({ label: "唯金币 95 折兑换", desc: "购买平台权益卡可享 95 折 · 银卡会员专享", tag: { cls: "mb-tag-violet", text: "95 折" } });
+  } else if (buyerLevel === "V3") {
+    used.push({ label: "唯金币 8 折兑换", desc: "购买平台权益卡可享 8 折 · 金卡会员专享", tag: { cls: "mb-tag-violet", text: "8 折" } });
+  } else {
+    used.push({ label: "唯金币 1:1 兑换", desc: "按 1 金币 = 0.093 元等值兑换权益卡" });
+  }
+
+  // 1V1 客服 - V1+
+  if (["V1", "V2", "V3"].includes(buyerLevel)) {
+    used.push({ label: "1V1 客服支持", desc: "已分配专属客服 · 小李(T4321)" });
+  }
+
+  // 保留价查询 - V1+
+  if (["V1", "V2", "V3"].includes(buyerLevel)) {
+    used.push({ label: "保留价查询", desc: "本单出价前已使用保留价查询 1 次" });
+  }
+
+  document.getElementById("mbUsedList").innerHTML = used.length ? used.map(u => `
+    <div class="mb-item">
+      <span class="mb-check used"><i data-lucide="check" class="w-3 h-3"></i></span>
+      <div class="flex-1">
+        <div class="mb-label">${u.label}${u.tag ? `<span class="mb-tag ${u.tag.cls}">${u.tag.text}</span>` : ''}</div>
+        <div class="mb-desc">${u.desc}</div>
+      </div>
+    </div>
+  `).join("") : `<div class="mb-desc" style="padding:8px 0">本单未使用等级权益</div>`;
+
+  // ── 本单可获得的积分/唯金币 ──
+  const coinYuan = window.MEMBER_CONFIG.yuanFromCoin(coinReward);
+  document.getElementById("mbCoinReward").innerHTML = `
+    <div class="mb-item">
+      <span class="mb-check ${isCompleted ? 'used' : 'unused'}">
+        <i data-lucide="${isCompleted ? 'check' : 'clock'}" class="w-3 h-3"></i>
+      </span>
+      <div class="flex-1">
+        <div class="mb-label">成交车辆奖励<span class="mb-tag mb-tag-amber">+${coinReward} 金币</span></div>
+        <div class="mb-desc">
+          ${isCompleted
+            ? `已发放 · 有效期至 ${coinExpireAt} · 约 ¥ ${coinYuan}`
+            : `待订单完成并清算后发放 · 约 ¥ ${coinYuan}`}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.title = `订单详情 · ${plate} · 唯普汽车`;
+
+  /* ─── 申请售后 / 售后信息 弹框 ─── */
+  const noReasonState = { remain: 1, used: false };
+  const afsList = [
+    { id: 'demo', tagDate: '04-15', tagText: '04-15 售后', type: '售后类', reason: '车况申诉类-泡水展示争议', result: '直接退车', duty: '买家', desc: '买受人提出车子有水泡,不是天窗漏水导致的,发动机拆修过,网页未告知,提出退车的诉求。经核查,该车发动机没大修,只是气门室盖螺丝动了,属于非承诺相;车内没看到泡水迹,情况不实。已驳回买家诉求。经协商,最终买家接受扣罚退车。', plan: '现申请扣除买家2000元办理退车,1200元归门店,800元归唯普,请领导审批!。', useNoReason: false, status: '审核中', initiator: '唯普-小珂(ykk)', startAt: '2026-04-21 13:02:11', steps: [
+      { type: 'pass', title: '通过', at: '2026-04-21 14:16:29', meta: '售后专员:吕兆文(hpozw)' },
+      { type: 'pass', title: '通过', at: '2026-04-21 15:10:41', meta: '区域经理:林家杰(xinljj)' },
+      { type: 'pass', title: '通过', at: '2026-04-21 15:20:35', meta: '售后经理:吕兆文(hpozw)' },
+      { type: 'pass', title: '通过', at: '2026-04-21 15:22:24', meta: '区域总监:黄帆(kghf)' },
+      { type: 'current', title: '审批中', meta: '总发部:刘建(liujian888),杜智辉(dzh)' },
+      { type: 'pending', title: '未开始', meta: '财务执行:' }
+    ] }
+  ];
+
+  function buildBaseInfo() {
+    return `车牌:${plate};成交日期:${deal.split(' ')[0]};门店:${get('store','长城02')};业务员:${get('seller','测试')};买受人:${buyer}。`;
+  }
+
+  function openApplyAfsModal() {
+    document.getElementById('afsBaseInfo').value = buildBaseInfo();
+    document.getElementById('afsRemain').textContent = `剩余 ${noReasonState.remain} 次`;
+    const bar = document.getElementById('benefitBar');
+    const cb = document.getElementById('useNoReason');
+    if (noReasonState.remain <= 0) {
+      bar.classList.add('disabled');
+      cb.checked = false; cb.disabled = true;
+    } else {
+      bar.classList.remove('disabled'); cb.disabled = false; cb.checked = false;
+    }
+    document.getElementById('applyAfsMask').classList.add('open');
+    lucide.createIcons();
+  }
+  function closeApplyAfsModal() { document.getElementById('applyAfsMask').classList.remove('open'); }
+
+  function onToggleNoReason() {
+    const used = document.getElementById('useNoReason').checked;
+    if (used) {
+      document.querySelector('input[name="afsType"][value="售后类"]').checked = true;
+      document.querySelector('input[name="afsResult"][value="直接退车"]').checked = true;
+      document.getElementById('dutyParty').value = '买家';
+      const reasonSel = document.getElementById('afsReason');
+      if (!reasonSel.value) reasonSel.value = '买家违约类-买家反悔';
+      const desc = document.getElementById('afsDesc');
+      if (!desc.value.includes('无理由退车权益')) desc.value = (desc.value ? desc.value + '\n' : '') + '【已使用买家"无理由退车权益"】买家行使权益申请退车,无需走责任方判定。';
+    }
+  }
+
+  function submitAfs() {
+    const type = document.querySelector('input[name="afsType"]:checked')?.value || '售后类';
+    const result = document.querySelector('input[name="afsResult"]:checked')?.value || '直接退车';
+    const reason = document.getElementById('afsReason').value || '买家违约类-买家反悔';
+    const duty = document.getElementById('dutyParty').value || '买家';
+    const desc = document.getElementById('afsDesc').value || '客服于演示中提交售后申请。';
+    const plan = document.getElementById('afsPlan').value || '按选项执行。';
+    const used = document.getElementById('useNoReason').checked;
+    if (used) noReasonState.remain = Math.max(0, noReasonState.remain - 1);
+
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const id = 'afs_' + Date.now();
+    afsList.unshift({
+      id, tagDate: `${mm}-${dd}`, tagText: `${mm}-${dd} 售后`,
+      type, reason, result, duty, desc, plan, useNoReason: used,
+      status: '审核中', initiator: '唯普-客服(cpylj)', startAt: `${today.getFullYear()}-${mm}-${dd} ${String(today.getHours()).padStart(2,'0')}:${String(today.getMinutes()).padStart(2,'0')}:00`,
+      steps: [
+        { type: 'current', title: '审批中', meta: '售后专员:待分配' },
+        { type: 'pending', title: '未开始', meta: '区域经理:' },
+        { type: 'pending', title: '未开始', meta: '售后经理:' },
+        { type: 'pending', title: '未开始', meta: '区域总监:' },
+        { type: 'pending', title: '未开始', meta: '财务执行:' }
+      ]
+    });
+    refreshTagsRow();
+    closeApplyAfsModal();
+    openViewAfsModal(id);
+  }
+
+  function refreshTagsRow() {
+    const row = document.getElementById('afsTagsRow');
+    row.innerHTML = afsList.map(a => `<span class="tag-after cursor-pointer" onclick="openViewAfsModal('${a.id}')">${a.tagText}${a.useNoReason ? ' · 权益' : ''}</span>`).join('') +
+      `<button class="el-btn" style="height:24px;padding:0 10px;font-size:12px;color:#409eff;border-color:#c6e2ff;background:#ecf5ff" onclick="openApplyAfsModal()">+ 申请售后</button>`;
+  }
+
+  function openViewAfsModal(id) {
+    const a = afsList.find(x => x.id === id) || afsList[0];
+    document.getElementById('vStatus').textContent = a.status;
+    document.getElementById('vType').textContent = a.type;
+    document.getElementById('vReason').textContent = a.reason;
+    document.getElementById('vResult').textContent = a.result;
+    document.getElementById('vDuty').textContent = a.duty;
+    document.getElementById('vBenefitRow').style.display = a.useNoReason ? 'flex' : 'none';
+    document.getElementById('vBase').textContent = buildBaseInfo();
+    document.getElementById('vDesc').textContent = a.desc;
+    document.getElementById('vPlan').textContent = a.plan;
+
+    const flow = [
+      { type: 'done', title: `发起[订单(${plate})售后申请]`, meta: `${a.initiator}<br/>${a.startAt}`, benefit: a.useNoReason ? '本次售后已使用买家「无理由退车权益」' : null },
+      ...a.steps.map(s => ({ type: s.type === 'pass' ? 'done' : s.type, title: s.type === 'pass' ? `通过 ${s.at}` : s.title, meta: s.meta }))
+    ];
+    document.getElementById('auditFlow').innerHTML = flow.map(s => `
+      <div class="audit-step ${s.type}">
+        <div class="as-title">${s.title}</div>
+        <div class="as-meta">${s.meta}</div>
+        ${s.benefit ? `<div class="as-benefit"><i data-lucide="shield-check" class="w-3 h-3"></i>${s.benefit}</div>` : ''}
+      </div>
+    `).join('');
+
+    document.getElementById('auditRecords').innerHTML = afsList.map(r => `
+      <div class="audit-record"><span>${r.startAt.slice(0,16)} ${r.type}${r.useNoReason ? ' · 权益' : ''}</span><span class="ar-link" onclick="openViewAfsModal('${r.id}')">${r.status} &gt;</span></div>
+    `).join('');
+
+    document.getElementById('viewAfsMask').classList.add('open');
+    lucide.createIcons();
+  }
+  function closeViewAfsModal() { document.getElementById('viewAfsMask').classList.remove('open'); }
+
+  refreshTagsRow();
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

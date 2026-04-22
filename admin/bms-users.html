@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户列表 · 业务数据 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+
+  /* Sider */
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+
+  /* Header */
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+  .breadcrumb-current { color: #f56c6c; }
+
+  /* Card / Form */
+  .ant-card { background: #fff; border-radius: 2px; }
+  .el-input, .el-select { position: relative; display: inline-flex; align-items: center; }
+  .el-input input, .el-select select { width: 100%; height: 32px; padding: 0 12px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; line-height: 32px; outline: none; transition: border-color .15s; box-sizing: border-box; }
+  .el-input input:focus, .el-select select:focus { border-color: #409eff; }
+  .el-input input::placeholder { color: #c0c4cc; }
+  .el-label { color: #606266; font-size: 13px; line-height: 32px; text-align: right; padding-right: 8px; white-space: nowrap; }
+  .date-sep, .num-sep { color: #c0c4cc; padding: 0 6px; font-size: 12px; }
+  .date-range { display: flex; align-items: center; flex: 1; border: 1px solid #dcdfe6; border-radius: 4px; height: 32px; padding: 0 8px; background: #fff; gap: 6px; }
+  .date-range input { border: 0; outline: none; width: 0; flex: 1; min-width: 0; height: 30px; font-size: 13px; color: #606266; background: transparent; }
+  .date-range input::placeholder { color: #c0c4cc; }
+  .date-range i { color: #c0c4cc; flex-shrink: 0; }
+
+  .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
+  .el-btn:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
+  .el-btn-primary:hover { background: #66b1ff; color: #fff; border-color: #66b1ff; }
+
+  /* Table */
+  .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; }
+  .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 10px 12px; border-bottom: 1px solid #ebeef5; text-align: left; white-space: nowrap; }
+  .el-table tbody td { padding: 12px 12px; border-bottom: 1px solid #ebeef5; text-align: left; vertical-align: top; }
+  .el-table tbody tr { cursor: pointer; }
+  .el-table tbody tr:hover { background: #f5f7fa; }
+
+  .user-cell { display: flex; align-items: flex-start; gap: 6px; }
+  .verify-badge { width: 14px; height: 14px; border-radius: 50%; background: #409eff; color: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .user-code { color: #606266; line-height: 1.5; word-break: break-all; }
+  .phone-link { color: #409eff; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+  .phone-link:hover { text-decoration: underline; }
+  .phone-region { color: #909399; font-size: 12px; margin-top: 2px; }
+  .detail-link { color: #409eff; cursor: pointer; }
+  .detail-link:hover { text-decoration: underline; }
+
+  .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #fff; line-height: 16px; flex-shrink: 0; }
+  .lv-na { display: inline-flex; padding: 1px 8px; border-radius: 10px; font-size: 11px; color: #909399; background: #f4f4f5; border: 1px solid #e9e9eb; flex-shrink: 0; }
+  .name-cell { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .filter-hint { color: #c0c4cc; font-size: 11px; margin-left: 4px; }
+
+  /* Pagination */
+  .el-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 14px 16px; color: #606266; font-size: 13px; }
+  .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; }
+  .pager-btn:hover { color: #409eff; }
+  .pager-btn.active { background: #409eff; color: #fff; }
+  .pager-arrow { min-width: 28px; height: 28px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; }
+  .pager-arrow:hover { color: #409eff; }
+  .page-size-select { height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 8px; background: #fff; color: #606266; font-size: 13px; outline: none; }
+  .page-jump-input { width: 48px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; }
+</style>
+</head>
+<body>
+
+<div class="flex min-h-screen">
+
+  <!-- Sider -->
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+
+      <div class="menu-item open"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <div class="sub-item">业务首页</div>
+        <div class="sub-item">拍卖管理</div>
+        <div class="sub-item active" onclick="location.href='bms-users.html'">用户管理</div>
+      </div>
+
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">销售首页</div>
+        <div class="sub-item">客户等级管理</div>
+        <div class="sub-item" onclick="location.href='bms-sales-buyers.html'">买家管理</div>
+        <div class="sub-item">B2C零售</div>
+        <div class="sub-item">门店奖励</div>
+        <div class="sub-item" onclick="location.href='sales-orders.html'">销售订单</div>
+      </div>
+      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Header -->
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-4 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+        <div class="flex items-center gap-1">
+          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>首页</span>
+          <span class="text-slate-300">/</span>
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>业务数据</span>
+          <span class="text-slate-300">/</span>
+          <span class="breadcrumb-current font-medium">用户列表</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+          </div>
+          <span class="text-sm text-slate-600">ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-4 overflow-auto">
+
+      <!-- Filters -->
+      <div class="ant-card p-4 mb-3">
+        <div class="grid grid-cols-4 gap-x-4 gap-y-3">
+          <!-- Row 1 -->
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">用户:</span>
+            <div class="el-input flex-1"><input placeholder="请输入登录名/姓名/电话/身份证/银行卡号/门店名称" /></div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">银行子帐号:</span>
+            <div class="el-input flex-1"><input placeholder="请输入银行子帐号" /></div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">认证:</span>
+            <div class="el-select flex-1">
+              <select>
+                <option>已认证</option>
+                <option>未认证</option>
+                <option>认证中</option>
+                <option>认证失败</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">账户性质:</span>
+            <div class="el-select flex-1">
+              <select>
+                <option>请选择</option>
+                <option>个人</option>
+                <option>企业</option>
+                <option>个体工商户</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">注册时间:</span>
+            <div class="date-range flex-1">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <input type="date" placeholder="开始时间" />
+              <span class="date-sep">-</span>
+              <input type="date" placeholder="结束时间" />
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">认证时间:</span>
+            <div class="date-range flex-1">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <input type="date" placeholder="开始时间" />
+              <span class="date-sep">-</span>
+              <input type="date" placeholder="结束时间" />
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">来源:</span>
+            <div class="el-input flex-1"><input value="官网" /></div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">用户标签:</span>
+            <div class="el-select flex-1">
+              <select>
+                <option>请选择</option>
+                <option>优质客户</option>
+                <option>高频交易</option>
+                <option>新客户</option>
+                <option>风险客户</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">银行总额:</span>
+            <div class="el-input flex-1" style="width:90px"><input /></div>
+            <span class="num-sep">到</span>
+            <div class="el-input flex-1" style="width:90px"><input /></div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">保证金:</span>
+            <div class="el-input flex-1" style="width:90px"><input /></div>
+            <span class="num-sep">到</span>
+            <div class="el-input flex-1" style="width:90px"><input /></div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">可用余额:</span>
+            <div class="el-input flex-1" style="width:90px"><input value="2000" /></div>
+            <span class="num-sep">到</span>
+            <div class="el-input flex-1" style="width:90px"><input value="20000" /></div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">手机归属地:</span>
+            <div class="el-select flex-1">
+              <select>
+                <option>请选择</option>
+                <option>广东</option>
+                <option>浙江</option>
+                <option>江苏</option>
+                <option>北京</option>
+                <option>上海</option>
+              </select>
+            </div>
+          </div>
+                    <!-- Row 4 -->
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">智慧市场用户:</span>
+            <div class="el-select flex-1">
+              <select>
+                <option>请选择</option>
+                <option>是</option>
+                <option>否</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="el-label" style="width:80px">用户等级:</span>
+            <div class="el-select flex-1">
+              <select id="levelFilter">
+                <option value="">请选择</option>
+                <option value="LV0">V0 新人会员</option>
+                <option value="LV1">V1 普通会员</option>
+                <option value="LV2">V2 银卡会员</option>
+                <option value="LV3">V3 金卡会员</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-span-2 flex items-center">
+            <span class="filter-hint">* 用户等级仅适用于买家用户</span>
+            <button class="el-btn el-btn-primary" style="margin-left:auto">搜索</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: table -->
+      <div class="ant-card">
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="el-table">
+            <thead>
+              <tr>
+                <th>用户名</th>
+                <th>姓名</th>
+                <th>电话</th>
+                <th>来源</th>
+                <th>注册日期</th>
+                <th style="text-align:right">可用余额(元)</th>
+                <th style="text-align:right">待确认收款(元)</th>
+                <th style="text-align:right">保证金(元)</th>
+                <th style="text-align:right">总金额(元)</th>
+                <th style="text-align:center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="userBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="el-pagination">
+          <span style="color:#909399">共 1286 条</span>
+          <select class="page-size-select">
+            <option>10 条/页</option>
+            <option>20 条/页</option>
+            <option>50 条/页</option>
+          </select>
+          <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+          <button class="pager-btn active">1</button>
+          <button class="pager-btn">2</button>
+          <button class="pager-btn">3</button>
+          <button class="pager-btn">4</button>
+          <button class="pager-btn">5</button>
+          <span style="color:#909399">...</span>
+          <button class="pager-btn">129</button>
+          <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          <span>跳至</span>
+          <input class="page-jump-input" value="1" />
+          <span>页</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="fixed top-2 right-4 z-50">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+
+<script src="../shared/member-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  // role: 买家(可享会员等级) / 卖家(无会员等级) / 双边
+  const users = [
+    { code: "m_4020873627655838", name: "江门市新兰环保科技有限公司", phone: "18022982171", region: "广东江门", source: "官网", regAt: "2025-02-22", balance: "9199", pending: "0", deposit: "6000", total: "15199", role: "买家", level: "LV2", coin: 180 },
+    { code: "m_3562985785171584", name: "李小云", phone: "13503043263", region: "广东广州", source: "官网", regAt: "2024-12-31", balance: "4984", pending: "0", deposit: "0", total: "4984", role: "买家", level: "LV1", coin: 60 },
+    { code: "m_2965358181311201", name: "佛山车汇莱再生资源回收有限公司", phone: "13925917094", region: "广东佛山", source: "官网", regAt: "2024-10-23", balance: "2500", pending: "0", deposit: "0", total: "12500", role: "买家", level: "LV1", coin: 120 },
+    { code: "m_2714160846677737", name: "广东运通报废车辆回收拆解有限公司", phone: "13824336622", region: "广东深圳", source: "官网", regAt: "2024-09-24", balance: "15184", pending: "0", deposit: "10000", total: "35184", role: "买家", level: "LV3", coin: 520 },
+    { code: "m_1358864385486289", name: "陈兆勇", phone: "15018014564", region: "广东中山", source: "官网", regAt: "2024-04-20", balance: "17325.69", pending: "0", deposit: "16000", total: "33325.69", role: "买家", level: "LV3", coin: 410 },
+    { code: "m_1029208930750539", name: "赵中阳", phone: "13922220661", region: "广东广州", source: "官网", regAt: "2024-03-13", balance: "4000", pending: "0", deposit: "0", total: "4000", role: "卖家", level: "", coin: 15 },
+    { code: "m_0987654321123456", name: "深圳市绿源再生资源有限公司", phone: "13528876543", region: "广东深圳", source: "官网", regAt: "2024-02-08", balance: "8320", pending: "1200", deposit: "5000", total: "14520", role: "买家", level: "LV2", coin: 240 },
+    { code: "m_0876543219876543", name: "林志强", phone: "13712348765", region: "广东东莞", source: "官网", regAt: "2024-01-15", balance: "6500", pending: "0", deposit: "3000", total: "9500", role: "买家", level: "LV1", coin: 85 },
+    { code: "m_0765432187654321", name: "广州市恒通二手车经营有限公司", phone: "13600012345", region: "广东广州", source: "官网", regAt: "2023-12-28", balance: "22400", pending: "3500", deposit: "15000", total: "40900", role: "买家", level: "LV3", coin: 690 },
+    { code: "m_0654321876543210", name: "黄建华", phone: "13988776655", region: "广东珠海", source: "官网", regAt: "2023-11-02", balance: "3200", pending: "0", deposit: "2000", total: "5200", role: "卖家", level: "", coin: 0 },
+  ];
+
+  const getLevel = (code) => code ? window.MEMBER_CONFIG.getLevelByCode(code) : null;
+
+  const buildDetailUrl = (u) => {
+    const params = new URLSearchParams({
+      code: u.code,
+      name: u.name,
+      phone: u.phone,
+      total: u.total,
+      role: u.role || "",
+      level: u.level || "",
+      coin: String(u.coin ?? 0),
+    });
+    return `bms-user-detail.html?${params.toString()}`;
+  };
+
+  const body = document.getElementById("userBody");
+
+  function render(list) {
+    body.innerHTML = list.map((u, i) => {
+      const lv = getLevel(u.level);
+      const lvHtml = lv
+        ? `<span class="lv-pill" style="background:${lv.color}" title="${lv.name}">${lv.short}</span>`
+        : `<span class="lv-na" title="仅买家用户享有会员等级">卖家</span>`;
+      return `
+      <tr data-idx="${users.indexOf(u)}">
+        <td>
+          <div class="user-cell">
+            <span class="verify-badge"><svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="user-code">${u.code}</span>
+          </div>
+        </td>
+        <td>
+          <div class="name-cell">
+            ${lvHtml}
+            <span>${u.name}</span>
+          </div>
+        </td>
+        <td>
+          <a class="phone-link">${u.phone}<i data-lucide="link" class="w-3 h-3"></i></a>
+          <div class="phone-region">${u.region}</div>
+        </td>
+        <td>${u.source}</td>
+        <td>${u.regAt}</td>
+        <td style="text-align:right">${u.balance}</td>
+        <td style="text-align:right">${u.pending}</td>
+        <td style="text-align:right">${u.deposit}</td>
+        <td style="text-align:right">${u.total}</td>
+        <td style="text-align:center"><a class="detail-link" href="${buildDetailUrl(u)}">详情</a></td>
+      </tr>`;
+    }).join("");
+    lucide.createIcons();
+  }
+
+  render(users);
+
+  // Filter by user level
+  const levelFilter = document.getElementById("levelFilter");
+  levelFilter.addEventListener("change", () => {
+    const v = levelFilter.value;
+    render(v ? users.filter(u => u.level === v) : users);
+  });
+
+  body.addEventListener("click", (e) => {
+    if (e.target.closest("a")) return; // let explicit links handle their own navigation
+    const tr = e.target.closest("tr[data-idx]");
+    if (!tr) return;
+    const u = users[Number(tr.dataset.idx)];
+    if (u) window.location.href = buildDetailUrl(u);
+  });
+</script>
+</body>
+</html>

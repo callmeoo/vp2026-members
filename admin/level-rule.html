@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>等级规则配置 · 唯普会员体系后台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+  .ant-sider { background: #001529; }
+  .ant-sider a { color: rgba(255,255,255,.65); }
+  .ant-sider a.active { background: #1677ff; color: #fff; }
+  .ant-sider a:hover:not(.active) { color: #fff; background: rgba(255,255,255,.06); }
+  .ant-card { background: #fff; border-radius: 8px; }
+  .ant-input { padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; width: 100%; }
+  .ant-input:focus { outline: none; border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,.1); }
+  .ant-btn { padding: 5px 16px; border-radius: 6px; font-size: 14px; border: 1px solid #d9d9d9; background: #fff; }
+  .ant-btn-primary { background: #1677ff; color: #fff; border-color: #1677ff; }
+  .ant-btn-primary:hover { background: #4096ff; }
+  .ant-tag { display: inline-flex; align-items: center; padding: 0 7px; font-size: 12px; line-height: 20px; border-radius: 4px; }
+  .ant-tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+  .lv-badge { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; font-weight: bold; color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="flex min-h-screen">
+
+  <aside class="ant-sider w-56 flex-none text-white">
+    <div class="h-14 flex items-center px-6 border-b border-white/10">
+      <span class="text-lg font-semibold flex items-center gap-2"><i data-lucide="crown" class="w-5 h-5"></i>会员体系后台</span>
+    </div>
+    <nav class="py-3 text-sm">
+      <a href="dashboard.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>运营仪表盘</span></a>
+      <div class="px-6 py-2 text-xs text-white/40 mt-2">规则配置</div>
+      <a href="level-rule.html" class="active flex items-center gap-3 px-6 py-2.5"><i data-lucide="settings" class="w-4 h-4"></i><span>等级规则</span></a>
+      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>金币规则</span></a>
+      <a href="rewards.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="ticket-check" class="w-4 h-4"></i><span>权益卡管理</span></a>
+      <div class="px-6 py-2 text-xs text-white/40 mt-2">业务数据</div>
+      <a href="orders.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="receipt" class="w-4 h-4"></i><span>订单列表</span></a>
+      <div class="px-6 py-2 text-xs text-white/40 mt-2">商户运营</div>
+      <a href="members.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="users" class="w-4 h-4"></i><span>商户档案</span></a>
+      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>金币流水</span></a>
+      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="gift" class="w-4 h-4"></i><span>兑换记录</span></a>
+    </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <header class="bg-white border-b border-slate-200 h-14 px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-sm text-slate-600">
+        <span>首页</span><span>/</span><span>规则配置</span><span>/</span><span class="text-slate-800 font-medium">等级规则</span>
+      </div>
+      <div class="flex items-center gap-4 text-sm text-slate-600">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">运</div>
+          <span>运营-小王</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6 overflow-y-auto">
+
+      <!-- 页面头 -->
+      <div class="mb-5">
+        <h1 class="text-xl font-semibold text-slate-800">等级规则配置</h1>
+        <p class="text-sm text-slate-500 mt-1">配置会员等级的台数门槛与评估周期。修改后将在下次结算时生效。</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-5">
+
+        <!-- 左侧:定级门槛(由 shared/member-config.js 动态渲染) -->
+        <div class="col-span-2 ant-card p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div class="text-base font-semibold text-slate-800 flex items-center gap-2"><i data-lucide="ruler" class="w-5 h-5 text-violet-500"></i>定级门槛</div>
+            <span class="text-xs text-slate-400">口径:近 3 月累计成交台数 + 账户金额,满足任一条件即可</span>
+          </div>
+
+          <table class="w-full">
+            <thead class="text-xs text-slate-500 border-b border-slate-200">
+              <tr>
+                <th class="text-left py-3 font-medium">等级</th>
+                <th class="text-left py-3 font-medium">名称</th>
+                <th class="text-left py-3 font-medium">最低成交台数</th>
+                <th class="text-left py-3 font-medium">最高成交台数</th>
+                <th class="text-left py-3 font-medium">账户金额门槛(元)</th>
+                <th class="text-left py-3 font-medium">商户数</th>
+                <th class="text-center py-3 font-medium">状态</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100" id="levelRuleTableBody"></tbody>
+          </table>
+
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-end gap-3">
+            <button class="ant-btn">取消</button>
+            <button class="ant-btn-primary px-4 py-1.5 rounded-md">保存定级门槛</button>
+          </div>
+        </div>
+
+        <!-- 右侧:评估周期 + 钻石规则 -->
+        <div class="space-y-5">
+
+          <div class="ant-card p-6">
+            <div class="text-base font-semibold text-slate-800 mb-4">🗓️ 评估周期</div>
+            <div class="space-y-4">
+              <div>
+                <label class="text-xs text-slate-500 block mb-1.5">统计窗口(月)</label>
+                <input class="ant-input" value="3" type="number">
+                <div class="text-[11px] text-slate-400 mt-1">当前:近 3 个月成交台数</div>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1.5">结算频率</label>
+                <select class="ant-input">
+                  <option>每月 1 日凌晨滚动重算</option>
+                  <option>每季度末重算</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 block mb-1.5">下次结算</label>
+                <input class="ant-input" value="2026-05-01 01:00" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="ant-card p-6">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="text-base">📊</span>
+              <span class="text-base font-semibold text-slate-800">等级分布概览</span>
+            </div>
+            <div class="space-y-3 text-sm" id="levelDistribution"></div>
+            <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500 text-center">
+              商户数据来自 26 年 1 季度成交商户的平台成交数据
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 规则变更历史 -->
+      <div class="ant-card p-6 mt-5">
+        <div class="text-base font-semibold text-slate-800 mb-4">📋 规则变更历史</div>
+        <table class="w-full text-sm">
+          <thead class="text-xs text-slate-500 bg-slate-50">
+            <tr>
+              <th class="text-left px-3 py-2 font-medium">变更时间</th>
+              <th class="text-left px-3 py-2 font-medium">变更内容</th>
+              <th class="text-left px-3 py-2 font-medium">操作人</th>
+              <th class="text-left px-3 py-2 font-medium">生效时间</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="px-3 py-3 text-slate-600">2026-03-20 15:42</td>
+              <td class="px-3 py-3">V2 门槛从 8 台调整为 10 台</td>
+              <td class="px-3 py-3 text-slate-600">运营-小王</td>
+              <td class="px-3 py-3 text-slate-600">2026-04-01</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-3 text-slate-600">2026-02-10 10:20</td>
+              <td class="px-3 py-3">新增钻石荣誉规则(V3 年度 TOP500)</td>
+              <td class="px-3 py-3 text-slate-600">产品-小李</td>
+              <td class="px-3 py-3 text-slate-600">2026-03-01</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="fixed top-4 right-6 z-50">
+  <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/member-config.js"></script>
+<script>
+(function () {
+  var CFG = window.MEMBER_CONFIG;
+  // 定级门槛表格
+  document.getElementById('levelRuleTableBody').innerHTML = CFG.levels.map(function (lv) {
+    var t = lv.threshold;
+    var max = (t.dealsMax !== undefined && t.dealsMax > 0) ? t.dealsMax : (t.dealsMin === 0 ? 0 : '不限');
+    return '<tr>' +
+             '<td class="py-4"><span class="lv-badge" style="background:' + lv.color + '">' + lv.short + '</span></td>' +
+             '<td class="py-4"><input class="ant-input" value="' + lv.name + '" style="max-width:140px"></td>' +
+             '<td class="py-4"><div class="flex items-center gap-2"><input class="ant-input" value="' + t.dealsMin + '" type="number" style="max-width:90px"><span class="text-xs text-slate-500">台</span></div></td>' +
+             '<td class="py-4"><div class="flex items-center gap-2"><input class="ant-input" value="' + max + '" style="max-width:90px"><span class="text-xs text-slate-500">台</span></div></td>' +
+             '<td class="py-4"><input class="ant-input" value="' + (t.accountMin || 0) + '" type="number" style="max-width:120px"></td>' +
+             '<td class="py-4 text-slate-600">' + lv.merchantCount.toLocaleString() + '</td>' +
+             '<td class="py-4 text-center"><span class="ant-tag ant-tag-green">启用</span></td>' +
+           '</tr>';
+  }).join('');
+
+  // 等级分布
+  document.getElementById('levelDistribution').innerHTML = CFG.levels.map(function (lv) {
+    return '<div class="flex items-center justify-between p-2 rounded hover:bg-slate-50">' +
+             '<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background:' + lv.color + '"></span>' + lv.short + ' · ' + lv.name + '</span>' +
+             '<span class="font-semibold">' + lv.merchantCount.toLocaleString() + '</span>' +
+           '</div>';
+  }).join('');
+
+  lucide.createIcons();
+})();
+</script>
+</body>
+</html>
