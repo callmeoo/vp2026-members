@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>车辆详情 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display:none; }
+
+  /* 图片轮播 */
+  .gallery { background: #e5e7eb; }
+  .gallery-track { display: flex; transition: transform .35s ease; height: 100%; }
+  .gallery-slide { flex: 0 0 100%; height: 100%; }
+  .gallery-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* 唯普检测 banner */
+  .vp-banner { background: linear-gradient(90deg, #f43f5e 0%, #ef4444 50%, #f97316 100%); }
+
+  /* 倒计时数字格 */
+  .ts-num { display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:22px; background:#ef4444; color:#fff; font-weight:700; font-size:12px; border-radius:3px; padding:0 4px; font-variant-numeric: tabular-nums; }
+
+  /* tab 下划线 */
+  .tab-active { color:#ef4444; font-weight:700; position:relative; }
+  .tab-active::after { content:''; position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); width:18px; height:6px;
+    background: radial-gradient(ellipse at center top, #ef4444 0%, #ef4444 40%, transparent 70%); border-radius:50%; }
+
+  /* 浮窗按钮 */
+  .float-vp {
+    position:absolute; right:12px; top:140px;
+    background: linear-gradient(135deg, #f43f5e, #ef4444);
+    color:#fff; border-radius:9999px;
+    padding: 6px 10px 6px 8px;
+    display:flex; align-items:center; gap:4px;
+    font-size:12px; font-weight:600;
+    box-shadow: 0 6px 16px rgba(239,68,68,.4);
+  }
+
+  /* 报告卡片左侧标签 */
+  .corner-tag {
+    position:absolute; top:0; left:0;
+    background: linear-gradient(135deg, #fb7185, #f43f5e);
+    color:#fff; font-size:10px; padding:2px 8px;
+    border-radius: 12px 0 12px 0;
+  }
+
+  /* 骨架图(简化 SVG 替代) */
+  .skeleton-wrap { background:#fff; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- Status bar -->
+  <div class="flex items-center justify-between px-5 py-2 bg-white text-slate-800 text-sm">
+    <span>15:00</span>
+    <span class="flex items-center gap-1"><i data-lucide="bluetooth" class="w-3.5 h-3.5"></i><i data-lucide="map-pin" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- 顶部导航 -->
+  <div class="bg-white px-3 py-2 flex items-center gap-2 sticky top-0 z-30 border-b border-slate-100">
+    <a href="home.html" class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="chevron-left" class="w-6 h-6"></i></a>
+    <div class="flex-1 min-w-0">
+      <div v-if="!showCompactTitle" class="text-base font-semibold text-slate-800">车辆详情</div>
+      <div v-else class="text-[13px] text-slate-800 leading-tight line-clamp-2">{{ car.title }}</div>
+    </div>
+    <button class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="headphones" class="w-5 h-5"></i></button>
+    <button class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="share" class="w-5 h-5"></i></button>
+  </div>
+
+  <!-- Tab 切换(吸附) -->
+  <div v-show="showCompactTitle" class="bg-white sticky top-[52px] z-20 px-4 py-3 flex items-center justify-between text-sm border-b border-slate-100">
+    <button v-for="t in tabs" :key="t.key" :class="['px-1', activeTab === t.key ? 'tab-active' : 'text-slate-600']" @click="goTab(t.key)">{{ t.label }}</button>
+  </div>
+
+  <!-- ========= 基本信息 ========= -->
+  <section :id="'sec-base'" ref="secBase">
+
+    <!-- 图片轮播 -->
+    <div class="relative gallery h-[260px]">
+      <div class="gallery-track" :style="{ transform: 'translateX(-' + (currentImg * 100) + '%)' }">
+        <div v-for="(img, i) in car.images" :key="i" class="gallery-slide">
+          <img :src="img" :alt="'图 ' + (i+1)">
+        </div>
+      </div>
+
+      <!-- 浮窗 · 查维保 -->
+      <a href="#sec-config" @click.prevent="goTab('config')" class="float-vp">
+        <i data-lucide="file-search" class="w-4 h-4"></i>
+        <span>查维保</span>
+      </a>
+
+      <!-- 底部车辆编号 -->
+      <div class="absolute left-0 right-0 bottom-0 px-4 pb-2 pt-8 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-between text-white">
+        <div class="flex items-center gap-2 text-[13px]">
+          <span>车辆编号:{{ car.vin }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 bg-white/30 rounded">复制</span>
+        </div>
+        <div class="text-xs">{{ currentImg + 1 }}/{{ car.images.length }}</div>
+      </div>
+
+      <!-- 滑动控制 -->
+      <button @click="prevImg" class="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/30 text-white flex items-center justify-center"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+      <button @click="nextImg" class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/30 text-white flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+    </div>
+
+    <!-- 车辆基本信息卡 -->
+    <div class="bg-white px-4 py-4">
+      <div class="flex items-start gap-2">
+        <span class="flex-none mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-white text-[11px] font-bold bg-gradient-to-r from-rose-500 to-red-500">专业检测</span>
+        <h2 class="text-[16px] font-semibold text-slate-800 leading-snug">{{ car.title }}</h2>
+      </div>
+
+      <div class="border-t border-dashed border-slate-200 mt-3 pt-3 grid grid-cols-5 gap-1 text-center">
+        <div v-for="s in car.specs" :key="s.label">
+          <div class="text-[13px] font-semibold text-slate-800">{{ s.value }}</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">{{ s.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 当前价 -->
+    <div class="bg-white mt-1.5 px-4 py-3 flex items-center justify-between">
+      <div class="text-sm">
+        <span class="text-slate-500">当前价 </span>
+        <span class="text-red-500 font-bold text-[22px] align-middle">¥{{ formatNum(car.currentPrice) }}</span>
+      </div>
+      <div class="text-xs text-slate-400">起拍价 ¥{{ formatNum(car.startPrice) }}</div>
+    </div>
+
+    <!-- 唯普检测 banner -->
+    <a href="#sec-config" @click.prevent="goTab('config')" class="block mx-3 my-2 rounded-lg vp-banner text-white px-3 py-2.5 flex items-center gap-2">
+      <span class="font-bold text-[15px] tracking-wide">唯普检测</span>
+      <span class="text-[11px] opacity-90">唯普标准 · 专业检测 · 车况透明 · 买卖放心承诺说明</span>
+      <i data-lucide="chevron-right" class="w-4 h-4 ml-auto opacity-90"></i>
+    </a>
+
+  </section>
+
+  <!-- ========= 手续及过户 ========= -->
+  <section id="sec-license" ref="secLicense" class="bg-white mt-1.5 px-4 py-4">
+    <div class="text-[15px] font-semibold text-slate-800 mb-3">手续及过户</div>
+    <div class="grid grid-cols-2 gap-y-3 text-[13px]">
+      <div v-for="l in car.license" :key="l.label">
+        <div class="text-slate-400 text-xs">{{ l.label }}</div>
+        <div class="text-slate-800 mt-1">{{ l.value }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========= 配置 / 查维保 ========= -->
+  <section id="sec-config" ref="secConfig" class="bg-slate-50 mt-1.5 pt-3">
+
+    <!-- 维保·出险·里程 -->
+    <div class="mx-3 mb-2 bg-white rounded-xl p-3 flex items-center gap-3 relative overflow-hidden">
+      <div class="corner-tag">买车必查</div>
+      <div class="flex-none w-14 h-14 rounded-lg bg-gradient-to-br from-sky-100 to-blue-200 flex items-center justify-center text-blue-500">
+        <i data-lucide="bot" class="w-7 h-7"></i>
+      </div>
+      <div class="flex-1 min-w-0 pl-1">
+        <div class="text-[14px] font-bold text-slate-800">维保 · 出险 · 里程 一键查询</div>
+        <div class="text-[11px] text-slate-400 mt-1">车况透明 交易更省心</div>
+      </div>
+      <button class="flex-none px-3 py-1.5 rounded-full bg-red-50 text-red-500 text-[13px] font-semibold">立即查询</button>
+    </div>
+
+    <!-- 事故风险简易报告 -->
+    <div class="mx-3 mb-2 bg-white rounded-xl p-3 flex items-center gap-3 relative overflow-hidden">
+      <div class="corner-tag" style="background:linear-gradient(135deg,#fdba74,#f59e0b)">仅供参考</div>
+      <div class="flex-none w-14 h-14 rounded-lg bg-slate-100 flex items-center justify-center text-amber-500">
+        <i data-lucide="car-front" class="w-7 h-7"></i>
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 -ml-3 -mt-4 text-amber-500"></i>
+      </div>
+      <div class="flex-1 min-w-0 pl-1">
+        <div class="text-[14px] font-bold text-slate-800">事故风险简易报告</div>
+        <div class="text-[11px] text-slate-400 mt-1">报告生成日期:2025-10-02</div>
+      </div>
+      <button class="flex-none px-3 py-1.5 rounded-full bg-orange-50 text-orange-500 text-[13px] font-semibold">免费查看</button>
+    </div>
+
+    <!-- 骨架检测 -->
+    <div class="mx-3 mb-2 bg-white rounded-xl">
+      <div class="px-4 pt-4 pb-2 flex items-center justify-between cursor-pointer" @click="skeletonOpen = !skeletonOpen">
+        <div class="text-[15px] font-bold text-slate-800">骨架检测</div>
+        <div class="flex items-center gap-2 text-[12px]">
+          <span class="inline-flex items-center gap-1 text-emerald-600"><i data-lucide="check-circle-2" class="w-4 h-4"></i>{{ car.skeleton.checked }}项</span>
+          <i :data-lucide="skeletonOpen ? 'chevron-up' : 'chevron-down'" class="w-4 h-4 text-slate-400"></i>
+        </div>
+      </div>
+
+      <div v-show="skeletonOpen" class="px-4 pb-4">
+        <div class="text-[12px] text-slate-400 flex items-center gap-1 mb-3">
+          什么是大事故、轻微事故车 <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+        </div>
+
+        <!-- 骨架示意图(简化 SVG) -->
+        <div class="skeleton-wrap py-4 flex flex-col gap-3">
+          <div class="relative">
+            <span class="absolute top-0 left-0 text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded">车架号</span>
+            <svg viewBox="0 0 320 130" class="w-full h-auto" fill="none" stroke="#cbd5e1" stroke-width="1.5">
+              <!-- 上视 -->
+              <path d="M30 30 L70 15 L240 15 L290 30 L290 100 L240 115 L70 115 L30 100 Z"/>
+              <path d="M70 15 L70 115 M120 15 L120 115 M180 15 L180 115 M240 15 L240 115"/>
+              <path d="M30 65 L290 65"/>
+              <path d="M85 30 L105 30 L105 60 L85 60 Z M195 30 L215 30 L215 60 L195 60 Z"/>
+            </svg>
+          </div>
+          <div class="relative">
+            <svg viewBox="0 0 320 110" class="w-full h-auto" fill="none" stroke="#cbd5e1" stroke-width="1.5">
+              <!-- 侧视 -->
+              <path d="M20 80 L40 30 L120 20 L200 30 L260 30 L290 50 L300 80 Z"/>
+              <circle cx="80" cy="85" r="14"/>
+              <circle cx="240" cy="85" r="14"/>
+              <path d="M120 20 L120 60 L260 60"/>
+              <path d="M170 25 L170 60"/>
+            </svg>
+            <div class="absolute right-1 bottom-0 text-[10px] text-slate-400 leading-tight text-right">
+              <div>导</div><div>水</div><div>槽</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 检测项摘要 -->
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          <div v-for="g in car.skeleton.groups" :key="g.name" class="bg-slate-50 rounded-lg p-2 text-center">
+            <div class="text-[11px] text-slate-500">{{ g.name }}</div>
+            <div class="text-[12px] mt-1 text-emerald-600 font-semibold flex items-center justify-center gap-1">
+              <i data-lucide="check" class="w-3 h-3"></i>{{ g.value }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ========= 报告 ========= -->
+  <section id="sec-report" ref="secReport" class="bg-white mt-1.5 px-4 py-4">
+    <div class="text-[15px] font-semibold text-slate-800 mb-3">检测报告</div>
+    <div class="space-y-2.5 text-[13px]">
+      <div v-for="r in car.report" :key="r.label" class="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+        <span class="text-slate-600 flex items-center gap-2"><i :data-lucide="r.icon" class="w-4 h-4 text-slate-400"></i>{{ r.label }}</span>
+        <span :class="[r.tone === 'ok' ? 'text-emerald-600' : r.tone === 'warn' ? 'text-amber-600' : 'text-slate-700', 'flex items-center gap-1']">
+          <i v-if="r.tone === 'ok'" data-lucide="check-circle-2" class="w-4 h-4"></i>
+          <i v-else-if="r.tone === 'warn'" data-lucide="alert-triangle" class="w-4 h-4"></i>
+          {{ r.value }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========= 车辆图片 ========= -->
+  <section id="sec-photos" ref="secPhotos" class="bg-white mt-1.5 px-4 py-4 pb-24">
+    <div class="text-[15px] font-semibold text-slate-800 mb-3">车辆图片 <span class="text-slate-400 text-xs font-normal">共 {{ car.images.length }} 张</span></div>
+    <div class="grid grid-cols-3 gap-1.5">
+      <div v-for="(img, i) in car.images" :key="i" class="aspect-square overflow-hidden rounded-md bg-slate-100">
+        <img :src="img" class="w-full h-full object-cover" :alt="'图片 ' + (i+1)">
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部出价栏 -->
+  <div class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-3 pt-2 pb-3 z-40 flex items-center gap-3">
+    <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 pr-1">
+      <i data-lucide="clock" class="w-5 h-5"></i><span>出价记录</span>
+    </div>
+    <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 pr-2">
+      <i data-lucide="heart" class="w-5 h-5"></i><span>关注</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="text-[11px] text-slate-500 leading-none">当前价</div>
+      <div class="text-red-500 font-bold text-[20px] leading-tight">¥{{ formatNum(car.currentPrice) }}</div>
+    </div>
+    <div class="flex-none text-right pr-1">
+      <div class="text-[11px] text-slate-500 leading-none mb-1">竞价剩余</div>
+      <div class="flex items-center gap-0.5">
+        <span class="ts-num">{{ pad(countdown.h) }}</span><span class="text-red-500 font-bold">:</span>
+        <span class="ts-num">{{ pad(countdown.m) }}</span><span class="text-red-500 font-bold">:</span>
+        <span class="ts-num">{{ pad(countdown.s) }}</span>
+      </div>
+    </div>
+    <button class="flex-none px-6 py-3 rounded-full text-white font-bold text-[15px] bg-gradient-to-r from-rose-500 to-red-500 shadow-lg shadow-red-500/30">
+      我要出价
+    </button>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } = Vue;
+
+createApp({
+  setup() {
+    const car = {
+      title: '广州 粤A | 上汽MAXUS 大通G50 2023款 上汽MAXUS G50 PLUS 1.5T 幸福推荐自动启航版',
+      vin: '0704 0163',
+      currentPrice: 75000,
+      startPrice: 75000,
+      images: [
+        'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=900&h=600&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&h=600&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1542362567-b07e54358753?w=900&h=600&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=900&h=600&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=900&h=600&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1617469767053-8da35b2c6db1?w=900&h=600&fit=crop&auto=format&q=80'
+      ],
+      specs: [
+        { label:'注册日期', value:'2024.06' },
+        { label:'表显里程', value:'0.25万' },
+        { label:'排放标准', value:'需买家自查' },
+        { label:'使用性质', value:'非营运' },
+        { label:'过户次数', value:'0次' }
+      ],
+      license: [
+        { label:'车牌归属',     value:'广东 广州' },
+        { label:'登记日期',     value:'2024-06-12' },
+        { label:'年检到期',     value:'2026-06' },
+        { label:'交强险到期',   value:'2026-06' },
+        { label:'车船税到期',   value:'2026-12' },
+        { label:'过户方式',     value:'外迁过户' },
+        { label:'外迁要求',     value:'国六排放可外迁' },
+        { label:'本地过户费',   value:'¥ 480' }
+      ],
+      report: [
+        { label:'外观检测', icon:'sparkles',         tone:'ok',   value:'无明显损伤' },
+        { label:'内饰检测', icon:'sofa',             tone:'ok',   value:'保养良好' },
+        { label:'发动机舱', icon:'cog',              tone:'ok',   value:'未见异常' },
+        { label:'底盘检测', icon:'shield',           tone:'ok',   value:'结构完好' },
+        { label:'随车工具', icon:'wrench',           tone:'warn', value:'部分缺失' },
+        { label:'路试评估', icon:'rocket',           tone:'ok',   value:'通过' }
+      ],
+      skeleton: {
+        checked: 58,
+        groups: [
+          { name:'前部骨架', value:'18/18' },
+          { name:'中部骨架', value:'24/24' },
+          { name:'后部骨架', value:'16/16' }
+        ]
+      }
+    };
+
+    const currentImg = ref(0);
+    const skeletonOpen = ref(true);
+    const showCompactTitle = ref(false);
+    const activeTab = ref('base');
+    const tabs = [
+      { key:'base',     label:'基本信息',  ref:'secBase' },
+      { key:'license',  label:'手续及过户', ref:'secLicense' },
+      { key:'config',   label:'配置',      ref:'secConfig' },
+      { key:'report',   label:'报告',      ref:'secReport' },
+      { key:'photos',   label:'车辆图片',  ref:'secPhotos' }
+    ];
+
+    const secBase = ref(null), secLicense = ref(null), secConfig = ref(null), secReport = ref(null), secPhotos = ref(null);
+    const refMap = () => ({ base: secBase.value, license: secLicense.value, config: secConfig.value, report: secReport.value, photos: secPhotos.value });
+
+    const countdown = reactive({ h: 23, m: 59, s: 28 });
+    let timer = null, autoTimer = null;
+
+    function pad(n){ return n < 10 ? '0' + n : '' + n; }
+    function formatNum(n){ return n.toLocaleString('en-US'); }
+
+    function tickCountdown(){
+      let total = countdown.h * 3600 + countdown.m * 60 + countdown.s - 1;
+      if (total < 0) total = 23 * 3600 + 59 * 59;
+      countdown.h = Math.floor(total / 3600);
+      countdown.m = Math.floor((total % 3600) / 60);
+      countdown.s = total % 60;
+    }
+
+    function nextImg(){ currentImg.value = (currentImg.value + 1) % car.images.length; }
+    function prevImg(){ currentImg.value = (currentImg.value - 1 + car.images.length) % car.images.length; }
+
+    function goTab(key){
+      activeTab.value = key;
+      const target = refMap()[key];
+      if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function onScroll(){
+      const y = window.scrollY || document.documentElement.scrollTop;
+      showCompactTitle.value = y > 80;
+      const map = refMap();
+      let cur = 'base';
+      for (const t of tabs) {
+        const el = map[t.key];
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top;
+        if (top - 120 <= 0) cur = t.key;
+      }
+      activeTab.value = cur;
+    }
+
+    onMounted(() => {
+      lucide.createIcons();
+      timer = setInterval(tickCountdown, 1000);
+      autoTimer = setInterval(nextImg, 4500);
+      window.addEventListener('scroll', onScroll, { passive: true });
+    });
+    onUnmounted(() => {
+      if (timer) clearInterval(timer);
+      if (autoTimer) clearInterval(autoTimer);
+      window.removeEventListener('scroll', onScroll);
+    });
+
+    watch([currentImg, skeletonOpen, showCompactTitle, activeTab], () => {
+      nextTick(() => lucide.createIcons());
+    });
+
+    return {
+      car, currentImg, skeletonOpen, showCompactTitle, activeTab, tabs, countdown,
+      secBase, secLicense, secConfig, secReport, secPhotos,
+      pad, formatNum, nextImg, prevImg, goTab
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
