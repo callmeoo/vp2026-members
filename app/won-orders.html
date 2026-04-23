@@ -63,6 +63,11 @@
           <div v-if="o.timeout" class="text-[12px] text-rose-500 mt-1.5">剩余时间:支付超时</div>
         </div>
       </div>
+      <div v-if="o.benefit && o.benefit.type === 'refund'" :class="['mt-3 px-3 py-2 rounded-lg flex items-center gap-2 text-[12px]', benefitToneClass(o.benefit.tone)]">
+        <i :data-lucide="o.benefit.icon" class="w-3.5 h-3.5 flex-shrink-0"></i>
+        <span class="font-semibold flex-shrink-0">{{ o.benefit.label }}</span>
+        <span class="opacity-80 truncate">已使用 V3「无理由退车」权益</span>
+      </div>
       <div v-if="!o.scrap" class="flex justify-end gap-2 mt-3" @click.stop>
         <button v-for="btn in o.actions" :key="btn.label" :class="btn.primary ? 'btn-primary' : 'btn-outline'">{{ btn.label }}</button>
       </div>
@@ -79,7 +84,7 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script>
-const { createApp, ref, computed, onMounted } = Vue;
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
 createApp({
   setup() {
@@ -96,6 +101,16 @@ createApp({
       { id:'ORD20260306001',        status:'done',    statusLabel:'已完成订单',
         name:'宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型', plate:'粤A78546', total:31300, alt:'bmw',
         img:'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=400&q=70',
+        actions:[ { label:'提车与授权' }, { label:'提交过户资料', primary:true } ] },
+      { id:'ORD20260228015',        status:'done',    statusLabel:'已完成订单',
+        name:'奥迪 A6L 2020款 45 TFSI quattro 臻选致雅型', plate:'粤B23568', total:283000, alt:'audi',
+        img:'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=400&q=70',
+        benefit:{ type:'refund', label:'无理由退车', icon:'undo-2', tone:'rose', desc:'已使用 V3「无理由退车」权益 · 违约金 ¥2000 已全额抵扣' },
+        actions:[ { label:'查看退款进度', primary:true } ] },
+      { id:'ORD20260315028',        status:'done',    statusLabel:'已完成订单',
+        name:'丰田 凯美瑞 2022款 双擎 2.5HQ 旗舰版', plate:'粤C66888', total:198000, alt:'camry',
+        img:'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?auto=format&fit=crop&w=400&q=70',
+        benefit:{ type:'coupon', label:'过户 100 元抵扣券', icon:'ticket', tone:'amber', desc:'已使用「100 元过户抵扣券」 · 过户费实付 ¥100' },
         actions:[ { label:'提车与授权' }, { label:'提交过户资料', primary:true } ] },
       { id:'9026030672789758632',   status:'pending', statusLabel:'待支付订单', timeout:true,
         name:'保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T', plate:'粤HSB009', total:3000, alt:'panamera',
@@ -116,7 +131,16 @@ createApp({
 
     function orderHref(o) {
       const img = o.alt || 'car';
-      return `won-order-detail.html?id=${o.id}&status=${o.status}&plate=${encodeURIComponent(o.plate)}&total=${o.total}&img=${img}`;
+      const benefit = o.benefit ? `&benefit=${o.benefit.type}` : '';
+      return `won-order-detail.html?id=${o.id}&status=${o.status}&plate=${encodeURIComponent(o.plate)}&total=${o.total}&img=${img}${benefit}`;
+    }
+
+    function benefitToneClass(tone) {
+      return {
+        rose:  'bg-rose-50 text-rose-600',
+        amber: 'bg-amber-50 text-amber-700',
+        emerald: 'bg-emerald-50 text-emerald-600'
+      }[tone] || 'bg-slate-50 text-slate-600';
     }
 
     function imgFallback(e) {
@@ -130,8 +154,9 @@ createApp({
     function back() { smartBack('profile-loggedin.html'); }
 
     onMounted(() => lucide.createIcons());
+    watch(activeTab, () => nextTick(() => window.lucide && lucide.createIcons()));
 
-    return { activeTab, tabs, visibleOrders, orderHref, imgFallback, back };
+    return { activeTab, tabs, visibleOrders, orderHref, imgFallback, benefitToneClass, back };
   }
 }).mount('#app');
 </script>

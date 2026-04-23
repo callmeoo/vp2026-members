@@ -54,40 +54,46 @@
       <div class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white shadow-lg">
         <i data-lucide="user" class="w-8 h-8"></i>
       </div>
-      <div class="flex-1">
-        <div class="text-lg font-bold tracking-wide mb-1">130****4608</div>
-        <a href="member.html" class="inline-flex items-center gap-1.5 text-xs opacity-90 hover:opacity-100 cursor-pointer">
-          <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-orange-400"></i>
-          <span>近 3 月成交 <span class="text-white font-semibold">12</span> 台</span>
-          <i data-lucide="chevron-right" class="w-3 h-3"></i>
-        </a>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-lg font-bold tracking-wide">130****4608</span>
+          <span v-if="isVerified" class="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded border border-emerald-400/30">
+            <i data-lucide="badge-check" class="w-3 h-3"></i>已认证
+          </span>
+        </div>
       </div>
     </div>
 
-    <!-- V2 会员 Banner + 权益横滑 -->
+    <!-- 等级 Banner + 进度 + 权益横滑 -->
     <a href="member.html" class="block relative z-10 mx-4 mt-4 rounded-3xl member-banner p-4 shadow-2xl">
       <div class="relative z-10 flex items-center justify-between mb-3">
         <div class="flex items-baseline gap-2">
-          <span class="text-2xl font-black text-white">V2 会员</span>
-          <span class="text-[11px] text-indigo-200">还需 <span class="text-amber-300 font-semibold">18 台</span> 升 V3</span>
+          <span class="text-2xl font-black text-white">{{ currentLv.short }} {{ currentLv.name }}</span>
         </div>
         <div class="inline-flex items-center gap-1 bg-white/15 backdrop-blur text-xs font-semibold px-2.5 py-1 rounded-full text-white">
           会员中心 <i data-lucide="chevron-right" class="w-3 h-3"></i>
         </div>
       </div>
-      <div class="relative z-10 h-1 bg-white/10 rounded-full overflow-hidden mb-3">
-        <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full" style="width:40%"></div>
+      <div class="relative z-10 mb-2 flex items-baseline justify-between">
+        <span class="text-[11px] text-indigo-200">近 3 月成交</span>
+        <span class="text-[12px] text-white">
+          <span class="text-amber-300 font-bold text-[15px]">{{ currentDeals }}</span>
+          <span class="opacity-70"> / {{ target }} 台</span>
+          <span v-if="nextLvShort" class="text-[10px] text-indigo-200 ml-2">升 {{ nextLvShort }}</span>
+        </span>
       </div>
-      <!-- 权益横滑 -->
+      <div class="relative z-10 h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
+        <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full transition-all duration-300" :style="{ width: progress + '%' }"></div>
+      </div>
+      <!-- 权益横滑(基于 member-config.js 当前等级 benefits) -->
       <div class="relative z-10 hscroll flex gap-2 overflow-x-auto pb-1">
-        <div v-for="b in benefits" :key="b.title" :class="['benefit-card rounded-xl p-2.5 text-center', b.locked ? 'opacity-50' : '']">
-          <div :class="['h-8 flex items-center justify-center relative', b.color]">
+        <div v-for="b in currentLv.benefits" :key="b.id" class="benefit-card rounded-xl p-2.5 text-center">
+          <div class="h-8 flex items-center justify-center text-amber-300">
             <i :data-lucide="b.icon" class="w-5 h-5"></i>
-            <i v-if="b.locked" data-lucide="lock" class="w-2.5 h-2.5 absolute bottom-0 right-2"></i>
           </div>
-          <div class="text-[11px] font-semibold text-white mt-1">{{ b.title }}</div>
-          <div v-if="b.desc" class="text-[9px] text-indigo-200">{{ b.desc }}</div>
+          <div class="text-[11px] font-semibold text-white mt-1 leading-tight">{{ b.label }}</div>
         </div>
+        <div v-if="!currentLv.benefits || !currentLv.benefits.length" class="text-[11px] text-indigo-200 px-2">暂无可享权益</div>
       </div>
     </a>
   </div>
@@ -205,22 +211,57 @@
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
+
+<!-- 模拟用户等级 · 仅 Demo(md+ 屏幕显示) -->
+<div class="hidden md:block fixed top-4 right-4 z-50">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户身份</span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <button v-for="lv in CFG.levels" :key="lv.code"
+              @click="simulateLevel(lv.short)"
+              :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all min-w-[88px] text-left', currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-violet-400 scale-105' : 'opacity-80 hover:opacity-100']"
+              :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
+        {{ lv.short }} · {{ lv.name }}
+      </button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+  </div>
+</div>
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/member-config.js"></script>
 <script>
-const { createApp, onMounted } = Vue;
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
 createApp({
   setup() {
-    const benefits = [
-      { title:'过户 9.5 折', desc:'省 300 元', icon:'tag',        color:'text-amber-300' },
-      { title:'1V1 客服',   desc:'专属服务',   icon:'headphones', color:'text-emerald-300' },
-      { title:'销售顾问',   desc:'1 对 1',    icon:'briefcase',   color:'text-sky-300' },
-      { title:'保留价',     desc:'查底价',     icon:'target',     color:'text-violet-300' },
-      { title:'历史数据',   desc:'查询',       icon:'scroll-text', color:'text-pink-300' },
-      { title:'代送上门',   desc:'V3 解锁',    icon:'truck',       color:'text-slate-300', locked:true }
-    ];
+    const CFG = window.MEMBER_CONFIG;
+
+    // 演示用:每个等级假设的近 3 月成交台数
+    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 12 };
+    const currentLvShort = ref('V2');
+    const isVerified = ref(true);
+
+    function simulateLevel(short) { currentLvShort.value = short; }
+
+    const currentLv = computed(() => CFG.getLevelByCode(currentLvShort.value));
+    const currentDeals = computed(() => DEALS_PRESET[currentLvShort.value]);
+    const target = computed(() => {
+      const idx = CFG.levels.indexOf(currentLv.value);
+      const next = CFG.levels[idx + 1];
+      return next ? next.threshold.dealsMin : currentDeals.value;
+    });
+    const nextLvShort = computed(() => {
+      const idx = CFG.levels.indexOf(currentLv.value);
+      const next = CFG.levels[idx + 1];
+      return next ? next.short : '';
+    });
+    const progress = computed(() => target.value > 0
+      ? Math.min(100, Math.round(currentDeals.value / target.value * 100))
+      : 100);
 
     const bidMenu = [
       { label:'进行中', icon:'gavel' },
@@ -243,9 +284,14 @@ createApp({
       { label:'联系客服', icon:'headphones' }
     ];
 
+    watch(currentLvShort, () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { benefits, bidMenu, orderMenu, serviceMenu };
+    return {
+      CFG, isVerified, currentLv, currentLvShort, currentDeals, target, nextLvShort, progress,
+      simulateLevel,
+      bidMenu, orderMenu, serviceMenu
+    };
   }
 }).mount('#app');
 </script>

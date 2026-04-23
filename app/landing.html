@@ -129,8 +129,11 @@
     </div>
   </div>
 
+  <!-- Tab 哨兵:用于判断是否进入悬浮态 -->
+  <div ref="tabSentinel"></div>
+
   <!-- Tab 栏 -->
-  <div class="sticky top-0 z-30 bg-white border-b border-slate-100 shadow-sm">
+  <div :class="['tab-bar sticky top-0 z-30 bg-white border-b border-slate-100', isStuck ? 'is-stuck' : '']">
     <div class="flex">
       <div v-for="t in tabs" :key="t.key"
            :class="['main-tab', { active: activeTab === t.key }]"
@@ -140,10 +143,21 @@
     </div>
   </div>
 
-  <!-- Section · 会员等级 -->
-  <div id="tab-levels" class="tab-panel pb-2">
+  <!-- ========== Tab 1 · 等级权益 ========== -->
+  <section v-show="activeTab === 'levels'" class="pb-2">
+    <!-- 1) 会员等级说明 -->
     <h2 class="sec-title">
-      <i data-lucide="layers" class="w-[18px] h-[18px] text-violet-600"></i>会员等级
+      <i data-lucide="info" class="w-[18px] h-[18px] text-violet-600"></i>会员等级说明
+    </h2>
+    <div class="px-4">
+      <div class="bg-violet-50 border border-violet-100 rounded-xl p-3.5 leading-relaxed" style="font-size:14px;color:#334155;">
+        会员等级是根据您账号内<strong style="color:#6d28d9">保证金余额(含冻结)</strong>及前 3 个自然月完成成交的<strong style="color:#6d28d9">车辆台数</strong>计算,统计周期内成交台数越高,当月的会员等级越高,可获得平台特定的等级权益。<strong style="color:#6d28d9">每月 1 日</strong>计算当月会员等级。
+      </div>
+    </div>
+
+    <!-- 2) 等级表格 -->
+    <h2 class="sec-title">
+      <i data-lucide="layers" class="w-[18px] h-[18px] text-violet-600"></i>等级
     </h2>
     <div class="px-4">
       <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm matrix bg-white">
@@ -158,12 +172,9 @@
           <div class="cell text-left px-3" style="color:#475569;font-size:13px;line-height:1.55" v-html="lv.threshold"></div>
         </div>
       </div>
-      <div class="cap-text text-center mt-2">近 3 个月累计成交台数 · 每月 1 日更新</div>
     </div>
-  </div>
 
-  <!-- Section · 会员权益 -->
-  <div id="tab-benefits" class="tab-panel pb-2">
+    <!-- 3) 会员权益 -->
     <h2 class="sec-title">
       <i data-lucide="shield-check" class="w-[18px] h-[18px] text-violet-600"></i>会员权益
     </h2>
@@ -183,14 +194,10 @@
       </div>
       <div class="cap-text text-center mt-2">以实际页面展示为准,平台保留调整权</div>
     </div>
-  </div>
+  </section>
 
-  <!-- Section · 积分 -->
-  <div id="tab-coins" class="tab-panel pb-2">
-    <h2 class="sec-title">
-      <i data-lucide="coins" class="w-[18px] h-[18px] text-amber-500"></i>积分
-    </h2>
-
+  <!-- ========== Tab 2 · 积分说明 ========== -->
+  <section v-show="activeTab === 'coins'" class="pb-2 pt-5">
     <!-- 什么是积分 -->
     <div class="mx-4 p-4 rounded-2xl bg-amber-50 border border-amber-200">
       <div class="flex items-center gap-2 mb-2">

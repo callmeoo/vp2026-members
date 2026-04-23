@@ -18,6 +18,17 @@
   .row .val.muted { color: #94a3b8; }
   .btn-out { flex: 1; height: 40px; border-radius: 999px; background: #f1f3f5; color: #6b7280; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
   .btn-pri { flex: 1; height: 40px; border-radius: 999px; background: #fde2e2; color: #ef4444; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; }
+  .price-old { text-decoration: line-through; color: #94a3b8; font-size: 13px; margin-right: 6px; }
+  .benefit-card {
+    margin: 12px 12px 0; padding: 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 100%);
+    border: 1px solid #fed7aa;
+  }
+  .benefit-card.refund { background: linear-gradient(135deg, #fff1f2 0%, #fce7f3 100%); border-color: #fecaca; }
+  .benefit-card.coupon { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a; }
+  .badge-done { display:inline-flex; align-items:center; gap:4px; background:#dcfce7; color:#15803d; font-size:11px; padding:2px 8px; border-radius:999px; font-weight:600; }
+  .badge-refund { display:inline-flex; align-items:center; gap:4px; background:#fee2e2; color:#b91c1c; font-size:11px; padding:2px 8px; border-radius:999px; font-weight:600; }
 </style>
 </head>
 <body>
@@ -47,8 +58,9 @@
       <img :src="carImg" @error="imgFallback" class="w-28 h-24 rounded-lg object-cover flex-shrink-0" alt="car">
       <div class="flex-1 min-w-0">
         <div class="text-[14px] text-slate-900 leading-snug">{{ carTitle }}</div>
-        <div class="text-right text-[16px] font-semibold text-slate-900 mt-2">¥{{ totalPrice.toFixed(2) }}</div>
-        <div class="text-right text-[12px] text-rose-500 mt-1">订单剩余有效时间:支付超时</div>
+        <div class="text-right text-[16px] font-semibold text-slate-900 mt-2">¥{{ totalShown.toFixed(2) }}</div>
+        <div v-if="status === 'pending'" class="text-right text-[12px] text-rose-500 mt-1">订单剩余有效时间:支付超时</div>
+        <div v-else class="text-right text-[12px] mt-1"><span class="badge-done"><i data-lucide="check" class="w-3 h-3"></i>交易完成</span></div>
       </div>
     </div>
     <div class="px-4 pb-4 text-[13px] text-slate-700 space-y-1.5">
@@ -62,18 +74,53 @@
     </div>
   </div>
 
+  <!-- 已使用权益(仅无理由退车场景展示) -->
+  <div v-if="benefit === 'refund'" class="benefit-card refund">
+    <div class="flex items-center gap-2 mb-2">
+      <i data-lucide="undo-2" class="w-5 h-5 text-rose-600"></i>
+      <span class="text-[14px] font-bold text-rose-700">已使用权益</span>
+      <span class="ml-auto text-[11px] text-slate-500">会员等级权益</span>
+    </div>
+    <div class="text-[13px] text-rose-900 leading-relaxed">
+      已使用「<span class="font-semibold">无理由退车</span>」权益,无损退车。
+    </div>
+  </div>
+
   <!-- 付款详情 -->
   <div class="bg-white mt-3">
     <div class="section-title"><i data-lucide="wallet" class="w-4 h-4 text-slate-700"></i><span>付款详情</span></div>
     <div class="pb-3">
-      <div class="row"><span class="lbl">成交价</span><span class="val">¥{{ (totalPrice - 500).toFixed(2) }}</span></div>
-      <div class="row"><span class="lbl">手续费</span><span class="val">¥200.00</span></div>
-      <div class="row"><span class="lbl">平台使用费</span><span class="val">¥300.00</span></div>
-      <div class="row"><span class="lbl">综合服务费</span><span class="val muted">¥0</span></div>
-      <div class="row"><span class="lbl">交付服务费</span><span class="val muted">¥0</span></div>
-      <div class="row"><span class="lbl">评估费</span><span class="val muted">¥0</span></div>
-      <div class="row"><span class="lbl">其他</span><span class="val muted">¥0</span></div>
-      <div class="row"><span class="lbl">订单总价</span><span class="val text-rose-500 font-semibold">¥{{ totalPrice.toFixed(2) }}</span></div>
+      <template v-if="benefit === 'refund'">
+        <div class="row"><span class="lbl">成交价</span><span class="val">¥{{ (totalShown - 500).toFixed(2) }}</span></div>
+        <div class="row"><span class="lbl">手续费</span><span class="val">¥200.00</span></div>
+        <div class="row"><span class="lbl">平台使用费</span><span class="val">¥300.00</span></div>
+        <div class="row"><span class="lbl">违约金</span>
+          <span><span class="price-old">¥2000.00</span><span class="val text-emerald-600 font-semibold">¥0.00</span></span>
+        </div>
+        <div class="row"><span class="lbl">权益抵扣</span><span class="val text-rose-500">- ¥2000.00(无理由退车)</span></div>
+        <div class="row"><span class="lbl">订单总价</span><span class="val text-rose-500 font-semibold">¥{{ totalShown.toFixed(2) }}</span></div>
+        <div class="row"><span class="lbl">已退款</span><span class="val text-emerald-600 font-semibold">¥{{ totalShown.toFixed(2) }}</span></div>
+      </template>
+      <template v-else-if="benefit === 'coupon'">
+        <div class="row"><span class="lbl">成交价</span><span class="val">¥{{ (totalShown - 400).toFixed(2) }}</span></div>
+        <div class="row"><span class="lbl">手续费</span><span class="val">¥200.00</span></div>
+        <div class="row"><span class="lbl">平台使用费</span><span class="val">¥300.00</span></div>
+        <div class="row"><span class="lbl">过户费</span>
+          <span><span class="price-old">¥200.00</span><span class="val text-emerald-600 font-semibold">¥100.00</span></span>
+        </div>
+        <div class="row"><span class="lbl">优惠券抵扣</span><span class="val text-rose-500">- ¥100.00(过户抵扣券)</span></div>
+        <div class="row"><span class="lbl">订单总价</span><span class="val text-rose-500 font-semibold">¥{{ totalShown.toFixed(2) }}</span></div>
+      </template>
+      <template v-else>
+        <div class="row"><span class="lbl">成交价</span><span class="val">¥{{ (totalShown - 500).toFixed(2) }}</span></div>
+        <div class="row"><span class="lbl">手续费</span><span class="val">¥200.00</span></div>
+        <div class="row"><span class="lbl">平台使用费</span><span class="val">¥300.00</span></div>
+        <div class="row"><span class="lbl">综合服务费</span><span class="val muted">¥0</span></div>
+        <div class="row"><span class="lbl">交付服务费</span><span class="val muted">¥0</span></div>
+        <div class="row"><span class="lbl">评估费</span><span class="val muted">¥0</span></div>
+        <div class="row"><span class="lbl">其他</span><span class="val muted">¥0</span></div>
+        <div class="row"><span class="lbl">订单总价</span><span class="val text-rose-500 font-semibold">¥{{ totalShown.toFixed(2) }}</span></div>
+      </template>
     </div>
   </div>
 
@@ -82,11 +129,16 @@
     <div class="section-title"><i data-lucide="file-text" class="w-4 h-4 text-slate-700"></i><span>订单详情</span></div>
     <div class="pb-3">
       <div class="row"><span class="lbl">订单号:</span><span class="val text-slate-500">{{ orderId }}</span></div>
-      <div class="row"><span class="lbl">成交时间:</span><span class="val text-slate-500">2026-03-06 17:35:59</span></div>
-      <div class="row"><span class="lbl">支付时间:</span><span class="text-blue-500">待支付</span></div>
+      <div class="row"><span class="lbl">成交时间:</span><span class="val text-slate-500">{{ orderMeta.dealAt }}</span></div>
+      <div class="row"><span class="lbl">支付时间:</span>
+        <span v-if="status === 'pending'" class="text-blue-500">待支付</span>
+        <span v-else class="val text-slate-500">{{ orderMeta.paidAt }}</span>
+      </div>
+      <div v-if="benefit === 'refund'" class="row"><span class="lbl">退款时间:</span><span class="val text-slate-500">{{ orderMeta.refundAt }}</span></div>
+      <div v-if="benefit === 'coupon'" class="row"><span class="lbl">优惠券核销:</span><span class="val text-slate-500">{{ orderMeta.paidAt }}</span></div>
       <div class="row items-start">
         <span class="lbl flex-shrink-0">温馨提示:</span>
-        <span class="text-rose-500 text-right max-w-[240px]">请成交后24小时内支付订单总价,若超时平台有权取消交易</span>
+        <span :class="['text-right max-w-[260px]', tipsColor]">{{ tipsText }}</span>
       </div>
     </div>
   </div>
@@ -103,9 +155,18 @@
 
 <!-- 底部操作栏 -->
 <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 px-3 py-3 flex gap-2">
-  <a :href="'aftersale-apply.html?id=' + orderId" class="btn-out">申请售后</a>
-  <button class="btn-pri">确认过户对象</button>
-  <button class="btn-pri">立即支付</button>
+  <template v-if="status === 'pending'">
+    <a :href="'aftersale-apply.html?id=' + orderId" class="btn-out">申请售后</a>
+    <button class="btn-pri">确认过户对象</button>
+    <button class="btn-pri">立即支付</button>
+  </template>
+  <template v-else-if="benefit === 'refund'">
+    <button class="btn-pri">联系客服</button>
+  </template>
+  <template v-else>
+    <button class="btn-out">提车与授权</button>
+    <button class="btn-pri">提交过户资料</button>
+  </template>
 </div>
 
 <div class="hidden md:block fixed top-4 left-4 z-50">
@@ -116,7 +177,7 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script>
-const { createApp, ref, onMounted } = Vue;
+const { createApp, ref, computed, onMounted } = Vue;
 
 createApp({
   setup() {
@@ -126,20 +187,47 @@ createApp({
       bmw:       'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=70',
       panamera1: 'https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=600&q=70',
       panamera2: 'https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?auto=format&fit=crop&w=600&q=70',
-      buick:     'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600&q=70'
+      buick:     'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600&q=70',
+      audi:      'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=70',
+      camry:     'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?auto=format&fit=crop&w=600&q=70'
     };
     const titleMap = {
       bmw:       '宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型',
       panamera1: '保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T',
       panamera2: '保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T',
-      buick:     '别克 E4 2023款 智享版'
+      buick:     '别克 E4 2023款 智享版',
+      audi:      '奥迪 A6L 2020款 45 TFSI quattro 臻选致雅型',
+      camry:     '丰田 凯美瑞 2022款 双擎 2.5HQ 旗舰版'
     };
 
-    const imgKey = params.get('img');
+    const imgKey  = params.get('img');
+    const status  = params.get('status') || 'pending';
+    const benefit = params.get('benefit'); // 'refund' | 'coupon' | null
     const orderId = ref(params.get('id') || '9026030672789758632');
-    const totalPrice = ref(parseFloat(params.get('total')) || 3000);
+    const totalShown = ref(parseFloat(params.get('total')) || 3000);
     const carImg = ref(imgMap[imgKey] || imgMap.panamera1);
     const carTitle = ref(titleMap[imgKey] || titleMap.panamera1);
+
+    const orderMeta = computed(() => {
+      if (status === 'pending') {
+        return { dealAt:'2026-03-06 17:35:59', paidAt:'待支付', refundAt:'' };
+      }
+      if (benefit === 'refund') {
+        return { dealAt:'2026-02-28 14:22:08', paidAt:'2026-02-28 14:35:11', refundAt:'2026-03-02 10:08:42' };
+      }
+      if (benefit === 'coupon') {
+        return { dealAt:'2026-03-15 11:18:30', paidAt:'2026-03-15 11:25:46', refundAt:'' };
+      }
+      return { dealAt:'2026-03-06 17:35:59', paidAt:'2026-03-06 18:02:11', refundAt:'' };
+    });
+
+    const tipsText = computed(() => {
+      if (status === 'pending') return '请成交后24小时内支付订单总价,若超时平台有权取消交易';
+      if (benefit === 'refund') return '退款已原路返回您的支付账户,预计 1-3 个工作日到账';
+      if (benefit === 'coupon') return '过户费已使用优惠券抵扣,如需开票请联系客服';
+      return '订单已完成,如有疑问请在 7 日内联系客服';
+    });
+    const tipsColor = computed(() => status === 'pending' ? 'text-rose-500' : 'text-slate-500');
 
     function imgFallback(e) {
       const div = document.createElement('div');
@@ -153,7 +241,7 @@ createApp({
 
     onMounted(() => lucide.createIcons());
 
-    return { orderId, totalPrice, carImg, carTitle, imgFallback, back };
+    return { orderId, totalShown, carImg, carTitle, status, benefit, orderMeta, tipsText, tipsColor, imgFallback, back };
   }
 }).mount('#app');
 </script>
