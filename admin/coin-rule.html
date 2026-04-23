@@ -105,21 +105,21 @@
     <main class="flex-1 p-6 overflow-y-auto">
       <div class="mb-5">
         <h1 class="text-xl font-semibold text-slate-800">积分规则配置</h1>
-        <p class="text-sm text-slate-500 mt-1">配置积分(唯金币)的发放数量、转发上限、有效期等参数。修改后实时生效。</p>
+        <p class="text-sm text-slate-500 mt-1">配置积分的发放数量、转发上限、有效期等参数。修改后实时生效。</p>
       </div>
 
       <div class="ant-alert-info mb-5 flex items-center gap-2">
         <i data-lucide="info" class="w-4 h-4"></i>
-        <span>所有发放规则的前提是:<strong>用户必须处于登录状态</strong>,未登录行为不计入金币发放</span>
+        <span>所有发放规则的前提是:<strong>用户必须处于登录状态</strong>,未登录行为不计入积分发放</span>
       </div>
 
-      <!-- 金币发放规则 -->
+      <!-- 积分发放规则 -->
       <div class="ant-card p-6 mb-5">
         <div class="flex items-center justify-between mb-5">
           <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
-            <i data-lucide="coins" class="w-5 h-5 text-amber-500"></i>金币发放规则
+            <i data-lucide="coins" class="w-5 h-5 text-amber-500"></i>积分发放规则
           </div>
-          <div class="text-xs text-slate-400">单位:1 金币 ≈ {{ coin.unitYuan }} 元 · 数据源:<code>shared/member-config.js</code></div>
+          <div class="text-xs text-slate-400">单位:1 积分 ≈ {{ coin.unitYuan }} 元 · 数据源:<code>shared/member-config.js</code></div>
         </div>
 
         <div class="space-y-4">
@@ -132,7 +132,7 @@
               <thead class="text-xs text-slate-500 bg-slate-50">
                 <tr>
                   <th class="text-left px-4 py-2 font-medium">具体行为</th>
-                  <th class="text-left px-4 py-2 font-medium" style="width:130px">金币值</th>
+                  <th class="text-left px-4 py-2 font-medium" style="width:130px">积分值</th>
                   <th class="text-left px-4 py-2 font-medium" style="width:110px">单位</th>
                   <th class="text-left px-4 py-2 font-medium">规则说明</th>
                   <th class="text-center px-4 py-2 font-medium" style="width:70px">状态</th>
@@ -154,23 +154,23 @@
         </div>
       </div>
 
-      <!-- 金币有效期 -->
+      <!-- 积分有效期 -->
       <div class="ant-card p-6 mb-5">
-        <div class="text-base font-semibold text-slate-800 mb-5">⏳ 金币有效期</div>
+        <div class="text-base font-semibold text-slate-800 mb-5 flex items-center gap-2"><i data-lucide="hourglass" class="w-4 h-4 text-amber-500"></i>积分有效期</div>
         <div class="flex items-start gap-5">
           <div class="flex-1 max-w-md">
             <label class="text-xs text-slate-500 block mb-1">有效期(月)</label>
             <input class="ant-input" v-model.number="coin.validityMonths" type="number">
             <div class="text-xs text-slate-400 mt-2">
-              金币自获得当月起,经过 <strong>{{ coin.validityMonths }} 个自然月</strong> 后到期清零。
+              积分自获得当月起,经过 <strong>{{ coin.validityMonths }} 个自然月</strong> 后到期清零。
             </div>
           </div>
           <div class="flex-1 bg-slate-50 rounded-lg p-4 text-sm">
-            <div class="font-medium text-slate-700 mb-2">📅 举例说明</div>
+            <div class="font-medium text-slate-700 mb-2 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-slate-500"></i>举例说明</div>
             <div class="text-slate-600 space-y-1 text-xs">
-              <div>· 2026 年 4 月获得的金币,有效期至 <strong>2027 年 4 月 30 日</strong></div>
+              <div>· 2026 年 4 月获得的积分,有效期至 <strong>2027 年 4 月 30 日</strong></div>
               <div>· 每日凌晨执行过期清零任务</div>
-              <div>· 优先消耗即将过期的金币(FIFO)</div>
+              <div>· 优先消耗即将过期的积分(FIFO)</div>
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@
 
       <!-- 反作弊 -->
       <div class="ant-card p-6 mb-5">
-        <div class="text-base font-semibold text-slate-800 mb-5">🛡️ 反作弊设置</div>
+        <div class="text-base font-semibold text-slate-800 mb-5 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>反作弊设置</div>
         <div class="grid grid-cols-2 gap-5">
           <div v-for="r in risk" :key="r.title" class="flex items-center justify-between border border-slate-200 rounded p-4">
             <div>
@@ -222,7 +222,7 @@ createApp({
       items: g.items.map(it => ({ action: it.action, coin: it.coin, unit: it.unit, desc: it.desc, enabled: true }))
     })));
     const risk = reactive([
-      { title:'登录状态校验', desc:'非登录状态的行为不记金币', enabled:true, locked:true },
+      { title:'登录状态校验', desc:'非登录状态的行为不记积分', enabled:true, locked:true },
       { title:'IP 频次限制', desc:'同一 IP 每分钟最多触发 10 次行为', enabled:true },
       { title:'异常账号黑名单', desc:'系统识别的薅羊毛账号停止发放', enabled:true },
       { title:'行为日志留存', desc:'保留 180 天,供审计追溯', enabled:true }

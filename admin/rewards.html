@@ -107,7 +107,7 @@
           <h1 class="text-xl font-semibold text-slate-800">商城商品配置</h1>
           <p class="text-sm text-slate-500 mt-1">管理积分兑换型与等级直达型权益商品,支持目录、库存与上下架</p>
         </div>
-        <button class="ant-btn-primary">+ 新增商品</button>
+        <button class="ant-btn-primary inline-flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i>新增商品</button>
       </div>
 
       <div class="grid grid-cols-4 gap-4 mb-5">
@@ -135,7 +135,7 @@
             <label class="text-xs text-slate-500 block mb-1">获取方式</label>
             <select class="ant-input" v-model="filters.source">
               <option value="">全部</option>
-              <option>金币兑换</option><option>等级直达</option>
+              <option>积分兑换</option><option>等级直达</option>
             </select>
           </div>
           <div>
@@ -160,7 +160,7 @@
               <th class="text-left px-4 py-3 font-medium">权益名称</th>
               <th class="text-left px-4 py-3 font-medium">类别</th>
               <th class="text-left px-4 py-3 font-medium">获取方式</th>
-              <th class="text-right px-4 py-3 font-medium">金币价</th>
+              <th class="text-right px-4 py-3 font-medium">积分价</th>
               <th class="text-left px-4 py-3 font-medium">等级门槛</th>
               <th class="text-right px-4 py-3 font-medium">库存</th>
               <th class="text-right px-4 py-3 font-medium">已发放</th>
@@ -173,7 +173,7 @@
               <td class="px-4 py-3"><input type="checkbox" :disabled="p.status==='待启用'"></td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
-                  <div class="icon-tile" :style="{background: p.status==='待启用' ? '#cbd5e1' : p.iconBg}">{{ p.iconEmoji }}</div>
+                  <div class="icon-tile" :style="{background: p.status==='待启用' ? '#cbd5e1' : p.iconBg}"><i :data-lucide="p.icon" class="w-4 h-4"></i></div>
                   <div>
                     <div class="font-medium" :class="p.status==='待启用' ? 'text-slate-500' : 'text-slate-800'">
                       {{ p.name }}<span v-if="p.isNew" class="new-chip">新</span><span v-if="p.isTodo" class="todo-chip">待定</span>
@@ -229,7 +229,7 @@
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-const { createApp, reactive, ref, computed, onMounted } = Vue;
+const { createApp, reactive, ref, computed, onMounted, watch, nextTick } = Vue;
 createApp({
   setup() {
     const stats = [
@@ -242,21 +242,21 @@ createApp({
     const resetFilter = () => { filters.keyword=''; filters.category=''; filters.source=''; filters.level=''; };
 
     const products = reactive([
-      { code:'CAR_BID_PRICE_QUERY', name:'车辆中标价查询卡', iconEmoji:'🔍', iconBg:'linear-gradient(135deg,#38bdf8,#3b82f6)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V0+', stock:823, issued:177, status:'上架' },
-      { code:'MARKET_QUERY', name:'交易行情查询卡', iconEmoji:'📊', iconBg:'linear-gradient(135deg,#34d399,#14b8a6)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V0+', stock:'1,245', issued:498, status:'上架' },
-      { code:'HISTORY_DATA', name:'历史数据查询卡', iconEmoji:'📜', iconBg:'linear-gradient(135deg,#fbbf24,#f97316)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V1+', stock:612, issued:88, status:'上架', isNew:true },
-      { code:'RESERVE_PRICE_QUERY', name:'保留价查询卡', iconEmoji:'🎯', iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V1+', stock:480, issued:152, status:'上架', isNew:true },
-      { code:'MAINTAIN_DATA', name:'出险维保数据卡', iconEmoji:'🛠️', iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', source:'金币兑换', coin:300, levelReq:'V1+', stock:45, issued:155, status:'库存低', stockWarn:true },
-      { code:'CRASH_REPORT', name:'碰撞报告查询卡', iconEmoji:'🚗', iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V1+', stock:688, issued:312, status:'上架' },
-      { code:'DISCOUNT_95', name:'过户 9.5 折 / 复检 9.5 折', iconEmoji:'🏷️', iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', source:'金币兑换', coin:200, levelReq:'V2+', stock:128, issued:612, status:'上架' },
-      { code:'DISCOUNT_80', name:'过户 8 折 / 复检 8 折', iconEmoji:'🏷️', iconBg:'linear-gradient(135deg,#fbbf24,#eab308)', category:'交易折扣', source:'金币兑换', coin:200, levelReq:'V3+', stock:50, issued:32, status:'上架' },
-      { code:'REFUND_ONCE', name:'无理由退车 1 台卡', iconEmoji:'↩️', iconBg:'linear-gradient(135deg,#fb7185,#ef4444)', category:'额度免审', source:'金币兑换', coin:500, levelReq:'V3+', stock:32, issued:178, status:'库存低', stockWarn:true },
-      { code:'VIP_SUPPORT', name:'1V1 专属客服', iconEmoji:'🎧', iconBg:'linear-gradient(135deg,#2dd4bf,#10b981)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用' },
-      { code:'SALES_ADVISOR', name:'专属销售顾问', iconEmoji:'👨‍💼', iconBg:'linear-gradient(135deg,#60a5fa,#6366f1)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用', isNew:true },
-      { code:'DELIVERY_SERVICE', name:'代送车上门(代物流)', iconEmoji:'🚛', iconBg:'linear-gradient(135deg,#fb923c,#f59e0b)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
-      { code:'FREE_PARKING', name:'免费停车服务', iconEmoji:'🅿️', iconBg:'linear-gradient(135deg,#22d3ee,#3b82f6)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
-      { code:'SIGN_SERVICE', name:'代签名', iconEmoji:'✍️', iconBg:'', category:'专属服务', source:'', coin:'—', levelReq:'未定', stock:'—', issued:'—', status:'待启用', isTodo:true },
-      { code:'NEWBIE_PACK', name:'新人首次服务包', iconEmoji:'🎁', iconBg:'linear-gradient(135deg,#f472b6,#d946ef)', category:'新人专享', source:'金币兑换', coin:1, levelReq:'V0 专享', stock:'5,000', issued:'2,841', status:'上架' }
+      { code:'CAR_BID_PRICE_QUERY', name:'车辆中标价查询卡', icon:'search', iconBg:'linear-gradient(135deg,#38bdf8,#3b82f6)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V0+', stock:823, issued:177, status:'上架' },
+      { code:'MARKET_QUERY', name:'交易行情查询卡', icon:'bar-chart-3', iconBg:'linear-gradient(135deg,#34d399,#14b8a6)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V0+', stock:'1,245', issued:498, status:'上架' },
+      { code:'HISTORY_DATA', name:'历史数据查询卡', icon:'scroll-text', iconBg:'linear-gradient(135deg,#fbbf24,#f97316)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V1+', stock:612, issued:88, status:'上架', isNew:true },
+      { code:'RESERVE_PRICE_QUERY', name:'保留价查询卡', icon:'target', iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V1+', stock:480, issued:152, status:'上架', isNew:true },
+      { code:'MAINTAIN_DATA', name:'出险维保数据卡', icon:'wrench', iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', source:'积分兑换', coin:300, levelReq:'V1+', stock:45, issued:155, status:'库存低', stockWarn:true },
+      { code:'CRASH_REPORT', name:'碰撞报告查询卡', icon:'car-front', iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V1+', stock:688, issued:312, status:'上架' },
+      { code:'DISCOUNT_95', name:'过户 9.5 折 / 复检 9.5 折', icon:'tag', iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', source:'积分兑换', coin:200, levelReq:'V2+', stock:128, issued:612, status:'上架' },
+      { code:'DISCOUNT_80', name:'过户 8 折 / 复检 8 折', icon:'tag', iconBg:'linear-gradient(135deg,#fbbf24,#eab308)', category:'交易折扣', source:'积分兑换', coin:200, levelReq:'V3+', stock:50, issued:32, status:'上架' },
+      { code:'REFUND_ONCE', name:'无理由退车 1 台卡', icon:'undo-2', iconBg:'linear-gradient(135deg,#fb7185,#ef4444)', category:'额度免审', source:'积分兑换', coin:500, levelReq:'V3+', stock:32, issued:178, status:'库存低', stockWarn:true },
+      { code:'VIP_SUPPORT', name:'1V1 专属客服', icon:'headphones', iconBg:'linear-gradient(135deg,#2dd4bf,#10b981)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用' },
+      { code:'SALES_ADVISOR', name:'专属销售顾问', icon:'briefcase', iconBg:'linear-gradient(135deg,#60a5fa,#6366f1)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用', isNew:true },
+      { code:'DELIVERY_SERVICE', name:'代送车上门(代物流)', icon:'truck', iconBg:'linear-gradient(135deg,#fb923c,#f59e0b)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
+      { code:'FREE_PARKING', name:'免费停车服务', icon:'square-parking', iconBg:'linear-gradient(135deg,#22d3ee,#3b82f6)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
+      { code:'SIGN_SERVICE', name:'代签名', icon:'pen-line', iconBg:'', category:'专属服务', source:'', coin:'—', levelReq:'未定', stock:'—', issued:'—', status:'待启用', isTodo:true },
+      { code:'NEWBIE_PACK', name:'新人首次服务包', icon:'gift', iconBg:'linear-gradient(135deg,#f472b6,#d946ef)', category:'新人专享', source:'积分兑换', coin:1, levelReq:'V0 专享', stock:'5,000', issued:'2,841', status:'上架' }
     ]);
 
     const categoryTagCls = (c) => ({
@@ -280,6 +280,7 @@ createApp({
     const opsOpen = ref(false);
     const toggleOps = () => opsOpen.value = !opsOpen.value;
     onMounted(() => lucide.createIcons());
+    watch(filteredProducts, async () => { await nextTick(); lucide.createIcons(); });
     return { stats, filters, resetFilter, products, filteredProducts, categoryTagCls, sourceTagCls, statusTagCls, opsOpen, toggleOps };
   }
 }).mount('#app');
