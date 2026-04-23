@@ -268,6 +268,43 @@
     </div>
   </section>
 
+  <!-- 历史成交价 · 弹框 -->
+  <div v-if="showHistoryModal" class="fixed inset-0 z-50 flex items-end justify-center" @click.self="showHistoryModal = false">
+    <div class="absolute inset-0 bg-black/40" @click="showHistoryModal = false"></div>
+    <div class="relative w-full max-w-[420px] bg-white rounded-t-2xl flex flex-col" style="max-height:85vh;">
+      <!-- header -->
+      <div class="relative px-4 py-3 border-b border-slate-100 flex items-center justify-center">
+        <div class="text-[15px] font-semibold text-slate-800">历史成交价</div>
+        <button @click="showHistoryModal = false" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 当前价 -->
+      <div class="px-4 py-4 border-b border-slate-100">
+        <div class="text-[12px] text-slate-500">当前价</div>
+        <div class="text-red-500 font-bold text-[26px] leading-tight mt-1">¥{{ formatNum(car.currentPrice) }}</div>
+      </div>
+
+      <!-- 同车系 -->
+      <div class="px-4 pt-3 pb-2 text-[13px] font-semibold text-slate-700">同车系历史成交价</div>
+
+      <div class="flex-1 overflow-y-auto px-4 pb-4">
+        <div v-for="(h, i) in historyDeals" :key="i" class="flex gap-3 py-3 border-b border-slate-100 last:border-0">
+          <div class="flex-none w-20 h-20 rounded-lg bg-slate-100 flex items-center justify-center">
+            <span class="text-slate-400 text-[20px] font-bold tracking-wider">测试</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[13px] text-slate-800 font-medium leading-snug line-clamp-2">{{ h.title }}</div>
+            <div class="text-[11px] text-slate-400 mt-1">{{ h.plate }} | {{ h.regDate }} | {{ h.mileage }} | {{ h.city }}</div>
+            <div class="text-[12px] text-slate-500 mt-1">成交价 <span class="text-red-500 font-bold text-[15px]">{{ h.price }}</span><span class="text-red-500 text-[12px]">万</span></div>
+          </div>
+          <div class="flex-none text-[11px] text-slate-400 self-start">{{ h.date }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 底部出价栏 -->
   <div class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-3 pt-2 pb-3 z-40 flex items-center gap-3">
     <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 pr-1">
@@ -277,7 +314,13 @@
       <i data-lucide="heart" class="w-5 h-5"></i><span>关注</span>
     </div>
     <div class="flex-1 min-w-0">
-      <div class="text-[11px] text-slate-500 leading-none">当前价</div>
+      <div class="text-[11px] text-slate-500 leading-none flex items-center gap-2">
+        <span>当前价</span>
+        <span class="text-slate-300">|</span>
+        <button @click="showHistoryModal = true" class="inline-flex items-center gap-0.5 text-red-500 text-[11px]">
+          <i data-lucide="trending-up" class="w-3 h-3"></i><span>历史成交价</span>
+        </button>
+      </div>
       <div class="text-red-500 font-bold text-[20px] leading-tight">¥{{ formatNum(car.currentPrice) }}</div>
     </div>
     <div class="flex-none text-right pr-1">
@@ -358,6 +401,15 @@ createApp({
     const skeletonOpen = ref(true);
     const showCompactTitle = ref(false);
     const activeTab = ref('base');
+    const showHistoryModal = ref(false);
+
+    const historyDeals = [
+      { title:'上汽MAXUS 大通G50 2023款 G50 PLUS 1.5T 幸福推荐自动启航版', plate:'粤A', regDate:'2023-08', mileage:'0.58万公里', city:'广东·广州市', price:'7.25', date:'04-12' },
+      { title:'上汽MAXUS 大通G50 2023款 G50 PLUS 1.5T 幸福推荐自动启航版', plate:'沪B', regDate:'2022-11', mileage:'2.16万公里', city:'上海市', price:'6.98', date:'04-05' },
+      { title:'上汽MAXUS 大通G50 2022款 1.5T 自动豪华版', plate:'浙A', regDate:'2022-03', mileage:'3.84万公里', city:'浙江·杭州市', price:'6.52', date:'03-28' },
+      { title:'上汽MAXUS 大通G50 2023款 1.5T 自动精英版',              plate:'苏E', regDate:'2023-06', mileage:'1.12万公里', city:'江苏·苏州市', price:'7.05', date:'03-21' },
+      { title:'上汽MAXUS 大通G50 2021款 1.5T 自动舒适版',              plate:'鲁A', regDate:'2021-05', mileage:'5.76万公里', city:'山东·济南市', price:'5.80', date:'03-15' }
+    ];
     const tabs = [
       { key:'base',     label:'基本信息',  ref:'secBase' },
       { key:'license',  label:'手续及过户', ref:'secLicense' },
@@ -418,13 +470,14 @@ createApp({
       window.removeEventListener('scroll', onScroll);
     });
 
-    watch([currentImg, skeletonOpen, showCompactTitle, activeTab], () => {
+    watch([currentImg, skeletonOpen, showCompactTitle, activeTab, showHistoryModal], () => {
       nextTick(() => lucide.createIcons());
     });
 
     return {
       car, currentImg, skeletonOpen, showCompactTitle, activeTab, tabs, countdown,
       secBase, secLicense, secConfig, secReport, secPhotos,
+      showHistoryModal, historyDeals,
       pad, formatNum, nextImg, prevImg, goTab
     };
   }
