@@ -218,7 +218,7 @@
 
   <!-- 车源列表 -->
   <div class="p-2 grid grid-cols-2 gap-2 pb-20">
-    <div v-for="(car, i) in carList" :key="i" class="bg-white rounded-xl overflow-hidden">
+    <a v-for="(car, i) in carList" :key="i" :href="'car-detail.html?id=' + i" class="bg-white rounded-xl overflow-hidden block active:opacity-80">
       <img :src="car.img" class="w-full h-36 object-cover" :alt="car.name">
       <div class="p-2.5">
         <div class="text-sm font-semibold text-slate-800 leading-tight">{{ car.name }}</div>
@@ -227,7 +227,7 @@
           <span class="car-tag">{{ car.tag }}</span>
         </div>
       </div>
-    </div>
+    </a>
   </div>
 
   <!-- 底部导航 -->
