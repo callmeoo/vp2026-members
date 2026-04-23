@@ -58,12 +58,23 @@
       </div>
     </div>
 
-    <!-- Tab panel · 2 列 -->
+    <!-- Tab panel · 左侧需求说明(可选) + 右侧 2 列页面 -->
     <div class="p-3">
-      <div v-if="currentTab.items.length" class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
-        <div v-for="item in currentTab.items" :key="item.file" class="row">
-          <a :href="item.file" target="_blank" rel="noopener">{{ item.title }}</a>
-          <span class="file">{{ item.file }}</span>
+      <div v-if="currentTab.items.length || currentTab.specs" class="flex gap-4">
+        <aside v-if="currentTab.specs" class="w-52 shrink-0 border-r border-slate-200 pr-3">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-2 pb-1.5 pt-1 flex items-center gap-1.5">
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>需求说明
+          </div>
+          <div v-for="s in currentTab.specs" :key="s.title" class="row">
+            <span class="text-slate-700">{{ s.title }}</span>
+            <span class="file">{{ s.status }}</span>
+          </div>
+        </aside>
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
+          <div v-for="item in currentTab.items" :key="item.file" class="row">
+            <a :href="item.file" target="_blank" rel="noopener">{{ item.title }}</a>
+            <span class="file">{{ item.file }}</span>
+          </div>
         </div>
       </div>
       <div v-else class="empty">暂无页面 · 稍后添加</div>
@@ -86,6 +97,10 @@
       const tabs = [
         {
           key: 'app', label: '商户端(app/小程序)', icon: 'smartphone',
+          specs: [
+            { title: '原始文档', status: '待补充' },
+            { title: '需求说明', status: '待补充' },
+          ],
           items: [
             { title: 'APP 开屏广告',            file: 'app/splash.html' },
             { title: 'APP 首页',                file: 'app/home.html' },
