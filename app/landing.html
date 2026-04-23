@@ -311,10 +311,10 @@
         <div class="meta-text">获得当月起 12 个月内未用将作废 · 尽快兑换权益卡</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Section · Q&A -->
-  <div id="tab-qa" class="tab-panel" style="padding-bottom: calc(80px + env(safe-area-inset-bottom))">
+  <!-- ========== Tab 3 · Q&A ========== -->
+  <section v-show="activeTab === 'qa'" class="pt-5" style="padding-bottom: calc(80px + env(safe-area-inset-bottom))">
     <h2 class="sec-title">
       <i data-lucide="help-circle" class="w-[18px] h-[18px] text-violet-600"></i>Q&amp;A
     </h2>
@@ -334,7 +334,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 底部固定 CTA · 跟随手机壳限宽,悬浮在最上层 -->
   <div class="cta-fixed">
@@ -447,12 +447,18 @@ createApp({
     const discountMap = { LV0:'1:1', LV1:'1:1', LV2:'95 折', LV3:'8 折' };
 
     const TAB_BAR_OFFSET = 56;
+    const tabSentinel = ref(null);
+    const isStuck = ref(false);
     function switchTab(key) {
+      if (activeTab.value === key) return;
       activeTab.value = key;
-      const target = document.getElementById('tab-' + key);
-      if (!target) return;
-      const top = target.getBoundingClientRect().top + window.scrollY - TAB_BAR_OFFSET - 4;
-      window.scrollTo({ top, behavior: 'smooth' });
+      // 切 tab 时滚回 tab 栏顶部,避免内容看不见
+      const bar = document.querySelector('.tab-bar');
+      if (bar) {
+        const top = bar.getBoundingClientRect().top + window.scrollY - 4;
+        if (window.scrollY > top) window.scrollTo({ top, behavior: 'smooth' });
+      }
+      nextTick(() => window.lucide && lucide.createIcons());
     }
 
     function toggleQa(i) {
@@ -486,22 +492,19 @@ createApp({
 
     onMounted(() => {
       lucide.createIcons();
-      const io = new IntersectionObserver((entries) => {
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible.length) {
-          activeTab.value = visible[0].target.id.replace('tab-', '');
-        }
-      }, { rootMargin: '-' + (TAB_BAR_OFFSET + 20) + 'px 0px -55% 0px', threshold: 0 });
-      tabs.forEach(t => {
-        const el = document.getElementById('tab-' + t.key);
-        if (el) io.observe(el);
-      });
+      // 监听 tab 哨兵是否离开视口,用于 tab 栏悬浮态样式
+      if (tabSentinel.value) {
+        const io = new IntersectionObserver(
+          ([e]) => { isStuck.value = !e.isIntersecting; },
+          { threshold: 0 }
+        );
+        io.observe(tabSentinel.value);
+      }
     });
 
     return {
       CFG, activeTab, showShareModal, openQa, tabs, levelRows, benefitMatrix, qaList, earningTable, discountMap,
+      tabSentinel, isStuck,
       switchTab, toggleQa, back, shareToWechat, copyLink
     };
   }
