@@ -5,135 +5,147 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>唯普汽车 · 商户会员体系 · Demo 导航</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  [v-cloak] { display: none; }
   .brand-gradient { background: linear-gradient(135deg, #5b3fd9 0%, #8b5cf6 50%, #c084fc 100%); }
-  .row { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-  .row:last-child { border-bottom: 0; }
+  .tab-btn { position: relative; padding: 10px 18px; font-size: 14px; font-weight: 500; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; display:flex; align-items:center; gap:6px; }
+  .tab-btn:hover { color: #5b3fd9; }
+  .tab-btn.active { color: #5b3fd9; border-bottom-color: #5b3fd9; font-weight: 600; }
+  .tab-btn .count { font-size: 11.5px; color: #94a3b8; font-weight: 400; }
+  .tab-btn.active .count { color: #a78bfa; }
+  .row { display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 9px 14px; border-radius: 8px; font-size: 13.5px; }
   .row:hover { background: #f8fafc; }
-  .row a { color: #5b3fd9; }
+  .row a { color: #5b3fd9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row a:hover { text-decoration: underline; }
-  .file { color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
-  .section-title { display:flex; align-items:center; gap:8px; font-size: 18px; font-weight: 700; color:#0f172a; margin-bottom: 10px; }
-  .section-count { color:#94a3b8; font-size: 13px; font-weight: 400; }
-  .empty { color:#94a3b8; font-size: 13px; padding: 14px 16px; }
+  .file { color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; white-space: nowrap; }
+  .empty { color:#94a3b8; font-size: 13px; padding: 40px 0; text-align: center; }
 </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen" v-cloak>
+<div id="app">
 
-<!-- Header -->
+<!-- Header (compact) -->
 <header class="brand-gradient text-white">
-  <div class="max-w-5xl mx-auto px-6 py-10">
-    <div class="flex items-center gap-3 text-sm opacity-80 mb-3">
-      <span class="px-2 py-0.5 bg-white/20 rounded">v1.1</span>
-      <span>设计方案 · 原型 Demo</span>
+  <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
+    <div>
+      <div class="flex items-center gap-2 text-xs opacity-80 mb-1">
+        <span class="px-1.5 py-0.5 bg-white/20 rounded text-[11px]">v1.1</span>
+        <span>原型 Demo</span>
+      </div>
+      <h1 class="text-xl font-bold">唯普汽车 · 商户会员体系</h1>
     </div>
-    <h1 class="text-3xl font-bold mb-2">唯普汽车 · 商户会员体系</h1>
-    <p class="text-white/80 max-w-2xl">
-      会员等级 + 积分 + 权益体系 —— 基于滚动 3 个月成交量的 4 级会员
-      (V0~V3),配合行为激励的积分机制 + 等级直达权益,驱动商户活跃与复购。
-    </p>
-    <div class="mt-5 flex flex-wrap gap-3 text-sm">
-      <a href="docs/PRD.md" target="_blank" rel="noopener" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="file-text" class="w-4 h-4 inline mr-1"></i>PRD 文档</a>
-      <a href="docs/DB-Schema.md" target="_blank" rel="noopener" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="database" class="w-4 h-4 inline mr-1"></i>数据库设计</a>
-      <a href="docs/API.md" target="_blank" rel="noopener" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="plug" class="w-4 h-4 inline mr-1"></i>API 文档</a>
+    <div class="flex flex-wrap gap-2 text-xs">
+      <a href="docs/PRD.md" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="file-text" class="w-3.5 h-3.5 inline mr-1"></i>PRD</a>
+      <a href="docs/DB-Schema.md" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="database" class="w-3.5 h-3.5 inline mr-1"></i>DB</a>
+      <a href="docs/API.md" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="plug" class="w-3.5 h-3.5 inline mr-1"></i>API</a>
     </div>
   </div>
 </header>
 
-<main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
+<main class="max-w-6xl mx-auto px-6 py-5">
+  <!-- Tabs -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+    <div class="flex border-b border-slate-200 px-2 overflow-x-auto">
+      <div v-for="t in tabs" :key="t.key"
+           class="tab-btn"
+           :class="{ active: active === t.key }"
+           @click="active = t.key">
+        <i :data-lucide="t.icon" class="w-4 h-4"></i>
+        <span>{{ t.label }}</span>
+        <span class="count">{{ t.items.length ? t.items.length : '稍后' }}</span>
+      </div>
+    </div>
 
-  <!-- 商户端（app/小程序） -->
-  <section>
-    <div class="section-title">
-      <i data-lucide="smartphone" class="w-5 h-5"></i>
-      商户端(app / 小程序)
-      <span class="section-count">共 19 个页面</span>
+    <!-- Tab panel · 2 列 -->
+    <div class="p-3">
+      <div v-if="currentTab.items.length" class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
+        <div v-for="item in currentTab.items" :key="item.file" class="row">
+          <a :href="item.file" target="_blank" rel="noopener">{{ item.title }}</a>
+          <span class="file">{{ item.file }}</span>
+        </div>
+      </div>
+      <div v-else class="empty">暂无页面 · 稍后添加</div>
     </div>
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div class="row"><a href="app/splash.html" target="_blank" rel="noopener">APP 开屏广告</a><span class="file">app/splash.html</span></div>
-      <div class="row"><a href="app/home.html" target="_blank" rel="noopener">APP 首页</a><span class="file">app/home.html</span></div>
-      <div class="row"><a href="app/landing.html" target="_blank" rel="noopener">会员权益升级落地页</a><span class="file">app/landing.html</span></div>
-      <div class="row"><a href="app/member.html" target="_blank" rel="noopener">会员中心</a><span class="file">app/member.html</span></div>
-      <div class="row"><a href="app/coins.html" target="_blank" rel="noopener">积分明细</a><span class="file">app/coins.html</span></div>
-      <div class="row"><a href="app/level.html" target="_blank" rel="noopener">等级成长</a><span class="file">app/level.html</span></div>
-      <div class="row"><a href="app/mall.html" target="_blank" rel="noopener">权益商城</a><span class="file">app/mall.html</span></div>
-      <div class="row"><a href="app/my-rewards.html" target="_blank" rel="noopener">我的权益卡</a><span class="file">app/my-rewards.html</span></div>
-      <div class="row"><a href="app/coupons.html" target="_blank" rel="noopener">活动优惠券</a><span class="file">app/coupons.html</span></div>
-      <div class="row"><a href="app/won-orders.html" target="_blank" rel="noopener">我的订单(买到的车)</a><span class="file">app/won-orders.html</span></div>
-      <div class="row"><a href="app/won-order-detail.html" target="_blank" rel="noopener">订单详情</a><span class="file">app/won-order-detail.html</span></div>
-      <div class="row"><a href="app/car-detail.html" target="_blank" rel="noopener">车辆详情</a><span class="file">app/car-detail.html</span></div>
-      <div class="row"><a href="app/aftersale-apply.html" target="_blank" rel="noopener">申请售后</a><span class="file">app/aftersale-apply.html</span></div>
-      <div class="row"><a href="app/aftersale-approval-list.html" target="_blank" rel="noopener">售后审批列表</a><span class="file">app/aftersale-approval-list.html</span></div>
-      <div class="row"><a href="app/aftersale-approval-detail.html" target="_blank" rel="noopener">售后审批详情</a><span class="file">app/aftersale-approval-detail.html</span></div>
-      <div class="row"><a href="app/profile.html" target="_blank" rel="noopener">个人中心(未登录)</a><span class="file">app/profile.html</span></div>
-      <div class="row"><a href="app/login.html" target="_blank" rel="noopener">登录页</a><span class="file">app/login.html</span></div>
-      <div class="row"><a href="app/profile-loggedin.html" target="_blank" rel="noopener">个人中心(已登录)</a><span class="file">app/profile-loggedin.html</span></div>
-      <div class="row"><a href="app/settings.html" target="_blank" rel="noopener">设置页</a><span class="file">app/settings.html</span></div>
-    </div>
-  </section>
+  </div>
 
-  <!-- 商户端（pc） -->
-  <section>
-    <div class="section-title">
-      <i data-lucide="monitor" class="w-5 h-5"></i>
-      商户端(pc)
-      <span class="section-count">稍后添加</span>
-    </div>
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div class="empty">暂无页面</div>
-    </div>
-  </section>
-
-  <!-- BMS 后台 -->
-  <section>
-    <div class="section-title">
-      <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-      BMS 后台
-      <span class="section-count">共 18 个页面</span>
-    </div>
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div class="row"><a href="admin/dashboard.html" target="_blank" rel="noopener">运营仪表盘</a><span class="file">admin/dashboard.html</span></div>
-      <div class="row"><a href="admin/members.html" target="_blank" rel="noopener">商户档案与流水</a><span class="file">admin/members.html</span></div>
-      <div class="row"><a href="admin/bms-sales-buyers.html" target="_blank" rel="noopener">买家管理</a><span class="file">admin/bms-sales-buyers.html</span></div>
-      <div class="row"><a href="admin/bms-sales-buyer-detail.html" target="_blank" rel="noopener">买家详情</a><span class="file">admin/bms-sales-buyer-detail.html</span></div>
-      <div class="row"><a href="admin/bms-sales-orders.html" target="_blank" rel="noopener">销售订单</a><span class="file">admin/bms-sales-orders.html</span></div>
-      <div class="row"><a href="admin/sales-orders.html" target="_blank" rel="noopener">销售订单(旧版)</a><span class="file">admin/sales-orders.html</span></div>
-      <div class="row"><a href="admin/bms-orders.html" target="_blank" rel="noopener">业务数据 · 订单列表</a><span class="file">admin/bms-orders.html</span></div>
-      <div class="row"><a href="admin/bms-order-detail.html" target="_blank" rel="noopener">业务数据 · 订单详情</a><span class="file">admin/bms-order-detail.html</span></div>
-      <div class="row"><a href="admin/order-detail.html" target="_blank" rel="noopener">订单详情(旧版)</a><span class="file">admin/order-detail.html</span></div>
-      <div class="row"><a href="admin/bms-users.html" target="_blank" rel="noopener">用户列表</a><span class="file">admin/bms-users.html</span></div>
-      <div class="row"><a href="admin/bms-user-detail.html" target="_blank" rel="noopener">用户详情</a><span class="file">admin/bms-user-detail.html</span></div>
-      <div class="row"><a href="admin/level-rule.html" target="_blank" rel="noopener">等级设置</a><span class="file">admin/level-rule.html</span></div>
-      <div class="row"><a href="admin/coin-rule.html" target="_blank" rel="noopener">积分规则</a><span class="file">admin/coin-rule.html</span></div>
-      <div class="row"><a href="admin/rewards.html" target="_blank" rel="noopener">商城商品配置</a><span class="file">admin/rewards.html</span></div>
-      <div class="row"><a href="admin/bms-coin-log.html" target="_blank" rel="noopener">积分流水</a><span class="file">admin/bms-coin-log.html</span></div>
-      <div class="row"><a href="admin/bms-redeem-log.html" target="_blank" rel="noopener">兑换记录</a><span class="file">admin/bms-redeem-log.html</span></div>
-      <div class="row"><a href="admin/bms-aftersales.html" target="_blank" rel="noopener">售后服务</a><span class="file">admin/bms-aftersales.html</span></div>
-      <div class="row"><a href="admin/bms-aftersales-list.html" target="_blank" rel="noopener">售后列表</a><span class="file">admin/bms-aftersales-list.html</span></div>
-      <div class="row"><a href="admin/bms-aftersale-approval-list.html" target="_blank" rel="noopener">企微审批</a><span class="file">admin/bms-aftersale-approval-list.html</span></div>
-    </div>
-  </section>
-
-  <!-- FNC 后台 -->
-  <section>
-    <div class="section-title">
-      <i data-lucide="landmark" class="w-5 h-5"></i>
-      FNC 后台
-      <span class="section-count">稍后添加</span>
-    </div>
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div class="empty">暂无页面</div>
-    </div>
-  </section>
-
-  <footer class="mt-8 pt-6 text-center text-sm text-slate-400 border-t border-slate-200">
-    <div>唯普汽车 · 商户会员体系设计方案</div>
-    <div class="mt-1">演示数据均为模拟,用于评审会员体系规则与交互设计</div>
+  <footer class="mt-5 py-4 text-center text-xs text-slate-400">
+    唯普汽车 · 商户会员体系设计方案 · 演示数据均为模拟
   </footer>
 </main>
 
+</div>
+
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script>lucide.createIcons();</script>
+<script>
+  const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
+
+  createApp({
+    setup() {
+      const tabs = [
+        {
+          key: 'app', label: '商户端(app/小程序)', icon: 'smartphone',
+          items: [
+            { title: 'APP 开屏广告',            file: 'app/splash.html' },
+            { title: 'APP 首页',                file: 'app/home.html' },
+            { title: '会员权益升级落地页',      file: 'app/landing.html' },
+            { title: '会员中心',                file: 'app/member.html' },
+            { title: '积分明细',                file: 'app/coins.html' },
+            { title: '等级成长',                file: 'app/level.html' },
+            { title: '权益商城',                file: 'app/mall.html' },
+            { title: '我的权益卡',              file: 'app/my-rewards.html' },
+            { title: '活动优惠券',              file: 'app/coupons.html' },
+            { title: '我的订单(买到的车)',      file: 'app/won-orders.html' },
+            { title: '订单详情',                file: 'app/won-order-detail.html' },
+            { title: '车辆详情',                file: 'app/car-detail.html' },
+            { title: '申请售后',                file: 'app/aftersale-apply.html' },
+            { title: '售后审批列表',            file: 'app/aftersale-approval-list.html' },
+            { title: '售后审批详情',            file: 'app/aftersale-approval-detail.html' },
+            { title: '个人中心(未登录)',        file: 'app/profile.html' },
+            { title: '登录页',                  file: 'app/login.html' },
+            { title: '个人中心(已登录)',        file: 'app/profile-loggedin.html' },
+            { title: '设置页',                  file: 'app/settings.html' },
+          ],
+        },
+        { key: 'pc', label: '商户端(pc)', icon: 'monitor', items: [] },
+        {
+          key: 'bms', label: 'BMS 后台', icon: 'layout-dashboard',
+          items: [
+            { title: '运营仪表盘',              file: 'admin/dashboard.html' },
+            { title: '商户档案与流水',          file: 'admin/members.html' },
+            { title: '买家管理',                file: 'admin/bms-sales-buyers.html' },
+            { title: '买家详情',                file: 'admin/bms-sales-buyer-detail.html' },
+            { title: '销售订单',                file: 'admin/bms-sales-orders.html' },
+            { title: '销售订单(旧版)',          file: 'admin/sales-orders.html' },
+            { title: '业务数据 · 订单列表',     file: 'admin/bms-orders.html' },
+            { title: '业务数据 · 订单详情',     file: 'admin/bms-order-detail.html' },
+            { title: '订单详情(旧版)',          file: 'admin/order-detail.html' },
+            { title: '用户列表',                file: 'admin/bms-users.html' },
+            { title: '用户详情',                file: 'admin/bms-user-detail.html' },
+            { title: '等级设置',                file: 'admin/level-rule.html' },
+            { title: '积分规则',                file: 'admin/coin-rule.html' },
+            { title: '商城商品配置',            file: 'admin/rewards.html' },
+            { title: '积分流水',                file: 'admin/bms-coin-log.html' },
+            { title: '兑换记录',                file: 'admin/bms-redeem-log.html' },
+            { title: '售后服务',                file: 'admin/bms-aftersales.html' },
+            { title: '售后列表',                file: 'admin/bms-aftersales-list.html' },
+            { title: '企微审批',                file: 'admin/bms-aftersale-approval-list.html' },
+          ],
+        },
+        { key: 'fnc', label: 'FNC 后台', icon: 'landmark', items: [] },
+      ];
+
+      const active = ref('app');
+      const currentTab = computed(() => tabs.find(t => t.key === active.value));
+
+      const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
+      watch(active, refresh);
+      onMounted(refresh);
+
+      return { tabs, active, currentTab };
+    },
+  }).mount('#app');
+</script>
 </body>
 </html>
