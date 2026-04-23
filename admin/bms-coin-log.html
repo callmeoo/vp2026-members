@@ -74,27 +74,21 @@
     </div>
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></a>
 
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
-        <div class="sub-item">销售首页</div>
         <div class="sub-item">客户等级管理</div>
-        <div class="sub-item" onclick="location.href='bms-sales-buyers.html'">买家管理</div>
-        <div class="sub-item">B2C零售</div>
-        <div class="sub-item">门店奖励</div>
-        <div class="sub-item" onclick="location.href='bms-sales-orders.html'">销售订单</div>
-        <div class="sub-item" onclick="location.href='level-rule.html'">等级规则</div>
-        <div class="sub-item" onclick="location.href='coin-rule.html'">积分规则</div>
-        <div class="sub-item" onclick="location.href='rewards.html'">商城商品配置</div>
-        <div class="sub-item active">积分流水</div>
-        <div class="sub-item" onclick="location.href='bms-redeem-log.html'">兑换记录</div>
+        <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
+        <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
+        <a href="level-rule.html" class="sub-item">等级设置</a>
+        <a href="coin-rule.html" class="sub-item">积分规则</a>
+        <a href="rewards.html" class="sub-item">商城商品配置</a>
+        <a href="bms-coin-log.html" class="sub-item active">积分流水</a>
+        <a href="bms-redeem-log.html" class="sub-item">兑换记录</a>
       </div>
 
-      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu" style="display:none">
         <div class="sub-item">内容管理</div>
@@ -104,12 +98,6 @@
         <div class="sub-item">权益卡发放管理</div>
         <div class="sub-item">奖品投放</div>
       </div>
-      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     </nav>
   </aside>
 
@@ -144,11 +132,10 @@
     <main class="flex-1 p-3 overflow-auto">
 
       <!-- 汇总卡片 -->
-      <div class="grid grid-cols-4 gap-3 mb-3">
+      <div class="grid grid-cols-3 gap-3 mb-3">
         <div class="stat-tile bg-white"><div class="label">本月发放(积分)</div><div class="num green">+ 1,280,000</div></div>
         <div class="stat-tile bg-white"><div class="label">本月消耗(积分)</div><div class="num red">- 568,300</div></div>
         <div class="stat-tile bg-white"><div class="label">本月到期(积分)</div><div class="num">86,420</div></div>
-        <div class="stat-tile bg-white"><div class="label">流水总条数</div><div class="num">12,840</div></div>
       </div>
 
       <!-- 筛选 -->
@@ -171,14 +158,14 @@
             </div>
           </div>
           <div class="flex items-center">
-            <span class="el-label" style="width:80px">来源渠道:</span>
+            <span class="el-label" style="width:80px">行为:</span>
             <div class="el-select flex-1">
               <select>
                 <option>全部</option>
                 <option>成交奖励</option>
                 <option>转发朋友圈</option>
                 <option>出价</option>
-                <option>运营调整</option>
+                <option>人工调整</option>
                 <option>兑换扣减</option>
               </select>
             </div>
@@ -205,11 +192,9 @@
               <tr>
                 <th>流水号</th>
                 <th>用户</th>
-                <th>等级</th>
                 <th>类型</th>
-                <th>来源渠道</th>
+                <th>行为</th>
                 <th>变动积分</th>
-                <th>变动后余额</th>
                 <th>到期时间</th>
                 <th>发生时间</th>
                 <th>备注</th>
@@ -235,7 +220,7 @@
 </div>
 
 <div class="fixed top-2 right-4 z-50">
-  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50"><i data-lucide="arrow-left" class="w-3 h-3 inline -mt-0.5"></i> Demo 导航</a>
 </div>
 
 <script src="../shared/member-config.js"></script>
@@ -248,7 +233,7 @@
     { sn:"CL202604230812", user:"林子墨", phone:"186****1145", level:"V2", type:"消耗", src:"兑换扣减", delta:-500, balance:7820,  expire:"—",         time:"2026-04-23 08:12:30", note:"兑换 过户 9.5 折卡" },
     { sn:"CL202604222340", user:"陆嘉豪", phone:"158****6721", level:"V1", type:"到期", src:"系统结算", delta:-320, balance:2100,  expire:"2026-04-22", time:"2026-04-22 23:40:00", note:"2025-04 发放 · 自然到期" },
     { sn:"CL202604221842", user:"陈敏",   phone:"137****4410", level:"V2", type:"发放", src:"成交奖励", delta:+1500, balance:12600, expire:"2027-04-22", time:"2026-04-22 18:42:28", note:"订单 SO2026042205 成交奖励" },
-    { sn:"CL202604221618", user:"张晓雯", phone:"159****0032", level:"V1", type:"调整", src:"运营调整", delta:+1000, balance:4800,  expire:"2027-04-22", time:"2026-04-22 16:18:11", note:"客服工单 CS20260422#3389 补偿" },
+    { sn:"CL202604221618", user:"张晓雯", phone:"159****0032", level:"V1", type:"调整", src:"人工调整", delta:+1000, balance:4800,  expire:"2027-04-22", time:"2026-04-22 16:18:11", note:"客服工单 CS20260422#3389 补偿" },
     { sn:"CL202604221502", user:"王磊",   phone:"138****7788", level:"V2", type:"发放", src:"出价",       delta:+30,   balance:9210,  expire:"2027-04-22", time:"2026-04-22 15:02:49", note:"有效出价奖励" },
     { sn:"CL202604221340", user:"孙勇英", phone:"130****0277", level:"V2", type:"消耗", src:"兑换扣减",   delta:-800, balance:6310,  expire:"—",         time:"2026-04-22 13:40:02", note:"兑换 交易行情查询卡" },
     { sn:"CL202604220955", user:"李景文", phone:"156****8688", level:"V2", type:"发放", src:"成交奖励",   delta:+3500, balance:22400, expire:"2027-04-22", time:"2026-04-22 09:55:21", note:"订单 SO2026042201 成交奖励" }
@@ -267,11 +252,9 @@
     <tr>
       <td class="text-blue-500">${l.sn}</td>
       <td><div>${l.user}</div><div class="text-xs text-slate-400">${l.phone}</div></td>
-      <td><span class="lv-badge" style="background:${levelColor(l.level)}">${l.level}</span></td>
       <td><span class="${typeTag(l.type)}">${l.type}</span></td>
       <td>${l.src}</td>
       <td class="${l.delta > 0 ? 'amount-plus' : 'amount-minus'}">${l.delta > 0 ? '+' : ''}${l.delta.toLocaleString()}</td>
-      <td>${l.balance.toLocaleString()}</td>
       <td>${l.expire}</td>
       <td>${l.time}</td>
       <td style="text-align:left">${l.note}</td>

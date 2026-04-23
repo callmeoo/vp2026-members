@@ -7,8 +7,8 @@
 ## 一、用户协作偏好
 
 ### 决策与自治
-- **默认放手执行,不要反复确认**。包括:创建/切换分支、提交、推送、创建 PR、合并 PR、发布。
-- 任务流程默认为:**开发 → 提交 → 推送 → 创建 PR → 合并**,一气呵成,中间无需询问。
+- **默认放手执行,不要反复确认**。包括:创建/切换分支、合并main。
+- 任务流程默认为:**开发 → 合并main,一气呵成,中间无需询问。
 - 遇到破坏性操作(强推 main、删除分支、删除文件)仍然先问一句,但其余全部可以直接做。
 - 不要在每一步都列 plan 等审核;简短汇报结果即可。
 
@@ -38,7 +38,7 @@
 ```
 /
 ├─ index.html                  # Demo 导航首页
-├─ app/                        # 商户端(手机)原型 —— 紫色"滴滴会员"风格
+├─ app/                        # 商户端(手机)原型 
 │   ├─ home.html              # APP 首页
 │   ├─ member.html            # 会员中心
 │   ├─ coins.html             # 积分明细
@@ -49,13 +49,13 @@
 │   └─ orders.html / order-detail.html
 ├─ admin/                      # 运营后台(PC) —— Ant Design 风格
 │   ├─ dashboard.html         # 运营仪表盘
-│   ├─ level-rule.html        # 等级规则
+│   ├─ level-rule.html        # 等级设置(等级设定 / 等级权益 / 变更日志)
 │   ├─ coin-rule.html         # 积分规则
 │   ├─ rewards.html           # 权益卡管理
 │   ├─ members.html           # 商户档案
 │ 
-│   ├─ bms-orders.html / bms-order-detail.html   # 现网 BMS 订单复刻
-│   ├─ bms-users.html / bms-user-detail.html     # 现网 BMS 用户复刻
+│   ├─ bms-orders.html / bms-order-detail.html   #  BMS 订单
+│   ├─ bms-users.html / bms-user-detail.html     #  BMS 用户
 ├─ shared/
 │   └─ member-config.js       # 会员等级/积分/权益卡 · 全站统一数据源
 └─ docs/                       # PRD / DB Schema / API 文档
@@ -89,7 +89,7 @@
       <div class="sub-item">客户等级管理</div>
       <a href="bms-sales-buyers.html"   class="sub-item">买家管理</a>
       <a href="bms-sales-orders.html"   class="sub-item">销售订单</a>
-      <a href="level-rule.html"         class="sub-item">等级规则</a>
+      <a href="level-rule.html"         class="sub-item">等级设置</a>
       <a href="coin-rule.html"          class="sub-item">积分规则</a>
       <a href="rewards.html"            class="sub-item">商城商品配置</a>
       <a href="bms-coin-log.html"       class="sub-item">积分流水</a>
@@ -113,8 +113,8 @@
 ```
 
 规则:
-1. **菜单只能有 4 个一级项**:检测认证管理 / 业务数据 / 销售管理(展开) / 服务中心 / 运营部(可折叠)——不要再添加"政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心"等旧项。
-2. **销售管理 submenu 固定 8 项,按此顺序**:客户等级管理 / 买家管理 / 销售订单 / 等级规则 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
+1. **菜单只能有 4 个一级项**:业务数据 / 销售管理(展开) / 服务中心 / 运营部(可折叠)——不要再添加"政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心"等旧项。
+2. **销售管理 submenu 固定 8 项,按此顺序**:客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
 3. **当前页 active**:在对应 `sub-item` 上加 `active` 类;`客户等级管理` 默认没有专属页,不加 href。
 4. **运营部默认折叠**,点击展开;Vue 页使用 `opsOpen` + `toggleOps` 控制,非 Vue 页使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
 

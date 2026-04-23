@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>等级规则配置 · 唯普会员体系后台</title>
+<title>等级设置 · 唯普会员体系后台</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
@@ -33,6 +33,24 @@
   .ant-tag { display: inline-flex; align-items: center; padding: 0 7px; font-size: 12px; line-height: 20px; border-radius: 4px; }
   .ant-tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
   .lv-badge { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; font-weight:700; color:#fff; font-style:italic; letter-spacing:.5px; }
+  /* tabs */
+  .el-tabs { border-bottom: 1px solid #e4e7ed; display:flex; }
+  .el-tab { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; font-size: 14px; color: #606266; cursor: pointer; position: relative; }
+  .el-tab:hover { color: #1677ff; }
+  .el-tab.active { color: #1677ff; font-weight: 500; }
+  .el-tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #1677ff; }
+  /* 权益卡片 */
+  .bf-card { border: 1px solid #ebeef5; border-radius: 10px; overflow: hidden; background: #fff; }
+  .bf-head { padding: 14px 16px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .bf-head .lv-name { font-size: 15px; font-weight: 600; }
+  .bf-head .lv-code { font-size: 22px; font-weight: 700; opacity: .95; font-style: italic; letter-spacing: 1px; }
+  .bf-body { padding: 14px 16px; }
+  .bf-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px dashed #f0f2f5; }
+  .bf-row:last-child { border-bottom:none; }
+  .bf-row i { color:#8b5cf6; flex-shrink:0; margin-top:2px; }
+  .bf-row .bf-label { font-size:13px; color:#303133; font-weight:500; }
+  .bf-row .bf-desc { font-size:12px; color:#909399; margin-top:2px; line-height:1.45; }
+  .bf-empty { text-align:center; padding: 24px 0; color:#c0c4cc; font-size:12px; }
 </style>
 </head>
 <body>
@@ -52,7 +70,7 @@
         <div class="sub-item">客户等级管理</div>
         <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
         <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
-        <a href="level-rule.html" class="sub-item active">等级规则</a>
+        <a href="level-rule.html" class="sub-item active">等级设置</a>
         <a href="coin-rule.html" class="sub-item">积分规则</a>
         <a href="rewards.html" class="sub-item">商城商品配置</a>
         <a href="bms-coin-log.html" class="sub-item">积分流水</a>
@@ -79,7 +97,7 @@
           <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-400"></i>
           <span>销售管理</span>
           <span class="text-slate-300">/</span>
-          <span class="font-medium text-slate-700">等级规则</span>
+          <span class="font-medium text-slate-700">等级设置</span>
         </div>
       </div>
       <div class="flex items-center gap-4">
@@ -95,18 +113,24 @@
     <main class="flex-1 p-6 overflow-y-auto">
 
       <div class="mb-5">
-        <h1 class="text-xl font-semibold text-slate-800">等级规则配置</h1>
-        <p class="text-sm text-slate-500 mt-1">配置会员等级的台数门槛与评估周期。修改后将在下次结算时生效。</p>
+        <h1 class="text-xl font-semibold text-slate-800">等级设置</h1>
+        <p class="text-sm text-slate-500 mt-1">配置会员等级的台数门槛、权益规则与变更历史。</p>
       </div>
 
-      <div class="grid grid-cols-3 gap-5">
-        <!-- 左:定级门槛 -->
-        <div class="col-span-2 ant-card p-6">
+      <!-- Tabs -->
+      <div class="ant-card p-0 overflow-hidden">
+        <div class="el-tabs px-4">
+          <div v-for="t in tabs" :key="t.key"
+               :class="['el-tab', { active: activeTab === t.key }]"
+               @click="activeTab = t.key">{{ t.label }}</div>
+        </div>
+
+        <!-- 等级设定 -->
+        <div v-show="activeTab === 'setup'" class="p-6">
           <div class="flex items-center justify-between mb-5">
             <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
               <i data-lucide="ruler" class="w-5 h-5 text-violet-500"></i>定级门槛
             </div>
-            <span class="text-xs text-slate-400">口径:近 3 月累计成交台数 + 账户金额,满足任一条件即可</span>
           </div>
 
           <table class="w-full">
@@ -144,17 +168,12 @@
             </tbody>
           </table>
 
-          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-end gap-3">
-            <button class="ant-btn">取消</button>
-            <button class="ant-btn-primary">保存定级门槛</button>
-          </div>
-        </div>
-
-        <!-- 右:周期 + 分布 -->
-        <div class="space-y-5">
-          <div class="ant-card p-6">
-            <div class="text-base font-semibold text-slate-800 mb-4">🗓️ 评估周期</div>
-            <div class="space-y-4">
+          <!-- 评估周期 -->
+          <div class="mt-6 pt-5 border-t border-slate-100">
+            <div class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-violet-500"></i>评估周期
+            </div>
+            <div class="grid grid-cols-3 gap-5 max-w-4xl">
               <div>
                 <label class="text-xs text-slate-500 block mb-1.5">统计窗口(月)</label>
                 <input class="ant-input" v-model.number="period.windowMonths" type="number">
@@ -174,49 +193,75 @@
             </div>
           </div>
 
-          <div class="ant-card p-6">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="text-base">📊</span>
-              <span class="text-base font-semibold text-slate-800">等级分布概览</span>
-            </div>
-            <div class="space-y-3 text-sm">
-              <div v-for="lv in levels" :key="'dist-'+lv.code"
-                class="flex items-center justify-between p-2 rounded hover:bg-slate-50">
-                <span class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full" :style="{background: lv.color}"></span>
-                  {{ lv.short }} · {{ lv.name }}
-                </span>
-                <span class="font-semibold">{{ lv.merchantCount.toLocaleString() }}</span>
-              </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500 text-center">
-              商户数据来自 26 年 1 季度成交商户的平台成交数据
-            </div>
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-end gap-3">
+            <button class="ant-btn">取消</button>
+            <button class="ant-btn-primary">保存</button>
           </div>
         </div>
-      </div>
 
-      <!-- 历史 -->
-      <div class="ant-card p-6 mt-5">
-        <div class="text-base font-semibold text-slate-800 mb-4">📋 规则变更历史</div>
-        <table class="w-full text-sm">
-          <thead class="text-xs text-slate-500 bg-slate-50">
-            <tr>
-              <th class="text-left px-3 py-2 font-medium">变更时间</th>
-              <th class="text-left px-3 py-2 font-medium">变更内容</th>
-              <th class="text-left px-3 py-2 font-medium">操作人</th>
-              <th class="text-left px-3 py-2 font-medium">生效时间</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            <tr v-for="h in history" :key="h.at">
-              <td class="px-3 py-3 text-slate-600">{{ h.at }}</td>
-              <td class="px-3 py-3">{{ h.content }}</td>
-              <td class="px-3 py-3 text-slate-600">{{ h.by }}</td>
-              <td class="px-3 py-3 text-slate-600">{{ h.effectAt }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- 等级权益 -->
+        <div v-show="activeTab === 'benefits'" class="p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
+              <i data-lucide="gem" class="w-5 h-5 text-violet-500"></i>等级权益配置
+            </div>
+            <span class="text-xs text-slate-400">数据源:<code>shared/member-config.js</code> · 各等级权益列表</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-5">
+            <div v-for="lv in levels" :key="'bf-'+lv.code" class="bf-card">
+              <div class="bf-head" :style="{background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')'}">
+                <div>
+                  <div class="lv-name">{{ lv.name }}</div>
+                  <div class="text-xs opacity-80 mt-1">{{ lv.thresholdText }}</div>
+                </div>
+                <div class="lv-code">{{ lv.short }}</div>
+              </div>
+              <div class="bf-body">
+                <div v-if="lv.benefits.length === 0" class="bf-empty">暂无权益</div>
+                <div v-for="b in lv.benefits" :key="b.id" class="bf-row">
+                  <i :data-lucide="b.icon || 'check'" class="w-4 h-4"></i>
+                  <div class="flex-1">
+                    <div class="bf-label">{{ b.label }}</div>
+                    <div v-if="b.desc" class="bf-desc">{{ b.desc }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 text-xs text-slate-400 leading-relaxed">
+            说明:权益数据与前端商户会员中心 / 买家详情的会员卡来自同一数据源。修改 <code>shared/member-config.js</code> 后,全站生效。
+          </div>
+        </div>
+
+        <!-- 变更日志 -->
+        <div v-show="activeTab === 'history'" class="p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
+              <i data-lucide="clipboard-list" class="w-5 h-5 text-violet-500"></i>规则变更历史
+            </div>
+            <span class="text-xs text-slate-400">共 {{ history.length }} 条</span>
+          </div>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate-500 bg-slate-50">
+              <tr>
+                <th class="text-left px-3 py-2 font-medium">变更时间</th>
+                <th class="text-left px-3 py-2 font-medium">变更内容</th>
+                <th class="text-left px-3 py-2 font-medium">操作人</th>
+                <th class="text-left px-3 py-2 font-medium">生效时间</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="h in history" :key="h.at">
+                <td class="px-3 py-3 text-slate-600 whitespace-nowrap">{{ h.at }}</td>
+                <td class="px-3 py-3">{{ h.content }}</td>
+                <td class="px-3 py-3 text-slate-600">{{ h.by }}</td>
+                <td class="px-3 py-3 text-slate-600 whitespace-nowrap">{{ h.effectAt }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </main>
@@ -231,18 +276,29 @@
 <script src="../shared/member-config.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-const { createApp, reactive, ref, onMounted } = Vue;
+const { createApp, reactive, ref, watch, nextTick, onMounted } = Vue;
 createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
+    const activeTab = ref('setup');
+    const tabs = [
+      { key: 'setup',    label: '等级设定' },
+      { key: 'benefits', label: '等级权益' },
+      { key: 'history',  label: '变更日志' }
+    ];
+
     const levels = reactive(CFG.levels.map(lv => ({
       code: lv.code, short: lv.short, name: lv.name, color: lv.color,
+      gradient: lv.gradient || [lv.color, lv.color],
+      thresholdText: lv.thresholdText || '',
       merchantCount: lv.merchantCount,
+      benefits: (lv.benefits || []).map(b => ({ id: b.id, icon: b.icon, label: b.label, desc: b.desc })),
       threshold: { dealsMin: lv.threshold.dealsMin, accountMin: lv.threshold.accountMin || 0 },
       dealsMaxDisplay: (lv.threshold.dealsMax !== undefined && lv.threshold.dealsMax > 0)
         ? String(lv.threshold.dealsMax)
         : (lv.threshold.dealsMin === 0 ? '0' : '不限')
     })));
+
     const period = reactive({ windowMonths: 3, frequency: '每月 1 日凌晨滚动重算', nextAt: '2026-05-01 01:00' });
     const history = [
       { at:'2026-03-20 15:42', content:'V2 门槛从 8 台调整为 10 台', by:'运营-小王', effectAt:'2026-04-01' },
@@ -251,8 +307,10 @@ createApp({
     const opsOpen = ref(false);
     const toggleOps = () => opsOpen.value = !opsOpen.value;
 
+    watch(activeTab, () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
-    return { levels, period, history, opsOpen, toggleOps };
+
+    return { levels, period, history, opsOpen, toggleOps, activeTab, tabs };
   }
 }).mount('#app');
 </script>
