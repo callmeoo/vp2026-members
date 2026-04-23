@@ -31,7 +31,7 @@
 ## 二、项目简介 · members2026
 
 ### 定位
-唯普汽车「商户会员体系」演示站点 —— 静态 HTML 原型,用于评审会员等级、唯金币(积分)、权益卡三大体系的规则与交互。
+唯普汽车「商户会员体系」演示站点 —— 静态 HTML 原型,用于评审会员等级、积分(积分)、权益卡三大体系的规则与交互。
 
 ### 目录结构
 ```
@@ -40,7 +40,7 @@
 ├─ app/                        # 商户端(手机)原型 —— 紫色"滴滴会员"风格
 │   ├─ home.html              # APP 首页
 │   ├─ member.html            # 会员中心
-│   ├─ coins.html             # 金币明细
+│   ├─ coins.html             # 积分明细
 │   ├─ level.html             # 等级成长
 │   ├─ mall.html              # 权益商城
 │   ├─ my-rewards.html        # 我的权益卡
@@ -49,23 +49,23 @@
 ├─ admin/                      # 运营后台(PC) —— Ant Design 风格
 │   ├─ dashboard.html         # 运营仪表盘
 │   ├─ level-rule.html        # 等级规则
-│   ├─ coin-rule.html         # 金币规则
+│   ├─ coin-rule.html         # 积分规则
 │   ├─ rewards.html           # 权益卡管理
 │   ├─ members.html           # 商户档案
 │ 
 │   ├─ bms-orders.html / bms-order-detail.html   # 现网 BMS 订单复刻
 │   ├─ bms-users.html / bms-user-detail.html     # 现网 BMS 用户复刻
 ├─ shared/
-│   └─ member-config.js       # 会员等级/金币/权益卡 · 全站统一数据源
+│   └─ member-config.js       # 会员等级/积分/权益卡 · 全站统一数据源
 └─ docs/                       # PRD / DB Schema / API 文档
 ```
 
 ### 关键约定
 - **唯一数据源**: `shared/member-config.js` 导出 `window.MEMBER_CONFIG`,含 4 级会员
-  (V0 新人/V1 普通/V2 银卡/V3 金卡)及配色、门槛、权益、金币规则。
-  修改任何会员/金币规则都只改这一处。
+  (V0 新人/V1 普通/V2 银卡/V3 金卡)及配色、门槛、权益、积分规则。
+  修改任何会员/积分规则都只改这一处。
 - **配色**: V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`。
-- **金币**: 有效期 12 个自然月,按 `获得月 + 12 月` 滚动到期。
+- **积分**: 有效期 12 个自然月,按 `获得月 + 12 月` 滚动到期。
 - **等级**: 基于滚动近 3 个月成交台数 + 账户金额门槛(详情见 level-rule.html)。
 - **列表→详情 跳转**: 参照 `bms-orders.html` 模式——整行可点击,行内 `<a>` 保留原生行为,详情参数用 URLSearchParams 透传。
 
@@ -76,7 +76,7 @@
 
 | 任务 | 入口 |
 |---|---|
-| 改会员等级 / 权益 / 金币规则 | `shared/member-config.js` |
+| 改会员等级 / 权益 / 积分规则 | `shared/member-config.js` |
 | 新增运营后台页 | `admin/` + `index.html` 导航卡 |
 | 新增商户端页 | `app/` + `index.html` 导航卡 |
 | 修改 PRD / 数据库 / API 文档 | `docs/` |

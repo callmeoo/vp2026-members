@@ -57,27 +57,26 @@
     <div class="px-6 pb-8 flex items-end gap-6">
       <div class="flex-none"><div class="lv-text text-[96px] leading-none">{{ selectedLv.short }}</div></div>
       <div class="flex-1 text-white pb-3">
-        <div class="text-xs text-indigo-200 mb-3">{{ heroDate }}</div>
-        <div class="text-xs text-indigo-200">近 3 月成交 <span class="text-white font-semibold">{{ currentDeals }} 台</span> {{ heroNextHint }}</div>
-        <div class="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+        <div class="text-xs text-indigo-200" v-html="heroMain"></div>
+        <div class="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden max-w-[160px]">
           <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 transition-all duration-300" :style="{ width: heroProgress + '%' }"></div>
         </div>
-        <div class="text-[11px] mt-1.5 text-indigo-200" v-html="heroNextTip"></div>
+        <div class="text-[11px] mt-2 text-indigo-200">{{ heroDate }}</div>
       </div>
     </div>
   </div>
 
-  <!-- 我的唯金币 -->
+  <!-- 我的积分 -->
   <div class="px-4 -mt-4 relative z-10">
     <div class="card-shine rounded-2xl p-4 text-white shadow-xl">
       <div class="flex items-center justify-between mb-1">
         <div class="flex items-center gap-2">
           <i data-lucide="coins" class="w-4 h-4 text-amber-300"></i>
-          <span class="text-sm font-bold">我的唯金币</span>
+          <span class="text-sm font-bold">我的积分</span>
         </div>
         <div class="flex items-center gap-3 text-xs">
           <button @click="showCoinsSheet = true" class="flex items-center opacity-90 hover:opacity-100">
-            <i data-lucide="help-circle" class="w-3 h-3 mr-0.5"></i>金币怎么拿
+            <i data-lucide="help-circle" class="w-3 h-3 mr-0.5"></i>积分怎么拿
           </button>
           <span class="w-px h-3 bg-white/30"></span>
           <a href="coins.html" class="opacity-90 flex items-center">明细 <i data-lucide="chevron-right" class="w-3 h-3"></i></a>
@@ -86,7 +85,7 @@
       <div class="flex items-end justify-between mt-2">
         <div>
           <div class="text-3xl font-bold tracking-tight">356</div>
-          <div class="text-[11px] opacity-75 mt-0.5">30 天内 <span class="text-amber-300 font-semibold">50 金币</span> 即将过期</div>
+          <div class="text-[11px] opacity-75 mt-0.5">30 天内 <span class="text-amber-300 font-semibold">50 积分</span> 即将过期</div>
         </div>
         <a href="mall.html" class="px-4 py-2 bg-white/20 backdrop-blur rounded-full text-xs font-medium">立即兑换</a>
       </div>
@@ -96,19 +95,6 @@
   <!-- 等级权益 -->
   <div class="pb-24 lv-preview-bg pt-5">
 
-    <!-- 等级切换 Pill -->
-    <div class="px-4 mb-4">
-      <div class="flex items-center gap-1.5 bg-white rounded-full p-1 border border-violet-100 shadow-sm">
-        <button v-for="(lv, i) in CFG.levels" :key="lv.code"
-                @click="selectLevel(i)"
-                class="flex-1 py-1.5 rounded-full text-[12px] font-bold transition-all relative"
-                :style="segStyle(i)">
-          {{ lv.short }}
-          <span v-if="i === currentIdx" class="absolute -top-1 -right-0.5 w-1.5 h-1.5 rounded-full bg-violet-500 ring-2 ring-white"></span>
-        </button>
-      </div>
-    </div>
-
     <!-- 权益标题 -->
     <div class="flex items-center justify-center gap-3 px-6">
       <span class="w-1 h-1 bg-violet-300 rounded-full"></span>
@@ -116,37 +102,34 @@
       <span class="w-1 h-1 bg-violet-300 rounded-full"></span>
     </div>
 
-    <!-- 权益网格 4 列 -->
+    <!-- 权益网格 4 列(基于当前等级 benefits 动态渲染) -->
     <div class="px-4 mt-5 grid grid-cols-4 gap-y-5 gap-x-2">
-      <div v-for="b in MASTER_BENEFITS" :key="b.id" class="ben-cell">
-        <div :class="['ben-ic', selectedIdx >= b.minLv ? 'active' : 'locked']">
+      <div v-for="b in currentLv.benefits" :key="b.id" class="ben-cell">
+        <div class="ben-ic active">
           <i :data-lucide="b.icon" class="w-6 h-6"></i>
         </div>
-        <div :class="['ben-label', selectedIdx >= b.minLv ? 'text-slate-700' : 'locked']">{{ b.label }}</div>
+        <div class="ben-label text-slate-700">{{ b.label }}</div>
       </div>
     </div>
 
-    <!-- 精选推荐 -->
+    <!-- 推荐任务 -->
     <div class="px-4 mt-7">
-      <div class="flex items-center justify-center gap-2 mb-4">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-violet-400"></i>
-        <span class="text-sm font-bold text-slate-700">{{ selectedLv.short }} 会员精选推荐</span>
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-violet-400"></i>
-      </div>
-      <div class="grid grid-cols-2 gap-2.5">
-        <div v-for="(b, k) in featuredBenefits" :key="b.id" :class="['rounded-2xl p-3 text-white relative overflow-hidden shadow-sm bg-gradient-to-br', FEATURED_STYLES[k % FEATURED_STYLES.length].bg]">
-          <div class="relative z-10">
-            <div class="text-sm font-bold">{{ b.label }}</div>
-            <div class="text-[10px] opacity-85 mt-0.5 line-clamp-2 leading-snug min-h-[26px]">{{ b.desc || '' }}</div>
-            <div :class="['mt-2.5 inline-flex items-center gap-1 bg-white/95 px-2.5 py-1 rounded-full text-[11px] font-bold', FEATURED_STYLES[k % FEATURED_STYLES.length].text]">
-              <template v-if="selectedIdx > currentIdx">
-                <i data-lucide="lock" class="w-3 h-3"></i>{{ selectedLv.short }} 享
-              </template>
-              <template v-else>立即使用 ›</template>
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="px-4 pt-4 pb-1">
+          <span class="text-base font-bold text-slate-800">推荐任务</span>
+        </div>
+        <div class="divide-y divide-slate-100">
+          <div v-for="t in CFG.recommendedTasks" :key="t.id" class="px-4 py-3.5 flex items-start gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="text-[15px] font-bold text-slate-800 leading-snug">{{ t.action }}</div>
+              <div class="flex items-center flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-xs text-slate-400">
+                <span class="whitespace-nowrap">积分 <span :class="['font-bold', t.highlight ? 'text-rose-500' : 'text-violet-600']">+{{ t.points }}{{ t.unit }}</span></span>
+                <span v-if="t.desc" class="truncate">{{ t.desc }}</span>
+              </div>
             </div>
-          </div>
-          <div class="absolute -right-3 -bottom-3 text-white/15">
-            <i :data-lucide="b.icon" class="w-20 h-20"></i>
+            <button class="flex-none px-4 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-bold rounded-full whitespace-nowrap shadow-sm">
+              去完成
+            </button>
           </div>
         </div>
       </div>
@@ -185,7 +168,6 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="text-[11px] text-slate-400 text-center mt-2">近 3 个月累计成交台数 · 满足任一条件即可</div>
             </div>
             <div v-else class="px-4 pb-4 text-xs text-slate-600 leading-relaxed space-y-2" v-html="qa.a"></div>
           </div>
@@ -194,13 +176,13 @@
     </div>
   </div>
 
-  <!-- 金币怎么拿 · 底部弹窗 -->
+  <!-- 积分怎么拿 · 底部弹窗 -->
   <div v-if="showCoinsSheet" class="fixed inset-0 z-50 flex items-end justify-center" style="background:rgba(0,0,0,.5);backdrop-filter:blur(4px)" @click.self="showCoinsSheet = false">
     <div class="bg-white rounded-t-3xl w-full max-w-[420px] max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
 
       <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-none">
         <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-          <i data-lucide="coins" class="w-4 h-4 text-amber-500"></i>金币怎么拿
+          <i data-lucide="coins" class="w-4 h-4 text-amber-500"></i>积分怎么拿
         </div>
         <button @click="showCoinsSheet = false" class="text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -208,13 +190,13 @@
       </div>
 
       <div class="flex-1 overflow-y-auto pb-6">
-        <!-- 什么是唯金币 -->
+        <!-- 什么是积分 -->
         <div class="mx-4 mt-4 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200">
           <div class="flex items-center gap-2 mb-2">
             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white"><i data-lucide="coins" class="w-4 h-4"></i></div>
-            <span class="text-sm font-bold text-slate-800">什么是唯金币?</span>
+            <span class="text-sm font-bold text-slate-800">什么是积分?</span>
           </div>
-          <div class="text-xs text-slate-600 leading-relaxed">唯金币是唯普汽车平台的<strong>商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong>兑换平台权益卡</strong>或享受<strong>折扣</strong>。</div>
+          <div class="text-xs text-slate-600 leading-relaxed">积分是唯普汽车平台的<strong>商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong>兑换平台权益卡</strong>或享受<strong>折扣</strong>。</div>
         </div>
 
         <!-- 获取方式 -->
@@ -229,7 +211,7 @@
                 <tr class="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
                   <th class="p-2 text-left font-bold border-r border-white/20 w-[22%]">获取方式</th>
                   <th class="p-2 text-left font-bold border-r border-white/20">具体行为</th>
-                  <th class="p-2 text-center font-bold border-r border-white/20 w-[22%]">唯金币</th>
+                  <th class="p-2 text-center font-bold border-r border-white/20 w-[22%]">积分</th>
                   <th class="p-2 text-left font-bold w-[30%]">说明</th>
                 </tr>
               </thead>
@@ -256,7 +238,7 @@
 
           <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-3">
             <div class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-1.5"><i data-lucide="tag" class="w-4 h-4 text-rose-500"></i>按等级享兑换折扣</div>
-            <div class="text-[11px] text-slate-500 mb-3">同一张权益卡,等级越高消耗的金币越少</div>
+            <div class="text-[11px] text-slate-500 mb-3">同一张权益卡,等级越高消耗的积分越少</div>
             <div class="grid grid-cols-4 gap-2 text-center">
               <div v-for="lv in CFG.levels" :key="lv.code" class="bg-slate-50 rounded-lg py-2 px-1 border border-slate-100">
                 <div class="text-[10px] text-slate-400">{{ lv.short }} {{ lv.name }}</div>
@@ -276,7 +258,7 @@
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 text-amber-600 flex items-center justify-center mb-2"><i :data-lucide="r.icon" class="w-4 h-4"></i></div>
                 <div class="text-xs font-semibold text-slate-800 leading-tight">{{ r.name }}</div>
                 <div class="text-[10px] text-slate-400 mt-0.5 mb-1.5">{{ r.scope }}</div>
-                <span class="text-[11px] px-2 py-0.5 bg-amber-500 text-white rounded-full">{{ r.coin }} 金币</span>
+                <span class="text-[11px] px-2 py-0.5 bg-amber-500 text-white rounded-full">{{ r.coin }} 积分</span>
               </div>
             </div>
           </div>
@@ -299,6 +281,25 @@
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
+
+<!-- 模拟用户等级(仅 Demo) -->
+<div class="hidden md:block fixed top-4 right-4 z-50">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="users" class="w-3 h-3"></i>
+      <span>模拟用户身份</span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <button v-for="lv in CFG.levels" :key="lv.code"
+              @click="simulateLevel(lv.short)"
+              :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all min-w-[88px] text-left', currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-violet-400 scale-105' : 'opacity-80 hover:opacity-100']"
+              :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
+        {{ lv.short }} · {{ lv.name }}
+      </button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+  </div>
+</div>
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -310,73 +311,53 @@ const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
-    const currentDeals = 12;
-    const currentLv = CFG.getLevelByDeals(currentDeals);
-    const currentIdx = CFG.levels.indexOf(currentLv);
+    // 模拟用户当前等级(仅 Demo 用:侧边按钮可切 V0/V1/V2/V3)
+    const DEALS_PRESET = { V0: 0, V1: 1, V2: 5, V3: 12 };
+    const currentDeals = ref(12);
+    const currentLv = computed(() => CFG.getLevelByDeals(currentDeals.value));
+    const currentIdx = computed(() => CFG.levels.indexOf(currentLv.value));
 
-    const selectedIdx = ref(currentIdx);
+    const selectedIdx = ref(currentIdx.value);
+    function simulateLevel(short) {
+      currentDeals.value = DEALS_PRESET[short] ?? 0;
+      selectedIdx.value = currentIdx.value;
+    }
     const showCoinsSheet = ref(false);
     const openQa = ref(0);
 
     const selectedLv = computed(() => CFG.levels[selectedIdx.value]);
 
-    const MASTER_BENEFITS = [
-      { id:'coin_exchange', label:'唯金币兑换',   icon:'coins',        minLv:0 },
-      { id:'history_data',  label:'历史数据查询', icon:'scroll-text',  minLv:1 },
-      { id:'reserve_price', label:'保留价查询',   icon:'target',       minLv:1 },
-      { id:'sales_advisor', label:'专属销售顾问', icon:'briefcase',    minLv:1 },
-      { id:'service_1v1',   label:'1V1 客服',     icon:'headphones',   minLv:1 },
-      { id:'service_pack',  label:'服务中心权益包', icon:'package',    minLv:2 },
-      { id:'refund_1',      label:'无偿退车',     icon:'undo-2',       minLv:2 }
-    ];
-
-    const FEATURED_STYLES = [
-      { bg:'from-violet-500 to-indigo-600', text:'text-violet-600' },
-      { bg:'from-amber-500 to-orange-600',  text:'text-amber-600' },
-      { bg:'from-rose-500 to-pink-600',     text:'text-rose-600' },
-      { bg:'from-emerald-500 to-teal-600',  text:'text-emerald-600' }
-    ];
-
-    const featuredBenefits = computed(() => selectedLv.value.benefits.slice(0, 4));
-
     // Hero 动态文案
     const heroDate = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value;
-      if (idx === currentIdx) return '有效期至 2026-06-30 · ' + lv.name;
-      if (idx < currentIdx)   return '您已超越该等级 · ' + lv.name;
+      const idx = selectedIdx.value, lv = selectedLv.value, cur = currentIdx.value;
+      if (idx === cur) return lv.name + ' · 有效期至 2026-06-30';
+      if (idx < cur)   return '您已超越该等级 · ' + lv.name;
       return '暂未达到 · ' + lv.name;
     });
-    const heroNextHint = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value;
-      if (idx === currentIdx) {
+    const heroMain = computed(() => {
+      const idx = selectedIdx.value, lv = selectedLv.value, cur = currentIdx.value, deals = currentDeals.value;
+      const bold = (s) => '<span class="text-white font-semibold">' + s + '</span>';
+      const base = '近 3 月成交 ' + bold(deals + ' 台');
+      if (idx === cur) {
         const next = CFG.levels[idx + 1];
-        return next ? '/ 升 ' + next.short + ' 需 ' + next.threshold.dealsMin + ' 台' : '';
+        if (!next) return base;
+        const need = Math.max(0, next.threshold.dealsMin - deals);
+        return base + ',还需 ' + bold(need + ' 台') + ' 升 ' + bold(next.short);
       }
-      if (idx < currentIdx) return '';
-      return '/ 升 ' + lv.short + ' 需 ' + lv.threshold.dealsMin + ' 台';
-    });
-    const heroNextTip = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value;
-      if (idx === currentIdx) {
-        const next = CFG.levels[idx + 1];
-        if (!next) return '继续保持,享受金卡会员全部权益';
-        const needed = Math.max(0, (next.threshold.dealsMin || 0) - currentDeals);
-        return needed > 0
-          ? '还需成交 <span class="text-amber-300 font-semibold">' + needed + ' 台</span> 升 ' + next.short
-          : '已达 ' + next.short + ' 升级门槛';
+      if (idx < cur) {
+        return bold(lv.name) + ' · 权益已自动升级';
       }
-      if (idx < currentIdx) return '当前等级 <span class="text-amber-300 font-semibold">' + currentLv.short + '</span>,权益已自动升级';
-      const need = Math.max(0, (lv.threshold.dealsMin || 0) - currentDeals);
-      return '还需成交 <span class="text-amber-300 font-semibold">' + need + ' 台</span>可升 ' + lv.short;
+      const need = Math.max(0, (lv.threshold.dealsMin || 0) - deals);
+      return base + ',还需 ' + bold(need + ' 台') + ' 升 ' + bold(lv.short);
     });
     const heroProgress = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value;
-      if (idx === currentIdx) {
+      const idx = selectedIdx.value, lv = selectedLv.value, cur = currentIdx.value, deals = currentDeals.value;
+      if (idx === cur) {
         const next = CFG.levels[idx + 1];
-        return next ? Math.min(100, Math.round(currentDeals / next.threshold.dealsMin * 100)) : 100;
+        return next ? Math.min(100, Math.round(deals / next.threshold.dealsMin * 100)) : 100;
       }
-      if (idx < currentIdx) return 100;
-      return Math.min(100, Math.round(currentDeals / lv.threshold.dealsMin * 100));
+      if (idx < cur) return 100;
+      return Math.min(100, Math.round(deals / lv.threshold.dealsMin * 100));
     });
 
     // Q&A 列表
@@ -389,27 +370,27 @@ createApp({
       { q:'会员等级有效期多久?',   a:'<p>您的会员等级会在每月 1 日进行更新,更新后的等级有效期至当月最后一日。</p>' }
     ];
 
-    // 金币获取表
+    // 积分获取表
     const EARNING_TABLE = [
       { category:'交易', color:'bg-amber-50 text-amber-800', items:[
-        { action:'完成车辆交易',     coin:'50 金币',    desc:'成交一台车可获得,退车扣回' },
-        { action:'有效出价参与竞拍', coin:'10 金币/台', desc:'出价 1 台算 1 次,上不封顶' }
+        { action:'完成车辆交易',     coin:'50 积分',    desc:'成交一台车可获得,退车扣回' },
+        { action:'有效出价参与竞拍', coin:'10 积分/台', desc:'出价 1 台算 1 次,上不封顶' }
       ]},
       { category:'互动', color:'bg-sky-50 text-sky-800', items:[
-        { action:'参与平台投票 / 问卷 / 调研',         coin:'1-5 金币/次', desc:'' },
-        { action:'完成实名认证',                       coin:'1-5 金币/次', desc:'' },
-        { action:'首次充值保证金',                     coin:'1-5 金币/次', desc:'' },
-        { action:'转发车源并成功分享朋友圈',           coin:'1 金币',       desc:'' },
-        { action:'邀请商户完成注册 + 实名认证 + 保证金', coin:'20 金币',     desc:'双方都有金币增送,好友需完成实名 + 保证金充值' }
+        { action:'参与平台投票 / 问卷 / 调研',         coin:'1-5 积分/次', desc:'' },
+        { action:'完成实名认证',                       coin:'1-5 积分/次', desc:'' },
+        { action:'首次充值保证金',                     coin:'1-5 积分/次', desc:'' },
+        { action:'转发车源并成功分享朋友圈',           coin:'1 积分',       desc:'' },
+        { action:'邀请商户完成注册 + 实名认证 + 保证金', coin:'20 积分',     desc:'双方都有积分增送,好友需完成实名 + 保证金充值' }
       ]},
       { category:'限时活动 (不定期)', color:'bg-rose-50 text-rose-800', items:[
-        { action:'节日专属任务',         coin:'1 金币',         desc:'以具体活动通知为准' },
-        { action:'周六日出价双倍积分',   coin:'按出价金币算',   desc:'以具体活动通知为准' }
+        { action:'节日专属任务',         coin:'1 积分',         desc:'以具体活动通知为准' },
+        { action:'周六日出价双倍积分',   coin:'按出价积分算',   desc:'以具体活动通知为准' }
       ]},
       { category:'增值服务', color:'bg-violet-50 text-violet-800', items:[
-        { action:'使用唯车转',                                   coin:'1 金币',     desc:'首次下单使用后发放' },
-        { action:'使用物流 / 代驾 / 复检 / 购专业检测等服务',     coin:'5 金币/次',  desc:'按实际使用台次结算' },
-        { action:'使用平台代办服务(过户 / 年审 / 续保 / 配件)',  coin:'5 金币/次',  desc:'按实际使用台次结算' }
+        { action:'使用唯车转',                                   coin:'1 积分',     desc:'首次下单使用后发放' },
+        { action:'使用物流 / 代驾 / 复检 / 购专业检测等服务',     coin:'5 积分/次',  desc:'按实际使用台次结算' },
+        { action:'使用平台代办服务(过户 / 年审 / 续保 / 配件)',  coin:'5 积分/次',  desc:'按实际使用台次结算' }
       ]}
     ];
 
@@ -450,10 +431,10 @@ createApp({
     return {
       CFG, currentLv, currentIdx, currentDeals,
       selectedIdx, selectedLv, showCoinsSheet, openQa,
-      MASTER_BENEFITS, FEATURED_STYLES, featuredBenefits,
-      heroDate, heroNextHint, heroNextTip, heroProgress,
+      heroDate, heroMain, heroProgress,
       qaList, EARNING_TABLE, discountMap,
-      selectLevel, segStyle, lvRange, toggleQa, back
+      selectLevel, segStyle, lvRange, toggleQa, back,
+      simulateLevel
     };
   }
 }).mount('#app');

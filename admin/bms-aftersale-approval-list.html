@@ -5,124 +5,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>企微审批 · 唯普汽车</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
-
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+  [v-cloak] { display:none; }
   .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
   .ant-sider .logo { background: #263445; }
   .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
   .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
   .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
-  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
-  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
   .ant-sider .menu-item.active { background: #409eff; color: #fff; }
-  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
-  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
-  .ant-sider .submenu { background: #1f2d3d; }
-  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
-  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
-
   .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
   .breadcrumb-current { color: #303133; font-weight: 500; }
-
   .page-toolbar { background: #fff; padding: 10px 16px; border-bottom: 1px solid #e4e7ed; display: flex; align-items: center; gap: 12px; }
   .tb-tab { padding: 6px 14px; border-radius: 4px; font-size: 13px; color: #606266; cursor: pointer; border: 1px solid transparent; }
   .tb-tab.active { background: #ecf5ff; color: #409eff; border-color: #b3d8ff; }
   .tb-spacer { flex: 1; }
   .tb-meta { color: #909399; font-size: 12px; display: flex; align-items: center; gap: 6px; }
-
   .preview-stage { padding: 24px; display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
-  .phone-frame {
-    position: relative;
-    width: 380px; height: 780px;
-    background: #1a1a1a;
-    border-radius: 40px;
-    padding: 14px;
-    box-shadow: 0 24px 60px rgba(0,0,0,.25);
-  }
-  .phone-frame::before {
-    content: ""; position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
-    width: 110px; height: 22px; background: #1a1a1a; border-radius: 14px; z-index: 2;
-  }
-  .phone-screen {
-    width: 100%; height: 100%;
-    background: #fff;
-    border-radius: 28px;
-    overflow: hidden;
-    position: relative;
-  }
-  .phone-screen iframe {
-    width: 100%; height: 100%; border: 0; display: block;
-  }
-  .phone-caption {
-    text-align: center; margin-top: 14px; font-size: 13px; color: #606266;
-  }
+  .phone-frame { position: relative; width: 380px; height: 780px; background: #1a1a1a; border-radius: 40px; padding: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.25); }
+  .phone-frame::before { content: ""; position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 110px; height: 22px; background: #1a1a1a; border-radius: 14px; z-index: 2; }
+  .phone-screen { width: 100%; height: 100%; background: #fff; border-radius: 28px; overflow: hidden; position: relative; }
+  .phone-screen iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .phone-caption { text-align: center; margin-top: 14px; font-size: 13px; color: #606266; }
   .phone-caption .sub { color: #909399; font-size: 11px; margin-top: 2px; }
-
-  .info-banner {
-    background: #ecf5ff; border: 1px solid #b3d8ff; color: #409eff;
-    padding: 10px 14px; margin: 16px 24px 0; border-radius: 4px;
-    display: flex; align-items: center; gap: 8px; font-size: 12px;
-  }
+  .info-banner { background: #ecf5ff; border: 1px solid #b3d8ff; color: #409eff; padding: 10px 14px; margin: 16px 24px 0; border-radius: 4px; display: flex; align-items: center; gap: 8px; font-size: 12px; }
 </style>
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
 
-  <!-- Sider -->
   <aside class="ant-sider flex flex-col">
     <div class="logo h-14 flex flex-col items-center justify-center">
       <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
       <div class="brand-sub">www.chevip.com</div>
     </div>
     <nav class="flex-1 overflow-y-auto">
-      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="location.href='bms-sales-orders.html'"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="location.href='bms-aftersales.html'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item active"><i data-lucide="message-square-check" class="w-4 h-4"></i><span>企微审批</span></div>
-      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span></a>
+      <a href="bms-sales-orders.html" class="menu-item"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span></a>
+      <a href="bms-aftersales.html" class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span></a>
+      <div class="menu-item active"><i data-lucide="message-square" class="w-4 h-4"></i><span>企微审批</span></div>
     </nav>
   </aside>
 
-  <!-- Main -->
   <div class="flex-1 flex flex-col min-w-0">
     <header class="ant-header flex items-center justify-between px-4">
-      <div class="flex items-center gap-4 text-sm text-slate-600">
-        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
-        <div class="flex items-center gap-1">
-          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span>首页</span>
-          <span class="text-slate-300 mx-1">/</span>
-          <span class="breadcrumb-current">企微审批</span>
-        </div>
+      <div class="flex items-center gap-1 text-sm text-slate-600">
+        <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i><span>首页</span>
+        <span class="text-slate-300 mx-1">/</span><span class="breadcrumb-current">企微审批</span>
       </div>
-      <div class="flex items-center gap-4">
-        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
-        <div class="flex items-center gap-2 cursor-pointer">
-          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
-            <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
-          </div>
-          <span class="text-sm text-slate-600">ylj</span>
-          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
-        </div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+        <span>ylj</span>
       </div>
     </header>
 
-    <!-- Toolbar -->
     <div class="page-toolbar">
-      <span class="tb-tab active" data-view="list">售后申请列表</span>
-      <span class="tb-tab" data-view="detail">售后审批详情</span>
+      <span v-for="t in tabs" :key="t.key" :class="['tb-tab', { active: view === t.key }]" @click="view = t.key">{{ t.label }}</span>
       <div class="tb-spacer"></div>
       <span class="tb-meta"><i data-lucide="smartphone" class="w-3.5 h-3.5"></i>企微 H5 审批 · 移动端实时预览</span>
     </div>
@@ -134,18 +75,18 @@
 
     <main class="flex-1 overflow-auto">
       <div class="preview-stage">
-        <div>
+        <div v-show="view === 'list'">
           <div class="phone-frame">
-            <div class="phone-screen"><iframe id="phoneList" src="../app/aftersale-approval-list.html"></iframe></div>
+            <div class="phone-screen"><iframe src="../app/aftersale-approval-list.html"></iframe></div>
           </div>
           <div class="phone-caption">
             审批人端 · 售后申请列表
             <div class="sub">客服主管 / 区域经理 / 售后经理等审批人首页</div>
           </div>
         </div>
-        <div>
+        <div v-show="view === 'detail'">
           <div class="phone-frame">
-            <div class="phone-screen"><iframe id="phoneDetail" src="../app/aftersale-approval-detail.html?id=su-a3333"></iframe></div>
+            <div class="phone-screen"><iframe src="../app/aftersale-approval-detail.html?id=su-a3333"></iframe></div>
           </div>
           <div class="phone-caption">
             审批人端 · 售后审批详情
@@ -160,24 +101,23 @@
 <div class="fixed top-2 right-4 z-50">
   <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  lucide.createIcons();
+const { createApp, ref, onMounted } = Vue;
 
-  document.querySelectorAll('.tb-tab').forEach(t => t.addEventListener('click', () => {
-    document.querySelectorAll('.tb-tab').forEach(x => x.classList.toggle('active', x === t));
-    const view = t.dataset.view;
-    const stage = document.querySelector('.preview-stage');
-    stage.style.justifyContent = 'center';
-    const frames = stage.querySelectorAll('.phone-frame');
-    const caps = stage.querySelectorAll('.phone-caption');
-    if (view === 'list') {
-      frames[0].parentElement.style.display = ''; frames[1].parentElement.style.display = 'none';
-    } else {
-      frames[0].parentElement.style.display = 'none'; frames[1].parentElement.style.display = '';
-    }
-  }));
+createApp({
+  setup() {
+    const view = ref('list');
+    const tabs = [
+      { key:'list',   label:'售后申请列表' },
+      { key:'detail', label:'售后审批详情' }
+    ];
+    onMounted(() => lucide.createIcons());
+    return { view, tabs };
+  }
+}).mount('#app');
 </script>
 </body>
 </html>

@@ -7,41 +7,97 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background:#1a0e3d; }
-  .phone-shell { max-width:420px; margin:0 auto; min-height:100vh; background:#f8fafc; position:relative; }
-  @media (min-width:768px) { body { background:#f5f5f7; padding:24px 0; } .phone-shell { border-radius:40px; box-shadow:0 20px 60px rgba(0,0,0,.2); overflow:hidden; } }
-  [v-cloak] { display:none; }
+  /* ───────────────────────────────────
+     移动端字号规范(对标 iOS HIG):
+       Large Title   28 / 800
+       Title 1       22 / 700
+       Title 2       20 / 700
+       Headline      17 / 600   ← 章节标题
+       Body          16 / 500   ← 正文
+       Callout       15 / 500
+       Subhead       14 / 500
+       Footnote      13 / 500
+       Caption       12 / 500   ← 极限下限
+     可点击区 ≥ 44×44
+     ─────────────────────────────────── */
 
-  .hero-bg { background: linear-gradient(180deg, #2e1065 0%, #4c1d95 60%, #f8fafc 100%); }
-  .hero-title { background: linear-gradient(180deg,#fef3c7,#fbbf24 50%,#f59e0b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; font-weight:900; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #1a0e3d; font-size: 16px; color: #1e293b; line-height: 1.5; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #fff; position: relative; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
 
-  /* 等级胶囊 */
-  .lv-v0 { background: linear-gradient(135deg,#94a3b8,#64748b); color:#fff; }
-  .lv-v1 { background: linear-gradient(135deg,#38bdf8,#0ea5e9); color:#fff; }
-  .lv-v2 { background: linear-gradient(135deg,#a78bfa,#8b5cf6); color:#fff; }
-  .lv-v3 { background: linear-gradient(135deg,#fbbf24,#f59e0b); color:#fff; }
+  /* Hero · 紫色系(与 member.html 一致) */
+  .hero-bg {
+    background:
+      radial-gradient(ellipse at top left,  #8b5cf6 0%, transparent 50%),
+      radial-gradient(ellipse at top right, #6366f1 0%, transparent 50%),
+      linear-gradient(180deg, #2e1065 0%, #1e1b4b 60%, #f8fafc 100%);
+  }
+  .hero-title {
+    background: linear-gradient(180deg, #fff 0%, #e0e7ff 50%, #a5b4fc 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 900; letter-spacing: -1px;
+    font-size: 30px; line-height: 1.15;
+  }
+  .hero-subtitle { font-size: 15px; line-height: 1.5; }
 
-  .main-tab { flex:1; padding:12px 0; text-align:center; font-size:13px; font-weight:600; color:#64748b; position:relative; cursor:pointer; transition:color .2s; }
-  .main-tab.active { color:#7c3aed; }
-  .main-tab.active::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:28px; height:3px; background:linear-gradient(90deg,#8b5cf6,#6366f1); border-radius:3px; }
+  /* 顶部 Nav · 标题 17 */
+  .nav-title { font-size: 17px; font-weight: 600; }
 
-  .matrix { font-size:11px; }
-  .matrix .hd { background: linear-gradient(to right, #f59e0b, #f97316); color:#fff; font-weight:700; }
-  .matrix .cell { padding:10px 4px; text-align:center; }
-  .matrix .row { border-bottom:1px solid #fef3c7; }
-  .matrix .row:nth-child(even) { background:#fffbeb; }
-  .matrix .row:last-child { border-bottom:none; }
-  .matrix .tickG { color:#f59e0b; font-weight:800; }
-  .matrix .tickV { color:#8b5cf6; font-weight:800; }
-  .matrix .tickB { color:#0ea5e9; font-weight:700; }
-  .matrix .locked { color:#94a3b8; font-size:9.5px; display:inline-flex; align-items:center; gap:2px; }
-  .matrix .locked svg { width:10px; height:10px; }
+  /* 等级胶囊(仅 3 色系 + 灰) */
+  .lv-v0 { background: linear-gradient(135deg,#94a3b8,#64748b); color: #fff; }
+  .lv-v1 { background: linear-gradient(135deg,#a5b4fc,#818cf8); color: #fff; }
+  .lv-v2 { background: linear-gradient(135deg,#a78bfa,#8b5cf6); color: #fff; }
+  .lv-v3 { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #fff; }
 
-  .sec-title { padding: 20px 16px 10px; font-size: 20px; font-weight: 900; color: #1e293b; display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
+  /* Tab 栏 · 字号 15 / 高度 48 满足 ≥44 触摸 */
+  .main-tab { flex: 1; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 15px; font-weight: 600; color: #64748b; position: relative; cursor: pointer; transition: color .2s; }
+  .main-tab.active { color: #7c3aed; }
+  .main-tab.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 28px; height: 2px; background: #8b5cf6; border-radius: 2px; }
 
-  .qa-toggle { cursor:pointer; }
-  .qa-answer { max-height:0; overflow:hidden; transition: max-height .3s ease; }
-  .qa-answer.open { max-height:600px; }
+  /* Section 标题 · 17 Headline */
+  .sec-title { padding: 20px 16px 12px; font-size: 17px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px; letter-spacing: -.2px; }
+
+  /* 子标题 · 15 */
+  .sub-title { font-size: 15px; font-weight: 600; color: #1e293b; }
+
+  /* 正文 · 15 */
+  .body-text { font-size: 15px; color: #475569; line-height: 1.6; }
+
+  /* 辅助文字 · 13 */
+  .meta-text { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+  /* Caption · 12(页面最小号) */
+  .cap-text { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+
+  /* 权益对比矩阵 */
+  .matrix { font-size: 13px; }
+  .matrix .hd { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); color: #fff; font-weight: 600; font-size: 14px; }
+  .matrix .cell { padding: 12px 6px; text-align: center; line-height: 1.35; }
+  .matrix .row { border-bottom: 1px solid #f1f5f9; }
+  .matrix .row:nth-child(even) { background: #f8fafc; }
+  .matrix .row:last-child { border-bottom: none; }
+  .matrix .tick-amber  { color: #f59e0b; font-weight: 700; }
+  .matrix .tick-violet { color: #8b5cf6; font-weight: 700; }
+  .matrix .tick-slate  { color: #64748b; font-weight: 600; }
+  .matrix .locked { color: #94a3b8; font-size: 12px; display: inline-flex; align-items: center; gap: 3px; }
+  .matrix .locked svg { width: 12px; height: 12px; }
+
+  /* 积分获取表 */
+  .earn-table { font-size: 13px; line-height: 1.4; }
+  .earn-table th { padding: 10px 8px; font-size: 13px; font-weight: 600; }
+  .earn-table td { padding: 10px 8px; vertical-align: top; }
+
+  /* Q&A */
+  .qa-toggle { cursor: pointer; min-height: 52px; }
+  .qa-answer { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .qa-answer.open { max-height: 600px; }
+
+  /* 按钮 · 字号 16,高度 48 */
+  .btn-primary { height: 48px; font-size: 16px; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -51,137 +107,124 @@
 
   <!-- Hero -->
   <div class="hero-bg pt-2">
-    <div class="flex items-center justify-between px-5 py-2 text-white text-sm">
+    <div class="flex items-center justify-between px-5 py-2 text-white" style="font-size:14px">
       <span>9:41</span>
-      <span class="flex items-center gap-1"><i data-lucide="wifi" class="w-3 h-3"></i><i data-lucide="battery-full" class="w-3 h-3"></i></span>
+      <span class="flex items-center gap-1">
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="battery-full" class="w-3.5 h-3.5"></i>
+      </span>
     </div>
-    <div class="flex items-center justify-between px-5 pb-2">
-      <button type="button" @click="back" class="text-white cursor-pointer"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
-      <button @click="showShareModal = true" class="text-white/80 text-xs flex items-center gap-1"><i data-lucide="share-2" class="w-3.5 h-3.5"></i></button>
+    <div class="flex items-center justify-between px-4 pb-2" style="min-height:44px">
+      <button type="button" @click="back" class="text-white cursor-pointer p-1"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+      <span class="text-white nav-title">会员权益介绍</span>
+      <button @click="showShareModal = true" class="text-white/90 p-1"><i data-lucide="share-2" class="w-5 h-5"></i></button>
     </div>
-    <div class="px-6 pt-4 pb-8 text-center">
-      <div class="inline-block text-amber-300 mb-3"><i data-lucide="crown" class="w-12 h-12" style="stroke-width:1.5"></i></div>
-      <h1 class="hero-title text-3xl mb-1">会员权益重磅上线</h1>
-      <p class="text-sm text-indigo-200/90">出价有奖 · 成交返金 · 权益直达</p>
+
+    <div class="px-6 pt-6 pb-10 text-center">
+      <div class="inline-flex w-16 h-16 rounded-2xl bg-white/10 backdrop-blur items-center justify-center text-amber-300 mb-4">
+        <i data-lucide="crown" class="w-10 h-10" style="stroke-width:1.6"></i>
+      </div>
+      <h1 class="hero-title mb-2">会员权益重磅上线</h1>
+      <p class="hero-subtitle text-indigo-200">出价有奖 · 成交返金 · 权益直达</p>
     </div>
   </div>
 
-  <!-- Tab 栏 sticky -->
+  <!-- Tab 栏 -->
   <div class="sticky top-0 z-30 bg-white border-b border-slate-100 shadow-sm">
     <div class="flex">
       <div v-for="t in tabs" :key="t.key"
            :class="['main-tab', { active: activeTab === t.key }]"
            @click="switchTab(t.key)">
-        <i :data-lucide="t.icon" class="w-3.5 h-3.5 inline align-text-bottom mr-1"></i>{{ t.label }}
+        <i :data-lucide="t.icon" class="w-4 h-4"></i><span>{{ t.label }}</span>
       </div>
     </div>
   </div>
 
   <!-- Section · 会员等级 -->
-  <div id="tab-levels" class="tab-panel pb-6">
+  <div id="tab-levels" class="tab-panel pb-2">
     <h2 class="sec-title">
-      <i data-lucide="layers" class="w-5 h-5 text-violet-600"></i>会员等级
+      <i data-lucide="layers" class="w-[18px] h-[18px] text-violet-600"></i>会员等级
     </h2>
-    <div class="px-4 mt-1">
+    <div class="px-4">
       <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm matrix bg-white">
-        <div class="grid grid-cols-[1fr_2.4fr] hd text-white">
-          <div class="cell font-black">等级</div>
-          <div class="cell font-bold">定级门槛</div>
+        <div class="grid grid-cols-[1fr_2.4fr] hd">
+          <div class="cell">等级</div>
+          <div class="cell">定级门槛</div>
         </div>
         <div v-for="lv in levelRows" :key="lv.code" class="grid grid-cols-[1fr_2.4fr] row">
-          <div class="cell"><div :class="['inline-block px-2.5 py-0.5 rounded text-[11px] font-black', lv.css]">{{ lv.short }}</div></div>
-          <div class="cell text-left px-3 text-slate-600" v-html="lv.threshold"></div>
+          <div class="cell">
+            <div :class="['inline-block px-2.5 py-1 rounded font-black', lv.css]" style="font-size:13px">{{ lv.short }}</div>
+          </div>
+          <div class="cell text-left px-3" style="color:#475569;font-size:13px;line-height:1.55" v-html="lv.threshold"></div>
         </div>
       </div>
+      <div class="cap-text text-center mt-2">近 3 个月累计成交台数 · 每月 1 日更新</div>
     </div>
   </div>
 
   <!-- Section · 会员权益 -->
-  <div id="tab-benefits" class="tab-panel pb-6">
+  <div id="tab-benefits" class="tab-panel pb-2">
     <h2 class="sec-title">
-      <i data-lucide="shield-check" class="w-5 h-5 text-violet-600"></i>会员权益
+      <i data-lucide="shield-check" class="w-[18px] h-[18px] text-violet-600"></i>会员权益
     </h2>
-    <div class="px-4 mt-1">
+    <div class="px-4">
       <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm matrix bg-white">
-        <div class="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr] hd text-white">
-          <div class="cell font-bold">权益类目</div>
-          <div class="cell font-black">V0</div>
-          <div class="cell font-black">V1</div>
-          <div class="cell font-black">V2</div>
-          <div class="cell font-black">V3</div>
+        <div class="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr] hd">
+          <div class="cell">权益类目</div>
+          <div class="cell">V0</div>
+          <div class="cell">V1</div>
+          <div class="cell">V2</div>
+          <div class="cell">V3</div>
         </div>
         <div v-for="(row, i) in benefitMatrix" :key="i" class="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr] row">
-          <div class="cell text-left px-2 text-slate-700 font-medium">{{ row.label }}</div>
+          <div class="cell text-left px-3" style="color:#334155;font-weight:500">{{ row.label }}</div>
           <div v-for="(v, j) in row.values" :key="j" class="cell" v-html="v"></div>
         </div>
       </div>
-      <div class="text-[10px] text-slate-400 text-center mt-2">以上权益以实际页面展示为准,平台保留调整权</div>
+      <div class="cap-text text-center mt-2">以实际页面展示为准,平台保留调整权</div>
     </div>
   </div>
 
-  <!-- Section · Q&A -->
-  <div id="tab-qa" class="tab-panel pb-6">
+  <!-- Section · 积分 -->
+  <div id="tab-coins" class="tab-panel pb-2">
     <h2 class="sec-title">
-      <i data-lucide="help-circle" class="w-5 h-5 text-violet-600"></i>Q&amp;A
-    </h2>
-    <div class="px-4 mt-1">
-      <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 divide-y divide-slate-100">
-        <div v-for="(qa, i) in qaList" :key="i">
-          <div class="qa-toggle flex items-center justify-between p-4" @click="toggleQa(i)">
-            <span class="text-sm font-semibold text-slate-800">{{ i + 1 }}. {{ qa.q }}</span>
-            <span class="text-slate-400 text-sm transition-transform duration-300"
-                  :style="{ transform: openQa === i ? 'rotate(180deg)' : '' }">
-              <i data-lucide="chevron-down" class="w-4 h-4"></i>
-            </span>
-          </div>
-          <div :class="['qa-answer', { open: openQa === i }]">
-            <div class="px-4 pb-4 text-xs text-slate-600 leading-relaxed space-y-2" v-html="qa.a"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section · 唯金币 -->
-  <div id="tab-coins" class="tab-panel pb-28">
-    <h2 class="sec-title">
-      <i data-lucide="coins" class="w-5 h-5 text-amber-500"></i>唯金币
+      <i data-lucide="coins" class="w-[18px] h-[18px] text-amber-500"></i>积分
     </h2>
 
-    <!-- 什么是唯金币 -->
-    <div class="mx-4 mt-1 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200">
+    <!-- 什么是积分 -->
+    <div class="mx-4 p-4 rounded-2xl bg-amber-50 border border-amber-200">
       <div class="flex items-center gap-2 mb-2">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white"><i data-lucide="coins" class="w-4 h-4"></i></div>
-        <span class="text-sm font-bold text-slate-800">什么是唯金币?</span>
+        <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white"><i data-lucide="coins" class="w-4 h-4"></i></div>
+        <span class="sub-title">什么是积分?</span>
       </div>
-      <div class="text-xs text-slate-600 leading-relaxed">
-        唯金币是唯普汽车平台的<strong>商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong>兑换平台权益卡</strong>或享受<strong>折扣</strong>。
+      <div class="body-text">
+        积分是唯普汽车平台的<strong style="color:#1e293b">商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong style="color:#1e293b">兑换平台权益卡</strong>或享受<strong style="color:#1e293b">折扣</strong>。
       </div>
     </div>
 
     <!-- 获取方式表 -->
     <div class="px-4 mt-5">
       <div class="flex items-center gap-2 mb-3">
-        <div class="h-4 w-0.5 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"></div>
-        <span class="text-sm font-bold text-slate-800">获取方式</span>
+        <div class="h-4 w-1 bg-amber-500 rounded-full"></div>
+        <span class="sub-title">获取方式</span>
       </div>
       <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-        <table class="w-full text-[11px] border-collapse">
+        <table class="w-full earn-table border-collapse">
           <thead>
-            <tr class="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-              <th class="p-2 text-left font-bold border-r border-white/20 w-[22%]">获取方式</th>
-              <th class="p-2 text-left font-bold border-r border-white/20">具体行为</th>
-              <th class="p-2 text-center font-bold border-r border-white/20 w-[22%]">唯金币</th>
-              <th class="p-2 text-left font-bold w-[30%]">说明</th>
+            <tr class="bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+              <th class="text-left border-r border-white/20" style="width:22%">类别</th>
+              <th class="text-left border-r border-white/20">具体行为</th>
+              <th class="text-center border-r border-white/20" style="width:22%">积分</th>
+              <th class="text-left" style="width:30%">说明</th>
             </tr>
           </thead>
           <tbody>
             <template v-for="g in earningTable" :key="g.category">
               <tr v-for="(it, i) in g.items" :key="it.action" class="border-b border-slate-100 last:border-0">
-                <td v-if="i === 0" :rowspan="g.items.length" :class="['p-2 align-middle text-center border-r border-slate-200 font-bold leading-snug', g.color]">{{ g.category }}</td>
-                <td class="p-2 align-top border-r border-slate-100 text-slate-700 leading-snug">{{ it.action }}</td>
-                <td class="p-2 align-top border-r border-slate-100 text-center text-amber-600 font-black whitespace-nowrap">{{ it.coin }}</td>
-                <td class="p-2 align-top text-slate-500 leading-snug">{{ it.desc || '—' }}</td>
+                <td v-if="i === 0" :rowspan="g.items.length" class="align-middle text-center border-r border-slate-200 font-semibold bg-slate-50" style="color:#334155">{{ g.category }}</td>
+                <td class="border-r border-slate-100" style="color:#334155">{{ it.action }}</td>
+                <td class="text-center border-r border-slate-100 font-bold whitespace-nowrap" style="color:#d97706">{{ it.coin }}</td>
+                <td style="color:#64748b">{{ it.desc || '—' }}</td>
               </tr>
             </template>
           </tbody>
@@ -192,53 +235,80 @@
     <!-- 消耗方式 -->
     <div class="px-4 mt-5">
       <div class="flex items-center gap-2 mb-3">
-        <div class="h-4 w-0.5 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full"></div>
-        <span class="text-sm font-bold text-slate-800">消耗方式</span>
+        <div class="h-4 w-1 bg-violet-500 rounded-full"></div>
+        <span class="sub-title">消耗方式</span>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-3">
-        <div class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-1.5"><i data-lucide="tag" class="w-4 h-4 text-rose-500"></i>按等级享兑换折扣</div>
-        <div class="text-[11px] text-slate-500 mb-3">同一张权益卡,等级越高消耗的金币越少</div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-3">
+        <div class="sub-title mb-1 flex items-center gap-1.5">
+          <i data-lucide="tag" class="w-4 h-4 text-violet-500"></i>按等级享兑换折扣
+        </div>
+        <div class="meta-text mb-3">同一张权益卡,等级越高消耗的积分越少</div>
         <div class="grid grid-cols-4 gap-2 text-center">
-          <div v-for="lv in CFG.levels" :key="lv.code" class="bg-slate-50 rounded-lg py-2 px-1 border border-slate-100">
-            <div class="text-[10px] text-slate-400">{{ lv.short }} {{ lv.name }}</div>
-            <div class="text-sm font-bold mt-0.5" :style="{ color: lv.color }">{{ discountMap[lv.code] || '1:1' }}</div>
+          <div v-for="lv in CFG.levels" :key="lv.code" class="bg-slate-50 rounded-lg py-2.5 px-1 border border-slate-100">
+            <div class="cap-text">{{ lv.short }} {{ lv.name }}</div>
+            <div class="font-bold mt-1" :style="{ color: lv.color, fontSize: '16px' }">{{ discountMap[lv.code] || '1:1' }}</div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-sm font-semibold text-slate-800 flex items-center gap-1.5"><i data-lucide="shopping-bag" class="w-4 h-4 text-rose-500"></i>可兑换权益卡</div>
-          <a href="mall.html" class="text-xs text-rose-500 flex items-center">去商城 <i data-lucide="chevron-right" class="w-3 h-3"></i></a>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+        <div class="flex items-center justify-between mb-1">
+          <div class="sub-title flex items-center gap-1.5">
+            <i data-lucide="shopping-bag" class="w-4 h-4 text-violet-500"></i>可兑换权益卡
+          </div>
+          <a href="mall.html" class="text-violet-600 flex items-center" style="font-size:13px">去商城 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
         </div>
-        <div class="text-[11px] text-slate-500 mb-3">所有等级商户均可兑换(按等级享折扣)</div>
+        <div class="meta-text mb-3">所有等级均可兑换,按等级享折扣</div>
         <div class="grid grid-cols-2 gap-2">
-          <div v-for="r in CFG.redeemableRewards" :key="r.id" class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-3 border border-slate-100">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 text-amber-600 flex items-center justify-center mb-2"><i :data-lucide="r.icon" class="w-4 h-4"></i></div>
-            <div class="text-xs font-semibold text-slate-800 leading-tight">{{ r.name }}</div>
-            <div class="text-[10px] text-slate-400 mt-0.5 mb-1.5">{{ r.scope }}</div>
-            <span class="text-[11px] px-2 py-0.5 bg-amber-500 text-white rounded-full">{{ r.coin }} 金币</span>
+          <div v-for="r in CFG.redeemableRewards" :key="r.id" class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mb-2"><i :data-lucide="r.icon" class="w-4 h-4"></i></div>
+            <div class="font-semibold leading-snug" style="font-size:14px;color:#1e293b">{{ r.name }}</div>
+            <div class="cap-text mt-1 mb-2">{{ r.scope }}</div>
+            <span class="inline-block px-2 py-0.5 bg-amber-500 text-white rounded-full font-medium" style="font-size:12px">{{ r.coin }} 积分</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 有效期提醒 -->
-    <div class="mx-4 mt-4 rounded-xl p-3 flex items-center gap-2.5 border" style="background:linear-gradient(135deg,#fff1f2,#fef3c7);border-color:#fed7aa">
-      <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center flex-none shadow">
+    <div class="mx-4 mt-4 rounded-xl p-3.5 flex items-center gap-3 border border-amber-200 bg-amber-50">
+      <div class="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center flex-none">
         <i data-lucide="timer" class="w-4 h-4 text-white"></i>
       </div>
       <div class="flex-1">
-        <div class="text-[12px] font-bold text-amber-900">金币有效期 12 个自然月</div>
-        <div class="text-[10.5px] text-amber-800/80">获得当月起 12 个月内未用将作废 · 尽快兑换权益卡</div>
+        <div class="sub-title">积分有效期 12 个自然月</div>
+        <div class="meta-text">获得当月起 12 个月内未用将作废 · 尽快兑换权益卡</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section · Q&A -->
+  <div id="tab-qa" class="tab-panel pb-28">
+    <h2 class="sec-title">
+      <i data-lucide="help-circle" class="w-[18px] h-[18px] text-violet-600"></i>Q&amp;A
+    </h2>
+    <div class="px-4">
+      <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 divide-y divide-slate-100">
+        <div v-for="(qa, i) in qaList" :key="i">
+          <div class="qa-toggle flex items-center justify-between p-4" @click="toggleQa(i)">
+            <span class="font-semibold" style="font-size:15px;color:#1e293b">{{ i + 1 }}. {{ qa.q }}</span>
+            <span class="text-slate-400 transition-transform duration-300 flex-shrink-0 ml-2"
+                  :style="{ transform: openQa === i ? 'rotate(180deg)' : '' }">
+              <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </span>
+          </div>
+          <div :class="['qa-answer', { open: openQa === i }]">
+            <div class="px-4 pb-4 body-text space-y-2" v-html="qa.a"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- 底部固定 CTA -->
   <div class="sticky bottom-0 z-30 bg-white/95 backdrop-blur border-t border-slate-100 px-4 py-3">
-    <a href="member.html" class="block w-full text-center py-3 rounded-xl font-bold text-white shadow-lg bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:opacity-95">
+    <a href="member.html" class="btn-primary block w-full text-center rounded-xl text-white shadow-lg bg-gradient-to-r from-violet-600 to-violet-700 hover:opacity-95" style="line-height:48px">
       <i data-lucide="crown" class="w-4 h-4 inline align-text-bottom mr-1"></i>查看我的权益
     </a>
   </div>
@@ -246,20 +316,20 @@
   <!-- 分享弹窗 -->
   <div v-if="showShareModal" class="fixed inset-0 z-50 flex items-end justify-center" style="background:rgba(0,0,0,.55);backdrop-filter:blur(3px)" @click.self="showShareModal = false">
     <div class="bg-white rounded-t-3xl w-full max-w-sm overflow-hidden shadow-2xl">
-      <div class="p-5 text-center border-b border-slate-100">
-        <div class="text-sm text-slate-500">分享到</div>
+      <div class="p-4 text-center border-b border-slate-100">
+        <div class="meta-text">分享到</div>
       </div>
       <div class="p-6 grid grid-cols-2 gap-6">
-        <button @click="shareToWechat" class="flex flex-col items-center gap-2">
-          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white shadow-lg"><i data-lucide="message-circle" class="w-7 h-7"></i></div>
-          <span class="text-xs text-slate-700">微信朋友圈</span>
+        <button @click="shareToWechat" class="flex flex-col items-center gap-2" style="min-height:44px">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-white shadow-lg"><i data-lucide="message-circle" class="w-7 h-7"></i></div>
+          <span style="font-size:13px;color:#334155">微信朋友圈</span>
         </button>
-        <button @click="copyLink" class="flex flex-col items-center gap-2">
-          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-white shadow-lg"><i data-lucide="link" class="w-7 h-7"></i></div>
-          <span class="text-xs text-slate-700">复制链接</span>
+        <button @click="copyLink" class="flex flex-col items-center gap-2" style="min-height:44px">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg"><i data-lucide="link" class="w-7 h-7"></i></div>
+          <span style="font-size:13px;color:#334155">复制链接</span>
         </button>
       </div>
-      <button @click="showShareModal = false" class="w-full py-3 border-t border-slate-100 text-sm text-slate-500">取消</button>
+      <button @click="showShareModal = false" class="w-full py-4 border-t border-slate-100" style="font-size:15px;color:#64748b;min-height:48px">取消</button>
     </div>
   </div>
 
@@ -287,8 +357,8 @@ createApp({
     const tabs = [
       { key: 'levels',   label: '会员等级', icon: 'layers' },
       { key: 'benefits', label: '会员权益', icon: 'shield-check' },
-      { key: 'qa',       label: 'Q&A',      icon: 'help-circle' },
-      { key: 'coins',    label: '唯金币',   icon: 'coins' }
+      { key: 'coins',    label: '积分',     icon: 'coins' },
+      { key: 'qa',       label: 'Q&A',      icon: 'help-circle' }
     ];
 
     const levelRows = [
@@ -298,19 +368,19 @@ createApp({
       { code:'V3', short:'V3', css:'lv-v3', threshold:'账户金额 ≥ 2000,且近 3 月成交 ≥ 10 台' }
     ];
 
-    const lock2 = '<span class="locked"><i data-lucide="lock"></i>LV2 解锁</span>';
-    const lock3 = '<span class="locked"><i data-lucide="lock"></i>LV3 解锁</span>';
-    const dash = '<span class="locked"><i data-lucide="minus"></i></span>';
-    const check = '<i data-lucide="check" class="w-3.5 h-3.5 inline"></i>';
+    const lock2 = '<span class="locked"><i data-lucide="lock"></i>V2 解锁</span>';
+    const lock3 = '<span class="locked"><i data-lucide="lock"></i>V3 解锁</span>';
+    const dash  = '<span class="locked"><i data-lucide="minus"></i></span>';
+    const check = '<i data-lucide="check" class="w-4 h-4 inline"></i>';
 
     const benefitMatrix = [
-      { label:'金币兑换折扣',  values:['<span class="text-slate-500">1:1</span>', '<span class="text-slate-500">1:1</span>', '<span class="tickV">95 折</span>', '<span class="tickG">8 折</span>'] },
-      { label:'数据查询权限',  values:[dash, '<span class="tickB text-[10px]">基础查询</span>', '<span class="tickV text-[10px]">深度查询</span>', '<span class="tickG text-[10px]">深度查询</span>'] },
-      { label:'1V1 专属客服', values:[dash, '<span class="tickB">'+check+'</span>', '<span class="tickV">'+check+'</span>', '<span class="tickG">'+check+'</span>'] },
-      { label:'专属销售顾问',  values:[dash, '<span class="tickB">'+check+'</span>', '<span class="tickV">'+check+'</span>', '<span class="tickG">'+check+'</span>'] },
-      { label:'无偿退车额度',  values:[lock2, lock2, '<span class="tickV font-black">1 台</span>', '<span class="tickG font-black">2 台</span>'] },
-      { label:'服务中心权益包', values:[lock2, lock2, '<span class="tickV text-[10px]">基础包</span>', '<span class="tickG text-[10px]">豪华包</span>'] },
-      { label:'代送车 / 免费停车', values:[lock3, lock3, lock3, '<span class="tickG font-black"><i data-lucide="check" class="w-4 h-4 inline"></i></span>'] }
+      { label:'积分兑换折扣',   values:['<span class="tick-slate">1:1</span>', '<span class="tick-slate">1:1</span>', '<span class="tick-violet">95 折</span>', '<span class="tick-amber">8 折</span>'] },
+      { label:'数据查询权限',   values:[dash, '<span class="tick-slate">基础</span>', '<span class="tick-violet">深度</span>', '<span class="tick-amber">深度</span>'] },
+      { label:'1V1 专属客服',   values:[dash, '<span class="tick-slate">'+check+'</span>', '<span class="tick-violet">'+check+'</span>', '<span class="tick-amber">'+check+'</span>'] },
+      { label:'专属销售顾问',   values:[dash, '<span class="tick-slate">'+check+'</span>', '<span class="tick-violet">'+check+'</span>', '<span class="tick-amber">'+check+'</span>'] },
+      { label:'无偿退车额度',   values:[lock2, lock2, '<span class="tick-violet">1 台</span>', '<span class="tick-amber">2 台</span>'] },
+      { label:'服务中心权益包', values:[lock2, lock2, '<span class="tick-violet">基础包</span>', '<span class="tick-amber">豪华包</span>'] },
+      { label:'代送车 / 免费停车', values:[lock3, lock3, lock3, '<span class="tick-amber">'+check+'</span>'] }
     ];
 
     const qaList = [
@@ -323,32 +393,31 @@ createApp({
     ];
 
     const earningTable = [
-      { category:'交易', color:'bg-amber-50 text-amber-800', items:[
-        { action:'完成车辆交易',     coin:'50 金币',    desc:'成交一台车可获得,退车扣回' },
-        { action:'有效出价参与竞拍', coin:'10 金币/台', desc:'出价 1 台算 1 次,上不封顶' }
+      { category:'交易', items:[
+        { action:'完成车辆交易',     coin:'50 积分',    desc:'成交一台车可获得,退车扣回' },
+        { action:'有效出价参与竞拍', coin:'10 积分/台', desc:'出价 1 台算 1 次,上不封顶' }
       ]},
-      { category:'互动', color:'bg-sky-50 text-sky-800', items:[
-        { action:'参与平台投票 / 问卷 / 调研',         coin:'1-5 金币/次', desc:'' },
-        { action:'完成实名认证',                       coin:'1-5 金币/次', desc:'' },
-        { action:'首次充值保证金',                     coin:'1-5 金币/次', desc:'' },
-        { action:'转发车源并成功分享朋友圈',           coin:'1 金币',       desc:'' },
-        { action:'邀请商户完成注册 + 实名认证 + 保证金', coin:'20 金币',     desc:'双方都有金币增送,好友需完成实名 + 保证金充值' }
+      { category:'互动', items:[
+        { action:'参与平台投票 / 问卷 / 调研',         coin:'1-5 积分/次', desc:'' },
+        { action:'完成实名认证',                       coin:'1-5 积分/次', desc:'' },
+        { action:'首次充值保证金',                     coin:'1-5 积分/次', desc:'' },
+        { action:'转发车源并分享朋友圈',               coin:'1 积分',      desc:'' },
+        { action:'邀请商户完成注册 + 实名 + 保证金',   coin:'20 积分',     desc:'双方都有积分赠送' }
       ]},
-      { category:'限时活动 (不定期)', color:'bg-rose-50 text-rose-800', items:[
-        { action:'节日专属任务',         coin:'1 金币',         desc:'以具体活动通知为准' },
-        { action:'周六日出价双倍积分',   coin:'按出价金币算',   desc:'以具体活动通知为准' }
+      { category:'限时活动', items:[
+        { action:'节日专属任务',       coin:'1 积分',       desc:'以具体活动通知为准' },
+        { action:'周六日出价双倍积分', coin:'按出价积分算', desc:'以具体活动通知为准' }
       ]},
-      { category:'增值服务', color:'bg-violet-50 text-violet-800', items:[
-        { action:'使用唯车转',                                   coin:'1 金币',     desc:'首次下单使用后发放' },
-        { action:'使用物流 / 代驾 / 复检 / 购专业检测等服务',     coin:'5 金币/次',  desc:'按实际使用台次结算' },
-        { action:'使用平台代办服务(过户 / 年审 / 续保 / 配件)',  coin:'5 金币/次',  desc:'按实际使用台次结算' }
+      { category:'增值服务', items:[
+        { action:'使用唯车转',                                   coin:'1 积分',    desc:'首次下单使用后发放' },
+        { action:'使用物流 / 代驾 / 复检 / 专业检测服务',         coin:'5 积分/次', desc:'按实际使用台次结算' },
+        { action:'使用代办服务(过户 / 年审 / 续保 / 配件)',      coin:'5 积分/次', desc:'按实际使用台次结算' }
       ]}
     ];
 
     const discountMap = { LV0:'1:1', LV1:'1:1', LV2:'95 折', LV3:'8 折' };
 
-    // Tab 切换 + 锚点滚动
-    const TAB_BAR_OFFSET = 52;
+    const TAB_BAR_OFFSET = 56;
     function switchTab(key) {
       activeTab.value = key;
       const target = document.getElementById('tab-' + key);
@@ -380,7 +449,8 @@ createApp({
     }
     function showToast(msg) {
       const t = document.createElement('div');
-      t.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm shadow-xl z-[100]';
+      t.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl z-[100]';
+      t.style.fontSize = '15px';
       t.textContent = msg; document.body.appendChild(t);
       setTimeout(() => t.remove(), 1800);
     }

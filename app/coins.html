@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>金币明细 · 唯普汽车</title>
+<title>积分明细 · 唯普汽车</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
@@ -28,13 +28,13 @@
     </div>
     <div class="flex items-center justify-between px-5 pb-3">
       <button type="button" @click="back" class="text-white cursor-pointer"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
-      <span class="text-white text-base font-semibold">金币明细</span>
+      <span class="text-white text-base font-semibold">积分明细</span>
       <button @click="showRuleModal = true" class="text-white text-xs">规则说明</button>
     </div>
 
     <!-- 余额概览 -->
     <div class="px-5 pb-8 text-white">
-      <div class="text-xs opacity-80 mb-1">金币余额</div>
+      <div class="text-xs opacity-80 mb-1">积分余额</div>
       <div class="text-5xl font-bold tracking-tight mb-3">356</div>
       <div class="grid grid-cols-3 gap-2 text-center">
         <div class="bg-white/10 backdrop-blur rounded-xl py-2.5 border border-white/10">
@@ -58,7 +58,7 @@
     <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
       <i data-lucide="alarm-clock" class="w-6 h-6 text-amber-600"></i>
       <div class="flex-1">
-        <div class="text-sm font-semibold text-amber-900">50 金币将在 15 天内过期</div>
+        <div class="text-sm font-semibold text-amber-900">50 积分将在 15 天内过期</div>
         <div class="text-xs text-amber-700 mt-0.5">赶快去商城兑换吧!</div>
       </div>
       <a href="mall.html" class="px-3 py-1.5 bg-amber-500 text-white rounded-full text-xs font-medium">去兑换</a>
@@ -103,19 +103,19 @@
 <div v-if="showRuleModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.55);backdrop-filter:blur(3px)" @click.self="showRuleModal = false">
   <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
     <div class="bg-gradient-to-r from-violet-600 to-indigo-600 p-4 text-white flex items-center justify-between">
-      <div class="flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-base font-bold">唯金币获取规则</span></div>
+      <div class="flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-base font-bold">积分获取规则</span></div>
       <button @click="showRuleModal = false" class="text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
     <div class="p-4 max-h-[72vh] overflow-y-auto">
       <div class="mb-3 p-3 bg-amber-50 border border-amber-100 rounded-lg text-xs text-amber-800">
-        <strong>1 金币 ≈ {{ CFG.coin.unitYuan }} 元</strong>,可用于兑换平台权益卡
+        <strong>1 积分 ≈ {{ CFG.coin.unitYuan }} 元</strong>,可用于兑换平台权益卡
       </div>
       <div class="overflow-x-auto rounded-lg border border-slate-200">
         <table class="w-full text-[11px] text-left border-collapse">
           <thead class="bg-slate-50 text-slate-600">
             <tr>
               <th class="py-2 px-2 font-semibold text-left">具体行为</th>
-              <th class="py-2 px-2 font-semibold text-center whitespace-nowrap">唯金币值</th>
+              <th class="py-2 px-2 font-semibold text-center whitespace-nowrap">积分值</th>
               <th class="py-2 px-2 font-semibold text-left">规则说明</th>
             </tr>
           </thead>
@@ -132,7 +132,7 @@
         </table>
       </div>
       <div class="mt-3 p-3 bg-slate-900 text-white rounded-lg text-xs">
-        <div class="font-semibold mb-1 flex items-center gap-1.5"><i data-lucide="hourglass" class="w-3.5 h-3.5"></i>金币有效期</div>
+        <div class="font-semibold mb-1 flex items-center gap-1.5"><i data-lucide="hourglass" class="w-3.5 h-3.5"></i>积分有效期</div>
         <div class="text-slate-300 leading-relaxed">{{ CFG.coin.validityDesc }},到期自动清零</div>
       </div>
     </div>
@@ -177,11 +177,11 @@ createApp({
       { date:'昨天 · 2026-04-14', items:[
         { type:'spend',  title:'兑换权益',       meta:'车辆中标价查询卡 · 15:10', amount:'-200', amountColor:'text-rose-600',    note:'余额 306',           icon:'gift',     iconBg:'bg-gradient-to-br from-rose-400 to-pink-500' },
         { type:'deal',   title:'成交奖励',       meta:'车源 XC2038 · 14:30',      amount:'+50',  amountColor:'text-emerald-600', note:'有效期至 2027-04-14', icon:'wallet',   iconBg:'bg-gradient-to-br from-emerald-400 to-teal-500' },
-        { type:'bid',    title:'有效出价 × 3',   meta:'3 辆不同车源 · 10 金币/台', amount:'+30',  amountColor:'text-sky-600',     note:'已合并展示',         icon:'gavel',    iconBg:'bg-gradient-to-br from-sky-400 to-blue-500' },
+        { type:'bid',    title:'有效出价 × 3',   meta:'3 辆不同车源 · 10 积分/台', amount:'+30',  amountColor:'text-sky-600',     note:'已合并展示',         icon:'gavel',    iconBg:'bg-gradient-to-br from-sky-400 to-blue-500' },
         { type:'service',title:'使用平台物流服务',meta:'车源 XC2038 · 11:05',      amount:'+5',   amountColor:'text-amber-600',   note:'有效期至 2027-04-14', icon:'truck',    iconBg:'bg-gradient-to-br from-amber-400 to-orange-500' }
       ]},
       { date:'2026-04-10', items:[
-        { type:'expire', title:'金币过期清零',      meta:'2025-04-10 获得 · 满 12 月', amount:'-12', amountColor:'text-slate-500',   note:'余额 369',           icon:'hourglass',  iconBg:'bg-gradient-to-br from-slate-400 to-slate-500' },
+        { type:'expire', title:'积分过期清零',      meta:'2025-04-10 获得 · 满 12 月', amount:'-12', amountColor:'text-slate-500',   note:'余额 369',           icon:'hourglass',  iconBg:'bg-gradient-to-br from-slate-400 to-slate-500' },
         { type:'deal',   title:'成交奖励',          meta:'车源 XC1998 · 10:22',        amount:'+50', amountColor:'text-emerald-600', note:'有效期至 2027-04-10', icon:'wallet',     iconBg:'bg-gradient-to-br from-emerald-400 to-teal-500' },
         { type:'invite', title:'邀请好友开通会员',  meta:'好友 138****6621 · 09:18',   amount:'+2',  amountColor:'text-fuchsia-600', note:'有效期至 2027-04-10', icon:'user-plus',  iconBg:'bg-gradient-to-br from-fuchsia-400 to-pink-500' }
       ]}

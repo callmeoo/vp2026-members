@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>订单详情 · 业务数据 · 唯车拍</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+  [v-cloak] { display:none; }
   .ant-sider { background: #001529; }
   .ant-sider a { color: rgba(255,255,255,.65); }
   .ant-sider a.active { background: #1677ff; color: #fff; }
@@ -23,7 +25,6 @@
   .ant-tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
   .ant-tag-gold { background: #fffbe6; color: #d4b106; border: 1px solid #ffe58f; }
   .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; }
-  /* 流程节点 */
   .step { position: relative; flex: 1; text-align: center; }
   .step-dot { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; margin: 0 auto; position: relative; z-index: 2; }
   .step.done .step-dot { background: #10b981; }
@@ -36,6 +37,7 @@
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
 
   <aside class="ant-sider w-56 flex-none text-white">
@@ -43,17 +45,15 @@
       <span class="text-lg font-semibold flex items-center gap-2"><i data-lucide="crown" class="w-5 h-5"></i>会员体系后台</span>
     </div>
     <nav class="py-3 text-sm">
-      <a href="dashboard.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>运营仪表盘</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">规则配置</div>
-      <a href="level-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="settings" class="w-4 h-4"></i><span>等级规则</span></a>
-      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>金币规则</span></a>
-      <a href="rewards.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="ticket-check" class="w-4 h-4"></i><span>权益卡管理</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">业务数据</div>
-      <a href="orders.html" class="active flex items-center gap-3 px-6 py-2.5"><i data-lucide="receipt" class="w-4 h-4"></i><span>订单列表</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">商户运营</div>
-      <a href="members.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="users" class="w-4 h-4"></i><span>商户档案</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>金币流水</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="gift" class="w-4 h-4"></i><span>兑换记录</span></a>
+      <a v-for="item in navTop" :key="item.label" :href="item.href" :class="['flex items-center gap-3 px-6 py-2.5', item.active && 'active']">
+        <i :data-lucide="item.icon" class="w-4 h-4"></i><span>{{ item.label }}</span>
+      </a>
+      <template v-for="group in navGroups" :key="group.title">
+        <div class="px-6 py-2 text-xs text-white/40 mt-2">{{ group.title }}</div>
+        <a v-for="item in group.items" :key="item.label" :href="item.href" :class="['flex items-center gap-3 px-6 py-2.5', item.active && 'active']">
+          <i :data-lucide="item.icon" class="w-4 h-4"></i><span>{{ item.label }}</span>
+        </a>
+      </template>
     </nav>
   </aside>
 
@@ -77,11 +77,11 @@
         <div class="flex items-start justify-between mb-5">
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <h1 class="text-xl font-semibold text-slate-800">订单 WP20260415001</h1>
-              <span class="ant-tag ant-tag-orange">待支付</span>
+              <h1 class="text-xl font-semibold text-slate-800">订单 {{ order.no }}</h1>
+              <span class="ant-tag ant-tag-orange">{{ order.status }}</span>
               <span class="ant-tag ant-tag-red inline-flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i>存在售后申请</span>
             </div>
-            <div class="text-sm text-slate-500">成交时间:2026-04-15 11:23:45 · 订单时效剩余 23:45:12</div>
+            <div class="text-sm text-slate-500">成交时间:{{ order.dealAt }} · 订单时效剩余 {{ order.countdown }}</div>
           </div>
           <div class="flex gap-2">
             <button class="ant-btn inline-flex items-center gap-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i>打印</button>
@@ -93,32 +93,10 @@
         <!-- 流程节点 -->
         <div class="bg-slate-50 rounded-lg p-5">
           <div class="flex items-start">
-            <div class="step done">
-              <div class="step-dot"><i data-lucide="check" class="w-4 h-4"></i></div>
-              <div class="text-xs font-medium text-emerald-600 mt-2">竞价中</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">04-14 10:00</div>
-            </div>
-            <div class="step done">
-              <div class="step-dot"><i data-lucide="check" class="w-4 h-4"></i></div>
-              <div class="text-xs font-medium text-emerald-600 mt-2">拍下</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">04-15 11:23</div>
-            </div>
-            <div class="step active">
-              <div class="step-dot"><i data-lucide="loader" class="w-4 h-4"></i></div>
-              <div class="text-xs font-medium text-blue-600 mt-2">待支付</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">当前节点</div>
-            </div>
-            <div class="step pending">
-              <div class="step-dot"><i data-lucide="credit-card" class="w-4 h-4"></i></div>
-              <div class="text-xs text-slate-400 mt-2">已支付</div>
-            </div>
-            <div class="step pending">
-              <div class="step-dot"><i data-lucide="car" class="w-4 h-4"></i></div>
-              <div class="text-xs text-slate-400 mt-2">待过户</div>
-            </div>
-            <div class="step pending">
-              <div class="step-dot"><i data-lucide="flag" class="w-4 h-4"></i></div>
-              <div class="text-xs text-slate-400 mt-2">已完成</div>
+            <div v-for="s in steps" :key="s.label" :class="['step', s.state]">
+              <div class="step-dot"><i :data-lucide="s.icon" class="w-4 h-4"></i></div>
+              <div :class="['text-xs mt-2', s.state === 'done' ? 'font-medium text-emerald-600' : s.state === 'active' ? 'font-medium text-blue-600' : 'text-slate-400']">{{ s.label }}</div>
+              <div v-if="s.time" class="text-[10px] text-slate-400 mt-0.5">{{ s.time }}</div>
             </div>
           </div>
         </div>
@@ -133,73 +111,39 @@
           <div class="ant-card p-5">
             <div class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-1.5"><i data-lucide="user" class="w-4 h-4 text-sky-500"></i>商户信息</div>
             <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold">张</div>
+              <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold">{{ buyer.avatar }}</div>
               <div class="flex-1">
-                <div class="font-medium text-slate-800">张宇明</div>
-                <div class="text-xs text-slate-400 mt-0.5">138****2841 · M10086</div>
+                <div class="font-medium text-slate-800">{{ buyer.name }}</div>
+                <div class="text-xs text-slate-400 mt-0.5">{{ buyer.phone }} · {{ buyer.id }}</div>
                 <div class="flex items-center gap-1 mt-1">
-                  <span class="lv-pill" style="background:#f59e0b">V3 会员</span>
+                  <span class="lv-pill" :style="{ background: buyer.levelColor }">{{ buyer.level }} 会员</span>
                   <span class="text-[10px] text-slate-500">已认证</span>
                 </div>
               </div>
             </div>
             <div class="pt-4 space-y-2 text-xs">
-              <div class="flex justify-between"><span class="text-slate-500">近 3 月成交</span><span class="text-slate-700 font-medium">47 台</span></div>
-              <div class="flex justify-between"><span class="text-slate-500">历史总成交</span><span class="text-slate-700 font-medium">286 台</span></div>
-              <div class="flex justify-between"><span class="text-slate-500">金币余额</span><span class="text-amber-600 font-semibold">8,352</span></div>
-              <div class="flex justify-between"><span class="text-slate-500">可兑换权益</span><span class="text-violet-600 font-medium">V3 全部</span></div>
+              <div v-for="row in buyer.stats" :key="row.label" class="flex justify-between">
+                <span class="text-slate-500">{{ row.label }}</span>
+                <span :class="row.cls">{{ row.value }}</span>
+              </div>
             </div>
             <a class="block text-xs text-blue-600 mt-3 text-center">查看商户档案 ›</a>
           </div>
 
-          <!-- ⭐ 会员权益明细(核心) -->
+          <!-- ⭐ 会员权益明细 -->
           <div class="ant-card p-5 border-2 border-violet-200">
             <div class="text-base font-semibold text-slate-800 mb-2 flex items-center gap-1.5"><i data-lucide="crown" class="w-4 h-4 text-amber-500"></i>本单已享会员权益</div>
             <div class="text-[11px] text-slate-500 mb-4">该商户为 V3 金卡会员,本单享有以下权益</div>
 
             <div class="space-y-3">
-              <!-- 折扣权益 -->
-              <div class="flex items-start gap-3 p-3 bg-violet-50 rounded-lg border border-violet-100">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-white flex-none"><i data-lucide="tag" class="w-4 h-4"></i></div>
+              <div v-for="b in benefits" :key="b.title" :class="['flex items-start gap-3 p-3 rounded-lg border', b.bg, b.border]">
+                <div :class="['w-9 h-9 rounded-lg flex items-center justify-center text-white flex-none bg-gradient-to-br', b.icoBg]"><i :data-lucide="b.icon" class="w-4 h-4"></i></div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-semibold text-slate-800">过户 8 折 / 复检 8 折</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">V3 专享 · 金币兑换使用</div>
-                  <div class="text-[11px] text-violet-700 mt-1">💰 本单节省:<span class="font-bold">¥ 240</span>(原 ¥1,200 → ¥ 960)</div>
+                  <div class="text-sm font-semibold text-slate-800">{{ b.title }}</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">{{ b.sub }}</div>
+                  <div :class="['text-[11px] mt-1', b.descCls]" v-html="b.desc"></div>
                 </div>
-                <span class="ant-tag ant-tag-purple text-[10px]">已生效</span>
-              </div>
-
-              <!-- 无理由退车 -->
-              <div class="flex items-start gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-rose-400 to-red-500 flex items-center justify-center text-white flex-none"><i data-lucide="undo-2" class="w-4 h-4"></i></div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-sm font-semibold text-slate-800">无理由退车 1 台卡</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">V3 专享 · 成交后 7 日内可申请</div>
-                  <div class="text-[11px] text-rose-700 mt-1"><i data-lucide="alert-circle" class="w-3 h-3 inline"></i> 商户已提交退车申请,待审核</div>
-                </div>
-                <span class="ant-tag ant-tag-red text-[10px]">申请中</span>
-              </div>
-
-              <!-- 成交奖励 -->
-              <div class="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white flex-none"><i data-lucide="coins" class="w-4 h-4"></i></div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-sm font-semibold text-slate-800">成交金币奖励</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">过户完成后发放</div>
-                  <div class="text-[11px] text-amber-700 mt-1">⏳ 待发放:<span class="font-bold">+50 金币</span></div>
-                </div>
-                <span class="ant-tag ant-tag-orange text-[10px]">待发放</span>
-              </div>
-
-              <!-- 服务权益 -->
-              <div class="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white flex-none"><i data-lucide="truck" class="w-4 h-4"></i></div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-sm font-semibold text-slate-800">代送车上门</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">V3 等级直达权益</div>
-                  <div class="text-[11px] text-emerald-700 mt-1">✓ 已预约 · 预计送达 04-17</div>
-                </div>
-                <span class="ant-tag ant-tag-green text-[10px]">已预约</span>
+                <span :class="['ant-tag', b.tagCls, 'text-[10px]']">{{ b.tag }}</span>
               </div>
             </div>
           </div>
@@ -213,17 +157,12 @@
           <div class="ant-card p-5">
             <div class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-1.5"><i data-lucide="car" class="w-4 h-4 text-indigo-500"></i>车辆信息</div>
             <div class="flex gap-5">
-              <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=300&h=200&fit=crop&auto=format&q=80" class="w-52 h-36 rounded-lg object-cover" alt="车辆">
+              <img :src="car.image" class="w-52 h-36 rounded-lg object-cover" alt="车辆">
               <div class="flex-1">
-                <div class="text-lg font-bold text-slate-800">比亚迪 宋 Pro 1.5TID 双离合</div>
-                <div class="text-sm text-slate-500 mt-1">XC2045 · 2019款</div>
+                <div class="text-lg font-bold text-slate-800">{{ car.name }}</div>
+                <div class="text-sm text-slate-500 mt-1">{{ car.model }}</div>
                 <div class="grid grid-cols-3 gap-y-2.5 gap-x-4 mt-4 text-sm">
-                  <div><span class="text-slate-400">车牌</span>:<span class="text-slate-700">川 A·1865F</span></div>
-                  <div><span class="text-slate-400">上牌</span>:<span class="text-slate-700">2021-01</span></div>
-                  <div><span class="text-slate-400">里程</span>:<span class="text-slate-700">6.07 万公里</span></div>
-                  <div><span class="text-slate-400">过户</span>:<span class="text-slate-700">0 次</span></div>
-                  <div><span class="text-slate-400">车况</span>:<span class="text-slate-700">良好</span></div>
-                  <div><span class="text-slate-400">所在地</span>:<span class="text-slate-700">成都</span></div>
+                  <div v-for="item in car.specs" :key="item.label"><span class="text-slate-400">{{ item.label }}</span>:<span class="text-slate-700">{{ item.value }}</span></div>
                 </div>
               </div>
             </div>
@@ -234,39 +173,12 @@
             <div class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-1.5"><i data-lucide="calculator" class="w-4 h-4 text-amber-500"></i>费用明细</div>
             <table class="w-full text-sm">
               <tbody class="divide-y divide-slate-100">
-                <tr>
-                  <td class="py-3 text-slate-600">车辆成交价</td>
-                  <td class="py-3 text-right text-slate-800">¥ 38,000.00</td>
-                </tr>
-                <tr>
-                  <td class="py-3 text-slate-600">服务费</td>
-                  <td class="py-3 text-right text-slate-800">¥ 800.00</td>
-                </tr>
-                <tr>
-                  <td class="py-3 text-slate-600">过户费(原价)</td>
-                  <td class="py-3 text-right text-slate-400 line-through">¥ 1,200.00</td>
-                </tr>
-                <tr class="bg-violet-50">
-                  <td class="py-3 text-violet-700 pl-2">
-                    <i data-lucide="tag" class="w-3.5 h-3.5 inline text-violet-500"></i>
-                    过户 8 折优惠(V3 权益)
+                <tr v-for="row in fees" :key="row.label" :class="row.rowCls || ''">
+                  <td :class="['py-3', row.labelCls, row.pad && 'pl-2']">
+                    <i v-if="row.icon" :data-lucide="row.icon" class="w-3.5 h-3.5 inline text-violet-500"></i>
+                    {{ row.label }}
                   </td>
-                  <td class="py-3 text-right text-violet-600 font-semibold">- ¥ 240.00</td>
-                </tr>
-                <tr>
-                  <td class="py-3 text-slate-600">复检费(原价)</td>
-                  <td class="py-3 text-right text-slate-400 line-through">¥ 500.00</td>
-                </tr>
-                <tr class="bg-violet-50">
-                  <td class="py-3 text-violet-700 pl-2">
-                    <i data-lucide="tag" class="w-3.5 h-3.5 inline text-violet-500"></i>
-                    复检 8 折优惠(V3 权益)
-                  </td>
-                  <td class="py-3 text-right text-violet-600 font-semibold">- ¥ 100.00</td>
-                </tr>
-                <tr class="bg-slate-50">
-                  <td class="py-3 text-slate-700 font-semibold pl-2">应付总计</td>
-                  <td class="py-3 text-right text-rose-600 font-bold text-lg pr-2">¥ 40,160.00</td>
+                  <td :class="['py-3 text-right', row.valueCls, row.pad && 'pr-2']">{{ row.value }}</td>
                 </tr>
               </tbody>
             </table>
@@ -282,15 +194,13 @@
             <div class="bg-rose-50 rounded-lg p-4 border border-rose-100">
               <div class="flex items-start justify-between mb-2">
                 <div>
-                  <div class="text-sm font-semibold text-slate-800">无理由退车申请</div>
-                  <div class="text-xs text-slate-500 mt-0.5">售后单号:AS20260415003 · 提交时间:2026-04-15 18:20</div>
+                  <div class="text-sm font-semibold text-slate-800">{{ aftersale.title }}</div>
+                  <div class="text-xs text-slate-500 mt-0.5">售后单号:{{ aftersale.no }} · 提交时间:{{ aftersale.submitAt }}</div>
                 </div>
                 <span class="ant-tag ant-tag-red">处理中</span>
               </div>
               <div class="text-sm text-slate-700 mt-3">
-                <div class="mb-1"><strong>原因:</strong>车况与描述略有差异</div>
-                <div class="mb-1"><strong>使用权益:</strong>V3 专享 · 无理由退车 1 台卡</div>
-                <div class="mb-1"><strong>处理进度:</strong>待审核(预计 24h 内响应)</div>
+                <div v-for="line in aftersale.lines" :key="line.label" class="mb-1"><strong>{{ line.label }}:</strong>{{ line.value }}</div>
               </div>
               <div class="flex gap-2 mt-4">
                 <button class="ant-btn-primary text-xs">同意退车</button>
@@ -300,7 +210,7 @@
             </div>
             <div class="mt-3 text-[11px] text-slate-500">
               <i data-lucide="info" class="w-3 h-3 inline"></i>
-              退车成功后,将自动冲减商户本月 1 笔成交台数,并扣回 50 成交奖励金币
+              退车成功后,将自动冲减商户本月 1 笔成交台数,并扣回 50 成交奖励积分
             </div>
           </div>
 
@@ -315,8 +225,112 @@
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script>lucide.createIcons();</script>
+<script>
+const { createApp, onMounted } = Vue;
+createApp({
+  setup() {
+    const navTop = [
+      { label:'运营仪表盘', icon:'bar-chart-3', href:'dashboard.html' }
+    ];
+    const navGroups = [
+      { title:'规则配置', items:[
+        { label:'等级规则', icon:'settings', href:'level-rule.html' },
+        { label:'积分规则', icon:'wrench', href:'coin-rule.html' },
+        { label:'权益卡管理', icon:'ticket-check', href:'rewards.html' }
+      ]},
+      { title:'业务数据', items:[
+        { label:'订单列表', icon:'receipt', href:'orders.html', active:true }
+      ]},
+      { title:'商户运营', items:[
+        { label:'商户档案', icon:'users', href:'members.html' },
+        { label:'积分流水', icon:'file-text', href:'#' },
+        { label:'兑换记录', icon:'gift', href:'#' }
+      ]}
+    ];
+
+    const order = { no:'WP20260415001', status:'待支付', dealAt:'2026-04-15 11:23:45', countdown:'23:45:12' };
+
+    const steps = [
+      { label:'竞价中', icon:'check',       state:'done',    time:'04-14 10:00' },
+      { label:'拍下',   icon:'check',       state:'done',    time:'04-15 11:23' },
+      { label:'待支付', icon:'loader',      state:'active',  time:'当前节点' },
+      { label:'已支付', icon:'credit-card', state:'pending' },
+      { label:'待过户', icon:'car',         state:'pending' },
+      { label:'已完成', icon:'flag',        state:'pending' }
+    ];
+
+    const buyer = {
+      avatar:'张', name:'张宇明', phone:'138****2841', id:'M10086',
+      level:'V3', levelColor:'#f59e0b',
+      stats: [
+        { label:'近 3 月成交', value:'47 台', cls:'text-slate-700 font-medium' },
+        { label:'历史总成交', value:'286 台', cls:'text-slate-700 font-medium' },
+        { label:'积分余额',   value:'8,352',  cls:'text-amber-600 font-semibold' },
+        { label:'可兑换权益', value:'V3 全部', cls:'text-violet-600 font-medium' }
+      ]
+    };
+
+    const benefits = [
+      { title:'过户 8 折 / 复检 8 折', sub:'V3 专享 · 积分兑换使用',
+        bg:'bg-violet-50', border:'border-violet-100', icoBg:'from-violet-400 to-indigo-500', icon:'tag',
+        desc:'<i data-lucide="coins" class="w-3 h-3 inline"></i> 本单节省:<span class="font-bold">¥ 240</span>(原 ¥1,200 → ¥ 960)',
+        descCls:'text-violet-700', tag:'已生效', tagCls:'ant-tag-purple' },
+      { title:'无理由退车 1 台卡', sub:'V3 专享 · 成交后 7 日内可申请',
+        bg:'bg-rose-50', border:'border-rose-100', icoBg:'from-rose-400 to-red-500', icon:'undo-2',
+        desc:'<i data-lucide="alert-circle" class="w-3 h-3 inline"></i> 商户已提交退车申请,待审核',
+        descCls:'text-rose-700', tag:'申请中', tagCls:'ant-tag-red' },
+      { title:'成交积分奖励', sub:'过户完成后发放',
+        bg:'bg-amber-50', border:'border-amber-100', icoBg:'from-amber-400 to-orange-500', icon:'coins',
+        desc:'<i data-lucide="clock" class="w-3 h-3 inline"></i> 待发放:<span class="font-bold">+50 积分</span>',
+        descCls:'text-amber-700', tag:'待发放', tagCls:'ant-tag-orange' },
+      { title:'代送车上门', sub:'V3 等级直达权益',
+        bg:'bg-emerald-50', border:'border-emerald-100', icoBg:'from-emerald-400 to-teal-500', icon:'truck',
+        desc:'<i data-lucide="check" class="w-3 h-3 inline"></i> 已预约 · 预计送达 04-17',
+        descCls:'text-emerald-700', tag:'已预约', tagCls:'ant-tag-green' }
+    ];
+
+    const car = {
+      image:'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=300&h=200&fit=crop&auto=format&q=80',
+      name:'比亚迪 宋 Pro 1.5TID 双离合', model:'XC2045 · 2019款',
+      specs: [
+        { label:'车牌',   value:'川 A·1865F' },
+        { label:'上牌',   value:'2021-01' },
+        { label:'里程',   value:'6.07 万公里' },
+        { label:'过户',   value:'0 次' },
+        { label:'车况',   value:'良好' },
+        { label:'所在地', value:'成都' }
+      ]
+    };
+
+    const fees = [
+      { label:'车辆成交价',       value:'¥ 38,000.00', labelCls:'text-slate-600', valueCls:'text-slate-800' },
+      { label:'服务费',           value:'¥ 800.00',    labelCls:'text-slate-600', valueCls:'text-slate-800' },
+      { label:'过户费(原价)',     value:'¥ 1,200.00',  labelCls:'text-slate-600', valueCls:'text-slate-400 line-through' },
+      { label:'过户 8 折优惠(V3 权益)', value:'- ¥ 240.00', rowCls:'bg-violet-50', pad:true, icon:'tag',
+        labelCls:'text-violet-700', valueCls:'text-violet-600 font-semibold' },
+      { label:'复检费(原价)',     value:'¥ 500.00',    labelCls:'text-slate-600', valueCls:'text-slate-400 line-through' },
+      { label:'复检 8 折优惠(V3 权益)', value:'- ¥ 100.00', rowCls:'bg-violet-50', pad:true, icon:'tag',
+        labelCls:'text-violet-700', valueCls:'text-violet-600 font-semibold' },
+      { label:'应付总计',         value:'¥ 40,160.00', rowCls:'bg-slate-50', pad:true,
+        labelCls:'text-slate-700 font-semibold', valueCls:'text-rose-600 font-bold text-lg' }
+    ];
+
+    const aftersale = {
+      title:'无理由退车申请', no:'AS20260415003', submitAt:'2026-04-15 18:20',
+      lines: [
+        { label:'原因',       value:'车况与描述略有差异' },
+        { label:'使用权益',   value:'V3 专享 · 无理由退车 1 台卡' },
+        { label:'处理进度',   value:'待审核(预计 24h 内响应)' }
+      ]
+    };
+
+    onMounted(() => lucide.createIcons());
+    return { navTop, navGroups, order, steps, buyer, benefits, car, fees, aftersale };
+  }
+}).mount('#app');
+</script>
 </body>
 </html>

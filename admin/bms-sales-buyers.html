@@ -1,7 +1,237 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>买家管理 · 销售管理 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+  [v-cloak] { display:none; }
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+  .ant-card { background: #fff; border-radius: 2px; }
+  .el-input, .el-select { display: inline-flex; align-items: center; }
+  .el-input input, .el-select select { width: 100%; height: 30px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 12px; box-sizing: border-box; }
+  .el-label { color: #606266; font-size: 13px; line-height: 30px; padding-right: 6px; white-space: nowrap; }
+  .range-sep { color: #c0c4cc; padding: 0 4px; font-size: 12px; }
+  .num-input { width: 72px; height: 30px; padding: 0 8px; border: 1px solid #dcdfe6; border-radius: 4px; color: #606266; font-size: 12px; outline: none; }
+  .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 14px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
+  .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
+  .sort-pill { display: inline-flex; align-items: center; height: 28px; padding: 0 14px; font-size: 13px; border-radius: 4px; cursor: pointer; color: #606266; background: #f4f4f5; border: 1px solid transparent; }
+  .sort-pill.active { background: #ecf5ff; color: #409eff; border-color: #b3d8ff; }
+  .el-table { width: 100%; border-collapse: collapse; font-size: 12px; color: #606266; }
+  .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
+  .el-table tbody td { padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; white-space: nowrap; }
+  .el-table tbody tr:hover { background: #f5f7fa; }
+  .el-table tbody tr.row-selected { background: #ecf5ff; }
+  .name-cell { display: inline-flex; align-items: center; gap: 4px; }
+  .name-link { color: #303133; cursor: pointer; }
+  .name-link:hover { color: #409eff; text-decoration: underline; }
+  .lv-badge { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 22px; padding: 0 4px; border-radius: 3px; color: #fff; font-size: 10px; font-weight: 700; font-style: italic; letter-spacing: .5px; flex-shrink: 0; }
+  .phone-cell { display: inline-flex; align-items: center; gap: 4px; }
+  .zero-amount { color: #c0c4cc; }
+  .el-pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; color: #606266; font-size: 13px; }
+  .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; }
+  .pager-btn.active { background: #409eff; color: #fff; }
+  .pager-arrow { min-width: 28px; height: 28px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; }
+  .page-jump-input { width: 44px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; }
+  .lv-chip { display: inline-flex; align-items: center; gap: 4px; background: #f0f2f5; border: 1px solid #e4e7ed; border-radius: 3px; padding: 0 6px; height: 22px; font-size: 12px; color: #606266; }
+  .lv-chip .x { cursor: pointer; color: #c0c4cc; font-size: 14px; line-height: 1; }
+</style>
+</head>
+<body>
 
+<div id="app" v-cloak>
+<div class="flex min-h-screen">
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span></a>
+      <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span></div>
+      <div class="submenu">
+        <div class="sub-item">客户等级管理</div>
+        <div class="sub-item active">买家管理</div>
+        <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
+      </div>
+      <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span></div>
+    </nav>
+  </aside>
 
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>买家管理 · 销售管理 · 唯普汽车</title><script src="https://cdn.tailwindcss.com"></script><style> body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; } /* Sider */ .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; } .ant-sider .logo { background: #263445; } .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; } .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; } .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; } .ant-sider .menu-item:hover { background: #263445; color: #fff; } .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; } .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; } .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); } .ant-sider .submenu { background: #1f2d3d; } .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; } .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; } .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; } /* Header */ .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; } /* Card / Form */ .ant-card { background: #fff; border-radius: 2px; } .el-input, .el-select { position: relative; display: inline-flex; align-items: center; } .el-input input, .el-select select { width: 100%; height: 30px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 12px; line-height: 30px; outline: none; transition: border-color .15s; box-sizing: border-box; } .el-input input:focus, .el-select select:focus { border-color: #409eff; } .el-input input::placeholder { color: #c0c4cc; } .el-label { color: #606266; font-size: 13px; line-height: 30px; text-align: left; padding-right: 6px; white-space: nowrap; } .range-sep { color: #c0c4cc; padding: 0 4px; font-size: 12px; } .num-input { width: 72px; height: 30px; padding: 0 8px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 12px; outline: none; } .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 14px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; } .el-btn:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; } .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; } .el-btn-primary:hover { background: #66b1ff; color: #fff; border-color: #66b1ff; } /* Sort pills */ .sort-pill { display: inline-flex; align-items: center; height: 28px; padding: 0 14px; font-size: 13px; border-radius: 4px; cursor: pointer; color: #606266; background: #f4f4f5; border: 1px solid transparent; } .sort-pill.active { background: #ecf5ff; color: #409eff; border-color: #b3d8ff; } /* Table */ .el-table { width: 100%; border-collapse: collapse; font-size: 12px; color: #606266; } .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; } .el-table tbody td { padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; white-space: nowrap; } .el-table tbody tr:hover { background: #f5f7fa; } .el-table tbody tr.row-selected { background: #ecf5ff; } .el-table tbody tr.row-selected:hover { background: #d9ecff; } .name-cell { display: inline-flex; align-items: center; gap: 4px; } .name-link { color: #303133; cursor: pointer; } .name-link:hover { color: #409eff; text-decoration: underline; } .lv-badge { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 22px; padding: 0 4px; border-radius: 3px; color: #fff; font-size: 10px; font-weight: 700; font-style: italic; letter-spacing: .5px; flex-shrink: 0; } .auth-icon { width: 14px; height: 14px; color: #409eff; flex-shrink: 0; } .auth-icon svg { fill: currentColor; stroke: #fff; stroke-width: 1.5; } .phone-cell { display: inline-flex; align-items: center; gap: 4px; } .phone-cell i { color: #c0c4cc; cursor: pointer; } .phone-cell i:hover { color: #409eff; } .zero-amount { color: #c0c4cc; } /* Pagination */ .el-pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; color: #606266; font-size: 13px; } .el-pagination .total { color: #606266; margin-right: 6px; font-size: 12px; } .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; } .pager-btn:hover { color: #409eff; } .pager-btn.active { background: #409eff; color: #fff; } .pager-arrow { min-width: 28px; height: 28px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; } .pager-arrow:hover { color: #409eff; } .page-ellipsis { color: #909399; } .page-jump-input { width: 44px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; } /* Level pill in filter */ .lv-chip { display: inline-flex; align-items: center; gap: 4px; background: #f0f2f5; border: 1px solid #e4e7ed; border-radius: 3px; padding: 0 6px; height: 22px; font-size: 12px; color: #606266; } .lv-chip .x { cursor: pointer; color: #c0c4cc; font-size: 14px; line-height: 1; } .lv-chip .x:hover { color: #606266; }</style></head><body><div class="flex min-h-screen"> <!-- Sider --> <aside class="ant-sider flex flex-col"> <div class="logo h-14 flex flex-col items-center justify-center"> <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div> <div class="brand-sub">www.chevip.com</div> </div> <nav class="flex-1 overflow-y-auto"> <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="submenu"> <div class="sub-item">销售首页</div> <div class="sub-item">客户等级管理</div> <div class="sub-item active">买家管理</div> <div class="sub-item">B2C零售</div> <div class="sub-item">门店奖励</div> <div class="sub-item" onclick="location.href='bms-sales-orders.html'">销售订单</div> </div> <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> </nav> </aside> <!-- Main --> <div class="flex-1 flex flex-col min-w-0"> <!-- Header --> <header class="ant-header flex items-center justify-between px-4"> <div class="flex items-center gap-4 text-sm text-slate-600"> <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i> <div class="flex items-center gap-1"> <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i> <span>首页</span> <span class="text-slate-300">/</span> <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-400"></i> <span>销售管理</span> <span class="text-slate-300">/</span> <span class="font-medium">买家管理</span> </div> </div> <div class="flex items-center gap-4"> <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i> <div class="flex items-center gap-2 cursor-pointer"> <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"> <i data-lucide="user" class="w-4 h-4 text-slate-500"></i> </div> <span class="text-sm text-slate-600">ylj</span> <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i> </div> </div> </header> <!-- Content --> <main class="flex-1 p-3 overflow-auto"> <!-- Filters --> <div class="ant-card p-3 mb-3"> <div class="grid grid-cols-4 gap-x-4 gap-y-2"> <!-- Row 1 --> <div class="el-input"><input placeholder="请输入姓名/手机号/账号进行查询" /></div> <div class="flex items-center"> <span class="el-label">成交日期:</span> <div class="el-input flex-1"><input type="date" placeholder="开始时间" /></div> <span class="range-sep">~</span> <div class="el-input flex-1"><input type="date" placeholder="结束时间" /></div> </div> <div class="flex items-center"> <span class="el-label">来源:</span> <div class="el-select flex-1"> <select> <option>请选择来源</option> <option>官网</option> <option>rncwp</option> <option>mpcwp</option> <option>车唯拍+小程序</option> </select> </div> </div> <div class="flex items-center"> <span class="el-label">跟进销售:</span> <div class="el-input flex-1"><input placeholder="输入手机/姓名,支持按关键字" /></div> </div> <!-- Row 2 --> <div class="flex items-center"> <span class="el-label">交易类型:</span> <div class="el-select flex-1"> <select> <option>请选择交易类型</option> <option>活跃客户</option> <option>沉默客户</option> <option>新客户</option> </select> </div> </div> <div class="flex items-center"> <span class="el-label">今年成交数:</span> <input class="num-input" /> <span class="range-sep">到</span> <input class="num-input" /> </div> <div class="flex items-center"> <span class="el-label">买家性质:</span> <div class="el-select flex-1"> <select> <option>请选择买家性质</option> <option>个人买家</option> <option>专业买家</option> </select> </div> </div> <div class="flex items-center"> <span class="el-label">买家客户等级:</span> <div class="flex-1 flex items-center border border-slate-200 rounded px-2" style="height:30px;"> <span class="lv-chip">V2 <span class="x">×</span></span> </div> </div> <!-- Row 3 --> <div class="flex items-center"> <span class="el-label">注册时间:</span> <div class="el-input flex-1"><input type="text" placeholder="开始时间 - 结束时间" /></div> </div> <div class="flex items-center"> <span class="el-label">总金额:</span> <input class="num-input" /> <span class="range-sep">到</span> <input class="num-input" /> </div> <div class="flex items-center"> <span class="el-label">保证金:</span> <input class="num-input" /> <span class="range-sep">到</span> <input class="num-input" /> </div> <div class="flex items-center"> <span class="el-label">可用余额:</span> <input class="num-input" /> <span class="range-sep">到</span> <input class="num-input" /> </div> <!-- Row 4 --> <div class="flex items-center"> <span class="el-label">认证:</span> <div class="el-select flex-1"> <select> <option>请选择</option> <option>已认证</option> <option>未认证</option> </select> </div> </div> <div class="flex items-center col-span-2"> <span class="el-label">认证日期:</span> <div class="el-input flex-1"><input type="text" placeholder="开始时间 - 结束时间" /></div> </div> <div class="flex items-center justify-end gap-2"> <button class="el-btn"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>重置</button> <button class="el-btn el-btn-primary"><i data-lucide="search" class="w-3.5 h-3.5"></i>搜索</button> <button class="el-btn">导出账号</button> </div> </div> </div> <!-- Sort + Filter stats --> <div class="ant-card px-3 py-2 mb-3 flex items-center justify-between"> <div class="flex items-center gap-2"> <span class="text-slate-500">排序:</span> <span class="sort-pill active">注册时间</span> <span class="sort-pill">最近成交</span> </div> <div class="flex items-center gap-2 text-slate-500"> <span>过滤统计:</span> <div class="el-select" style="width:120px"> <select> <option>所有车型</option> <option>SUV</option> <option>轿车</option> </select> </div> <div class="el-select" style="width:120px"> <select> <option>所有地区</option> <option>华南</option> <option>华东</option> </select> </div> </div> </div> <!-- Table --> <div class="ant-card"> <div class="overflow-x-auto"> <table class="el-table"> <thead> <tr> <th>姓名</th> <th>买家性质</th> <th>跟进销售</th> <th>交易类型</th> <th>用户账号</th> <th>电话号码</th> <th>注册日期</th> <th>认证日期</th> <th>可用余额(元)</th> <th>保证金(元)</th> <th>总金额(元)</th> <th>地区</th> <th>来源</th> <th>最近成交日期</th> <th>今年成交数</th> <th>今年出价台数</th> <th>符合过滤数量 <i data-lucide="chevrons-up-down" class="w-3 h-3 inline"></i></th> </tr> </thead> <tbody id="buyerBody"></tbody> </table> </div> <!-- Pagination --> <div class="el-pagination"> <span class="total">共 252 条</span> <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button> <button class="pager-btn active">1</button> <button class="pager-btn">2</button> <button class="pager-btn">3</button> <span class="page-ellipsis">...</span> <button class="pager-btn">26</button> <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button> <span>跳至</span> <input class="page-jump-input" value="1" /> <span>页</span> </div> </div> </main> </div></div><div class="fixed top-2 right-4 z-50"> <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a></div><script src="../shared/member-config.js"></script><script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script><script> const buyers = [ { name:"郑园", level:"V2", authed:true, type:"个人买家", sales:"", tx:"活跃客户", acct:"m_6689475262079722", phone:"189****2868", reg:"2025-12-28", auth:"2026-03-08", balance:"0", deposit:"10000", total:"15000", region:"", src:"官网", lastDeal:"2026-03-20", yearDeal:3, yearBid:5, match:5 }, { name:"雷琨瑶", level:"V2", authed:true, type:"专业买家", sales:"", tx:"活跃客户", acct:"m_651857491114756", phone:"188****7205", reg:"2025-12-08", auth:"2025-12-10", balance:"0", deposit:"2000", total:"2000", region:"长沙", src:"rncwp", lastDeal:"2026-03-30", yearDeal:4, yearBid:15, match:24 }, { name:"霍学明", level:"V2", authed:true, type:"", sales:"", tx:"活跃客户", acct:"m_6416634018455373", phone:"139****2750", reg:"2025-11-26", auth:"2025-11-26", balance:"0", deposit:"0", total:"0", region:"", src:"rncwp", lastDeal:"2026-03-20", yearDeal:4, yearBid:13, match:13 }, { name:"谢亮塘", level:"V2", authed:true, type:"", sales:"林泰", tx:"活跃客户", acct:"m_6407157528166823", phone:"137****0863", reg:"2025-11-25", auth:"2025-11-25", balance:"0", deposit:"2000", total:"7000", region:"广州市", src:"mpcwp", lastDeal:"2026-04-12", yearDeal:4, yearBid:14, match:19 }, { name:"钟榴添", level:"V2", authed:true, type:"", sales:"林玉兰", tx:"活跃客户", acct:"m_6396874345283856", phone:"132****5301", reg:"2025-11-24", auth:"2025-11-24", balance:"5000", deposit:"6000", total:"11000", region:"广州市", src:"rncwp", lastDeal:"2026-04-13", yearDeal:11, yearBid:22, match:26 }, { name:"吴汉", level:"V2", authed:true, type:"", sales:"林泰", tx:"活跃客户", acct:"m_6335547257696285", phone:"156****3767", reg:"2025-11-17", auth:"2025-11-17", balance:"1000", deposit:"8000", total:"9000", region:"桂林", src:"车唯拍+小程序", lastDeal:"2026-03-25", yearDeal:3, yearBid:37, match:47 }, { name:"张恒", level:"V2", authed:true, type:"专业买家", sales:"", tx:"活跃客户", acct:"m_6232472062259752", phone:"187****2008", reg:"2025-11-05", auth:"2025-11-05", balance:"158.9", deposit:"14000", total:"19158.9", region:"榆林市", src:"mpcwp", lastDeal:"2026-04-06", yearDeal:8, yearBid:36, match:36, selected:true }, { name:"李景文", level:"V2", authed:true, type:"", sales:"", tx:"活跃客户", acct:"m_6230677848487069", phone:"156****8688", reg:"2025-11-05", auth:"2025-11-05", balance:"10000", deposit:"10000", total:"20000", region:"中山市", src:"mpcwp", lastDeal:"2026-03-25", yearDeal:7, yearBid:28, match:43 }, { name:"谢淋光", level:"V2", authed:true, type:"专业买家", sales:"林玉兰", tx:"活跃客户", acct:"m_6213868513004821", phone:"181****8785", reg:"2025-11-03", auth:"2025-11-03", balance:"0", deposit:"2000", total:"2000", region:"南宁", src:"mpcwp", lastDeal:"2026-03-27", yearDeal:7, yearBid:16, match:20 }, { name:"孙勇英", level:"V2", authed:true, type:"", sales:"", tx:"活跃客户", acct:"m_5996761059859518", phone:"130****0277", reg:"2025-10-09", auth:"2025-10-13", balance:"3000", deposit:"10000", total:"13000", region:"新乡", src:"rncwp", lastDeal:"2026-04-16", yearDeal:4, yearBid:20, match:39 }, ]; const fmtZero = (v) => v === "0" ? `<span class="zero-amount">0</span>` : v; const levelColor = (code) => window.MEMBER_CONFIG.getLevelByCode(code).color; const detailUrl = (b) => `bms-sales-buyer-detail.html?${new URLSearchParams({ name: b.name, phone: b.phone.replace(/\*/g,"8"), reg: b.reg + " 12:05:53", src: b.src, city: b.region || "", level: b.level, }).toString()}`; document.getElementById("buyerBody").innerHTML = buyers.map(b => ` <tr class="${b.selected ? 'row-selected' : ''}"> <td> <span class="name-cell"> <span class="lv-badge" style="background:${levelColor(b.level)}" title="客户等级 ${b.level}">${b.level}</span> ${b.authed ? `<span class="auth-icon" title="已实名认证"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i></span>` : ''} <a class="name-link" href="${detailUrl(b)}">${b.name}</a> </span> </td> <td>${b.type || ''}</td> <td>${b.sales || ''}</td> <td>${b.tx}</td> <td class="text-slate-500">${b.acct}</td> <td> <span class="phone-cell">${b.phone}<i data-lucide="link-2" class="w-3 h-3"></i></span> </td> <td>${b.reg}</td> <td>${b.auth}</td> <td>${fmtZero(b.balance)}</td> <td>${fmtZero(b.deposit)}</td> <td>${fmtZero(b.total)}</td> <td>${b.region || ''}</td> <td>${b.src}</td> <td>${b.lastDeal}</td> <td>${b.yearDeal}</td> <td>${b.yearBid}</td> <td>${b.match}</td> </tr> `).join(""); lucide.createIcons();
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-1 text-sm text-slate-600">
+        <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i><span>首页</span>
+        <span class="text-slate-300">/</span><span>销售管理</span>
+        <span class="text-slate-300">/</span><span class="font-medium">买家管理</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+        <span>ylj</span>
+      </div>
+    </header>
+
+    <main class="flex-1 p-3 overflow-auto">
+      <div class="ant-card p-3 mb-3">
+        <div class="grid grid-cols-4 gap-x-4 gap-y-2">
+          <div class="el-input"><input v-model="search.keyword" placeholder="请输入姓名/手机号/账号进行查询" /></div>
+          <div class="flex items-center"><span class="el-label">成交日期:</span><div class="el-input flex-1"><input type="date" v-model="search.dealStart" /></div><span class="range-sep">~</span><div class="el-input flex-1"><input type="date" v-model="search.dealEnd" /></div></div>
+          <div class="flex items-center"><span class="el-label">来源:</span><div class="el-select flex-1"><select v-model="search.src"><option>请选择来源</option><option>官网</option><option>rncwp</option><option>mpcwp</option><option>车唯拍+小程序</option></select></div></div>
+          <div class="flex items-center"><span class="el-label">跟进销售:</span><div class="el-input flex-1"><input v-model="search.sales" placeholder="输入手机/姓名,支持按关键字" /></div></div>
+
+          <div class="flex items-center"><span class="el-label">交易类型:</span><div class="el-select flex-1"><select v-model="search.tx"><option>请选择交易类型</option><option>活跃客户</option><option>沉默客户</option><option>新客户</option></select></div></div>
+          <div class="flex items-center"><span class="el-label">今年成交数:</span><input class="num-input" v-model="search.dealMin" /><span class="range-sep">到</span><input class="num-input" v-model="search.dealMax" /></div>
+          <div class="flex items-center"><span class="el-label">买家性质:</span><div class="el-select flex-1"><select v-model="search.type"><option>请选择买家性质</option><option>个人买家</option><option>专业买家</option></select></div></div>
+          <div class="flex items-center">
+            <span class="el-label">买家客户等级:</span>
+            <div class="flex-1 flex items-center border border-slate-200 rounded px-2" style="height:30px;">
+              <span v-if="levelChip" class="lv-chip">{{ levelChip }}<span class="x" @click="levelChip = ''">×</span></span>
+            </div>
+          </div>
+
+          <div class="flex items-center"><span class="el-label">注册时间:</span><div class="el-input flex-1"><input type="text" v-model="search.regRange" placeholder="开始时间 - 结束时间" /></div></div>
+          <div class="flex items-center"><span class="el-label">总金额:</span><input class="num-input" v-model="search.totalMin" /><span class="range-sep">到</span><input class="num-input" v-model="search.totalMax" /></div>
+          <div class="flex items-center"><span class="el-label">保证金:</span><input class="num-input" v-model="search.depositMin" /><span class="range-sep">到</span><input class="num-input" v-model="search.depositMax" /></div>
+          <div class="flex items-center"><span class="el-label">可用余额:</span><input class="num-input" v-model="search.balanceMin" /><span class="range-sep">到</span><input class="num-input" v-model="search.balanceMax" /></div>
+
+          <div class="flex items-center"><span class="el-label">认证:</span><div class="el-select flex-1"><select v-model="search.cert"><option>请选择</option><option>已认证</option><option>未认证</option></select></div></div>
+          <div class="flex items-center col-span-2"><span class="el-label">认证日期:</span><div class="el-input flex-1"><input type="text" v-model="search.certRange" placeholder="开始时间 - 结束时间" /></div></div>
+          <div class="flex items-center justify-end gap-2">
+            <button class="el-btn"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>重置</button>
+            <button class="el-btn el-btn-primary"><i data-lucide="search" class="w-3.5 h-3.5"></i>搜索</button>
+            <button class="el-btn">导出账号</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ant-card px-3 py-2 mb-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">排序:</span>
+          <span v-for="s in sorts" :key="s" :class="['sort-pill', { active: sortBy === s }]" @click="sortBy = s">{{ s }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-slate-500">
+          <span>过滤统计:</span>
+          <div class="el-select" style="width:120px"><select v-model="filter.model"><option>所有车型</option><option>SUV</option><option>轿车</option></select></div>
+          <div class="el-select" style="width:120px"><select v-model="filter.region"><option>所有地区</option><option>华南</option><option>华东</option></select></div>
+        </div>
+      </div>
+
+      <div class="ant-card">
+        <div class="overflow-x-auto">
+          <table class="el-table">
+            <thead>
+              <tr>
+                <th>姓名</th><th>买家性质</th><th>跟进销售</th><th>交易类型</th><th>用户账号</th>
+                <th>电话号码</th><th>注册日期</th><th>认证日期</th>
+                <th>可用余额(元)</th><th>保证金(元)</th><th>总金额(元)</th>
+                <th>地区</th><th>来源</th><th>最近成交日期</th>
+                <th>今年成交数</th><th>今年出价台数</th><th>符合过滤数量</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="b in buyers" :key="b.acct" :class="{ 'row-selected': b.selected }">
+                <td>
+                  <span class="name-cell">
+                    <span class="lv-badge" :style="{ background: levelColor(b.level) }" :title="'客户等级 ' + b.level">{{ b.level }}</span>
+                    <span v-if="b.authed" title="已实名认证"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-blue-500"></i></span>
+                    <a class="name-link" :href="detailUrl(b)">{{ b.name }}</a>
+                  </span>
+                </td>
+                <td>{{ b.type }}</td>
+                <td>{{ b.sales }}</td>
+                <td>{{ b.tx }}</td>
+                <td class="text-slate-500">{{ b.acct }}</td>
+                <td><span class="phone-cell">{{ b.phone }}<i data-lucide="link-2" class="w-3 h-3 text-slate-400"></i></span></td>
+                <td>{{ b.reg }}</td>
+                <td>{{ b.auth }}</td>
+                <td><span :class="{ 'zero-amount': b.balance === '0' }">{{ b.balance }}</span></td>
+                <td><span :class="{ 'zero-amount': b.deposit === '0' }">{{ b.deposit }}</span></td>
+                <td><span :class="{ 'zero-amount': b.total === '0' }">{{ b.total }}</span></td>
+                <td>{{ b.region }}</td>
+                <td>{{ b.src }}</td>
+                <td>{{ b.lastDeal }}</td>
+                <td>{{ b.yearDeal }}</td>
+                <td>{{ b.yearBid }}</td>
+                <td>{{ b.match }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="el-pagination">
+          <span class="total">共 252 条</span>
+          <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+          <button class="pager-btn active">1</button>
+          <button class="pager-btn">2</button>
+          <button class="pager-btn">3</button>
+          <span class="text-slate-400">...</span>
+          <button class="pager-btn">26</button>
+          <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          <span>跳至</span><input class="page-jump-input" value="1" /><span>页</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="fixed top-2 right-4 z-50">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="../shared/member-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, reactive, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+    const sortBy = ref('注册时间');
+    const sorts = ['注册时间','最近成交'];
+    const levelChip = ref('V2');
+
+    const search = reactive({ keyword:'', dealStart:'', dealEnd:'', src:'请选择来源', sales:'', tx:'请选择交易类型', dealMin:'', dealMax:'', type:'请选择买家性质', regRange:'', totalMin:'', totalMax:'', depositMin:'', depositMax:'', balanceMin:'', balanceMax:'', cert:'请选择', certRange:'' });
+    const filter = reactive({ model:'所有车型', region:'所有地区' });
+
+    const buyers = [
+      { name:"郑园", level:"V2", authed:true, type:"个人买家", sales:"", tx:"活跃客户", acct:"m_6689475262079722", phone:"189****2868", reg:"2025-12-28", auth:"2026-03-08", balance:"0", deposit:"10000", total:"15000", region:"", src:"官网", lastDeal:"2026-03-20", yearDeal:3, yearBid:5, match:5 },
+      { name:"雷琨瑶", level:"V2", authed:true, type:"专业买家", sales:"", tx:"活跃客户", acct:"m_651857491114756", phone:"188****7205", reg:"2025-12-08", auth:"2025-12-10", balance:"0", deposit:"2000", total:"2000", region:"长沙", src:"rncwp", lastDeal:"2026-03-30", yearDeal:4, yearBid:15, match:24 },
+      { name:"霍学明", level:"V2", authed:true, type:"", sales:"", tx:"活跃客户", acct:"m_6416634018455373", phone:"139****2750", reg:"2025-11-26", auth:"2025-11-26", balance:"0", deposit:"0", total:"0", region:"", src:"rncwp", lastDeal:"2026-03-20", yearDeal:4, yearBid:13, match:13 },
+      { name:"谢亮塘", level:"V2", authed:true, type:"", sales:"林泰", tx:"活跃客户", acct:"m_6407157528166823", phone:"137****0863", reg:"2025-11-25", auth:"2025-11-25", balance:"0", deposit:"2000", total:"7000", region:"广州市", src:"mpcwp", lastDeal:"2026-04-12", yearDeal:4, yearBid:14, match:19 },
+      { name:"钟榴添", level:"V2", authed:true, type:"", sales:"林玉兰", tx:"活跃客户", acct:"m_6396874345283856", phone:"132****5301", reg:"2025-11-24", auth:"2025-11-24", balance:"5000", deposit:"6000", total:"11000", region:"广州市", src:"rncwp", lastDeal:"2026-04-13", yearDeal:11, yearBid:22, match:26 },
+      { name:"吴汉", level:"V2", authed:true, type:"", sales:"林泰", tx:"活跃客户", acct:"m_6335547257696285", phone:"156****3767", reg:"2025-11-17", auth:"2025-11-17", balance:"1000", deposit:"8000", total:"9000", region:"桂林", src:"车唯拍+小程序", lastDeal:"2026-03-25", yearDeal:3, yearBid:37, match:47 },
+      { name:"张恒", level:"V2", authed:true, type:"专业买家", sales:"", tx:"活跃客户", acct:"m_6232472062259752", phone:"187****2008", reg:"2025-11-05", auth:"2025-11-05", balance:"158.9", deposit:"14000", total:"19158.9", region:"榆林市", src:"mpcwp", lastDeal:"2026-04-06", yearDeal:8, yearBid:36, match:36, selected:true },
+      { name:"李景文", level:"V2", authed:true, type:"", sales:"", tx:"活跃客户", acct:"m_6230677848487069", phone:"156****8688", reg:"2025-11-05", auth:"2025-11-05", balance:"10000", deposit:"10000", total:"20000", region:"中山市", src:"mpcwp", lastDeal:"2026-03-25", yearDeal:7, yearBid:28, match:43 },
+      { name:"谢淋光", level:"V2", authed:true, type:"专业买家", sales:"林玉兰", tx:"活跃客户", acct:"m_6213868513004821", phone:"181****8785", reg:"2025-11-03", auth:"2025-11-03", balance:"0", deposit:"2000", total:"2000", region:"南宁", src:"mpcwp", lastDeal:"2026-03-27", yearDeal:7, yearBid:16, match:20 },
+      { name:"孙勇英", level:"V2", authed:true, type:"", sales:"", tx:"活跃客户", acct:"m_5996761059859518", phone:"130****0277", reg:"2025-10-09", auth:"2025-10-13", balance:"3000", deposit:"10000", total:"13000", region:"新乡", src:"rncwp", lastDeal:"2026-04-16", yearDeal:4, yearBid:20, match:39 }
+    ];
+
+    function levelColor(code) { return CFG.getLevelByCode(code).color; }
+    function detailUrl(b) {
+      return `bms-sales-buyer-detail.html?${new URLSearchParams({
+        name:b.name, phone:b.phone.replace(/\*/g,'8'), reg:b.reg + ' 12:05:53',
+        src:b.src, city:b.region || '', level:b.level
+      }).toString()}`;
+    }
+
+    onMounted(() => lucide.createIcons());
+
+    return { sortBy, sorts, levelChip, search, filter, buyers, levelColor, detailUrl };
+  }
+}).mount('#app');
 </script>
 </body>
-</htmt>
+</html>

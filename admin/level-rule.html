@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>等级规则配置 · 唯普会员体系后台</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+  [v-cloak] { display:none; }
   .ant-sider { background: #001529; }
   .ant-sider a { color: rgba(255,255,255,.65); }
   .ant-sider a.active { background: #1677ff; color: #fff; }
@@ -24,6 +26,7 @@
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
 
   <aside class="ant-sider w-56 flex-none text-white">
@@ -34,13 +37,13 @@
       <a href="dashboard.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>运营仪表盘</span></a>
       <div class="px-6 py-2 text-xs text-white/40 mt-2">规则配置</div>
       <a href="level-rule.html" class="active flex items-center gap-3 px-6 py-2.5"><i data-lucide="settings" class="w-4 h-4"></i><span>等级规则</span></a>
-      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>金币规则</span></a>
+      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>积分规则</span></a>
       <a href="rewards.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="ticket-check" class="w-4 h-4"></i><span>权益卡管理</span></a>
       <div class="px-6 py-2 text-xs text-white/40 mt-2">业务数据</div>
       <a href="orders.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="receipt" class="w-4 h-4"></i><span>订单列表</span></a>
       <div class="px-6 py-2 text-xs text-white/40 mt-2">商户运营</div>
       <a href="members.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="users" class="w-4 h-4"></i><span>商户档案</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>金币流水</span></a>
+      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>积分流水</span></a>
       <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="gift" class="w-4 h-4"></i><span>兑换记录</span></a>
     </nav>
   </aside>
@@ -61,7 +64,6 @@
 
     <main class="flex-1 p-6 overflow-y-auto">
 
-      <!-- 页面头 -->
       <div class="mb-5">
         <h1 class="text-xl font-semibold text-slate-800">等级规则配置</h1>
         <p class="text-sm text-slate-500 mt-1">配置会员等级的台数门槛与评估周期。修改后将在下次结算时生效。</p>
@@ -69,7 +71,6 @@
 
       <div class="grid grid-cols-3 gap-5">
 
-        <!-- 左侧:定级门槛(由 shared/member-config.js 动态渲染) -->
         <div class="col-span-2 ant-card p-6">
           <div class="flex items-center justify-between mb-5">
             <div class="text-base font-semibold text-slate-800 flex items-center gap-2"><i data-lucide="ruler" class="w-5 h-5 text-violet-500"></i>定级门槛</div>
@@ -88,7 +89,27 @@
                 <th class="text-center py-3 font-medium">状态</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100" id="levelRuleTableBody"></tbody>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="lv in levels" :key="lv.code">
+                <td class="py-4"><span class="lv-badge" :style="{ background: lv.color }">{{ lv.short }}</span></td>
+                <td class="py-4"><input class="ant-input" v-model="lv.name" style="max-width:140px"></td>
+                <td class="py-4">
+                  <div class="flex items-center gap-2">
+                    <input class="ant-input" v-model.number="lv.threshold.dealsMin" type="number" style="max-width:90px">
+                    <span class="text-xs text-slate-500">台</span>
+                  </div>
+                </td>
+                <td class="py-4">
+                  <div class="flex items-center gap-2">
+                    <input class="ant-input" :value="maxVal(lv)" style="max-width:90px">
+                    <span class="text-xs text-slate-500">台</span>
+                  </div>
+                </td>
+                <td class="py-4"><input class="ant-input" :value="lv.threshold.accountMin || 0" type="number" style="max-width:120px"></td>
+                <td class="py-4 text-slate-600">{{ lv.merchantCount.toLocaleString() }}</td>
+                <td class="py-4 text-center"><span class="ant-tag ant-tag-green">启用</span></td>
+              </tr>
+            </tbody>
           </table>
 
           <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-end gap-3">
@@ -97,20 +118,19 @@
           </div>
         </div>
 
-        <!-- 右侧:评估周期 + 钻石规则 -->
         <div class="space-y-5">
 
           <div class="ant-card p-6">
-            <div class="text-base font-semibold text-slate-800 mb-4">🗓️ 评估周期</div>
+            <div class="text-base font-semibold text-slate-800 mb-4 inline-flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-violet-500"></i>评估周期</div>
             <div class="space-y-4">
               <div>
                 <label class="text-xs text-slate-500 block mb-1.5">统计窗口(月)</label>
-                <input class="ant-input" value="3" type="number">
-                <div class="text-[11px] text-slate-400 mt-1">当前:近 3 个月成交台数</div>
+                <input class="ant-input" v-model.number="window" type="number">
+                <div class="text-[11px] text-slate-400 mt-1">当前:近 {{ window }} 个月成交台数</div>
               </div>
               <div>
                 <label class="text-xs text-slate-500 block mb-1.5">结算频率</label>
-                <select class="ant-input">
+                <select class="ant-input" v-model="frequency">
                   <option>每月 1 日凌晨滚动重算</option>
                   <option>每季度末重算</option>
                 </select>
@@ -124,10 +144,15 @@
 
           <div class="ant-card p-6">
             <div class="flex items-center gap-2 mb-4">
-              <span class="text-base">📊</span>
+              <i data-lucide="pie-chart" class="w-4 h-4 text-violet-500"></i>
               <span class="text-base font-semibold text-slate-800">等级分布概览</span>
             </div>
-            <div class="space-y-3 text-sm" id="levelDistribution"></div>
+            <div class="space-y-3 text-sm">
+              <div v-for="lv in levels" :key="lv.code" class="flex items-center justify-between p-2 rounded hover:bg-slate-50">
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" :style="{ background: lv.color }"></span>{{ lv.short }} · {{ lv.name }}</span>
+                <span class="font-semibold">{{ lv.merchantCount.toLocaleString() }}</span>
+              </div>
+            </div>
             <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500 text-center">
               商户数据来自 26 年 1 季度成交商户的平台成交数据
             </div>
@@ -135,9 +160,8 @@
         </div>
       </div>
 
-      <!-- 规则变更历史 -->
       <div class="ant-card p-6 mt-5">
-        <div class="text-base font-semibold text-slate-800 mb-4">📋 规则变更历史</div>
+        <div class="text-base font-semibold text-slate-800 mb-4 inline-flex items-center gap-2"><i data-lucide="clipboard-list" class="w-4 h-4 text-violet-500"></i>规则变更历史</div>
         <table class="w-full text-sm">
           <thead class="text-xs text-slate-500 bg-slate-50">
             <tr>
@@ -148,17 +172,11 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <tr>
-              <td class="px-3 py-3 text-slate-600">2026-03-20 15:42</td>
-              <td class="px-3 py-3">V2 门槛从 8 台调整为 10 台</td>
-              <td class="px-3 py-3 text-slate-600">运营-小王</td>
-              <td class="px-3 py-3 text-slate-600">2026-04-01</td>
-            </tr>
-            <tr>
-              <td class="px-3 py-3 text-slate-600">2026-02-10 10:20</td>
-              <td class="px-3 py-3">新增钻石荣誉规则(V3 年度 TOP500)</td>
-              <td class="px-3 py-3 text-slate-600">产品-小李</td>
-              <td class="px-3 py-3 text-slate-600">2026-03-01</td>
+            <tr v-for="h in history" :key="h.time">
+              <td class="px-3 py-3 text-slate-600">{{ h.time }}</td>
+              <td class="px-3 py-3">{{ h.content }}</td>
+              <td class="px-3 py-3 text-slate-600">{{ h.by }}</td>
+              <td class="px-3 py-3 text-slate-600">{{ h.effect }}</td>
             </tr>
           </tbody>
         </table>
@@ -171,37 +189,37 @@
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="../shared/member-config.js"></script>
 <script>
-(function () {
-  var CFG = window.MEMBER_CONFIG;
-  // 定级门槛表格
-  document.getElementById('levelRuleTableBody').innerHTML = CFG.levels.map(function (lv) {
-    var t = lv.threshold;
-    var max = (t.dealsMax !== undefined && t.dealsMax > 0) ? t.dealsMax : (t.dealsMin === 0 ? 0 : '不限');
-    return '<tr>' +
-             '<td class="py-4"><span class="lv-badge" style="background:' + lv.color + '">' + lv.short + '</span></td>' +
-             '<td class="py-4"><input class="ant-input" value="' + lv.name + '" style="max-width:140px"></td>' +
-             '<td class="py-4"><div class="flex items-center gap-2"><input class="ant-input" value="' + t.dealsMin + '" type="number" style="max-width:90px"><span class="text-xs text-slate-500">台</span></div></td>' +
-             '<td class="py-4"><div class="flex items-center gap-2"><input class="ant-input" value="' + max + '" style="max-width:90px"><span class="text-xs text-slate-500">台</span></div></td>' +
-             '<td class="py-4"><input class="ant-input" value="' + (t.accountMin || 0) + '" type="number" style="max-width:120px"></td>' +
-             '<td class="py-4 text-slate-600">' + lv.merchantCount.toLocaleString() + '</td>' +
-             '<td class="py-4 text-center"><span class="ant-tag ant-tag-green">启用</span></td>' +
-           '</tr>';
-  }).join('');
+const { createApp, ref, onMounted } = Vue;
 
-  // 等级分布
-  document.getElementById('levelDistribution').innerHTML = CFG.levels.map(function (lv) {
-    return '<div class="flex items-center justify-between p-2 rounded hover:bg-slate-50">' +
-             '<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background:' + lv.color + '"></span>' + lv.short + ' · ' + lv.name + '</span>' +
-             '<span class="font-semibold">' + lv.merchantCount.toLocaleString() + '</span>' +
-           '</div>';
-  }).join('');
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+    const levels = ref(CFG.levels.map(lv => ({ ...lv, threshold: { ...lv.threshold } })));
+    const window = ref(3);
+    const frequency = ref('每月 1 日凌晨滚动重算');
 
-  lucide.createIcons();
-})();
+    const history = [
+      { time:'2026-03-20 15:42', content:'V2 门槛从 8 台调整为 10 台',        by:'运营-小王', effect:'2026-04-01' },
+      { time:'2026-02-10 10:20', content:'新增钻石荣誉规则(V3 年度 TOP500)', by:'产品-小李', effect:'2026-03-01' }
+    ];
+
+    function maxVal(lv) {
+      const t = lv.threshold;
+      if (t.dealsMax !== undefined && t.dealsMax > 0) return t.dealsMax;
+      if (t.dealsMin === 0) return 0;
+      return '不限';
+    }
+
+    onMounted(() => lucide.createIcons());
+
+    return { levels, window, frequency, history, maxVal };
+  }
+}).mount('#app');
 </script>
 </body>
 </html>

@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>订单列表 · 业务数据 · 唯普汽车</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+  [v-cloak] { display:none; }
 
-  /* Sider */
   .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
   .ant-sider .logo { background: #263445; }
   .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
@@ -23,11 +24,9 @@
   .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
   .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
 
-  /* Header */
   .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
   .breadcrumb-current { color: #f56c6c; }
 
-  /* Card / Form */
   .ant-card { background: #fff; border-radius: 2px; }
   .el-input, .el-select { position: relative; display: inline-flex; align-items: center; }
   .el-input input, .el-select select { width: 100%; height: 32px; padding: 0 12px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; line-height: 32px; outline: none; transition: border-color .15s; box-sizing: border-box; }
@@ -43,21 +42,18 @@
   .el-btn-success { background: #67c23a; color: #fff; border-color: #67c23a; }
   .el-btn-success:hover { background: #85ce61; color: #fff; border-color: #85ce61; }
 
-  /* Tabs */
   .el-tabs { border-bottom: 1px solid #e4e7ed; }
   .el-tab { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; font-size: 14px; color: #303133; cursor: pointer; position: relative; }
   .el-tab:hover { color: #409eff; }
   .el-tab.active { color: #409eff; font-weight: 500; }
   .el-tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #409eff; }
 
-  /* Table */
   .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; }
   .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 10px 10px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
   .el-table tbody td { padding: 10px 10px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; }
   .el-table tbody tr { cursor: pointer; }
   .el-table tbody tr:hover { background: #f5f7fa; }
   .plate-cell { display: inline-flex; align-items: center; gap: 4px; color: #606266; }
-  .plate-cell svg { color: #e6a23c; }
 
   .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
   .dot-red { background: #f56c6c; }
@@ -68,12 +64,10 @@
   .fee-link { color: #409eff; cursor: pointer; }
   .fee-link:hover { text-decoration: underline; }
 
-  /* Member level pill & popover */
   .buyer-cell { display: inline-flex; align-items: center; gap: 4px; justify-content: center; }
   .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #fff; line-height: 16px; cursor: pointer; }
   .lv-pill:hover { opacity: .85; }
-  .lv-popover-mask { position: fixed; inset: 0; z-index: 998; display: none; }
-  .lv-popover-mask.open { display: block; }
+  .lv-popover-mask { position: fixed; inset: 0; z-index: 998; }
   .lv-popover { position: fixed; z-index: 999; background: #fff; border: 1px solid #ebeef5; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,.12); width: 320px; overflow: hidden; }
   .lv-popover .lv-head { padding: 14px 16px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
   .lv-popover .lv-head .lv-name { font-size: 15px; font-weight: 600; }
@@ -89,7 +83,6 @@
   .lv-popover .benefit-row .benefit-label { font-size: 13px; color: #303133; font-weight: 500; }
   .lv-popover .benefit-row .benefit-desc { font-size: 11px; color: #909399; margin-top: 1px; line-height: 1.4; }
 
-  /* Pagination */
   .el-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 14px 16px; color: #606266; font-size: 13px; }
   .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; }
   .pager-btn:hover { color: #409eff; }
@@ -102,70 +95,47 @@
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
 
-  <!-- Sider -->
   <aside class="ant-sider flex flex-col">
     <div class="logo h-14 flex flex-col items-center justify-center">
       <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
       <div class="brand-sub">www.chevip.com</div>
     </div>
     <nav class="flex-1 overflow-y-auto">
-      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
 
-      <div class="menu-item open"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu">
-        <div class="sub-item">业务首页</div>
-        <div class="sub-item">拍卖管理</div>
-        <div class="sub-item">上拍审核</div>
+      <div :class="['menu-item', { open: openGroup === 'biz' }]" @click="toggleGroup('biz')"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div v-show="openGroup === 'biz'" class="submenu">
         <div class="sub-item active">订单列表</div>
-        <div class="sub-item" onclick="location.href='bms-users.html'">用户管理</div>
+        <a href="bms-users.html" class="sub-item">用户管理</a>
       </div>
 
-      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" style="display:none">
-        <div class="sub-item">销售首页</div>
+      <div :class="['menu-item', { open: openGroup === 'sales' }]" @click="toggleGroup('sales')"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div v-show="openGroup === 'sales'" class="submenu">
         <div class="sub-item">客户等级管理</div>
-        <div class="sub-item" onclick="location.href='bms-sales-buyers.html'">买家管理</div>
-        <div class="sub-item">B2C零售</div>
-        <div class="sub-item">门店奖励</div>
-        <div class="sub-item" onclick="location.href='bms-sales-orders.html'">销售订单</div>
+        <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
+        <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
       </div>
-      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" style="display:none">
-        <div class="sub-item">车辆签注列表</div>
+      <div :class="['menu-item', { open: openGroup === 'svc' }]" @click="toggleGroup('svc')"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div v-show="openGroup === 'svc'" class="submenu">
         <div class="sub-item">过户服务</div>
-        <div class="sub-item">订单管理</div>
         <div class="sub-item">衍生服务订单</div>
-        <div class="sub-item" onclick="location.href='bms-aftersales.html'">售后服务</div>
+        <a href="bms-aftersales.html" class="sub-item">售后服务</a>
       </div>
-      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     </nav>
   </aside>
 
-  <!-- Main -->
   <div class="flex-1 flex flex-col min-w-0">
 
-    <!-- Header -->
     <header class="ant-header flex items-center justify-between px-4">
       <div class="flex items-center gap-4 text-sm text-slate-600">
         <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
         <div class="flex items-center gap-1">
           <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span>首页</span>
-          <span class="text-slate-300">/</span>
+          <span>首页</span><span class="text-slate-300">/</span>
           <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span>业务数据</span>
-          <span class="text-slate-300">/</span>
+          <span>业务数据</span><span class="text-slate-300">/</span>
           <span class="breadcrumb-current font-medium">订单列表</span>
         </div>
       </div>
@@ -181,73 +151,20 @@
       </div>
     </header>
 
-    <!-- Content -->
     <main class="flex-1 p-4 overflow-auto">
 
-      <!-- Filters -->
       <div class="ant-card p-4 mb-3">
         <div class="grid grid-cols-5 gap-x-4 gap-y-3">
-          <!-- Row 1 -->
-          <div class="flex items-center">
-            <span class="el-label" style="width:58px">车牌:</span>
-            <div class="el-input flex-1"><input placeholder="车牌..." /></div>
-          </div>
-          <div class="flex items-center">
-            <span class="el-label" style="width:58px">用户:</span>
-            <div class="el-input flex-1"><input placeholder="用户登录名、姓名..." /></div>
-          </div>
-          <div class="flex items-center">
-            <span class="el-label" style="width:58px">VIN:</span>
-            <div class="el-input flex-1"><input placeholder="VIN..." /></div>
-          </div>
-          <div class="flex items-center">
-            <span class="el-label" style="width:70px">付款状态:</span>
-            <div class="el-select flex-1">
-              <select>
-                <option>请选择...</option>
-                <option>未收车款</option>
-                <option>已收车款</option>
-              </select>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <span class="el-label" style="width:70px">订单状态:</span>
-            <div class="el-select flex-1">
-              <select>
-                <option>请选择...</option>
-                <option>订单未完成</option>
-                <option>已完成已清算</option>
-              </select>
-            </div>
-          </div>
+          <div class="flex items-center"><span class="el-label" style="width:58px">车牌:</span><div class="el-input flex-1"><input v-model="search.plate" placeholder="车牌..." /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:58px">用户:</span><div class="el-input flex-1"><input v-model="search.user" placeholder="用户登录名、姓名..." /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:58px">VIN:</span><div class="el-input flex-1"><input v-model="search.vin" placeholder="VIN..." /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:70px">付款状态:</span><div class="el-select flex-1"><select v-model="search.payStatus"><option>请选择...</option><option>未收车款</option><option>已收车款</option></select></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:70px">订单状态:</span><div class="el-select flex-1"><select v-model="search.orderStatus"><option>请选择...</option><option>订单未完成</option><option>已完成已清算</option></select></div></div>
 
-          <!-- Row 2 -->
-          <div class="flex items-center">
-            <span class="el-label" style="width:58px">门店:</span>
-            <div class="el-input flex-1"><input placeholder="门店" /></div>
-          </div>
-          <div class="flex items-center">
-            <span class="el-label" style="width:70px">成交时间:</span>
-            <div class="el-input flex-1"><input type="date" value="2026-03-17" /></div>
-            <span class="date-sep">~</span>
-            <div class="el-input flex-1"><input type="date" placeholder="结束日期" /></div>
-          </div>
-          <div class="flex items-center col-span-2">
-            <span class="el-label" style="width:70px">收款时间:</span>
-            <div class="el-input flex-1"><input type="date" placeholder="开始日期" /></div>
-            <span class="date-sep">~</span>
-            <div class="el-input flex-1"><input type="date" placeholder="结束日期" /></div>
-          </div>
-          <div class="flex items-center">
-            <span class="el-label" style="width:90px">是否延期付款:</span>
-            <div class="el-select flex-1">
-              <select>
-                <option>请选择...</option>
-                <option>是</option>
-                <option>否</option>
-              </select>
-            </div>
-          </div>
+          <div class="flex items-center"><span class="el-label" style="width:58px">门店:</span><div class="el-input flex-1"><input v-model="search.store" placeholder="门店" /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:70px">成交时间:</span><div class="el-input flex-1"><input type="date" v-model="search.dealStart" /></div><span class="date-sep">~</span><div class="el-input flex-1"><input type="date" v-model="search.dealEnd" /></div></div>
+          <div class="flex items-center col-span-2"><span class="el-label" style="width:70px">收款时间:</span><div class="el-input flex-1"><input type="date" v-model="search.paidStart" /></div><span class="date-sep">~</span><div class="el-input flex-1"><input type="date" v-model="search.paidEnd" /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:90px">是否延期付款:</span><div class="el-select flex-1"><select v-model="search.delayed"><option>请选择...</option><option>是</option><option>否</option></select></div></div>
         </div>
 
         <div class="flex justify-end gap-2 mt-3">
@@ -256,54 +173,63 @@
         </div>
       </div>
 
-      <!-- Card: tabs + table -->
       <div class="ant-card">
-        <!-- Tabs -->
         <div class="el-tabs px-2">
-          <div class="el-tab active">竞价大厅</div>
-          <div class="el-tab">有保留价</div>
-          <div class="el-tab">顺序拍</div>
-          <div class="el-tab">好车直卖</div>
-          <div class="el-tab">专场拍</div>
-          <div class="el-tab">广交所</div>
-          <div class="el-tab">外部订单</div>
-          <div class="el-tab">报废专场</div>
-          <div class="el-tab">共享拍</div>
+          <div v-for="t in tabs" :key="t" :class="['el-tab', { active: activeTab === t }]" @click="activeTab = t">{{ t }}</div>
         </div>
 
-        <!-- Table -->
         <div class="overflow-x-auto">
           <table class="el-table">
             <thead>
               <tr>
-                <th>车牌</th>
-                <th>车型</th>
-                <th>成交时间</th>
-                <th>收款状态</th>
-                <th>订单状态</th>
-                <th>是否报废车</th>
-                <th>卖家</th>
-                <th>门店</th>
-                <th>买家</th>
-                <th>总价</th>
-                <th>成交价</th>
-                <th>服务费</th>
+                <th>车牌</th><th>车型</th><th>成交时间</th><th>收款状态</th><th>订单状态</th>
+                <th>是否报废车</th><th>卖家</th><th>门店</th><th>买家</th><th>总价</th><th>成交价</th><th>服务费</th>
               </tr>
             </thead>
-            <tbody id="orderBody"></tbody>
+            <tbody>
+              <tr v-for="(o, i) in orders" :key="i" @click="goDetail(o)">
+                <td>
+                  <span class="plate-cell">
+                    <i data-lucide="car" class="w-3.5 h-3.5 text-amber-500"></i>{{ o.plate }}
+                  </span>
+                </td>
+                <td style="text-align:left; max-width:200px;">{{ o.model }}</td>
+                <td>{{ o.deal }}</td>
+                <td>
+                  <div :class="isPaid(o) ? 'status-text-green' : 'status-text-red'">
+                    <span :class="['status-dot', isPaid(o) ? 'dot-green' : 'dot-red']"></span>{{ o.payStatus }}
+                  </div>
+                  <div v-if="o.payTime" class="text-xs text-slate-400 mt-0.5">{{ o.payTime }}</div>
+                </td>
+                <td>
+                  <div :class="isDone(o) ? 'status-text-green' : 'status-text-red'">
+                    <span :class="['status-dot', isDone(o) ? 'dot-green' : 'dot-red']"></span>{{ o.orderStatus }}
+                  </div>
+                  <div v-if="o.orderTime" class="text-xs text-slate-400 mt-0.5">{{ o.orderTime }}</div>
+                </td>
+                <td>{{ o.scrap }}</td>
+                <td>{{ o.seller }}</td>
+                <td>{{ o.store }}</td>
+                <td>
+                  <span class="buyer-cell">
+                    <span v-if="o.buyerLevel" class="lv-pill" :style="{ background: levelColor(o.buyerLevel) }" @click.stop="openPopover($event, o)">{{ o.buyerLevel }}</span>
+                    {{ o.buyer }}
+                  </span>
+                </td>
+                <td>{{ o.total }}</td>
+                <td>{{ o.price }}</td>
+                <td><span class="fee-link">{{ o.fee }}</span></td>
+              </tr>
+            </tbody>
           </table>
         </div>
-        <!-- Pagination -->
+
         <div class="el-pagination">
           <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
           <button class="pager-btn active">1</button>
           <button class="pager-btn">2</button>
           <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
-          <select class="page-size-select">
-            <option>10 条/页</option>
-            <option>20 条/页</option>
-            <option>50 条/页</option>
-          </select>
+          <select class="page-size-select"><option>10 条/页</option><option>20 条/页</option><option>50 条/页</option></select>
           <span>跳至</span>
           <input class="page-jump-input" value="1" />
           <span>页</span>
@@ -314,160 +240,110 @@
   </div>
 </div>
 
+<!-- 等级弹窗 -->
+<template v-if="popover.order">
+  <div class="lv-popover-mask" @click="closePopover"></div>
+  <div class="lv-popover" :style="{ left: popover.left + 'px', top: popover.top + 'px' }">
+    <div class="lv-head" :style="{ background: popoverHeadBg }">
+      <div>
+        <div class="lv-name">{{ popoverLv.name }}</div>
+        <div style="font-size:11px;opacity:.85;margin-top:2px">{{ popover.order.buyer }}</div>
+      </div>
+      <div class="lv-code">{{ popoverLv.short }}</div>
+    </div>
+    <div class="lv-coin">
+      <div>
+        <div class="lv-coin-label">积分余额</div>
+        <div class="lv-coin-num">{{ popover.order.buyerCoins || 0 }} <span style="font-size:12px;color:#909399;font-weight:400">积分</span></div>
+      </div>
+      <div class="lv-coin-yuan">≈ ¥ {{ popoverYuan }}</div>
+    </div>
+    <div class="lv-benefits">
+      <div class="lv-benefits-title">当前等级权益 · 共 {{ popoverLv.benefits.length }} 项</div>
+      <div v-for="b in popoverLv.benefits" :key="b.id" class="benefit-row">
+        <i :data-lucide="b.icon" class="w-4 h-4"></i>
+        <div>
+          <div class="benefit-label">{{ b.label }}</div>
+          <div class="benefit-desc">{{ b.desc }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <div class="fixed top-2 right-4 z-50">
   <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
-
-<!-- Member level popover -->
-<div id="lvMask" class="lv-popover-mask"></div>
-<div id="lvPopover" class="lv-popover" style="display:none"></div>
+</div><!-- /#app -->
 
 <script src="../shared/member-config.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  const orders = [
-    { plate: "粤AT1014", model: "比速 M3 2017款 1.5T 豪华型", deal: "2026-04-14 14:00", payStatus: "未收车款", orderStatus: "订单未完成", scrap: "否", seller: "2", store: "唯普广州Saas新模式体验店", buyer: "t7", buyerLevel: "V0", buyerCoins: 0, total: "2350.00", price: "1600.00", fee: "750.00" },
-    { plate: "鲁AF64114", model: "坦克 坦克400新能源 2.0T DHT Hi4", deal: "2026-04-13 10:37", payStatus: "未收车款", orderStatus: "订单未完成", scrap: "否", seller: "测试", store: "长城02", buyer: "张三143", buyerLevel: "V2", buyerCoins: 850, total: "11499.00", price: "10199.00", fee: "1300.00" },
-    { plate: "湘A213LK", model: "丰田 bZ3 2023款 616km 长续航PRO", deal: "2026-04-10 16:30", payStatus: "未收车款", orderStatus: "订单未完成", scrap: "否", seller: "测试", store: "查验测试3", buyer: "张三", buyerLevel: "V3", buyerCoins: 1280, total: "502500.00", price: "500200.00", fee: "2300.00" },
-    { plate: "湘N7E851", model: "哈弗 哈弗H1 1.5L 手动 豪华型", deal: "2026-04-10 14:13", payStatus: "未收车款", orderStatus: "订单未完成", scrap: "否", seller: "测试", store: "长城02", buyer: "张三", buyerLevel: "V3", buyerCoins: 1280, total: "7500.00", price: "6200.00", fee: "1300.00" },
-    { plate: "浙A121KA", model: "大众 Arteon 2022款 2.0T Shooting Brake R-Line", deal: "2026-04-09 16:00", payStatus: "未收车款", orderStatus: "订单未完成", scrap: "否", seller: "测试", store: "查验测试3", buyer: "麦依", buyerLevel: "V1", buyerCoins: 210, total: "43720.00", price: "41420.00", fee: "2300.00" },
-    { plate: "津A12345", model: "比亚迪 宋PLUS 2020款 1.5T 自动豪华型", deal: "2026-04-09 15:44", payStatus: "已收车款", payTime: "2026-04-09 15:45", orderStatus: "已完成已清算", orderTime: "2026-04-09 15:45", scrap: "否", seller: "肖少薇", store: "演示门店", buyer: "产品测试1", buyerLevel: "V2", buyerCoins: 620, total: "11300.00", price: "9000.00", fee: "2300.00" },
-    { plate: "粤AT1013", model: "本田 CR-Z(进口) 2012款 hybrid", deal: "2026-04-09 11:35", payStatus: "已收车款", payTime: "2026-04-09 11:38", orderStatus: "已完成已清算", orderTime: "2026-04-09 11:38", scrap: "否", seller: "2", store: "唯普广州Saas新模式体验店", buyer: "唯普t3", buyerLevel: "V1", buyerCoins: 160, total: "2250.00", price: "1500.00", fee: "750.00" },
-    { plate: "粤AT1012", model: "北汽制造 勇士皮卡 2022款 2.4T柴油四驱 3695轴距分体双排三翻YCY24140-60A", deal: "2026-04-08 17:18", payStatus: "未收车款", orderStatus: "订单未完成", scrap: "否", seller: "2", store: "唯普广州Saas新模式体验店", buyer: "唯普t3", buyerLevel: "V1", buyerCoins: 160, total: "2050.00", price: "1400.00", fee: "650.00" },
-    { plate: "粤AT1011", model: "长城 C50 2016款 1.5T 手动舒适型", deal: "2026-04-08 16:52", payStatus: "已收车款", payTime: "2026-04-08 17:24", orderStatus: "已完成已清算", orderTime: "2026-04-08 17:24", scrap: "否", seller: "2", store: "唯普广州Saas新模式体验店", buyer: "唯普t3", buyerLevel: "V1", buyerCoins: 160, total: "2050.00", price: "1300.00", fee: "750.00" },
-    { plate: "粤AT1009", model: "富奇 富奇 2001款 3.4 自动", deal: "2026-04-08 15:16", payStatus: "已收车款", payTime: "2026-04-08 15:27", orderStatus: "已完成已清算", orderTime: "2026-04-08 15:27", scrap: "否", seller: "2", store: "唯普广州Saas新模式体验店", buyer: "唯普t3", buyerLevel: "V1", buyerCoins: 160, total: "20000.00", price: "19200.00", fee: "800.00" },
-  ];
+const { createApp, ref, reactive, computed, watch, nextTick, onMounted } = Vue;
 
-  const isPaid = (o) => o.payStatus === "已收车款";
-  const isDone = (o) => o.orderStatus === "已完成已清算";
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+    const openGroup = ref('biz');
+    const activeTab = ref('竞价大厅');
+    const tabs = ['竞价大厅','有保留价','顺序拍','好车直卖','专场拍','广交所','外部订单','报废专场','共享拍'];
+    const search = reactive({ plate:'', user:'', vin:'', payStatus:'请选择...', orderStatus:'请选择...', store:'', dealStart:'2026-03-17', dealEnd:'', paidStart:'', paidEnd:'', delayed:'请选择...' });
 
-  const buildDetailUrl = (o) => {
-    const params = new URLSearchParams({
-      plate: o.plate, model: o.model, deal: o.deal,
-      total: o.total, price: o.price, fee: o.fee,
-      payStatus: o.payStatus, orderStatus: o.orderStatus,
-      seller: o.seller, store: o.store, buyer: o.buyer,
-      buyerLevel: o.buyerLevel || "V0", buyerCoins: o.buyerCoins || 0,
-    });
-    return `bms-order-detail.html?${params.toString()}`;
-  };
+    const orders = [
+      { plate:"粤AT1014", model:"比速 M3 2017款 1.5T 豪华型", deal:"2026-04-14 14:00", payStatus:"未收车款", orderStatus:"订单未完成", scrap:"否", seller:"2", store:"唯普广州Saas新模式体验店", buyer:"t7", buyerLevel:"V0", buyerCoins:0, total:"2350.00", price:"1600.00", fee:"750.00" },
+      { plate:"鲁AF64114", model:"坦克 坦克400新能源 2.0T DHT Hi4", deal:"2026-04-13 10:37", payStatus:"未收车款", orderStatus:"订单未完成", scrap:"否", seller:"测试", store:"长城02", buyer:"张三143", buyerLevel:"V2", buyerCoins:850, total:"11499.00", price:"10199.00", fee:"1300.00" },
+      { plate:"湘A213LK", model:"丰田 bZ3 2023款 616km 长续航PRO", deal:"2026-04-10 16:30", payStatus:"未收车款", orderStatus:"订单未完成", scrap:"否", seller:"测试", store:"查验测试3", buyer:"张三", buyerLevel:"V3", buyerCoins:1280, total:"502500.00", price:"500200.00", fee:"2300.00" },
+      { plate:"湘N7E851", model:"哈弗 哈弗H1 1.5L 手动 豪华型", deal:"2026-04-10 14:13", payStatus:"未收车款", orderStatus:"订单未完成", scrap:"否", seller:"测试", store:"长城02", buyer:"张三", buyerLevel:"V3", buyerCoins:1280, total:"7500.00", price:"6200.00", fee:"1300.00" },
+      { plate:"浙A121KA", model:"大众 Arteon 2022款 2.0T Shooting Brake R-Line", deal:"2026-04-09 16:00", payStatus:"未收车款", orderStatus:"订单未完成", scrap:"否", seller:"测试", store:"查验测试3", buyer:"麦依", buyerLevel:"V1", buyerCoins:210, total:"43720.00", price:"41420.00", fee:"2300.00" },
+      { plate:"津A12345", model:"比亚迪 宋PLUS 2020款 1.5T 自动豪华型", deal:"2026-04-09 15:44", payStatus:"已收车款", payTime:"2026-04-09 15:45", orderStatus:"已完成已清算", orderTime:"2026-04-09 15:45", scrap:"否", seller:"肖少薇", store:"演示门店", buyer:"产品测试1", buyerLevel:"V2", buyerCoins:620, total:"11300.00", price:"9000.00", fee:"2300.00" },
+      { plate:"粤AT1013", model:"本田 CR-Z(进口) 2012款 hybrid", deal:"2026-04-09 11:35", payStatus:"已收车款", payTime:"2026-04-09 11:38", orderStatus:"已完成已清算", orderTime:"2026-04-09 11:38", scrap:"否", seller:"2", store:"唯普广州Saas新模式体验店", buyer:"唯普t3", buyerLevel:"V1", buyerCoins:160, total:"2250.00", price:"1500.00", fee:"750.00" },
+      { plate:"粤AT1012", model:"北汽制造 勇士皮卡 2022款 2.4T柴油四驱 3695轴距分体双排三翻YCY24140-60A", deal:"2026-04-08 17:18", payStatus:"未收车款", orderStatus:"订单未完成", scrap:"否", seller:"2", store:"唯普广州Saas新模式体验店", buyer:"唯普t3", buyerLevel:"V1", buyerCoins:160, total:"2050.00", price:"1400.00", fee:"650.00" },
+      { plate:"粤AT1011", model:"长城 C50 2016款 1.5T 手动舒适型", deal:"2026-04-08 16:52", payStatus:"已收车款", payTime:"2026-04-08 17:24", orderStatus:"已完成已清算", orderTime:"2026-04-08 17:24", scrap:"否", seller:"2", store:"唯普广州Saas新模式体验店", buyer:"唯普t3", buyerLevel:"V1", buyerCoins:160, total:"2050.00", price:"1300.00", fee:"750.00" },
+      { plate:"粤AT1009", model:"富奇 富奇 2001款 3.4 自动", deal:"2026-04-08 15:16", payStatus:"已收车款", payTime:"2026-04-08 15:27", orderStatus:"已完成已清算", orderTime:"2026-04-08 15:27", scrap:"否", seller:"2", store:"唯普广州Saas新模式体验店", buyer:"唯普t3", buyerLevel:"V1", buyerCoins:160, total:"20000.00", price:"19200.00", fee:"800.00" }
+    ];
 
-  const getLevel = (code) => window.MEMBER_CONFIG.getLevelByCode(code);
+    function toggleGroup(g) { openGroup.value = openGroup.value === g ? '' : g; }
+    function isPaid(o) { return o.payStatus === '已收车款'; }
+    function isDone(o) { return o.orderStatus === '已完成已清算'; }
+    function levelColor(code) { return CFG.getLevelByCode(code).color; }
 
-  const body = document.getElementById("orderBody");
-  body.innerHTML = orders.map((o, i) => `
-    <tr data-idx="${i}">
-      <td>
-        <span class="plate-cell">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16 3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
-          ${o.plate}
-        </span>
-      </td>
-      <td class="text-left" style="text-align:left; max-width:200px;">${o.model}</td>
-      <td>${o.deal}</td>
-      <td>
-        <div class="${isPaid(o) ? 'status-text-green' : 'status-text-red'}">
-          <span class="status-dot ${isPaid(o) ? 'dot-green' : 'dot-red'}"></span>${o.payStatus}
-        </div>
-        ${o.payTime ? `<div class="text-xs text-slate-400 mt-0.5">${o.payTime}</div>` : ''}
-      </td>
-      <td>
-        <div class="${isDone(o) ? 'status-text-green' : 'status-text-red'}">
-          <span class="status-dot ${isDone(o) ? 'dot-green' : 'dot-red'}"></span>${o.orderStatus}
-        </div>
-        ${o.orderTime ? `<div class="text-xs text-slate-400 mt-0.5">${o.orderTime}</div>` : ''}
-      </td>
-      <td>${o.scrap}</td>
-      <td>${o.seller}</td>
-      <td>${o.store}</td>
-      <td>
-        <span class="buyer-cell">
-          ${o.buyerLevel ? `<span class="lv-pill" data-lv-row="${i}" style="background:${getLevel(o.buyerLevel).color}">${o.buyerLevel}</span>` : ''}
-          ${o.buyer}
-        </span>
-      </td>
-      <td>${o.total}</td>
-      <td>${o.price}</td>
-      <td><span class="fee-link">${o.fee}</span></td>
-    </tr>
-  `).join("");
-
-  body.addEventListener("click", (e) => {
-    // Clicking the level pill opens popover instead of navigating
-    const pill = e.target.closest(".lv-pill[data-lv-row]");
-    if (pill) {
-      e.stopPropagation();
-      const rowIdx = Number(pill.dataset.lvRow);
-      openLevelPopover(pill, orders[rowIdx]);
-      return;
+    function goDetail(o) {
+      const params = new URLSearchParams({
+        plate:o.plate, model:o.model, deal:o.deal,
+        total:o.total, price:o.price, fee:o.fee,
+        payStatus:o.payStatus, orderStatus:o.orderStatus,
+        seller:o.seller, store:o.store, buyer:o.buyer,
+        buyerLevel:o.buyerLevel||'V0', buyerCoins:o.buyerCoins||0
+      });
+      location.href = 'bms-order-detail.html?' + params.toString();
     }
-    const tr = e.target.closest("tr[data-idx]");
-    if (!tr) return;
-    const idx = Number(tr.dataset.idx);
-    const o = orders[idx];
-    if (!o) return;
-    window.location.href = buildDetailUrl(o);
-  });
 
-  // ── Level popover ──
-  const popover = document.getElementById("lvPopover");
-  const mask = document.getElementById("lvMask");
-  mask.addEventListener("click", closeLevelPopover);
+    const popover = reactive({ order:null, left:0, top:0 });
+    const popoverLv = computed(() => popover.order ? CFG.getLevelByCode(popover.order.buyerLevel) : null);
+    const popoverYuan = computed(() => popover.order ? CFG.yuanFromCoin(popover.order.buyerCoins || 0) : '0');
+    const popoverHeadBg = computed(() => popoverLv.value ? `linear-gradient(135deg, ${popoverLv.value.gradient[0]}, ${popoverLv.value.gradient[1]})` : '');
 
-  function closeLevelPopover() {
-    popover.style.display = "none";
-    mask.classList.remove("open");
+    function openPopover(e, order) {
+      popover.order = order;
+      nextTick(() => {
+        lucide.createIcons();
+        const rect = e.target.getBoundingClientRect();
+        const popW = 320;
+        let left = rect.left + rect.width/2 - popW/2;
+        left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+        popover.left = left;
+        popover.top = rect.bottom + 6;
+      });
+    }
+    function closePopover() { popover.order = null; }
+
+    watch([openGroup, activeTab, popover], () => nextTick(() => lucide.createIcons()));
+
+    onMounted(() => lucide.createIcons());
+
+    return { CFG, openGroup, toggleGroup, activeTab, tabs, search, orders, isPaid, isDone, levelColor, goDetail, popover, popoverLv, popoverYuan, popoverHeadBg, openPopover, closePopover };
   }
-
-  function openLevelPopover(anchor, order) {
-    const lv = getLevel(order.buyerLevel);
-    const coins = order.buyerCoins || 0;
-    const yuan = window.MEMBER_CONFIG.yuanFromCoin(coins);
-    const grad = `linear-gradient(135deg, ${lv.gradient[0]}, ${lv.gradient[1]})`;
-    popover.innerHTML = `
-      <div class="lv-head" style="background:${grad}">
-        <div>
-          <div class="lv-name">${lv.name}</div>
-          <div style="font-size:11px;opacity:.85;margin-top:2px">${order.buyer}</div>
-        </div>
-        <div class="lv-code">${lv.short}</div>
-      </div>
-      <div class="lv-coin">
-        <div>
-          <div class="lv-coin-label">唯金币余额</div>
-          <div class="lv-coin-num">${coins} <span style="font-size:12px;color:#909399;font-weight:400">金币</span></div>
-        </div>
-        <div class="lv-coin-yuan">≈ ¥ ${yuan}</div>
-      </div>
-      <div class="lv-benefits">
-        <div class="lv-benefits-title">当前等级权益 · 共 ${lv.benefits.length} 项</div>
-        ${lv.benefits.map(b => `
-          <div class="benefit-row">
-            <i data-lucide="${b.icon}" class="w-4 h-4"></i>
-            <div>
-              <div class="benefit-label">${b.label}</div>
-              <div class="benefit-desc">${b.desc}</div>
-            </div>
-          </div>
-        `).join("")}
-      </div>
-    `;
-    // Position near the pill
-    popover.style.display = "block";
-    mask.classList.add("open");
-    const rect = anchor.getBoundingClientRect();
-    const popW = 320;
-    let left = rect.left + rect.width / 2 - popW / 2;
-    left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
-    const popH = popover.offsetHeight;
-    let top = rect.bottom + 6;
-    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 6;
-    popover.style.left = left + "px";
-    popover.style.top = top + "px";
-    lucide.createIcons();
-  }
-
-  lucide.createIcons();
+}).mount('#app');
 </script>
 </body>
 </html>

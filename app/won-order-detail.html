@@ -5,39 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>订单详情 · 唯车拍</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
   .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 88px; }
-  @media (min-width: 768px) {
-    body { background: #f5f5f7; padding: 24px 0; }
-    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
-  }
-  .section-title {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 15px; font-weight: 600; color: #111827;
-    padding: 14px 16px 10px;
-  }
+  @media (min-width: 768px) { body { background: #f5f5f7; padding: 24px 0; } .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; } }
+  [v-cloak] { display:none; }
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #111827; padding: 14px 16px 10px; }
   .row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 14px; }
   .row .lbl { color: #475569; }
   .row .val { color: #111827; }
   .row .val.muted { color: #94a3b8; }
-  .btn-out {
-    flex: 1; height: 40px; border-radius: 999px;
-    background: #f1f3f5; color: #6b7280; font-size: 14px;
-    display: inline-flex; align-items: center; justify-content: center;
-  }
-  .btn-pri {
-    flex: 1; height: 40px; border-radius: 999px;
-    background: #fde2e2; color: #ef4444; font-size: 14px; font-weight: 500;
-    display: inline-flex; align-items: center; justify-content: center;
-  }
+  .btn-out { flex: 1; height: 40px; border-radius: 999px; background: #f1f3f5; color: #6b7280; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
+  .btn-pri { flex: 1; height: 40px; border-radius: 999px; background: #fde2e2; color: #ef4444; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="phone-shell">
 
-  <!-- 状态栏 -->
   <div class="flex items-center justify-between px-5 pt-2 text-[13px] text-slate-700">
     <span>11:32</span>
     <span class="flex items-center gap-1 opacity-70">
@@ -48,11 +35,8 @@
     </span>
   </div>
 
-  <!-- 头部 -->
   <div class="flex items-center justify-between px-4 py-3 bg-white">
-    <button type="button" onclick="smartBack('won-orders.html')" class="text-slate-800">
-      <i data-lucide="chevron-left" class="w-6 h-6"></i>
-    </button>
+    <button type="button" @click="back" class="text-slate-800"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
     <span class="text-[17px] font-semibold text-slate-900">订单详情</span>
     <span class="w-6"></span>
   </div>
@@ -60,12 +44,10 @@
   <!-- 车辆概要 -->
   <div class="bg-white">
     <div class="px-4 pt-4 pb-3 flex gap-3">
-      <img id="carImg" src="https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=400&q=70"
-           onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-28 h-24 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0',innerHTML:'<i data-lucide=\u0027car\u0027 class=\u0027w-10 h-10 text-slate-400\u0027></i>'}));lucide.createIcons();"
-           class="w-28 h-24 rounded-lg object-cover flex-shrink-0" alt="car">
+      <img :src="carImg" @error="imgFallback" class="w-28 h-24 rounded-lg object-cover flex-shrink-0" alt="car">
       <div class="flex-1 min-w-0">
-        <div class="text-[14px] text-slate-900 leading-snug" id="carTitle">保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T</div>
-        <div class="text-right text-[16px] font-semibold text-slate-900 mt-2" id="topPrice">¥3000.00</div>
+        <div class="text-[14px] text-slate-900 leading-snug">{{ carTitle }}</div>
+        <div class="text-right text-[16px] font-semibold text-slate-900 mt-2">¥{{ totalPrice.toFixed(2) }}</div>
         <div class="text-right text-[12px] text-rose-500 mt-1">订单剩余有效时间:支付超时</div>
       </div>
     </div>
@@ -82,30 +64,24 @@
 
   <!-- 付款详情 -->
   <div class="bg-white mt-3">
-    <div class="section-title">
-      <i data-lucide="wallet" class="w-4 h-4 text-slate-700"></i>
-      <span>付款详情</span>
-    </div>
+    <div class="section-title"><i data-lucide="wallet" class="w-4 h-4 text-slate-700"></i><span>付款详情</span></div>
     <div class="pb-3">
-      <div class="row"><span class="lbl">成交价</span><span class="val" id="dealPrice">¥2500.00</span></div>
+      <div class="row"><span class="lbl">成交价</span><span class="val">¥{{ (totalPrice - 500).toFixed(2) }}</span></div>
       <div class="row"><span class="lbl">手续费</span><span class="val">¥200.00</span></div>
       <div class="row"><span class="lbl">平台使用费</span><span class="val">¥300.00</span></div>
       <div class="row"><span class="lbl">综合服务费</span><span class="val muted">¥0</span></div>
       <div class="row"><span class="lbl">交付服务费</span><span class="val muted">¥0</span></div>
       <div class="row"><span class="lbl">评估费</span><span class="val muted">¥0</span></div>
       <div class="row"><span class="lbl">其他</span><span class="val muted">¥0</span></div>
-      <div class="row"><span class="lbl">订单总价</span><span class="val text-rose-500 font-semibold" id="totalPrice">¥3000.00</span></div>
+      <div class="row"><span class="lbl">订单总价</span><span class="val text-rose-500 font-semibold">¥{{ totalPrice.toFixed(2) }}</span></div>
     </div>
   </div>
 
   <!-- 订单详情 -->
   <div class="bg-white mt-3">
-    <div class="section-title">
-      <i data-lucide="file-text" class="w-4 h-4 text-slate-700"></i>
-      <span>订单详情</span>
-    </div>
+    <div class="section-title"><i data-lucide="file-text" class="w-4 h-4 text-slate-700"></i><span>订单详情</span></div>
     <div class="pb-3">
-      <div class="row"><span class="lbl">订单号:</span><span class="val text-slate-500" id="orderId">9026030672789758632</span></div>
+      <div class="row"><span class="lbl">订单号:</span><span class="val text-slate-500">{{ orderId }}</span></div>
       <div class="row"><span class="lbl">成交时间:</span><span class="val text-slate-500">2026-03-06 17:35:59</span></div>
       <div class="row"><span class="lbl">支付时间:</span><span class="text-blue-500">待支付</span></div>
       <div class="row items-start">
@@ -117,10 +93,7 @@
 
   <!-- 违章情况 -->
   <div class="bg-white mt-3">
-    <div class="section-title">
-      <i data-lucide="alert-circle" class="w-4 h-4 text-slate-700"></i>
-      <span>违章情况</span>
-    </div>
+    <div class="section-title"><i data-lucide="alert-circle" class="w-4 h-4 text-slate-700"></i><span>违章情况</span></div>
     <div class="pb-4">
       <div class="row"><span class="lbl">是否有违章:</span><span class="val">无</span></div>
     </div>
@@ -130,7 +103,7 @@
 
 <!-- 底部操作栏 -->
 <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 px-3 py-3 flex gap-2">
-  <button class="btn-out" onclick="location.href='aftersale-apply.html?id=' + (new URLSearchParams(location.search).get('id') || '')">申请售后</button>
+  <a :href="'aftersale-apply.html?id=' + orderId" class="btn-out">申请售后</a>
   <button class="btn-pri">确认过户对象</button>
   <button class="btn-pri">立即支付</button>
 </div>
@@ -138,41 +111,51 @@
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script>
-  lucide.createIcons();
-  const params = new URLSearchParams(location.search);
-  const orderId = params.get('id');
-  if (orderId) document.getElementById('orderId').textContent = orderId;
-  const total = params.get('total');
-  if (total) {
-    const t = '¥' + parseFloat(total).toFixed(2);
-    document.getElementById('topPrice').textContent = t;
-    document.getElementById('totalPrice').textContent = t;
-    const deal = (parseFloat(total) - 500).toFixed(2);
-    document.getElementById('dealPrice').textContent = '¥' + deal;
-  }
-  const imgMap = {
-    bmw: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=70',
-    panamera1: 'https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=600&q=70',
-    panamera2: 'https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?auto=format&fit=crop&w=600&q=70',
-    buick: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600&q=70'
-  };
-  const titleMap = {
-    bmw: '宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型',
-    panamera1: '保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T',
-    panamera2: '保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T',
-    buick: '别克 E4 2023款 智享版'
-  };
-  const imgKey = params.get('img');
-  if (imgKey && imgMap[imgKey]) {
-    const carImg = document.getElementById('carImg');
-    if (carImg) carImg.src = imgMap[imgKey];
-    document.getElementById('carTitle').textContent = titleMap[imgKey];
-  }
-</script>
+const { createApp, ref, onMounted } = Vue;
 
+createApp({
+  setup() {
+    const params = new URLSearchParams(location.search);
+
+    const imgMap = {
+      bmw:       'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=70',
+      panamera1: 'https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=600&q=70',
+      panamera2: 'https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?auto=format&fit=crop&w=600&q=70',
+      buick:     'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600&q=70'
+    };
+    const titleMap = {
+      bmw:       '宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型',
+      panamera1: '保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T',
+      panamera2: '保时捷 Panamera(进口) 2014款 保时捷Panamera 3.0T',
+      buick:     '别克 E4 2023款 智享版'
+    };
+
+    const imgKey = params.get('img');
+    const orderId = ref(params.get('id') || '9026030672789758632');
+    const totalPrice = ref(parseFloat(params.get('total')) || 3000);
+    const carImg = ref(imgMap[imgKey] || imgMap.panamera1);
+    const carTitle = ref(titleMap[imgKey] || titleMap.panamera1);
+
+    function imgFallback(e) {
+      const div = document.createElement('div');
+      div.className = 'w-28 h-24 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0';
+      div.innerHTML = '<i data-lucide="car" class="w-10 h-10 text-slate-400"></i>';
+      e.target.replaceWith(div);
+      window.lucide && lucide.createIcons();
+    }
+
+    function back() { smartBack('won-orders.html'); }
+
+    onMounted(() => lucide.createIcons());
+
+    return { orderId, totalPrice, carImg, carTitle, imgFallback, back };
+  }
+}).mount('#app');
+</script>
 </body>
 </html>

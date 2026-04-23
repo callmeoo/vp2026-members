@@ -1,4 +1,257 @@
-  
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>销售订单 · 销售管理 · 唯普汽车</title><script src="https://cdn.tailwindcss.com"></script><style> body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; } /* Sider */ .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; } .ant-sider .logo { background: #263445; } .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; } .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; } .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; } .ant-sider .menu-item:hover { background: #263445; color: #fff; } .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; } .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; } .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); } .ant-sider .submenu { background: #1f2d3d; } .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; } .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; } .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; } /* Header */ .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; } .breadcrumb-current { color: #f56c6c; } /* Card / Form */ .ant-card { background: #fff; border-radius: 2px; } .el-input, .el-select { position: relative; display: inline-flex; align-items: center; } .el-input input, .el-select select { width: 100%; height: 32px; padding: 0 12px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; line-height: 32px; outline: none; transition: border-color .15s; box-sizing: border-box; } .el-input input:focus, .el-select select:focus { border-color: #409eff; } .el-input input::placeholder { color: #c0c4cc; } .el-label { color: #606266; font-size: 13px; line-height: 32px; text-align: right; padding-right: 8px; white-space: nowrap; } .date-sep { color: #c0c4cc; padding: 0 6px; font-size: 12px; } .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; } .el-btn:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; } .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; } .el-btn-primary:hover { background: #66b1ff; color: #fff; border-color: #66b1ff; } .el-btn-success { background: #67c23a; color: #fff; border-color: #67c23a; } .el-btn-success:hover { background: #85ce61; color: #fff; border-color: #85ce61; } /* Tabs */ .el-tabs { border-bottom: 1px solid #e4e7ed; } .el-tab { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; font-size: 14px; color: #303133; cursor: pointer; position: relative; } .el-tab:hover { color: #409eff; } .el-tab.active { color: #409eff; font-weight: 500; } .el-tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #409eff; } /* Table */ .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; } .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 10px 10px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; } .el-table tbody td { padding: 10px 10px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; } .el-table tbody tr { cursor: pointer; } .el-table tbody tr:hover { background: #f5f7fa; } .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; vertical-align: middle; } .dot-red { background: #f56c6c; } .dot-green { background: #67c23a; } .dot-blue { background: #409eff; } .status-text-red { color: #f56c6c; } .status-text-green { color: #67c23a; } .status-text-blue { color: #409eff; } /* Pagination */ .el-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 14px 16px; color: #606266; font-size: 13px; } .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; } .pager-btn:hover { color: #409eff; } .pager-btn.active { background: #409eff; color: #fff; } .pager-arrow { min-width: 28px; height: 28px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; } .pager-arrow:hover { color: #409eff; } .page-size-select { height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 8px; background: #fff; color: #606266; font-size: 13px; outline: none; } .page-jump-input { width: 48px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; }</style></head><body><div class="flex min-h-screen"> <!-- Sider --> <aside class="ant-sider flex flex-col"> <div class="logo h-14 flex flex-col items-center justify-center"> <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div> <div class="brand-sub">www.chevip.com</div> </div> <nav class="flex-1 overflow-y-auto"> <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="submenu"> <div class="sub-item">销售首页</div> <div class="sub-item">客户等级管理</div> <div class="sub-item">买家管理</div> <div class="sub-item">B2C零售</div> <div class="sub-item">门店奖励</div> <div class="sub-item active">销售订单</div> </div> <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div> </nav> </aside> <!-- Main --> <div class="flex-1 flex flex-col min-w-0"> <!-- Header --> <header class="ant-header flex items-center justify-between px-4"> <div class="flex items-center gap-4 text-sm text-slate-600"> <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i> <div class="flex items-center gap-1"> <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i> <span>首页</span> <span class="text-slate-300">/</span> <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-400"></i> <span>销售管理</span> <span class="text-slate-300">/</span> <span class="breadcrumb-current font-medium">销售订单</span> </div> </div> <div class="flex items-center gap-4"> <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i> <div class="flex items-center gap-2 cursor-pointer"> <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"> <i data-lucide="user" class="w-4 h-4 text-slate-500"></i> </div> <span class="text-sm text-slate-600">cpylj</span> <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i> </div> </div> </header> <!-- Content --> <main class="flex-1 p-4 overflow-auto"> <!-- Filters --> <div class="ant-card p-4 mb-3"> <div class="grid grid-cols-5 gap-x-4 gap-y-3"> <div class="flex items-center"> <span class="el-label" style="width:70px">订单编号:</span> <div class="el-input flex-1"><input placeholder="SO-..." /></div> </div> <div class="flex items-center"> <span class="el-label" style="width:70px">客户:</span> <div class="el-input flex-1"><input placeholder="客户名称/手机号" /></div> </div> <div class="flex items-center"> <span class="el-label" style="width:70px">销售员:</span> <div class="el-input flex-1"><input placeholder="销售员姓名" /></div> </div> <div class="flex items-center"> <span class="el-label" style="width:70px">渠道:</span> <div class="el-select flex-1"> <select> <option>请选择...</option> <option>门店</option> <option>B2C零售</option> <option>政企大客户</option> </select> </div> </div> <div class="flex items-center"> <span class="el-label" style="width:70px">订单状态:</span> <div class="el-select flex-1"> <select> <option>请选择...</option> <option>待付款</option> <option>待交付</option> <option>已完成</option> <option>已取消</option> </select> </div> </div> <div class="flex items-center"> <span class="el-label" style="width:70px">门店:</span> <div class="el-input flex-1"><input placeholder="门店" /></div> </div> <div class="flex items-center col-span-2"> <span class="el-label" style="width:70px">下单时间:</span> <div class="el-input flex-1"><input type="date" value="2026-03-17" /></div> <span class="date-sep">~</span> <div class="el-input flex-1"><input type="date" placeholder="结束日期" /></div> </div> <div class="flex items-center col-span-2"> <span class="el-label" style="width:70px">成交时间:</span> <div class="el-input flex-1"><input type="date" placeholder="开始日期" /></div> <span class="date-sep">~</span> <div class="el-input flex-1"><input type="date" placeholder="结束日期" /></div> </div> </div> <div class="flex justify-end gap-2 mt-3"> <button class="el-btn el-btn-primary"><i data-lucide="search" class="w-3.5 h-3.5"></i>查询</button> <button class="el-btn">重置</button> <button class="el-btn el-btn-success">导出报表</button> </div> </div> <!-- Card: tabs + table --> <div class="ant-card"> <div class="el-tabs px-2"> <div class="el-tab active">全部</div> <div class="el-tab">待付款</div> <div class="el-tab">待交付</div> <div class="el-tab">已完成</div> <div class="el-tab">已取消</div> </div> <div class="overflow-x-auto"> <table class="el-table"> <thead> <tr> <th>订单编号</th> <th>客户</th> <th>车型</th> <th>渠道</th> <th>门店</th> <th>销售员</th> <th>下单时间</th> <th>订单状态</th> <th>成交价</th> <th>金币抵扣</th> </tr> </thead> <tbody id="orderBody"></tbody> </table> </div> <div class="el-pagination"> <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button> <button class="pager-btn active">1</button> <button class="pager-btn">2</button> <button class="pager-btn">3</button> <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button> <select class="page-size-select"> <option>10 条/页</option> <option>20 条/页</option> <option>50 条/页</option> </select> <span>跳至</span> <input class="page-jump-input" value="1" /> <span>页</span> </div> </div> </main> </div></div><div class="fixed top-2 right-4 z-50"> <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a></div><script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script><script> const orders = [ { sn: "SO2026041901", customer: "王磊", model: "比亚迪 宋PLUS 2024款 DM-i 冠军版", channel: "B2C零售", store: "唯普广州体验店", seller: "李娜", time: "2026-04-19 10:24", status: "待付款", price: "158800.00", coin: "1200" }, { sn: "SO2026041805", customer: "陈敏", model: "丰田 bZ3 2023款 616km 长续航PRO", channel: "门店", store: "唯普深圳旗舰店", seller: "赵强", time: "2026-04-18 16:12", status: "待交付", price: "176500.00", coin: "800" }, { sn: "SO2026041802", customer: "深圳市润泽科技", model: "特斯拉 Model Y 2024款 后轮驱动版", channel: "政企大客户", store: "唯普深圳旗舰店", seller: "孙伟", time: "2026-04-18 11:05", status: "已完成", price: "258900.00", coin: "0" }, { sn: "SO2026041703", customer: "张晓雯", model: "哈弗 H6 2023款 1.5T 豪华型", channel: "门店", store: "唯普广州体验店", seller: "李娜", time: "2026-04-17 14:50", status: "已完成", price: "108600.00", coin: "500" }, { sn: "SO2026041702", customer: "刘洋", model: "大众 途观L 2023款 330TSI 两驱 舒适版", channel: "B2C零售", store: "—", seller: "周航", time: "2026-04-17 09:32", status: "待付款", price: "213400.00", coin: "0" }, { sn: "SO2026041601", customer: "陆嘉豪", model: "坦克 300 2023款 2.0T 越野版", channel: "门店", store: "唯普长沙店", seller: "吴敏", time: "2026-04-16 15:20", status: "已取消", price: "213000.00", coin: "0" }, { sn: "SO2026041504", customer: "黄楚雄", model: "本田 CR-V 2024款 240TURBO 两驱净享版", channel: "门店", store: "唯普佛山店", seller: "黄磊", time: "2026-04-15 17:48", status: "待交付", price: "188200.00", coin: "600" }, { sn: "SO2026041502", customer: "广州宏图物流", model: "长城 炮乘用皮卡 2023款 2.0T 柴油四驱", channel: "政企大客户", store: "唯普广州体验店", seller: "孙伟", time: "2026-04-15 10:30", status: "已完成", price: "168400.00", coin: "0" }, { sn: "SO2026041401", customer: "郑元豪", model: "蔚来 ET5 2023款 75kWh", channel: "B2C零售", store: "—", seller: "周航", time: "2026-04-14 13:06", status: "已完成", price: "298000.00", coin: "1500" }, { sn: "SO2026041302", customer: "林子墨", model: "小鹏 G6 2024款 580 Max", channel: "门店", store: "唯普深圳旗舰店", seller: "赵强", time: "2026-04-13 16:44", status: "已完成", price: "229800.00", coin: "900" }, ]; const statusStyle = (s) => { if (s === "已完成") return { cls: "status-text-green", dot: "dot-green" }; if (s === "待付款") return { cls: "status-text-red", dot: "dot-red" }; if (s === "待交付") return { cls: "status-text-blue", dot: "dot-blue" }; return { cls: "text-slate-400", dot: "bg-slate-300" }; }; document.getElementById("orderBody").innerHTML = orders.map(o => { const st = statusStyle(o.status); return ` <tr> <td class="text-blue-500">${o.sn}</td> <td>${o.customer}</td> <td style="text-align:left; max-width:220px;">${o.model}</td> <td>${o.channel}</td> <td>${o.store}</td> <td>${o.seller}</td> <td>${o.time}</td> <td><span class="${st.cls}"><span class="status-dot ${st.dot}"></span>${o.status}</span></td> <td>¥ ${o.price}</td> <td>${o.coin === "0" ? "—" : o.coin + " 金币"}</td> </tr> `; }).join(""); lucide.createIcons();</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>销售订单 · 销售管理 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+  [v-cloak] { display:none; }
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+  .breadcrumb-link { cursor: pointer; }
+  .breadcrumb-link:hover { color: #409eff; }
+  .ant-card { background: #fff; border-radius: 2px; }
+  /* 筛选表单 */
+  .fl-label { color: #606266; font-size: 13px; line-height: 32px; white-space: nowrap; padding-right: 8px; }
+  .fl-input, .fl-select { width: 100%; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; box-sizing: border-box; outline: none; }
+  .fl-input::placeholder { color: #c0c4cc; }
+  .fl-input:focus, .fl-select:focus { border-color: #409eff; }
+  .fl-select { appearance:none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23c0c4cc' d='M5 6L0 0h10z'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 24px; }
+  .fl-date { display:flex; align-items:center; gap:6px; }
+  .fl-date-sep { color: #c0c4cc; font-size: 12px; }
+  .el-btn { display: inline-flex; align-items: center; justify-content:center; gap: 4px; height: 32px; padding: 0 18px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
+  .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
+  /* Table */
+  .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; }
+  .el-table thead th { background: #fafafa; color: #606266; font-weight: 500; padding: 12px 8px; border-bottom: 1px solid #ebeef5; border-top: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
+  .el-table tbody td { padding: 12px 8px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; color: #303133; }
+  .el-table tbody tr:hover { background: #fafafa; }
+  .col-model { text-align:left; color:#409eff; cursor:pointer; max-width: 220px; line-height: 1.5; }
+  .col-model:hover { text-decoration: underline; }
+  .col-link { color: #409eff; cursor: pointer; }
+  .col-link:hover { text-decoration: underline; }
+  .col-time { color: #606266; line-height: 1.5; word-break: keep-all; white-space: nowrap; }
+  .customer-badge { display:inline-flex; align-items:center; gap:4px; }
+  .lv-badge { display:inline-flex; align-items:center; justify-content:center; height:18px; min-width:24px; padding:0 5px; border-radius:3px; color:#fff; font-size:10px; font-weight:700; font-style:italic; letter-spacing:.5px; flex-shrink:0; }
+  /* Pagination */
+  .el-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 14px 16px; color: #606266; font-size: 13px; }
+  .el-pagination .total { color:#606266; margin-right: 8px; }
+  .pager-btn { min-width: 30px; height: 30px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid transparent; font-size: 13px; }
+  .pager-btn:hover { color: #409eff; }
+  .pager-btn.active { background: #fff; color: #409eff; border-color: #409eff; }
+  .pager-arrow { min-width: 30px; height: 30px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; }
+  .pager-arrow:hover { color: #409eff; }
+  .page-jump-input { width: 48px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; margin: 0 4px; }
+  .pager-ellipsis { color: #909399; padding: 0 4px; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="flex min-h-screen">
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></a>
+      <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <div class="sub-item">客户等级管理</div>
+        <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
+        <div class="sub-item active">销售订单</div>
+      </div>
+      <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-3 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+        <div class="flex items-center gap-1">
+          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span class="breadcrumb-link" onclick="location.href='../index.html'">首页</span>
+          <span class="text-slate-300">/</span>
+          <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>销售管理</span>
+          <span class="text-slate-300">/</span>
+          <span class="font-medium text-slate-700">销售订单</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+          <span class="text-sm text-slate-600">ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-3 overflow-auto">
+      <!-- 筛选区 -->
+      <div class="ant-card p-4 mb-3">
+        <div class="grid grid-cols-5 gap-x-4 gap-y-3">
+          <div class="flex items-center"><span class="fl-label" style="width:72px">竞拍类型:</span>
+            <select class="fl-select" v-model="search.auctionType">
+              <option value="">请选择竞拍类型</option>
+              <option>竞价大厅</option><option>报废车专场</option><option>B2C专场</option>
+            </select>
+          </div>
+          <div class="flex items-center"><span class="fl-label" style="width:72px">跟进销售:</span>
+            <input class="fl-input" v-model="search.seller" placeholder="输入手机/姓名,支持按关键字" />
+          </div>
+          <div class="flex items-center col-span-1"><span class="fl-label" style="width:72px">成交日期:</span>
+            <div class="fl-date flex-1">
+              <input type="date" class="fl-input" v-model="search.dealStart" />
+              <span class="fl-date-sep">~</span>
+              <input type="date" class="fl-input" v-model="search.dealEnd" placeholder="结束时间" />
+            </div>
+          </div>
+          <div class="flex items-center"><span class="fl-label" style="width:48px">客户:</span>
+            <input class="fl-input" v-model="search.customer" placeholder="输入手机/姓名,支持按关键字" />
+          </div>
+          <div class="flex items-center"><span class="fl-label" style="width:48px">大区:</span>
+            <select class="fl-select" v-model="search.region">
+              <option value="">选择大区</option>
+              <option>置换一部</option><option>2-广东-惠州</option>
+            </select>
+          </div>
+
+          <div class="flex items-center"><span class="fl-label" style="width:72px">小区:</span>
+            <select class="fl-select" v-model="search.subRegion">
+              <option value="">选择小区</option>
+              <option>广东-广州</option><option>广东-惠州</option><option>广东-佛山</option><option>粤东区域</option>
+            </select>
+          </div>
+          <div class="flex items-center"><span class="fl-label" style="width:72px">门店:</span>
+            <input class="fl-input" v-model="search.store" placeholder="门店" />
+          </div>
+          <div class="flex items-center">
+            <button class="el-btn el-btn-primary" style="padding:0 22px"><i data-lucide="search" class="w-3.5 h-3.5"></i>搜索</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 表格区 -->
+      <div class="ant-card">
+        <div class="overflow-x-auto">
+          <table class="el-table">
+            <thead>
+              <tr>
+                <th>成交时间</th>
+                <th>品牌车型</th>
+                <th>车牌</th>
+                <th>竞拍类型</th>
+                <th>成交价(元)</th>
+                <th>所属大区</th>
+                <th>所属小区</th>
+                <th>所属门店</th>
+                <th>成交客户</th>
+                <th>账号</th>
+                <th>手机号</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="o in orders" :key="o.plate + o.time">
+                <td class="col-time">{{ o.time }}</td>
+                <td class="col-model">{{ o.model }}</td>
+                <td>{{ o.plate }}</td>
+                <td>{{ o.auctionType }}</td>
+                <td>{{ o.price }}</td>
+                <td>{{ o.region }}</td>
+                <td>{{ o.subRegion }}</td>
+                <td style="text-align:left; max-width: 180px; line-height:1.5">{{ o.store }}</td>
+                <td>
+                  <span class="customer-badge">
+                    <span class="lv-badge" :style="{background: levelColor(o.level)}">{{ o.level }}</span>
+                    <span>{{ o.customer }}</span>
+                  </span>
+                </td>
+                <td><span class="col-link">{{ o.account }}</span></td>
+                <td>{{ o.phone }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="el-pagination">
+          <span class="total">共 1455 条</span>
+          <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+          <button class="pager-btn active">1</button>
+          <button class="pager-btn">2</button>
+          <button class="pager-btn">3</button>
+          <span class="pager-ellipsis">···</span>
+          <button class="pager-btn">146</button>
+          <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          <span>跳至</span><input class="page-jump-input" value="1" /><span>页</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="fixed top-2 right-4 z-50">
+  <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, reactive, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const search = reactive({
+      auctionType: '',
+      seller: '',
+      dealStart: '2026-03-23',
+      dealEnd: '',
+      customer: '',
+      region: '',
+      subRegion: '',
+      store: ''
+    });
+
+    const orders = [
+      { time:'2026-04-23 14:10:53', model:'一汽 骏派D60 2015款 1.8L 自动尊贵型', plate:'粤DH523L', auctionType:'竞价大厅', price:'4400.00', region:'置换一部', subRegion:'粤东区域', store:'汕头市广物昱达汽车销售服务有限公司', customer:'邓*辉', level:'V2', account:'ap1013105', phone:'188****1811' },
+      { time:'2026-04-23 14:08:45', model:'别克 君越 2013款 2.0T SIDI 手自一体 智享旗舰型', plate:'粤 A1Z1Q6', auctionType:'竞价大厅', price:'20000.00', region:'置换一部', subRegion:'广东-广州', store:'广东信远汽车贸易有限公司', customer:'郭*坚', level:'V3', account:'m_1255008648979117', phone:'185****9914' },
+      { time:'2026-04-23 14:07:13', model:'比亚迪 唐新能源 2018款 DM 2.0T 全时四驱智联创享型 7座', plate:'粤AF33089', auctionType:'竞价大厅', price:'43200.00', region:'置换一部', subRegion:'广东-广州', store:'广州市物德远汽车销售服务有限公司', customer:'李*英', level:'V1', account:'m_5457446034857013', phone:'150****2293' },
+      { time:'2026-04-23 14:06:45', model:'马自达 马自达6 2013款 2.0L 时尚版', plate:'湘DNS020', auctionType:'竞价大厅', price:'10600.00', region:'置换一部', subRegion:'广东-广州', store:'广东五菱汽车销售服务有限公司', customer:'郭*坚', level:'V3', account:'m_1255008648979117', phone:'185****9914' },
+      { time:'2026-04-23 14:06:37', model:'日产 轩逸 2018款 经典 1.6XE CVT舒适版', plate:'桂J3E199', auctionType:'竞价大厅', price:'23200.00', region:'2-广东-惠州', subRegion:'广东-惠州', store:'惠州市辉达实业有限公司', customer:'李*裕', level:'V2', account:'粤发二手车', phone:'186****8458' },
+      { time:'2026-04-23 14:05:13', model:'东风 帅客 2011款 1.5 手动 7座 舒适型', plate:'粤Y53F99', auctionType:'报废车专场', price:'3400.00', region:'置换一部', subRegion:'广东-广州', store:'广东五菱汽车销售服务有限公司', customer:'广*********', level:'V0', account:'dgghyt', phone:'135****7211' },
+      { time:'2026-04-23 14:04:15', model:'宝骏 310W 2017款 1.5L 手动 时尚型', plate:'粤YJZ284', auctionType:'竞价大厅', price:'7200.00', region:'置换一部', subRegion:'广东-佛山', store:'佛山市汽车销售服务有限公司', customer:'黎*材', level:'V1', account:'m_4640498329184562', phone:'153****2600' },
+      { time:'2026-04-23 14:03:59', model:'吉普 自由光 2016款 2.4L 领先版', plate:'湘NLL638', auctionType:'竞价大厅', price:'16300.00', region:'2-广东-惠州', subRegion:'广东-惠州', store:'惠州市辉达丰瑞汽车有限公司', customer:'何*亨', level:'V2', account:'m_0134875299717253', phone:'137****5402' },
+      { time:'2026-04-23 14:03:03', model:'日产 逍客 2012款 2.0 XL 火 CVT 2WD', plate:'粤LZ703G', auctionType:'竞价大厅', price:'15600.00', region:'2-广东-惠州', subRegion:'广东-惠州', store:'惠州市辉达星悦二手车交易服务有限公司', customer:'燕*君', level:'V1', account:'m_7551454669393542', phone:'133****9077' },
+      { time:'2026-04-23 14:02:09', model:'斯柯达 明锐 2013款 1.6 手动 逸杰版', plate:'粤AE989C', auctionType:'竞价大厅', price:'7100.00', region:'置换一部', subRegion:'广东-广州', store:'广东广物骏达汽车贸易有限公司(深蓝)', customer:'张*', level:'V2', account:'m_0387846672779964', phone:'181****8668' }
+    ];
+
+    const levelColorMap = { V0:'#94a3b8', V1:'#0ea5e9', V2:'#8b5cf6', V3:'#f59e0b' };
+    function levelColor(code) { return levelColorMap[code] || '#94a3b8'; }
+
+    onMounted(() => lucide.createIcons());
+    return { search, orders, levelColor };
+  }
+}).mount('#app');
+</script>
 </body>
 </html>

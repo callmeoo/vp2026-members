@@ -30,7 +30,7 @@ https://api.wpcar.example/membership/v1
 | 40001 | 参数错误 |
 | 40101 | 未登录 |
 | 40301 | 等级不足,无法兑换 |
-| 40302 | 金币不足 |
+| 40302 | 积分不足 |
 | 40303 | 库存不足 |
 | 40304 | 转发已达上限 |
 | 40901 | 重复操作(已发放) |
@@ -69,7 +69,7 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 1.2 获取金币流水
+### 1.2 获取积分流水
 
 **`GET /me/coins/transactions`**
 
@@ -117,7 +117,7 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 1.3 即将过期金币提醒
+### 1.3 即将过期积分提醒
 
 **`GET /me/coins/expiring`**
 
@@ -265,7 +265,7 @@ https://api.wpcar.example/membership/v1
 
 **Response(失败示例)**
 ```json
-{ "code": 40302, "message": "金币余额不足", "data": null }
+{ "code": 40302, "message": "积分余额不足", "data": null }
 ```
 
 ---
@@ -304,9 +304,9 @@ https://api.wpcar.example/membership/v1
 
 ## 二、内部接口(业务系统回调)
 
-这些接口**不对 APP/小程序开放**,只由业务系统(拍卖系统、订单系统、分享系统)内部调用,用于触发金币发放。
+这些接口**不对 APP/小程序开放**,只由业务系统(拍卖系统、订单系统、分享系统)内部调用,用于触发积分发放。
 
-### 2.1 出价发金币
+### 2.1 出价发积分
 
 **`POST /internal/coins/grant-bid`**
 
@@ -326,7 +326,7 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 2.2 转发发金币
+### 2.2 转发发积分
 
 **`POST /internal/coins/grant-share`**
 
@@ -352,7 +352,7 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 2.3 成交发金币
+### 2.3 成交发积分
 
 **`POST /internal/coins/grant-deal`**
 
@@ -374,7 +374,7 @@ https://api.wpcar.example/membership/v1
 
 ### 2.4 退车/退款 —— 冲减成交台数(可选接口)
 
-> 金币**不扣**,但成交台数需要冲减。此处仅提供参考,也可让订单系统直接更新成交表,让月度结算自然处理。
+> 积分**不扣**,但成交台数需要冲减。此处仅提供参考,也可让订单系统直接更新成交表,让月度结算自然处理。
 
 **`POST /internal/deals/revoke`**
 
@@ -452,7 +452,7 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 3.3 金币规则配置
+### 3.3 积分规则配置
 
 **`GET /admin/rules/coin`**
 
@@ -517,20 +517,20 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 3.6 商户金币流水查询
+### 3.6 商户积分流水查询
 
 **`GET /admin/members/:user_id/transactions`** — 参数同前台流水接口,额外支持按任意用户查询。
 
 ---
 
-### 3.7 运营手动调整金币
+### 3.7 运营手动调整积分
 
 **`POST /admin/members/:user_id/coins/adjust`**
 
 ```json
 {
   "amount": -100,
-  "reason": "发现薅羊毛行为,扣回金币"
+  "reason": "发现薅羊毛行为,扣回积分"
 }
 ```
 
@@ -551,14 +551,14 @@ https://api.wpcar.example/membership/v1
 |----|------|
 | 时区 | 所有时间字段使用 ISO 8601(UTC+8),前端按需格式化 |
 | 分页 | 统一 `page` + `page_size`,最大 50 |
-| 金额单位 | 金币为整数,车价以分为单位 |
+| 金额单位 | 积分为整数,车价以分为单位 |
 | 接口限流 | 前台接口建议按 user 维度限流,内部接口按 IP 限流 |
 
 ---
 
 ## 五、未来扩展(本期不做)
 
-- 金币互赠(目前严格禁止转让)
-- 金币参与抽奖/盲盒
+- 积分互赠(目前严格禁止转让)
+- 积分参与抽奖/盲盒
 - 跨业务积分互通(如与会员费、保险积分互换)
-- 开放平台 API(合作商户查询自身金币)
+- 开放平台 API(合作商户查询自身积分)

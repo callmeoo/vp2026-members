@@ -11,16 +11,16 @@
 ```
 ┌──────────────────┐      ┌──────────────────────┐
 │  用户表(已有)    │──┬──>│ member_profile       │  会员扩展档案
-│  user            │  │   │ (等级、金币余额快照) │
+│  user            │  │   │ (等级、积分余额快照) │
 └──────────────────┘  │   └──────────────────────┘
                       │
                       │   ┌──────────────────────┐
-                      ├──>│ coin_transaction     │  金币流水
+                      ├──>│ coin_transaction     │  积分流水
                       │   │ (收入/支出/过期)      │
                       │   └──────────────────────┘
                       │
                       │   ┌──────────────────────┐
-                      ├──>│ coin_dedup           │  金币去重记录
+                      ├──>│ coin_dedup           │  积分去重记录
                       │   │ (用户×车辆×行为)      │
                       │   └──────────────────────┘
                       │
@@ -38,7 +38,7 @@
 └──────────────────────┘
 
 ┌──────────────────────┐
-│ coin_rule            │  金币规则配置
+│ coin_rule            │  积分规则配置
 └──────────────────────┘
 
 ┌──────────────────────┐
@@ -59,9 +59,9 @@
 | user_id | BIGINT | PK,关联 user.id |
 | current_level | TINYINT | 当前等级(0/1/2/3) |
 | level_updated_at | DATETIME | 上次等级变更时间 |
-| coin_balance | BIGINT | 金币余额(冗余字段,实时维护) |
-| lifetime_coin_earned | BIGINT | 历史累计获得金币 |
-| lifetime_coin_spent | BIGINT | 历史累计消耗金币 |
+| coin_balance | BIGINT | 积分余额(冗余字段,实时维护) |
+| lifetime_coin_earned | BIGINT | 历史累计获得积分 |
+| lifetime_coin_spent | BIGINT | 历史累计消耗积分 |
 | last_settled_at | DATETIME | 上次月度结算时间 |
 | created_at | DATETIME | 创建时间 |
 | updated_at | DATETIME | 更新时间 |
@@ -83,21 +83,21 @@ CREATE TABLE member_profile (
 
 ---
 
-### 2.2 `coin_transaction` —— 金币流水
+### 2.2 `coin_transaction` —— 积分流水
 
-**核心表**。所有金币的收入、支出、过期、冻结都记录在此。
+**核心表**。所有积分的收入、支出、过期、冻结都记录在此。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | BIGINT | PK |
 | user_id | BIGINT | 用户 ID |
 | type | VARCHAR(20) | 类型:EARN_BID / EARN_SHARE / EARN_DEAL / SPEND_REDEEM / EXPIRE / ADJUST |
-| amount | INT | 金币数(正数=增,负数=减) |
+| amount | INT | 积分数(正数=增,负数=减) |
 | balance_after | BIGINT | 交易后余额(便于审计) |
 | ref_type | VARCHAR(20) | 关联业务类型:CAR / ORDER / REWARD / NULL |
 | ref_id | BIGINT | 关联业务 ID(车辆 ID / 订单 ID / 权益兑换 ID) |
-| expire_at | DATETIME | 该笔金币过期时间(仅 EARN 类型有值) |
-| remaining | INT | 剩余未消耗金币数(FIFO 过期计算用) |
+| expire_at | DATETIME | 该笔积分过期时间(仅 EARN 类型有值) |
+| remaining | INT | 剩余未消耗积分数(FIFO 过期计算用) |
 | remark | VARCHAR(255) | 备注(如"成交 #车源编号" "权益兑换 #卡名") |
 | created_at | DATETIME | 创建时间 |
 
@@ -117,7 +117,7 @@ CREATE TABLE coin_transaction (
   INDEX idx_user_created (user_id, created_at DESC),
   INDEX idx_expire (expire_at, remaining),
   INDEX idx_ref (ref_type, ref_id)
-) COMMENT='金币流水';
+) COMMENT='积分流水';
 ```
 
 **`type` 枚举说明**:
@@ -135,9 +135,9 @@ CREATE TABLE coin_transaction (
 
 ---
 
-### 2.3 `coin_dedup` —— 金币去重记录
+### 2.3 `coin_dedup` —— 积分去重记录
 
-存储出价/转发的去重键,防止重复发金币。
+存储出价/转发的去重键,防止重复发积分。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -157,7 +157,7 @@ CREATE TABLE coin_dedup (
   coin_transaction_id BIGINT      NOT NULL,
   created_at          DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_dedup (user_id, action, car_id)
-) COMMENT='金币去重';
+) COMMENT='积分去重';
 ```
 
 **关键设计**:`UNIQUE KEY (user_id, action, car_id)` 是防重复发放的核心,由 DB 保证原子性。
@@ -211,9 +211,9 @@ CREATE TABLE level_history (
 | code | VARCHAR(50) | 权益卡编码(如 CAR_BID_PRICE_QUERY) |
 | name | VARCHAR(100) | 卡名 |
 | category | VARCHAR(20) | QUERY / DISCOUNT / QUOTA / SERVICE |
-| coin_price | INT | 兑换所需金币(0 表示等级直达,无需兑换) |
+| coin_price | INT | 兑换所需积分(0 表示等级直达,无需兑换) |
 | min_level | TINYINT | 最低可享/可兑换等级 |
-| grant_type | VARCHAR(10) | REDEEM(金币兑换)/ AUTO(等级直达) |
+| grant_type | VARCHAR(10) | REDEEM(积分兑换)/ AUTO(等级直达) |
 | stock | INT | 库存(-1 = 无限,等级直达类填 -1) |
 | redeemed_count | INT | 已兑换数量 |
 | validity_days | INT | 兑换后有效期天数 |
@@ -242,7 +242,7 @@ CREATE TABLE reward_card (
   updated_at      DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_status_category (status, category),
   INDEX idx_grant_type (grant_type)
-) COMMENT='权益卡目录(含金币兑换型 + 等级直达型)';
+) COMMENT='权益卡目录(含积分兑换型 + 等级直达型)';
 ```
 
 ---
@@ -254,7 +254,7 @@ CREATE TABLE reward_card (
 | id | BIGINT | PK |
 | user_id | BIGINT | 用户 ID |
 | reward_card_id | BIGINT | 权益卡 ID |
-| coin_cost | INT | 消耗金币数(快照) |
+| coin_cost | INT | 消耗积分数(快照) |
 | expire_at | DATETIME | 权益过期时间 |
 | status | VARCHAR(10) | ACTIVE / USED / EXPIRED / INVALID |
 | used_at | DATETIME | 使用时间 |
@@ -310,19 +310,19 @@ INSERT INTO level_rule (level, name, min_deal_count) VALUES
 
 ---
 
-### 2.8 `coin_rule` —— 金币规则配置
+### 2.8 `coin_rule` —— 积分规则配置
 
 单行配置表,存运营可调的全局参数。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | TINYINT | PK,固定为 1 |
-| bid_coin | INT | 出价金币(默认 1) |
-| share_coin | INT | 转发金币(默认 2) |
-| deal_coin | INT | 成交金币(默认 50) |
+| bid_coin | INT | 出价积分(默认 1) |
+| share_coin | INT | 转发积分(默认 2) |
+| deal_coin | INT | 成交积分(默认 50) |
 | share_daily_limit | INT | 转发每日上限(次数) |
 | share_total_limit | INT | 转发总量上限(次数) |
-| coin_validity_months | INT | 金币有效期(月,默认 12) |
+| coin_validity_months | INT | 积分有效期(月,默认 12) |
 | updated_by | VARCHAR(50) | 最后修改人 |
 | updated_at | DATETIME | 最后修改时间 |
 
@@ -337,7 +337,7 @@ CREATE TABLE coin_rule (
   coin_validity_months INT         NOT NULL DEFAULT 12,
   updated_by           VARCHAR(50) NULL,
   updated_at           DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) COMMENT='金币规则(单行配置)';
+) COMMENT='积分规则(单行配置)';
 
 INSERT INTO coin_rule (id) VALUES (1);
 ```
@@ -346,7 +346,7 @@ INSERT INTO coin_rule (id) VALUES (1);
 
 ## 三、关键逻辑说明
 
-### 3.1 金币发放(伪代码)
+### 3.1 积分发放(伪代码)
 
 ```pseudo
 function grantCoin(userId, action, carId):
@@ -370,7 +370,7 @@ function grantCoin(userId, action, carId):
     COMMIT
 ```
 
-### 3.2 金币消耗(FIFO 过期)
+### 3.2 积分消耗(FIFO 过期)
 
 ```pseudo
 function spendCoin(userId, amount, refInfo):
@@ -392,7 +392,7 @@ function spendCoin(userId, amount, refInfo):
     COMMIT
 ```
 
-### 3.3 金币过期(每日定时任务)
+### 3.3 积分过期(每日定时任务)
 
 ```pseudo
 function expireCoins():
@@ -447,6 +447,6 @@ function monthlyLevelSettle():
 - 商城首页的活动/运营位配置
 - 推送通知(APP 弹窗、短信)的投递记录
 - 反作弊明细规则(只保留基础去重)
-- 金币发放异常补偿流程(依赖对账 + 运营手动 ADJUST)
+- 积分发放异常补偿流程(依赖对账 + 运营手动 ADJUST)
 
 后续按需补充。

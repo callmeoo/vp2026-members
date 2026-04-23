@@ -5,78 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>销售订单 · 销售管理 · 唯普汽车</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
-
-  /* Sider */
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+  [v-cloak] { display:none; }
   .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
   .ant-sider .logo { background: #263445; }
   .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
   .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
   .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
-  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
   .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
-  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
-  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
   .ant-sider .submenu { background: #1f2d3d; }
   .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
-  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
   .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
-
-  /* Header */
   .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
-  .breadcrumb-link { cursor: pointer; }
-  .breadcrumb-link:hover { color: #409eff; }
-
-  /* Card */
   .ant-card { background: #fff; border-radius: 2px; }
-
-  /* Form */
-  .el-input, .el-select { position: relative; display: inline-flex; align-items: center; }
-  .el-input input, .el-select select { width: 100%; height: 32px; padding: 0 12px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; line-height: 32px; outline: none; box-sizing: border-box; }
-  .el-input input:focus, .el-select select:focus { border-color: #409eff; }
-  .el-input input::placeholder, .el-select select::placeholder { color: #c0c4cc; }
+  .el-input, .el-select { display: inline-flex; align-items: center; }
+  .el-input input, .el-select select { width: 100%; height: 32px; padding: 0 12px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; box-sizing: border-box; }
   .el-label { color: #606266; font-size: 13px; line-height: 32px; text-align: right; padding-right: 8px; white-space: nowrap; }
-
   .date-range { display: inline-flex; align-items: center; flex: 1; min-width: 0; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; gap: 4px; }
   .date-range input { border: 0; outline: none; width: 0; flex: 1; min-width: 0; height: 30px; font-size: 13px; color: #606266; background: transparent; }
-  .date-range input::placeholder { color: #c0c4cc; }
-  .date-range i { color: #c0c4cc; flex-shrink: 0; }
   .date-range .dr-sep { color: #c0c4cc; padding: 0 2px; }
-
   .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
-  .el-btn:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
   .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
-  .el-btn-primary:hover { background: #66b1ff; color: #fff; border-color: #66b1ff; }
-
-  /* Table */
   .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; }
   .el-table thead th { background: #f5f7fa; color: #606266; font-weight: 500; padding: 12px 10px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
-  .el-table tbody td { padding: 14px 10px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; word-break: break-all; }
-  .el-table tbody tr { cursor: pointer; }
+  .el-table tbody td { padding: 14px 10px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; }
   .el-table tbody tr:hover { background: #f5f7fa; }
   .el-table .model-cell { text-align: left; color: #409eff; cursor: pointer; min-width: 140px; max-width: 180px; }
-  .el-table .model-cell:hover { text-decoration: underline; }
   .el-table .account-cell { color: #409eff; cursor: pointer; min-width: 150px; }
-  .el-table .account-cell:hover { text-decoration: underline; }
   .el-table .price-cell { font-weight: 500; color: #303133; }
-
   .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #fff; line-height: 16px; margin-left: 4px; }
   .cust-avatar { display: inline-flex; align-items: center; gap: 4px; }
   .cust-avatar .dot { width: 16px; height: 16px; border-radius: 3px; background: #e6a23c; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
   .cust-avatar .dot.blue { background: #409eff; }
-
-  /* Pagination */
   .el-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 14px 16px; color: #606266; font-size: 13px; }
-  .el-pagination .total { margin-right: 8px; }
   .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #f4f4f5; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 12px; }
-  .pager-btn:hover { color: #409eff; }
   .pager-btn.active { background: #409eff; color: #fff; }
   .pager-arrow { min-width: 28px; height: 28px; background: #f4f4f5; color: #606266; border: none; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; }
-  .pager-arrow:hover { color: #409eff; }
   .page-jump-input { width: 42px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; }
-
-  /* Filter grid */
   .filter-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px 16px; }
   .filter-cell { display: flex; align-items: center; }
   .filter-cell .el-label { width: 66px; }
@@ -84,142 +51,62 @@
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
 
-  <!-- Sider -->
   <aside class="ant-sider flex flex-col">
     <div class="logo h-14 flex flex-col items-center justify-center">
       <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
       <div class="brand-sub">www.chevip.com</div>
     </div>
     <nav class="flex-1 overflow-y-auto">
-      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-
-      <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span></div>
+      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span></a>
+      <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span></div>
       <div class="submenu">
         <div class="sub-item">销售首页</div>
         <div class="sub-item">客户等级管理</div>
-        <div class="sub-item" onclick="location.href='bms-sales-buyers.html'">买家管理</div>
+        <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
         <div class="sub-item">B2C零售</div>
         <div class="sub-item">门店奖励</div>
         <div class="sub-item active">销售订单</div>
       </div>
-
-      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span></div>
     </nav>
   </aside>
 
-  <!-- Main -->
   <div class="flex-1 flex flex-col min-w-0">
-
-    <!-- Header -->
     <header class="ant-header flex items-center justify-between px-4">
-      <div class="flex items-center gap-4 text-sm text-slate-600">
-        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
-        <div class="flex items-center gap-1">
-          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span class="breadcrumb-link" onclick="location.href='../index.html'">首页</span>
-          <span class="text-slate-300">/</span>
-          <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span>销售管理</span>
-          <span class="text-slate-300">/</span>
-          <span class="font-medium">销售订单</span>
-        </div>
+      <div class="flex items-center gap-1 text-sm text-slate-600">
+        <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+        <a href="../index.html" class="hover:text-blue-500">首页</a>
+        <span class="text-slate-300">/</span><span>销售管理</span>
+        <span class="text-slate-300">/</span><span class="font-medium">销售订单</span>
       </div>
-      <div class="flex items-center gap-4">
-        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
-        <div class="flex items-center gap-2 cursor-pointer">
-          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
-            <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
-          </div>
-          <span class="text-sm text-slate-600">ylj</span>
-          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
-        </div>
-      </div>
+      <div class="flex items-center gap-2 text-sm"><div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div><span>ylj</span></div>
     </header>
 
-    <!-- Content -->
     <main class="flex-1 p-4 overflow-auto">
-
-      <!-- Filters -->
       <div class="ant-card p-4 mb-3">
         <div class="filter-grid">
-          <div class="filter-cell">
-            <span class="el-label">竞拍类型:</span>
-            <div class="el-select flex-1">
-              <select>
-                <option>请选择竞拍类型</option>
-                <option>竞价大厅</option>
-                <option>有保留价</option>
-                <option>顺序拍</option>
-                <option>好车直卖</option>
-                <option>专场拍</option>
-              </select>
-            </div>
-          </div>
-          <div class="filter-cell">
-            <span class="el-label">跟进销售:</span>
-            <div class="el-input flex-1"><input placeholder="输入手机/姓名,支持按关键" /></div>
-          </div>
+          <div class="filter-cell"><span class="el-label">竞拍类型:</span><div class="el-select flex-1"><select v-model="search.auc"><option>请选择竞拍类型</option><option>竞价大厅</option><option>有保留价</option><option>顺序拍</option><option>好车直卖</option><option>专场拍</option></select></div></div>
+          <div class="filter-cell"><span class="el-label">跟进销售:</span><div class="el-input flex-1"><input v-model="search.sales" placeholder="输入手机/姓名,支持按关键" /></div></div>
           <div class="filter-cell">
             <span class="el-label">成交日期:</span>
             <div class="date-range">
-              <input type="date" value="2026-03-21" />
-              <span class="dr-sep">~</span>
-              <input type="date" placeholder="结束时间" />
-              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <input type="date" v-model="search.dateStart" /><span class="dr-sep">~</span>
+              <input type="date" v-model="search.dateEnd" /><i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
             </div>
           </div>
-          <div class="filter-cell">
-            <span class="el-label">客户:</span>
-            <div class="el-input flex-1"><input placeholder="输入手机/姓名,支持按关键" /></div>
-          </div>
-          <div class="filter-cell">
-            <span class="el-label">大区:</span>
-            <div class="el-select flex-1">
-              <select>
-                <option>选择大区</option>
-                <option>1-广东-佛山</option>
-                <option>2-广东-惠州</option>
-                <option>2-广西-南宁</option>
-                <option>置换一部</option>
-              </select>
-            </div>
-          </div>
+          <div class="filter-cell"><span class="el-label">客户:</span><div class="el-input flex-1"><input v-model="search.cust" placeholder="输入手机/姓名,支持按关键" /></div></div>
+          <div class="filter-cell"><span class="el-label">大区:</span><div class="el-select flex-1"><select v-model="search.region"><option>选择大区</option><option>1-广东-佛山</option><option>2-广东-惠州</option><option>2-广西-南宁</option><option>置换一部</option></select></div></div>
 
-          <div class="filter-cell">
-            <span class="el-label">小区:</span>
-            <div class="el-select flex-1">
-              <select>
-                <option>选择小区</option>
-                <option>广东-佛山</option>
-                <option>广东-惠州</option>
-                <option>广西-梧州</option>
-                <option>广东-东莞</option>
-                <option>广东-广州</option>
-                <option>广东-深圳</option>
-              </select>
-            </div>
-          </div>
-          <div class="filter-cell">
-            <span class="el-label">门店:</span>
-            <div class="el-input flex-1"><input placeholder="门店" /></div>
-          </div>
+          <div class="filter-cell"><span class="el-label">小区:</span><div class="el-select flex-1"><select v-model="search.area"><option>选择小区</option><option>广东-佛山</option><option>广东-惠州</option><option>广西-梧州</option><option>广东-东莞</option><option>广东-广州</option><option>广东-深圳</option></select></div></div>
+          <div class="filter-cell"><span class="el-label">门店:</span><div class="el-input flex-1"><input v-model="search.store" placeholder="门店" /></div></div>
           <div class="filter-cell">
             <span class="el-label">客户等级:</span>
             <div class="el-select flex-1">
-              <select id="fltLevel">
+              <select v-model="levelFilter">
                 <option value="">全部</option>
                 <option value="LV0">V0 · 新人会员</option>
                 <option value="LV1">V1 · 普通会员</option>
@@ -235,33 +122,42 @@
         </div>
       </div>
 
-      <!-- Table -->
       <div class="ant-card">
         <div class="overflow-x-auto">
           <table class="el-table">
             <thead>
               <tr>
-                <th>成交时间</th>
-                <th>品牌车型</th>
-                <th>车牌</th>
-                <th>竞拍类型</th>
-                <th>成交价(元)</th>
-                <th>所属大区</th>
-                <th>所属小区</th>
-                <th>所属门店</th>
-                <th>成交客户</th>
-                <th>客户等级</th>
-                <th>账号</th>
-                <th>手机号</th>
-                <th>跟进销售</th>
+                <th>成交时间</th><th>品牌车型</th><th>车牌</th><th>竞拍类型</th><th>成交价(元)</th>
+                <th>所属大区</th><th>所属小区</th><th>所属门店</th><th>成交客户</th>
+                <th>客户等级</th><th>账号</th><th>手机号</th><th>跟进销售</th>
               </tr>
             </thead>
-            <tbody id="orderBody"></tbody>
+            <tbody>
+              <tr v-for="o in filteredOrders" :key="o.plate + o.at">
+                <td>{{ o.at }}</td>
+                <td class="model-cell">{{ o.model }}</td>
+                <td>{{ o.plate }}</td>
+                <td>{{ o.auc }}</td>
+                <td class="price-cell">{{ fmtMoney(o.price) }}</td>
+                <td>{{ o.region }}</td>
+                <td>{{ o.area }}</td>
+                <td style="text-align:left;min-width:150px">{{ o.store }}</td>
+                <td>
+                  <span class="cust-avatar">
+                    <span :class="['dot', o.avType === 'blue' ? 'blue' : '']">{{ o.cust.charAt(0) }}</span>{{ o.cust }}
+                  </span>
+                </td>
+                <td><span class="lv-pill" :style="{ background: lvColor(o.level) }" style="margin-left:0">{{ lvShort(o.level) }}</span></td>
+                <td class="account-cell">{{ o.account }}</td>
+                <td>{{ o.phone }}</td>
+                <td>{{ o.sales }}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
         <div class="el-pagination">
-          <span class="total">共 <span id="pageTotal">1506</span> 条</span>
+          <span>共 {{ totalText }} 条</span>
           <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
           <button class="pager-btn active">1</button>
           <button class="pager-btn">2</button>
@@ -269,12 +165,9 @@
           <span>···</span>
           <button class="pager-btn">151</button>
           <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
-          <span>跳至</span>
-          <input class="page-jump-input" value="1" />
-          <span>页</span>
+          <span>跳至</span><input class="page-jump-input" value="1" /><span>页</span>
         </div>
       </div>
-
     </main>
   </div>
 </div>
@@ -282,59 +175,45 @@
 <div class="fixed top-2 right-4 z-50">
   <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
 <script src="../shared/member-config.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  const cfg = window.MEMBER_CONFIG;
+const { createApp, ref, reactive, computed, watch, nextTick, onMounted } = Vue;
 
-  const orders = [
-    { at:"2026-04-21 15:30:01", model:"宝骏 510 2017款 1.5L 手动豪华型",        plate:"粤YRZ775",  auc:"竞价大厅", price:9200,   region:"1-广东-佛山",   area:"广东-佛山",   store:"佛山市南海铂景信息咨询服务部",       cust:"武*通", level:"LV1", account:"m_7722507899371716", avType:"orange", phone:"183****6671", sales:"林玉兰" },
-    { at:"2026-04-21 15:08:27", model:"大众 速腾 2012款 1.4TSI 双离合 时尚版",   plate:"粤LJW830",  auc:"竞价大厅", price:14400,  region:"2-广东-惠州",   area:"广东-惠州",   store:"惠州市悦景汽车贸易有限公司-比亚迪",  cust:"杨*",   level:"LV2", account:"m_0028519165675589", avType:"orange", phone:"188****0107", sales:"唯车小唯" },
-    { at:"2026-04-21 15:03:31", model:"比亚迪 元 2022款 元 PLUS 510KM 旗舰型",   plate:"桂DD36736", auc:"竞价大厅", price:63200,  region:"2-广西-南宁",   area:"广西-梧州",   store:"梧州市盛世开元汽车销售有限公司-比亚迪", cust:"曹*振", level:"LV3", account:"m_1600316462215481", avType:"orange", phone:"180****7770", sales:"赵秋秋" },
-    { at:"2026-04-21 15:00:51", model:"返歌 TLX-L 2018款 2.4L 畅享版",           plate:"粤S615ZU",  auc:"竞价大厅", price:52000,  region:"2-广东-东莞",   area:"广东-东莞",   store:"东莞市世奥汽车销售服务有限公司",      cust:"李*",   level:"LV2", account:"13669802866",         avType:"blue",   phone:"136****2866", sales:"薛济杭" },
-    { at:"2026-04-21 15:00:01", model:"五菱 宏光 2013款 1.5L 手动基本型",        plate:"粤P11P89",  auc:"竞价大厅", price:4200,   region:"2-广东-惠州",   area:"广东-惠州",   store:"惠州市悦景汽车贸易有限公司-比亚迪",  cust:"陈*新", level:"LV0", account:"m_3944533646157680", avType:"blue",   phone:"178****2889", sales:"郑燕玲" },
-    { at:"2026-04-21 14:38:37", model:"宝骏 730 2019款 1.5T CVT时尚型 7座",      plate:"粤SU60N0",  auc:"竞价大厅", price:17200,  region:"置换一部",     area:"广东-东莞",   store:"东莞市广物东捷汽车销售服务有限公司",  cust:"林*聪", level:"LV1", account:"m_4449925868335747", avType:"orange", phone:"189****0912", sales:"郑燕玲" },
-    { at:"2026-04-21 14:34:07", model:"大众 速腾 2013款 改款 1.4TSI DSG舒适版",  plate:"粤A57S4H",  auc:"竞价大厅", price:16400,  region:"置换一部",     area:"广东-广州",   store:"广东粤奥汽车服务有限公司",             cust:"孟*",   level:"LV2", account:"m_8314926810568349", avType:"orange", phone:"156****5666", sales:"薛济帆" },
-    { at:"2026-04-21 14:33:19", model:"现代 伊兰特 领动 2013款 1.6L 自动 领先型", plate:"粤B716ZS",  auc:"竞价大厅", price:7600,   region:"2-广东-东莞",   area:"广东-东莞",   store:"东莞市广物东捷汽车销售服务有限公司",  cust:"陈*绍", level:"LV1", account:"m_9802031587146009", avType:"blue",   phone:"183****1109", sales:"林玉兰" },
-    { at:"2026-04-21 14:32:01", model:"大众 朗行 1.6L 自动 舒适版",              plate:"鄂S693P8",  auc:"竞价大厅", price:17000,  region:"2-广东-深圳",   area:"广东-深圳",   store:"深圳市鹏爵汽车贸易有限公司",           cust:"卢*龙", level:"LV2", account:"m_5333660298383360", avType:"orange", phone:"177****0836", sales:"关鹏" },
-    { at:"2026-04-21 14:28:35", model:"别克 GL8 2021款 陆上公务舱 652T 尊贵型",   plate:"粤A6N0X3",  auc:"竞价大厅", price:94700,  region:"置换一部",     area:"广东-广州",   store:"广东富利汽车租赁有限公司",             cust:"郭*培", level:"LV3", account:"QQ8282",              avType:"orange", phone:"150****5989", sales:"薛济杭" }
-  ];
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+    const search = reactive({ auc:'请选择竞拍类型', sales:'', dateStart:'2026-03-21', dateEnd:'', cust:'', region:'选择大区', area:'选择小区', store:'' });
+    const levelFilter = ref('');
 
-  const fmtMoney = (n) => Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const orders = [
+      { at:"2026-04-21 15:30:01", model:"宝骏 510 2017款 1.5L 手动豪华型", plate:"粤YRZ775",  auc:"竞价大厅", price:9200,   region:"1-广东-佛山", area:"广东-佛山",   store:"佛山市南海铂景信息咨询服务部",   cust:"武*通", level:"LV1", account:"m_7722507899371716", avType:"orange", phone:"183****6671", sales:"林玉兰" },
+      { at:"2026-04-21 15:08:27", model:"大众 速腾 2012款 1.4TSI 双离合 时尚版", plate:"粤LJW830",  auc:"竞价大厅", price:14400,  region:"2-广东-惠州", area:"广东-惠州",   store:"惠州市悦景汽车贸易有限公司-比亚迪", cust:"杨*", level:"LV2", account:"m_0028519165675589", avType:"orange", phone:"188****0107", sales:"唯车小唯" },
+      { at:"2026-04-21 15:03:31", model:"比亚迪 元 2022款 元 PLUS 510KM 旗舰型", plate:"桂DD36736", auc:"竞价大厅", price:63200,  region:"2-广西-南宁", area:"广西-梧州", store:"梧州市盛世开元汽车销售有限公司-比亚迪", cust:"曹*振", level:"LV3", account:"m_1600316462215481", avType:"orange", phone:"180****7770", sales:"赵秋秋" },
+      { at:"2026-04-21 15:00:51", model:"返歌 TLX-L 2018款 2.4L 畅享版", plate:"粤S615ZU",  auc:"竞价大厅", price:52000,  region:"2-广东-东莞", area:"广东-东莞", store:"东莞市世奥汽车销售服务有限公司", cust:"李*", level:"LV2", account:"13669802866", avType:"blue", phone:"136****2866", sales:"薛济杭" },
+      { at:"2026-04-21 15:00:01", model:"五菱 宏光 2013款 1.5L 手动基本型", plate:"粤P11P89",  auc:"竞价大厅", price:4200, region:"2-广东-惠州", area:"广东-惠州", store:"惠州市悦景汽车贸易有限公司-比亚迪", cust:"陈*新", level:"LV0", account:"m_3944533646157680", avType:"blue", phone:"178****2889", sales:"郑燕玲" },
+      { at:"2026-04-21 14:38:37", model:"宝骏 730 2019款 1.5T CVT时尚型 7座", plate:"粤SU60N0",  auc:"竞价大厅", price:17200, region:"置换一部", area:"广东-东莞", store:"东莞市广物东捷汽车销售服务有限公司", cust:"林*聪", level:"LV1", account:"m_4449925868335747", avType:"orange", phone:"189****0912", sales:"郑燕玲" },
+      { at:"2026-04-21 14:34:07", model:"大众 速腾 2013款 改款 1.4TSI DSG舒适版", plate:"粤A57S4H",  auc:"竞价大厅", price:16400, region:"置换一部", area:"广东-广州", store:"广东粤奥汽车服务有限公司", cust:"孟*", level:"LV2", account:"m_8314926810568349", avType:"orange", phone:"156****5666", sales:"薛济帆" },
+      { at:"2026-04-21 14:33:19", model:"现代 伊兰特 领动 2013款 1.6L 自动 领先型", plate:"粤B716ZS",  auc:"竞价大厅", price:7600, region:"2-广东-东莞", area:"广东-东莞", store:"东莞市广物东捷汽车销售服务有限公司", cust:"陈*绍", level:"LV1", account:"m_9802031587146009", avType:"blue", phone:"183****1109", sales:"林玉兰" },
+      { at:"2026-04-21 14:32:01", model:"大众 朗行 1.6L 自动 舒适版", plate:"鄂S693P8", auc:"竞价大厅", price:17000, region:"2-广东-深圳", area:"广东-深圳", store:"深圳市鹏爵汽车贸易有限公司", cust:"卢*龙", level:"LV2", account:"m_5333660298383360", avType:"orange", phone:"177****0836", sales:"关鹏" },
+      { at:"2026-04-21 14:28:35", model:"别克 GL8 2021款 陆上公务舱 652T 尊贵型", plate:"粤A6N0X3", auc:"竞价大厅", price:94700, region:"置换一部", area:"广东-广州", store:"广东富利汽车租赁有限公司", cust:"郭*培", level:"LV3", account:"QQ8282", avType:"orange", phone:"150****5989", sales:"薛济杭" }
+    ];
 
-  function render() {
-    const selected = document.getElementById("fltLevel").value;
-    const list = selected ? orders.filter(o => o.level === selected) : orders;
-    document.getElementById("orderBody").innerHTML = list.map(o => {
-      const lv = cfg.getLevelByCode(o.level);
-      return `
-        <tr>
-          <td>${o.at.replace(" ", "<br>").replace("<br>", " ")}</td>
-          <td class="model-cell">${o.model}</td>
-          <td>${o.plate}</td>
-          <td>${o.auc}</td>
-          <td class="price-cell">${fmtMoney(o.price)}</td>
-          <td>${o.region}</td>
-          <td>${o.area}</td>
-          <td style="text-align:left;min-width:150px">${o.store}</td>
-          <td>
-            <span class="cust-avatar">
-              <span class="dot ${o.avType === 'blue' ? 'blue' : ''}">${o.cust.charAt(0)}</span>${o.cust}
-            </span>
-          </td>
-          <td><span class="lv-pill" style="background:${lv.color};margin-left:0">${lv.short}</span></td>
-          <td class="account-cell">${o.account}</td>
-          <td>${o.phone}</td>
-          <td>${o.sales}</td>
-        </tr>`;
-    }).join("");
-    document.getElementById("pageTotal").textContent = selected ? list.length : 1506;
+    const filteredOrders = computed(() => levelFilter.value ? orders.filter(o => o.level === levelFilter.value) : orders);
+    const totalText = computed(() => levelFilter.value ? filteredOrders.value.length : 1506);
+
+    function fmtMoney(n) { return Number(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+    function lvColor(code) { return CFG.getLevelByCode(code).color; }
+    function lvShort(code) { return CFG.getLevelByCode(code).short; }
+
+    watch(filteredOrders, () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return { search, levelFilter, orders, filteredOrders, totalText, fmtMoney, lvColor, lvShort };
   }
-
-  document.getElementById("fltLevel").addEventListener("change", render);
-  render();
-  lucide.createIcons();
+}).mount('#app');
 </script>
 </body>
 </html>

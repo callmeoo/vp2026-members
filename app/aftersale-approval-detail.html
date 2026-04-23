@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>售后详情 · 唯普审批</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
   .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 80px; }
-  @media (min-width: 768px) {
-    body { background: #f5f5f7; padding: 24px 0; }
-    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
-  }
+  @media (min-width: 768px) { body { background: #f5f5f7; padding: 24px 0; } .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; } }
+  [v-cloak] { display:none; }
   .top-bar { background: #4ba1f5; color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: center; position: relative; }
   .top-bar .back { position: absolute; left: 12px; display: flex; align-items: center; gap: 2px; color: #fff; }
   .top-bar .title { font-size: 17px; font-weight: 500; }
@@ -41,13 +40,10 @@
   .tab { flex: 1; text-align: center; padding: 12px 0; font-size: 13px; color: #4b5563; position: relative; cursor: pointer; }
   .tab.active { color: #4ba1f5; font-weight: 500; }
   .tab.active::after { content: ''; position: absolute; bottom: 0; left: 30%; right: 30%; height: 2px; background: #4ba1f5; border-radius: 2px; }
-
   .tab-body { background: #fff; padding: 14px 16px; }
-
   .tip-line { color: #ef4444; font-size: 12px; }
   .tip-line .small { color: #94a3b8; }
 
-  /* 时间线 */
   .timeline { background: #fff; margin-top: 8px; padding: 8px 16px; }
   .tl-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
   .tl-item:last-child { border-bottom: none; }
@@ -61,20 +57,6 @@
   .tl-meta { font-size: 12px; color: #6b7280; margin-top: 4px; }
   .tl-status { font-size: 12px; color: #f59e0b; }
 
-  /* 权益徽章 */
-  .benefit-banner {
-    margin-top: 8px;
-    background: linear-gradient(135deg, #fff7e6 0%, #fff1d6 100%);
-    border: 1px solid #ffe7ba;
-    border-radius: 8px;
-    padding: 10px 12px;
-    display: flex; gap: 10px; align-items: flex-start;
-  }
-  .benefit-banner .b-ic { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#fde68a,#f59e0b); display: flex; align-items: center; justify-content: center; color: #7c2d12; flex-shrink: 0; }
-  .benefit-banner .b-tt { font-size: 13px; color: #b45309; font-weight: 600; }
-  .benefit-banner .b-dd { font-size: 11px; color: #92400e; margin-top: 3px; line-height: 1.5; }
-
-  /* 底部按钮 */
   .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; }
   .bb-btn { flex: 1; padding: 14px 0; text-align: center; font-size: 16px; cursor: pointer; }
   .bb-btn.reject { color: #4b5563; background: #fff; }
@@ -82,9 +64,10 @@
 </style>
 </head>
 <body>
+
+<div id="app" v-cloak>
 <div class="phone-shell">
 
-  <!-- 状态栏 -->
   <div class="flex items-center justify-between px-5 pt-2 pb-1 text-[13px] text-slate-700">
     <span>12:10</span>
     <span class="flex items-center gap-1 opacity-70">
@@ -95,112 +78,131 @@
     </span>
   </div>
 
-  <!-- 顶部栏 -->
   <div class="top-bar">
-    <button onclick="location.href='aftersale-approval-list.html'" class="back">
+    <a href="aftersale-approval-list.html" class="back">
       <i data-lucide="chevron-left" class="w-5 h-5"></i>
       <span>返回</span>
-    </button>
-    <span class="title" id="topPlate">苏A3333</span>
+    </a>
+    <span class="title">{{ veh.plate }}</span>
   </div>
 
-  <!-- 车辆卡片 -->
   <div class="veh-card">
     <div class="veh-thumb">车辆图片</div>
     <div class="veh-info flex-1">
-      <div class="veh-name" id="vehName">大众 朗逸 2017款 1.6L 自动风尚版</div>
-      <div class="veh-meta">2019-07 | 11万公里</div>
-      <div class="veh-price">成交价: <b id="vehPrice">1200元</b></div>
+      <div class="veh-name">{{ veh.name }}</div>
+      <div class="veh-meta">{{ veh.meta }}</div>
+      <div class="veh-price">成交价: <b>{{ veh.price }}</b></div>
     </div>
   </div>
 
-  <!-- 售后申请 -->
   <div class="sec-card">
     <div class="sec-title">售后申请: <span class="sec-tag">售后类</span></div>
     <div style="display:inline-flex;align-items:center;gap:4px;background:#fff7e6;border:1px solid #ffe7ba;color:#b45309;padding:3px 8px;border-radius:3px;font-size:11px;margin:4px 0 10px">
       <i data-lucide="shield-check" class="w-3 h-3"></i>
       已使用「无理由退车」权益 · 来源:V3 等级权益
     </div>
-    <div class="kv-row"><span class="k">原因:</span><span class="v">买家违约类-买家反悔</span></div>
-    <div class="kv-row"><span class="k">结果:</span><span class="v">直接退车</span></div>
-    <div class="kv-row"><span class="k">责任方:</span><span class="v">买家</span></div>
-    <div class="kv-row"><span class="k">基本信息:</span><span class="v">我确认要退车</span></div>
-    <div class="kv-row"><span class="k">情况说明:</span><span class="v"></span></div>
-    <div class="kv-row"><span class="k">处理方案:</span><span class="v"></span></div>
-    <div class="kv-row"><span class="k">附件:</span><span class="v"></span></div>
+    <div v-for="kv in requestKV" :key="kv.k" class="kv-row"><span class="k">{{ kv.k }}</span><span class="v">{{ kv.v }}</span></div>
 
-    <!-- 价格表 -->
     <table class="price-table">
-      <thead>
-        <tr><th></th><th>原应收/应付(元)</th><th>售后金额(元)</th></tr>
-      </thead>
+      <thead><tr><th></th><th>原应收/应付(元)</th><th>售后金额(元)</th></tr></thead>
       <tbody>
-        <tr><td class="party">买家</td><td>-2,000</td><td class="afs">-2,000</td></tr>
-        <tr><td class="party">门店</td><td>2,200</td><td class="afs">1,200</td></tr>
-        <tr><td class="party">唯普</td><td>-200</td><td class="afs">800</td></tr>
+        <tr v-for="p in priceRows" :key="p.party">
+          <td class="party">{{ p.party }}</td>
+          <td>{{ p.origin }}</td>
+          <td class="afs">{{ p.afs }}</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active">概述信息</div>
-    <div class="tab">费用相关</div>
-    <div class="tab">车身检测</div>
-    <div class="tab">门店卖家</div>
-    <div class="tab">款项相关</div>
+    <div v-for="(t, i) in tabs" :key="t" :class="['tab', { active: activeTab === i }]" @click="activeTab = i">{{ t }}</div>
   </div>
 
-  <!-- 概述信息 -->
   <div class="tab-body">
-    <div class="kv-row"><span class="k">拍卖方式:</span><span class="v">竞价</span></div>
-    <div class="kv-row"><span class="k">拍卖时间:</span><span class="v">2025-04-23 00:00-2025-04-23 17:32</span></div>
-    <div class="kv-row"><span class="k">入场状态:</span><span class="v">在门店库(系统演示|A区)</span></div>
-    <div class="kv-row"><span class="k">过户状态:</span><span class="v">未接收</span></div>
-    <div class="kv-row"><span class="k">看车地址:</span><span class="v">伟腾大厦 | 联系人: 菲菲公主(18826453321)</span></div>
-    <div class="kv-row"><span class="k">过户次数:</span><span class="v">0次</span></div>
-    <div class="kv-row"><span class="k">补充信息:</span><span class="v"></span></div>
-    <div class="kv-row"><span class="k">车况描述:</span><span class="v"></span></div>
-    <div class="kv-row"><span class="k">登记证:</span><span class="v"><span class="tip-line">未收齐 <span class="small">【缺失登记证证件信息所导致的售后由门店承担】</span></span></span></div>
+    <div v-for="kv in overviewKV" :key="kv.k" class="kv-row">
+      <span class="k">{{ kv.k }}</span>
+      <span class="v" v-if="kv.html" v-html="kv.v"></span>
+      <span class="v" v-else>{{ kv.v }}</span>
+    </div>
   </div>
 
-  <!-- 审批时间线 -->
   <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-icon done"><i data-lucide="check" class="w-3 h-3"></i></div>
+    <div v-for="(s, i) in steps" :key="i" class="tl-item">
+      <div :class="['tl-icon', s.state]"><i :data-lucide="s.icon" class="w-3 h-3"></i></div>
       <div class="tl-body">
-        <div class="tl-head"><span class="tl-title">发起申请</span><span class="tl-time">2025-04-25 17:37:28</span></div>
-        <div class="tl-meta">评估师:产品测试1</div>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-icon cur"><i data-lucide="chevron-down" class="w-3 h-3"></i></div>
-      <div class="tl-body">
-        <div class="tl-head"><span class="tl-title">客服主管</span><span class="tl-status">处理中</span></div>
-        <div class="tl-meta">处理人:--</div>
+        <div class="tl-head">
+          <span class="tl-title">{{ s.title }}</span>
+          <span v-if="s.time" class="tl-time">{{ s.time }}</span>
+          <span v-else class="tl-status">{{ s.status }}</span>
+        </div>
+        <div class="tl-meta">{{ s.meta }}</div>
       </div>
     </div>
   </div>
 
-  <!-- 底部按钮 -->
   <div class="bottom-bar">
-    <div class="bb-btn reject" onclick="alert('已驳回')">驳回</div>
-    <div class="bb-btn pass" onclick="alert('审批通过 · 权益已核销')">审批通过</div>
+    <div class="bb-btn reject" @click="doReject">驳回</div>
+    <div class="bb-btn pass" @click="doPass">审批通过</div>
   </div>
 
 </div>
 
-<div class="fixed top-2 right-4 z-50" id="demoNav">
+<div class="fixed top-2 right-4 z-50" v-if="showNav">
   <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
-<script>if (window !== window.parent) document.getElementById('demoNav').style.display = 'none';</script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === t));
-  }));
-  lucide.createIcons();
+const { createApp, ref, watch, nextTick, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const activeTab = ref(0);
+    const showNav = ref(window === window.parent);
+
+    const veh = { plate:'苏A3333', name:'大众 朗逸 2017款 1.6L 自动风尚版', meta:'2019-07 | 11万公里', price:'1200元' };
+    const tabs = ['概述信息','费用相关','车身检测','门店卖家','款项相关'];
+    const requestKV = [
+      { k:'原因:',       v:'买家违约类-买家反悔' },
+      { k:'结果:',       v:'直接退车' },
+      { k:'责任方:',     v:'买家' },
+      { k:'基本信息:',   v:'我确认要退车' },
+      { k:'情况说明:',   v:'' },
+      { k:'处理方案:',   v:'' },
+      { k:'附件:',       v:'' }
+    ];
+    const priceRows = [
+      { party:'买家', origin:'-2,000', afs:'-2,000' },
+      { party:'门店', origin:'2,200',  afs:'1,200'  },
+      { party:'唯普', origin:'-200',   afs:'800'    }
+    ];
+    const overviewKV = [
+      { k:'拍卖方式:', v:'竞价' },
+      { k:'拍卖时间:', v:'2025-04-23 00:00-2025-04-23 17:32' },
+      { k:'入场状态:', v:'在门店库(系统演示|A区)' },
+      { k:'过户状态:', v:'未接收' },
+      { k:'看车地址:', v:'伟腾大厦 | 联系人: 菲菲公主(18826453321)' },
+      { k:'过户次数:', v:'0次' },
+      { k:'补充信息:', v:'' },
+      { k:'车况描述:', v:'' },
+      { k:'登记证:',   v:'<span class="tip-line">未收齐 <span class="small">【缺失登记证证件信息所导致的售后由门店承担】</span></span>', html:true }
+    ];
+    const steps = [
+      { state:'done', icon:'check',         title:'发起申请', time:'2025-04-25 17:37:28', meta:'评估师:产品测试1' },
+      { state:'cur',  icon:'chevron-down',  title:'客服主管', status:'处理中',             meta:'处理人:--' }
+    ];
+
+    function doReject() { alert('已驳回'); }
+    function doPass() { alert('审批通过 · 权益已核销'); }
+
+    watch(activeTab, () => nextTick(() => window.lucide && lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return { veh, tabs, activeTab, requestKV, priceRows, overviewKV, steps, showNav, doReject, doPass };
+  }
+}).mount('#app');
 </script>
 </body>
 </html>

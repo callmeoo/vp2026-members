@@ -5,46 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>申请售后 · 唯车拍</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
   .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 96px; }
-  @media (min-width: 768px) {
-    body { background: #f5f5f7; padding: 24px 0; }
-    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
-  }
+  @media (min-width: 768px) { body { background: #f5f5f7; padding: 24px 0; } .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; } }
+  [v-cloak] { display:none; }
   .row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #fff; }
   .row + .row { border-top: 1px solid #f3f4f6; }
   .row .lbl { color: #111827; font-size: 15px; }
   .row .val { color: #6b7280; font-size: 14px; }
   .row .val.amt { color: #ef4444; font-size: 15px; font-weight: 500; }
-  .reason-input {
-    border: none; outline: none; background: transparent;
-    text-align: right; color: #111827; font-size: 14px;
-    width: 60%;
-  }
+  .reason-input { border: none; outline: none; background: transparent; text-align: right; color: #111827; font-size: 14px; width: 60%; }
   .reason-input::placeholder { color: #c0c4cc; }
 
-  /* 权益抵扣行 */
-  .benefit-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 14px 16px; background: #fff; cursor: pointer;
-    border-top: 1px solid #f3f4f6;
-  }
-  .benefit-tag {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: linear-gradient(120deg,#fde68a 0%,#fbbf24 100%);
-    color: #7c2d12; font-size: 11px; font-weight: 600;
-    padding: 2px 8px; border-radius: 999px;
-  }
+  .benefit-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #fff; cursor: pointer; border-top: 1px solid #f3f4f6; }
+  .benefit-tag { display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(120deg,#fde68a 0%,#fbbf24 100%); color: #7c2d12; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
 
-  /* 合同样式 */
-  .contract {
-    background: #fff; padding: 14px 14px 18px;
-    font-size: 9px; color: #475569; line-height: 1.5;
-    margin: 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.05);
-  }
+  .contract { background: #fff; padding: 14px 14px 18px; font-size: 9px; color: #475569; line-height: 1.5; margin: 12px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
   .contract h2 { text-align: center; font-size: 13px; font-weight: 600; color: #111827; margin: 8px 0 10px; }
   .contract .top { display: flex; justify-content: space-between; align-items: center; font-size: 8px; color: #94a3b8; }
   .contract .top .logo { color: #ef4444; font-weight: 700; font-size: 11px; }
@@ -53,9 +31,7 @@
   .contract .intro { margin-top: 6px; }
   .contract .sec-title { margin-top: 8px; font-weight: 600; color: #111827; }
   .contract table { width: 100%; border-collapse: collapse; margin-top: 4px; }
-  .contract td, .contract th {
-    border: 1px solid #cbd5e1; padding: 4px 3px; text-align: center; font-size: 8px;
-  }
+  .contract td, .contract th { border: 1px solid #cbd5e1; padding: 4px 3px; text-align: center; font-size: 8px; }
   .contract th { background: #f8fafc; font-weight: 600; color: #475569; }
   .contract .total-row { text-align: right; font-size: 8px; color: #475569; padding: 3px 0; }
   .contract ol { padding-left: 14px; margin-top: 4px; }
@@ -63,76 +39,27 @@
   .contract .signoff { display: flex; gap: 16px; margin-top: 8px; font-size: 8px; }
   .contract .signoff > div { flex: 1; }
 
-  /* 弹窗 */
-  .modal-mask {
-    position: fixed; inset: 0; background: rgba(0,0,0,.45);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 50;
-  }
-  .modal-mask.hidden { display: none; }
-  .modal-card {
-    width: 80%; max-width: 320px; background: #fff; border-radius: 16px;
-    padding: 24px 20px 20px; text-align: center;
-  }
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; }
+  .modal-card { width: 80%; max-width: 320px; background: #fff; border-radius: 16px; padding: 24px 20px 20px; text-align: center; }
 
-  /* 底部 sheet */
-  .sheet-mask {
-    position: fixed; inset: 0; background: rgba(0,0,0,.45);
-    display: flex; align-items: flex-end; justify-content: center;
-    z-index: 60;
-  }
-  .sheet-mask.hidden { display: none; }
-  .sheet-card {
-    width: 100%; max-width: 420px; background: #fff;
-    border-radius: 18px 18px 0 0;
-    padding: 16px 0 24px;
-    max-height: 75vh; overflow-y: auto;
-  }
-  .sheet-card .sheet-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 4px 16px 12px;
-    border-bottom: 1px solid #f3f4f6;
-  }
-  .reward-card {
-    display: flex; align-items: center; gap: 12px;
-    margin: 12px 16px 0;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    cursor: pointer; position: relative;
-  }
-  .reward-card.selected {
-    border-color: #f59e0b; background: linear-gradient(135deg,#fffbeb 0%,#fff 100%);
-  }
-  .reward-card .auto-tip {
-    position: absolute; top: -8px; right: 12px;
-    background: #ef4444; color: #fff; font-size: 10px;
-    padding: 1px 6px; border-radius: 999px;
-  }
-  .reward-icon {
-    width: 44px; height: 44px; border-radius: 10px;
-    background: linear-gradient(135deg,#fde68a 0%,#f59e0b 100%);
-    display: flex; align-items: center; justify-content: center;
-    color: #7c2d12; flex-shrink: 0;
-  }
-  .reward-radio {
-    width: 18px; height: 18px; border-radius: 50%;
-    border: 1.5px solid #d1d5db;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .reward-card.selected .reward-radio {
-    background: #f59e0b; border-color: #f59e0b;
-    color: #fff;
-  }
+  .sheet-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 60; }
+  .sheet-card { width: 100%; max-width: 420px; background: #fff; border-radius: 18px 18px 0 0; padding: 16px 0 24px; max-height: 75vh; overflow-y: auto; }
+  .sheet-card .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 12px; border-bottom: 1px solid #f3f4f6; }
+
+  .reward-card { display: flex; align-items: center; gap: 12px; margin: 12px 16px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 12px; cursor: pointer; position: relative; }
+  .reward-card.selected { border-color: #f59e0b; background: linear-gradient(135deg,#fffbeb 0%,#fff 100%); }
+  .reward-icon { width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg,#fde68a 0%,#f59e0b 100%); display: flex; align-items: center; justify-content: center; color: #7c2d12; flex-shrink: 0; }
+  .reward-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #d1d5db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .reward-card.selected .reward-radio { background: #f59e0b; border-color: #f59e0b; color: #fff; }
 
   .price-old { text-decoration: line-through; color: #94a3b8; font-size: 13px; margin-right: 6px; }
 </style>
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="phone-shell">
 
-  <!-- 状态栏 -->
   <div class="flex items-center justify-between px-5 pt-2 text-[13px] text-slate-700">
     <span>12:10</span>
     <span class="flex items-center gap-1 opacity-70">
@@ -143,48 +70,47 @@
     </span>
   </div>
 
-  <!-- 头部 -->
   <div class="flex items-center justify-between px-4 py-3 bg-white">
-    <button type="button" onclick="smartBack('won-order-detail.html')" class="text-slate-800">
-      <i data-lucide="chevron-left" class="w-6 h-6"></i>
-    </button>
+    <button type="button" @click="back" class="text-slate-800"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
     <span class="text-[17px] font-semibold text-slate-900">申请售后</span>
     <span class="w-6"></span>
   </div>
 
-  <!-- 表单 -->
   <div class="mt-3">
     <div class="row">
       <span class="lbl">取消交易原因</span>
-      <input type="text" class="reason-input" id="reasonInput" value="test" placeholder="请输入..." />
+      <input type="text" class="reason-input" v-model="reason" placeholder="请输入..." />
     </div>
 
     <div class="row">
       <span class="lbl">违约金</span>
       <span>
-        <span class="price-old" id="penaltyOld">¥2000</span>
-        <span class="val amt" id="penaltyFinal">¥0</span>
+        <span v-if="selectedCard" class="price-old">¥{{ PENALTY }}</span>
+        <span class="val amt" :style="{ color: selectedCard ? '#10b981' : '#ef4444' }">¥{{ selectedCard ? 0 : PENALTY }}</span>
       </span>
     </div>
 
-    <!-- 权益抵扣入口 -->
-    <div class="benefit-row" onclick="openSheet()">
+    <div class="benefit-row" @click="openSheet">
       <div class="flex-1">
         <div class="text-[15px] text-slate-900 flex items-center gap-2">
           权益抵扣
-          <span class="benefit-tag" id="benefitTagWrap">
+          <span v-if="selectedCard" class="benefit-tag">
             <i data-lucide="sparkles" class="w-3 h-3"></i>
-            <span id="benefitTagText">已选 1 张</span>
+            <span>已选 1 张</span>
           </span>
         </div>
-        <div class="text-[12px] text-slate-500 mt-0.5" id="benefitDesc">无理由退车 · 2026-06-30 到期(优先使用先过期)</div>
+        <div class="text-[12px] text-slate-500 mt-0.5">
+          {{ selectedCard ? (selectedCard.name + ' · ' + selectedCard.expire + ' 到期(' + selectedCard.source + ')') : '可使用「无理由退车」抵扣违约金,点击选择' }}
+        </div>
       </div>
-      <span class="text-rose-500 text-[13px] mr-1" id="benefitDeduct">-¥2000</span>
+      <span :class="['text-[13px] mr-1', selectedCard ? 'text-rose-500' : 'text-slate-400']">
+        {{ selectedCard ? '-¥' + PENALTY : '未使用' }}
+      </span>
       <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
     </div>
   </div>
 
-  <!-- 合同 -->
+  <!-- 合同(静态展示) -->
   <div class="contract">
     <div class="top">
       <span class="logo">唯普汽车</span>
@@ -193,54 +119,29 @@
       <span>热线:4008912345</span>
     </div>
     <h2>竞价车辆竞买成交确认书</h2>
-    <div class="meta">
-      <span></span>
-      <span>编号:20263115824</span>
-    </div>
+    <div class="meta"><span></span><span>编号:20263115824</span></div>
     <div class="party">甲方:广东唯普汽车科技股份有限公司</div>
     <div class="party">乙方:产品test1</div>
-    <div class="intro">
-      鉴于乙方于2026年03月06日在广东唯普汽车科技股份有限公司的竞价平台通过其他的方式竞得车辆,现双方签订成交确认书如下:
-    </div>
+    <div class="intro">鉴于乙方于2026年03月06日在广东唯普汽车科技股份有限公司的竞价平台通过其他的方式竞得车辆,现双方签订成交确认书如下:</div>
     <div class="sec-title">一、标的</div>
     <div>当前车牌号:闽A12345,品牌型号:保时捷123,车架号:WM0AC297XEL030334</div>
     <div class="sec-title">二、成交价款(单位:元)</div>
     <table>
-      <tr>
-        <th>车辆成交价格</th><th>平台使用费</th><th>手续费</th><th>综合服务费</th><th>其他费用</th>
-      </tr>
-      <tr>
-        <td>6866.0</td><td>300.0</td><td>200.0</td><td>0.0</td><td>0.0</td>
-      </tr>
+      <tr><th>车辆成交价格</th><th>平台使用费</th><th>手续费</th><th>综合服务费</th><th>其他费用</th></tr>
+      <tr><td>6866.0</td><td>300.0</td><td>200.0</td><td>0.0</td><td>0.0</td></tr>
     </table>
     <div class="total-row">合计:7366.0 元 大写:柒仟叁佰陆拾陆圆整</div>
     <div class="sec-title">三、其他约定</div>
     <ol>
-      <li>(1) 乙方在成交前已经清楚了解该车辆状况,对该车辆有关情况及质量没有异议并自愿接受该标的的一切现状及瑕疵。</li>
-      <li>(2) 对于甲方未提供车况查验报告的车辆,则乙方对车辆证件信息准确性进行承诺,非证件信息的其它信息仅供参考。</li>
-      <li>(3) 乙方须按照「竞买须知」约定的时间内向甲方付清成交价款、手续费、综合服务费、平台使用费等费用。</li>
-      <li>(4) 成交价款中除车辆成交价格、平台使用费、手续费、综合服务费、其他费用等服务类收入,由不同服务主体提供服务。</li>
-      <li>(5) 该车辆相关税费以网上公示信息为准,未缴纳的税费及保险均由乙方负责。</li>
-      <li>(6) 该车辆只转让登记给买受人或买受人指定的其他人,转让登记指定新车主须带齐转让登记所需证件。</li>
-      <li>(7) 该车辆转让登记时间以各地车管所实际业务处理时间为准。</li>
-      <li>(8) 该车辆移交之前所产生的交通事故、债权债务等相关责任由甲方负责。</li>
-      <li>(9) 若车辆或办理车辆转让登记手续中遇到不可预见或非主观刻意的原因导致不能办理转让登记的情况。</li>
-      <li>(10) 对上述第(9)款提到的情形,甲乙双方协商作退车退款处理时,互不追究责任。</li>
-      <li>(11) 本确认书未尽事宜,由双方协商解决,协商不成的,向甲方所在地的人民法院起诉。</li>
-      <li>(12) 本确认书电子版本与纸质版本具有同等效力,自乙方完成支付之日起生效。</li>
+      <li v-for="(l, i) in clauses" :key="i">{{ l }}</li>
     </ol>
     <div class="signoff">
       <div>
         <div>甲方:广东唯普汽车科技股份有限公司</div>
-        <div>签约代表:</div>
-        <div>电话:</div>
-        <div>日期:</div>
+        <div>签约代表:</div><div>电话:</div><div>日期:</div>
       </div>
       <div>
-        <div>乙方:</div>
-        <div>签约代表:</div>
-        <div>电话:</div>
-        <div>日期:</div>
+        <div>乙方:</div><div>签约代表:</div><div>电话:</div><div>日期:</div>
       </div>
     </div>
   </div>
@@ -249,59 +150,68 @@
 
 <!-- 底部操作栏 -->
 <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 px-4 py-3 flex gap-3">
-  <button onclick="smartBack('won-order-detail.html')"
-    class="flex-1 h-11 rounded-full bg-slate-400 text-white text-[15px]">取消</button>
-  <button onclick="document.getElementById('confirmModal').classList.remove('hidden')"
-    class="flex-1 h-11 rounded-full bg-rose-500 text-white text-[15px] font-medium">确认提交</button>
+  <button @click="back" class="flex-1 h-11 rounded-full bg-slate-400 text-white text-[15px]">取消</button>
+  <button @click="showConfirm = true" class="flex-1 h-11 rounded-full bg-rose-500 text-white text-[15px] font-medium">确认提交</button>
 </div>
 
 <!-- 权益选择 sheet -->
-<div id="rewardSheet" class="sheet-mask hidden" onclick="if(event.target===this)closeSheet()">
+<div v-if="showSheet" class="sheet-mask" @click.self="closeSheet">
   <div class="sheet-card">
     <div class="sheet-head">
       <div class="flex items-center gap-2">
         <i data-lucide="ticket" class="w-5 h-5 text-amber-500"></i>
         <span class="text-[15px] font-semibold text-slate-900">选择权益抵扣违约金</span>
       </div>
-      <button onclick="closeSheet()" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <button @click="closeSheet" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
 
-    <div class="px-4 pt-3 text-[12px] text-slate-500">
-      可用「无理由退车」权益,使用后违约金 ¥2000 全额抵扣。
+    <div class="px-4 pt-3 text-[12px] text-slate-500">可用「无理由退车」权益,使用后违约金 ¥{{ PENALTY }} 全额抵扣。</div>
+
+    <div>
+      <div v-for="c in refundCards" :key="c.id" :class="['reward-card', { selected: selectedCard && selectedCard.id === c.id }]" @click="selectedCard = c">
+        <div class="reward-icon"><i data-lucide="undo-2" class="w-5 h-5"></i></div>
+        <div class="flex-1">
+          <div class="text-[14px] font-medium text-slate-900">{{ c.name }}</div>
+          <div class="text-[12px] text-slate-500 mt-0.5">{{ c.source }} · {{ c.expire }} 到期</div>
+        </div>
+        <div class="reward-radio"><i data-lucide="check" class="w-3 h-3"></i></div>
+      </div>
     </div>
 
-    <div id="rewardList"></div>
-
-    <!-- 不使用 -->
-    <div class="reward-card" id="rewardNone" onclick="selectReward(null, this)">
+    <div :class="['reward-card', { selected: !selectedCard }]" @click="selectedCard = null">
       <div class="reward-icon" style="background:#f1f5f9;color:#64748b">
         <i data-lucide="x" class="w-5 h-5"></i>
       </div>
       <div class="flex-1">
         <div class="text-[14px] font-medium text-slate-900">不使用权益</div>
-        <div class="text-[12px] text-slate-500 mt-0.5">需自行支付违约金 ¥2000</div>
+        <div class="text-[12px] text-slate-500 mt-0.5">需自行支付违约金 ¥{{ PENALTY }}</div>
       </div>
       <div class="reward-radio"><i data-lucide="check" class="w-3 h-3"></i></div>
     </div>
 
     <div class="px-4 pt-4">
-      <button onclick="closeSheet()" class="w-full h-11 rounded-full bg-rose-500 text-white text-[15px] font-medium">确定</button>
+      <button @click="closeSheet" class="w-full h-11 rounded-full bg-rose-500 text-white text-[15px] font-medium">确定</button>
     </div>
   </div>
 </div>
 
 <!-- 确认弹窗 -->
-<div id="confirmModal" class="modal-mask hidden">
+<div v-if="showConfirm" class="modal-mask">
   <div class="modal-card">
-    <div class="text-[16px] font-semibold text-slate-900 mb-3" id="modalTitle">您确认要取消交易吗?</div>
-    <div class="text-[13px] text-slate-600 leading-relaxed mb-5" id="modalDesc">
-      <!-- JS 动态填充 -->
+    <div class="text-[16px] font-semibold text-slate-900 mb-3">您确认要取消交易吗?</div>
+    <div class="text-[13px] text-slate-600 leading-relaxed mb-5">
+      <template v-if="selectedCard">
+        您已选择使用「<span class="text-amber-600 font-semibold">无理由退车</span>」权益卡,
+        <br/>违约金 ¥{{ PENALTY }} 将<span class="text-emerald-600 font-semibold">全额抵扣为 ¥0</span>。
+        <br/><br/>提交后该权益卡将被核销且不可退还,是否确认?
+      </template>
+      <template v-else>
+        根据竞价合约,如果您现在取消交易将要支付<span class="text-rose-500 font-semibold">{{ PENALTY }} 元违约金</span>,请您仔细考虑后再做决定。
+      </template>
     </div>
     <div class="flex gap-3">
-      <button onclick="document.getElementById('confirmModal').classList.add('hidden')"
-        class="flex-1 h-10 rounded-full bg-rose-500 text-white text-[14px]">取消</button>
-      <button onclick="onConfirm()"
-        class="flex-1 h-10 rounded-full bg-slate-200 text-slate-700 text-[14px]">确定</button>
+      <button @click="showConfirm = false" class="flex-1 h-10 rounded-full bg-rose-500 text-white text-[14px]">取消</button>
+      <button @click="onConfirm" class="flex-1 h-10 rounded-full bg-slate-200 text-slate-700 text-[14px]">确定</button>
     </div>
   </div>
 </div>
@@ -309,112 +219,63 @@
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script>
-  // 模拟当前会员持有的「无理由退车」权益卡(按到期时间倒序排列也无所谓 — 选中时按先过期取)
-  const PENALTY = 2000;
-  const memberLevel = 'V2'; // V2/V3 才有该权益,这里假定当前为 V2
-  const refundCards = [
-    { id: 'rf001', name: '无理由退车', expire: '2026-06-30', source: 'V2 等级权益' },
-    { id: 'rf002', name: '无理由退车', expire: '2026-12-31', source: '活动赠送' }
-  ];
-  // 自动按到期时间升序 → 先过期的优先
-  refundCards.sort((a, b) => a.expire.localeCompare(b.expire));
+const { createApp, ref, watch, nextTick, onMounted } = Vue;
 
-  let currentSelected = refundCards[0]; // 默认选先过期的
+createApp({
+  setup() {
+    const PENALTY = 2000;
+    const reason = ref('test');
+    const showSheet = ref(false);
+    const showConfirm = ref(false);
 
-  function renderRewardList() {
-    const list = document.getElementById('rewardList');
-    list.innerHTML = refundCards.map((c) => `
-      <div class="reward-card ${currentSelected && currentSelected.id === c.id ? 'selected' : ''}"
-           onclick="selectReward('${c.id}', this)">
-        <div class="reward-icon"><i data-lucide="undo-2" class="w-5 h-5"></i></div>
-        <div class="flex-1">
-          <div class="text-[14px] font-medium text-slate-900">${c.name}</div>
-          <div class="text-[12px] text-slate-500 mt-0.5">${c.source} · ${c.expire} 到期</div>
-        </div>
-        <div class="reward-radio"><i data-lucide="check" class="w-3 h-3"></i></div>
-      </div>
-    `).join('');
-    lucide.createIcons();
-  }
+    const refundCards = [
+      { id:'rf001', name:'无理由退车', expire:'2026-06-30', source:'V3 等级权益' },
+      { id:'rf002', name:'无理由退车', expire:'2026-12-31', source:'活动赠送' }
+    ].sort((a, b) => a.expire.localeCompare(b.expire));
 
-  function selectReward(id, el) {
-    document.querySelectorAll('.reward-card').forEach(n => n.classList.remove('selected'));
-    el.classList.add('selected');
-    if (id) {
-      currentSelected = refundCards.find(c => c.id === id);
-    } else {
-      currentSelected = null;
+    const selectedCard = ref(refundCards[0]);
+
+    const clauses = [
+      '(1) 乙方在成交前已经清楚了解该车辆状况,对该车辆有关情况及质量没有异议并自愿接受该标的的一切现状及瑕疵。',
+      '(2) 对于甲方未提供车况查验报告的车辆,则乙方对车辆证件信息准确性进行承诺,非证件信息的其它信息仅供参考。',
+      '(3) 乙方须按照「竞买须知」约定的时间内向甲方付清成交价款、手续费、综合服务费、平台使用费等费用。',
+      '(4) 成交价款中除车辆成交价格、平台使用费、手续费、综合服务费、其他费用等服务类收入,由不同服务主体提供服务。',
+      '(5) 该车辆相关税费以网上公示信息为准,未缴纳的税费及保险均由乙方负责。',
+      '(6) 该车辆只转让登记给买受人或买受人指定的其他人,转让登记指定新车主须带齐转让登记所需证件。',
+      '(7) 该车辆转让登记时间以各地车管所实际业务处理时间为准。',
+      '(8) 该车辆移交之前所产生的交通事故、债权债务等相关责任由甲方负责。',
+      '(9) 若车辆或办理车辆转让登记手续中遇到不可预见或非主观刻意的原因导致不能办理转让登记的情况。',
+      '(10) 对上述第(9)款提到的情形,甲乙双方协商作退车退款处理时,互不追究责任。',
+      '(11) 本确认书未尽事宜,由双方协商解决,协商不成的,向甲方所在地的人民法院起诉。',
+      '(12) 本确认书电子版本与纸质版本具有同等效力,自乙方完成支付之日起生效。'
+    ];
+
+    function openSheet() { showSheet.value = true; }
+    function closeSheet() { showSheet.value = false; }
+
+    function onConfirm() {
+      showConfirm.value = false;
+      if (selectedCard.value) {
+        alert('已使用「无理由退车」权益(' + selectedCard.value.expire + ' 到期),违约金已全额抵扣。\n售后申请已提交。');
+      } else {
+        alert('已扣除违约金 ¥' + PENALTY + ',售后申请已提交。');
+      }
+      location.href = 'won-orders.html';
     }
+
+    function back() { smartBack('won-order-detail.html'); }
+
+    watch([showSheet, showConfirm, selectedCard], () => nextTick(() => window.lucide && lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return { PENALTY, reason, showSheet, showConfirm, refundCards, selectedCard, clauses, openSheet, closeSheet, onConfirm, back };
   }
-
-  function openSheet() {
-    renderRewardList();
-    document.getElementById('rewardSheet').classList.remove('hidden');
-  }
-  function closeSheet() {
-    document.getElementById('rewardSheet').classList.add('hidden');
-    refreshSummary();
-  }
-
-  function refreshSummary() {
-    const tagWrap = document.getElementById('benefitTagWrap');
-    const tagText = document.getElementById('benefitTagText');
-    const desc = document.getElementById('benefitDesc');
-    const deduct = document.getElementById('benefitDeduct');
-    const oldPrice = document.getElementById('penaltyOld');
-    const finalPrice = document.getElementById('penaltyFinal');
-
-    if (currentSelected) {
-      tagWrap.style.display = '';
-      tagText.textContent = '已选 1 张';
-      desc.textContent = `${currentSelected.name} · ${currentSelected.expire} 到期(${currentSelected.source})`;
-      deduct.textContent = '-¥' + PENALTY;
-      deduct.className = 'text-rose-500 text-[13px] mr-1';
-      oldPrice.style.display = '';
-      finalPrice.textContent = '¥0';
-      finalPrice.className = 'val amt';
-      finalPrice.style.color = '#10b981';
-    } else {
-      tagWrap.style.display = 'none';
-      desc.textContent = '可使用「无理由退车」抵扣违约金,点击选择';
-      deduct.textContent = '未使用';
-      deduct.className = 'text-slate-400 text-[13px] mr-1';
-      oldPrice.style.display = 'none';
-      finalPrice.textContent = '¥' + PENALTY;
-      finalPrice.className = 'val amt';
-      finalPrice.style.color = '#ef4444';
-    }
-  }
-
-  function onConfirm() {
-    document.getElementById('confirmModal').classList.add('hidden');
-    if (currentSelected) {
-      alert('已使用「无理由退车」权益(' + currentSelected.expire + ' 到期),违约金已全额抵扣。\n售后申请已提交。');
-    } else {
-      alert('已扣除违约金 ¥2000,售后申请已提交。');
-    }
-    location.href = 'won-orders.html';
-  }
-
-  // 打开弹窗时填充文案
-  const oldOpenModal = document.querySelector('button[onclick*="confirmModal"]');
-  oldOpenModal.addEventListener('click', () => {
-    const desc = document.getElementById('modalDesc');
-    if (currentSelected) {
-      desc.innerHTML = `您已选择使用「<span class="text-amber-600 font-semibold">无理由退车</span>」权益卡<br/>(${currentSelected.expire} 到期 · ${currentSelected.source}),<br/>违约金 ¥2000 将<span class="text-emerald-600 font-semibold">全额抵扣为 ¥0</span>。<br/><br/>提交后该权益卡将被核销且不可退还,是否确认?`;
-    } else {
-      desc.innerHTML = `根据竞价合约,如果您现在取消交易将要支付<span class="text-rose-500 font-semibold">2000 元违约金</span>,请您仔细考虑后再做决定。`;
-    }
-  });
-
-  // 初始化:默认已选先过期那张,刷新摘要
-  lucide.createIcons();
-  refreshSummary();
+}).mount('#app');
 </script>
-
 </body>
 </html>

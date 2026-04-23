@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>商户档案 · 唯普会员体系后台</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+  [v-cloak] { display:none; }
   .ant-sider { background: #001529; }
   .ant-sider a { color: rgba(255,255,255,.65); }
   .ant-sider a.active { background: #1677ff; color: #fff; }
@@ -18,20 +20,15 @@
   .ant-btn-primary { background: #1677ff; color: #fff; border-color: #1677ff; padding: 5px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; }
   .ant-btn-primary:hover { background: #4096ff; }
   .ant-tag { display: inline-flex; align-items: center; padding: 0 7px; font-size: 12px; line-height: 20px; border-radius: 4px; }
-  .ant-tag-blue { background: #e6f4ff; color: #1677ff; border: 1px solid #91caff; }
-  .ant-tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
   .ant-tag-orange { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
-  .ant-tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
   .ant-tag-slate { background: #fafafa; color: #595959; border: 1px solid #d9d9d9; }
   tr:hover { background: #fafafa; }
-  .lv-pill {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff;
-  }
+  .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; }
 </style>
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
 
   <aside class="ant-sider w-56 flex-none text-white">
@@ -42,13 +39,13 @@
       <a href="dashboard.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>运营仪表盘</span></a>
       <div class="px-6 py-2 text-xs text-white/40 mt-2">规则配置</div>
       <a href="level-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="settings" class="w-4 h-4"></i><span>等级规则</span></a>
-      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>金币规则</span></a>
+      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>积分规则</span></a>
       <a href="rewards.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="ticket-check" class="w-4 h-4"></i><span>权益卡管理</span></a>
       <div class="px-6 py-2 text-xs text-white/40 mt-2">业务数据</div>
       <a href="orders.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="receipt" class="w-4 h-4"></i><span>订单列表</span></a>
       <div class="px-6 py-2 text-xs text-white/40 mt-2">商户运营</div>
       <a href="members.html" class="active flex items-center gap-3 px-6 py-2.5"><i data-lucide="users" class="w-4 h-4"></i><span>商户档案</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>金币流水</span></a>
+      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>积分流水</span></a>
       <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="gift" class="w-4 h-4"></i><span>兑换记录</span></a>
     </nav>
   </aside>
@@ -69,36 +66,22 @@
 
       <div class="mb-5">
         <h1 class="text-xl font-semibold text-slate-800">商户档案</h1>
-        <p class="text-sm text-slate-500 mt-1">查询商户会员信息、金币余额、流水,必要时进行金币调整</p>
+        <p class="text-sm text-slate-500 mt-1">查询商户会员信息、积分余额、流水,必要时进行积分调整</p>
       </div>
 
-      <!-- 筛选 -->
       <div class="ant-card p-4 mb-5">
         <div class="grid grid-cols-6 gap-3 items-end">
           <div class="col-span-2">
             <label class="text-xs text-slate-500 block mb-1">关键字搜索</label>
-            <input class="ant-input" placeholder="手机号 / 昵称 / 商户编号">
+            <input class="ant-input" v-model="search.keyword" placeholder="手机号 / 昵称 / 商户编号">
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">会员等级</label>
-            <select class="ant-input">
-              <option>全部</option>
-              <option>V0</option>
-              <option>V1</option>
-              <option>V2</option>
-              <option>V3</option>
-            </select>
+            <select class="ant-input" v-model="search.lv"><option v-for="o in opts.lv" :key="o">{{ o }}</option></select>
           </div>
           <div>
-            <label class="text-xs text-slate-500 block mb-1">金币余额</label>
-            <select class="ant-input">
-              <option>全部</option>
-              <option>0</option>
-              <option>1-100</option>
-              <option>100-500</option>
-              <option>500-5000</option>
-              <option>≥ 5000</option>
-            </select>
+            <label class="text-xs text-slate-500 block mb-1">积分余额</label>
+            <select class="ant-input" v-model="search.balance"><option v-for="o in opts.balance" :key="o">{{ o }}</option></select>
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">注册时间</label>
@@ -106,18 +89,17 @@
           </div>
           <div class="flex gap-2">
             <button class="ant-btn-primary flex-1">搜索</button>
-            <button class="ant-btn flex-1">重置</button>
+            <button class="ant-btn flex-1" @click="resetSearch">重置</button>
           </div>
         </div>
       </div>
 
-      <!-- 表格 -->
       <div class="ant-card overflow-hidden">
         <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
           <div class="text-sm text-slate-600">共 199,869 名商户</div>
           <div class="flex gap-2">
-            <button class="ant-btn text-xs">📊 导出 Excel</button>
-            <button class="ant-btn text-xs">🔄 刷新</button>
+            <button class="ant-btn text-xs inline-flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i>导出 Excel</button>
+            <button class="ant-btn text-xs inline-flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>刷新</button>
           </div>
         </div>
         <table class="w-full text-sm">
@@ -126,7 +108,7 @@
               <th class="text-left px-4 py-3 font-medium">商户</th>
               <th class="text-left px-4 py-3 font-medium">等级</th>
               <th class="text-right px-4 py-3 font-medium">近 3 月成交</th>
-              <th class="text-right px-4 py-3 font-medium">金币余额</th>
+              <th class="text-right px-4 py-3 font-medium">积分余额</th>
               <th class="text-right px-4 py-3 font-medium">30 天内过期</th>
               <th class="text-right px-4 py-3 font-medium">累计获得</th>
               <th class="text-right px-4 py-3 font-medium">累计消耗</th>
@@ -135,180 +117,38 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-
-            <tr>
+            <tr v-for="m in members" :key="m.id">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold">张</div>
+                  <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-white font-bold', m.avatarBg]">{{ m.initial }}</div>
                   <div>
-                    <div class="font-medium text-slate-800">张宇明</div>
-                    <div class="text-xs text-slate-400">138****2841 · M10086</div>
+                    <div class="font-medium text-slate-800">
+                      {{ m.name }}
+                      <span v-if="m.tag === 'new'"  class="ant-tag ant-tag-orange ml-1 text-xs">新入驻</span>
+                      <span v-if="m.tag === 'idle'" class="ant-tag ant-tag-slate ml-1 text-xs">3 月无成交</span>
+                    </div>
+                    <div class="text-xs text-slate-400">{{ m.phone }} · {{ m.id }}</div>
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#f59e0b">V3</span></td>
-              <td class="px-4 py-3 text-right font-semibold text-slate-800">47</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">8,352</td>
-              <td class="px-4 py-3 text-right text-rose-600">320</td>
-              <td class="px-4 py-3 text-right text-slate-600">24,500</td>
-              <td class="px-4 py-3 text-right text-slate-600">16,148</td>
-              <td class="px-4 py-3 text-xs text-slate-500">2026-04-01</td>
+              <td class="px-4 py-3"><span class="lv-pill" :style="{ background: m.lvColor }">{{ m.lv }}</span></td>
+              <td :class="['px-4 py-3 text-right', m.dealsBold ? 'font-semibold text-slate-800' : '']">{{ m.deals }}</td>
+              <td class="px-4 py-3 text-right font-semibold text-amber-600">{{ m.balance }}</td>
+              <td :class="['px-4 py-3 text-right', m.expire && m.expire !== '—' ? 'text-rose-600' : 'text-slate-400']">{{ m.expire }}</td>
+              <td class="px-4 py-3 text-right text-slate-600">{{ m.earned }}</td>
+              <td class="px-4 py-3 text-right text-slate-600">{{ m.used }}</td>
+              <td class="px-4 py-3 text-xs text-slate-500">{{ m.lastSettle }}</td>
               <td class="px-4 py-3 text-center text-xs">
                 <a href="#" class="text-blue-600 mr-2">详情</a>
                 <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
+                <a href="#" class="text-rose-600">调整积分</a>
               </td>
             </tr>
-
-            <tr>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">李</div>
-                  <div>
-                    <div class="font-medium text-slate-800">李明辉</div>
-                    <div class="text-xs text-slate-400">139****7632 · M12005</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#8b5cf6">V2</span></td>
-              <td class="px-4 py-3 text-right font-semibold">12</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">356</td>
-              <td class="px-4 py-3 text-right text-rose-600">50</td>
-              <td class="px-4 py-3 text-right text-slate-600">1,280</td>
-              <td class="px-4 py-3 text-right text-slate-600">924</td>
-              <td class="px-4 py-3 text-xs text-slate-500">2026-04-01</td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">详情</a>
-                <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">王</div>
-                  <div>
-                    <div class="font-medium text-slate-800">王淑芬</div>
-                    <div class="text-xs text-slate-400">135****4421 · M08856</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#8b5cf6">V2</span></td>
-              <td class="px-4 py-3 text-right font-semibold">9</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">248</td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right text-slate-600">720</td>
-              <td class="px-4 py-3 text-right text-slate-600">472</td>
-              <td class="px-4 py-3 text-xs text-slate-500">2026-04-01</td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">详情</a>
-                <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-gradient-to-br from-sky-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">陈</div>
-                  <div>
-                    <div class="font-medium text-slate-800">陈国强</div>
-                    <div class="text-xs text-slate-400">136****2341 · M22134</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#0ea5e9">V1</span></td>
-              <td class="px-4 py-3 text-right">5</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">85</td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right text-slate-600">310</td>
-              <td class="px-4 py-3 text-right text-slate-600">225</td>
-              <td class="px-4 py-3 text-xs text-slate-500">2026-04-01</td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">详情</a>
-                <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-gradient-to-br from-sky-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">赵</div>
-                  <div>
-                    <div class="font-medium text-slate-800">赵小龙</div>
-                    <div class="text-xs text-slate-400">137****8834 · M19923</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#0ea5e9">V1</span></td>
-              <td class="px-4 py-3 text-right">3</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">42</td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right text-slate-600">180</td>
-              <td class="px-4 py-3 text-right text-slate-600">138</td>
-              <td class="px-4 py-3 text-xs text-slate-500">2026-04-01</td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">详情</a>
-                <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold">孙</div>
-                  <div>
-                    <div class="font-medium text-slate-800">孙建国 <span class="ant-tag ant-tag-orange ml-1 text-xs">新入驻</span></div>
-                    <div class="text-xs text-slate-400">188****9091 · M45012</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#94a3b8">V0</span></td>
-              <td class="px-4 py-3 text-right">0</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">12</td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right text-slate-600">12</td>
-              <td class="px-4 py-3 text-right text-slate-600">0</td>
-              <td class="px-4 py-3 text-xs text-slate-500">—</td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">详情</a>
-                <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold">周</div>
-                  <div>
-                    <div class="font-medium text-slate-800">周文韬 <span class="ant-tag ant-tag-slate ml-1 text-xs">3 月无成交</span></div>
-                    <div class="text-xs text-slate-400">134****1122 · M00821</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="lv-pill" style="background:#94a3b8">V0</span></td>
-              <td class="px-4 py-3 text-right">0</td>
-              <td class="px-4 py-3 text-right font-semibold text-amber-600">0</td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right text-slate-600">450</td>
-              <td class="px-4 py-3 text-right text-slate-600">450</td>
-              <td class="px-4 py-3 text-xs text-slate-500">2026-04-01 ↓ V1</td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">详情</a>
-                <a href="#" class="text-blue-600 mr-2">流水</a>
-                <a href="#" class="text-rose-600">调整金币</a>
-              </td>
-            </tr>
-
           </tbody>
         </table>
 
         <div class="px-4 py-3 border-t border-slate-100 flex items-center justify-between text-sm">
-          <div class="text-slate-500">第 1 - 7 条 / 共 199,869 条</div>
+          <div class="text-slate-500">第 1 - {{ members.length }} 条 / 共 199,869 条</div>
           <div class="flex items-center gap-2">
             <select class="ant-input text-xs py-1" style="width:100px">
               <option>20 条/页</option>
@@ -333,6 +173,44 @@
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script><script>lucide.createIcons();</script></body>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, reactive, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const search = reactive({ keyword:'', lv:'全部', balance:'全部' });
+    const opts = {
+      lv:      ['全部','V0','V1','V2','V3'],
+      balance: ['全部','0','1-100','100-500','500-5000','≥ 5000']
+    };
+
+    function resetSearch() { search.keyword=''; search.lv='全部'; search.balance='全部'; }
+
+    const members = [
+      { id:'M10086', name:'张宇明', initial:'张', phone:'138****2841', avatarBg:'bg-gradient-to-br from-amber-400 to-yellow-500',
+        lv:'V3', lvColor:'#f59e0b', deals:47, dealsBold:true, balance:'8,352', expire:'320',  earned:'24,500', used:'16,148', lastSettle:'2026-04-01' },
+      { id:'M12005', name:'李明辉', initial:'李', phone:'139****7632', avatarBg:'bg-gradient-to-br from-violet-400 to-purple-500',
+        lv:'V2', lvColor:'#8b5cf6', deals:12, dealsBold:true, balance:'356', expire:'50', earned:'1,280', used:'924', lastSettle:'2026-04-01' },
+      { id:'M08856', name:'王淑芬', initial:'王', phone:'135****4421', avatarBg:'bg-gradient-to-br from-violet-400 to-purple-500',
+        lv:'V2', lvColor:'#8b5cf6', deals:9,  dealsBold:true, balance:'248', expire:'—', earned:'720', used:'472', lastSettle:'2026-04-01' },
+      { id:'M22134', name:'陈国强', initial:'陈', phone:'136****2341', avatarBg:'bg-gradient-to-br from-sky-400 to-blue-500',
+        lv:'V1', lvColor:'#0ea5e9', deals:5,  balance:'85',  expire:'—', earned:'310', used:'225', lastSettle:'2026-04-01' },
+      { id:'M19923', name:'赵小龙', initial:'赵', phone:'137****8834', avatarBg:'bg-gradient-to-br from-sky-400 to-blue-500',
+        lv:'V1', lvColor:'#0ea5e9', deals:3,  balance:'42',  expire:'—', earned:'180', used:'138', lastSettle:'2026-04-01' },
+      { id:'M45012', name:'孙建国', initial:'孙', phone:'188****9091', avatarBg:'bg-slate-300', tag:'new',
+        lv:'V0', lvColor:'#94a3b8', deals:0,  balance:'12',  expire:'—', earned:'12',  used:'0',   lastSettle:'—' },
+      { id:'M00821', name:'周文韬', initial:'周', phone:'134****1122', avatarBg:'bg-slate-300', tag:'idle',
+        lv:'V0', lvColor:'#94a3b8', deals:0,  balance:'0',   expire:'—', earned:'450', used:'450', lastSettle:'2026-04-01 ↓ V1' }
+    ];
+
+    onMounted(() => lucide.createIcons());
+
+    return { search, opts, resetSearch, members };
+  }
+}).mount('#app');
+</script>
+</body>
 </html>

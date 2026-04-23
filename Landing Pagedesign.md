@@ -21,42 +21,42 @@
 
 | 权益类目 | 新人 (LV0) | 普通 (LV1) | 银卡 (LV2) | 金卡 (LV3) |
 | :--- | :--- | :--- | :--- | :--- |
-| **金币兑换折扣** | [cite_start]1:1 [cite: 13] | [cite_start]1:1 [cite: 13] | [cite_start]95折 [cite: 13] | [cite_start]8折 [cite: 13] |
+| **积分兑换折扣** | [cite_start]1:1 [cite: 13] | [cite_start]1:1 [cite: 13] | [cite_start]95折 [cite: 13] | [cite_start]8折 [cite: 13] |
 | **无偿退车额度** | - | - | [cite_start]1台 [cite: 13] | [cite_start]2台 [cite: 13] |
 | **服务中心权益包** | - | - | [cite_start]基础包 [cite: 13] | [cite_start]豪华包 [cite: 13] |
 | **1V1 专属服务** | - | [cite_start]有 [cite: 13] | [cite_start]有 [cite: 13] | [cite_start]有 [cite: 13] |
 | **数据查询权限** | - | [cite_start]基础查询 [cite: 13] | [cite_start]深度查询 [cite: 13] | [cite_start]深度查询 [cite: 13] |
 
-### 模块三：唯金币获取中心 (Coin Missions - 可配置)
+### 模块三：积分获取中心 (Coin Missions - 可配置)
 > [cite_start]**设计目的**：明确行为路径，将“经营行为”转化为“平台积分” [cite: 26]。
 
 #### 1. 核心交易类 (成交驱动)
 * [cite_start]**任务名称**：车辆成交奖励 [cite: 35]
-* [cite_start]**奖励数值**：{50} 金币/台 [cite: 35]
-* [cite_start]**营销文案**：成交即可领金币，直抵过户费 [cite: 37]
+* [cite_start]**奖励数值**：{50} 积分/台 [cite: 35]
+* [cite_start]**营销文案**：成交即可领积分，直抵过户费 [cite: 37]
 
 #### 2. 活跃互动类 (待定/可扩展项)
 * [cite_start]**任务名称**：参与平台调研 [cite: 35]
-* [cite_start]**奖励数值**：{1-5} 金币/次 [cite: 35]
+* [cite_start]**奖励数值**：{1-5} 积分/次 [cite: 35]
 * [cite_start]**任务名称**：APP 每日打卡任务 [cite: 31]
-* [cite_start]**奖励数值**：{可配置} 金币 [cite: 31]
+* [cite_start]**奖励数值**：{可配置} 积分 [cite: 31]
 * [cite_start]**任务名称**：出价参与竞拍 [cite: 35]
-* [cite_start]**奖励数值**：{10} 金币/台 [cite: 35]
+* [cite_start]**奖励数值**：{10} 积分/台 [cite: 35]
 
 #### 3. 社交裂变类
 * [cite_start]**任务名称**：推荐好友成交 [cite: 35]
-* [cite_start]**奖励数值**：{2} 金币 [cite: 35]
+* [cite_start]**奖励数值**：{2} 积分 [cite: 35]
 
-### 模块四：金币兑换商店预览 (Redemption Preview)
-> [cite_start]**设计目的**：具象化金币价值（1金币 ≈ 0.093元），增强获得感 [cite: 34]。
+### 模块四：积分兑换商店预览 (Redemption Preview)
+> [cite_start]**设计目的**：具象化积分价值（1积分 ≈ 0.093元），增强获得感 [cite: 34]。
 * **展示内容：**
-    * [cite_start]**出险维保数据**：{300} 金币 [cite: 37]
-    * [cite_start]**过户费减免100元**：{500} 金币 [cite: 37]
-    * [cite_start]**碰撞报告查询**：{200} 金币 [cite: 37]
+    * [cite_start]**出险维保数据**：{300} 积分 [cite: 37]
+    * [cite_start]**过户费减免100元**：{500} 积分 [cite: 37]
+    * [cite_start]**碰撞报告查询**：{200} 积分 [cite: 37]
 
 ---
 
 ## 3. 0-1 上线运营策略建议
-1. [cite_start]**利益点前置**：对于 LV0 的 1.4 万商户，重点展示“完成实名并充值即领金币”的低门槛任务 [cite: 13, 35]。
+1. [cite_start]**利益点前置**：对于 LV0 的 1.4 万商户，重点展示“完成实名并充值即领积分”的低门槛任务 [cite: 13, 35]。
 2. [cite_start]**状态锁定感**：在权益表中，当前等级不支持的权益（如 LV1 的无偿退车）应显示为“锁定态”并配以“LV2解锁”标签 [cite: 13]。
-3. [cite_start]**有效期提醒**：显著标注“金币有效期 12 个自然月”，利用积分过期压力促使用户尽快兑换权益包 [cite: 38, 39]。
+3. [cite_start]**有效期提醒**：显著标注“积分有效期 12 个自然月”，利用积分过期压力促使用户尽快兑换权益包 [cite: 38, 39]。
