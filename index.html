@@ -8,310 +8,132 @@
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
   .brand-gradient { background: linear-gradient(135deg, #5b3fd9 0%, #8b5cf6 50%, #c084fc 100%); }
-  .card-hover { transition: all .25s; }
-  .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(91, 63, 217, .15); }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+  .row:last-child { border-bottom: 0; }
+  .row:hover { background: #f8fafc; }
+  .row a { color: #5b3fd9; }
+  .row a:hover { text-decoration: underline; }
+  .file { color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+  .section-title { display:flex; align-items:center; gap:8px; font-size: 18px; font-weight: 700; color:#0f172a; margin-bottom: 10px; }
+  .section-count { color:#94a3b8; font-size: 13px; font-weight: 400; }
+  .empty { color:#94a3b8; font-size: 13px; padding: 14px 16px; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
 
 <!-- Header -->
 <header class="brand-gradient text-white">
-  <div class="max-w-6xl mx-auto px-6 py-12">
-    <div class="flex items-center gap-3 text-sm opacity-80 mb-4">
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <div class="flex items-center gap-3 text-sm opacity-80 mb-3">
       <span class="px-2 py-0.5 bg-white/20 rounded">v1.1</span>
       <span>设计方案 · 原型 Demo</span>
     </div>
-    <h1 class="text-4xl font-bold mb-3">唯普汽车 · 商户会员体系</h1>
-    <p class="text-lg text-white/80 max-w-2xl">
+    <h1 class="text-3xl font-bold mb-2">唯普汽车 · 商户会员体系</h1>
+    <p class="text-white/80 max-w-2xl">
       会员等级 + 积分 + 权益体系 —— 基于滚动 3 个月成交量的 4 级会员
       (V0~V3),配合行为激励的积分机制 + 等级直达权益,驱动商户活跃与复购。
     </p>
-    <div class="mt-6 flex flex-wrap gap-3 text-sm">
-      <a href="docs/PRD.md" target="_blank" rel="noopener" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="file-text" class="w-4 h-4 inline mr-1"></i>PRD 文档</a>
-      <a href="docs/DB-Schema.md" target="_blank" rel="noopener" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="database" class="w-4 h-4 inline mr-1"></i>数据库设计</a>
-      <a href="docs/API.md" target="_blank" rel="noopener" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="plug" class="w-4 h-4 inline mr-1"></i>API 文档</a>
+    <div class="mt-5 flex flex-wrap gap-3 text-sm">
+      <a href="docs/PRD.md" target="_blank" rel="noopener" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="file-text" class="w-4 h-4 inline mr-1"></i>PRD 文档</a>
+      <a href="docs/DB-Schema.md" target="_blank" rel="noopener" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="database" class="w-4 h-4 inline mr-1"></i>数据库设计</a>
+      <a href="docs/API.md" target="_blank" rel="noopener" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg"><i data-lucide="plug" class="w-4 h-4 inline mr-1"></i>API 文档</a>
     </div>
   </div>
 </header>
 
-<!-- Content -->
-<main class="max-w-6xl mx-auto px-6 py-12">
+<main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
 
-  <!-- Frontend Demos -->
-  <section class="mb-14">
-    <div class="flex items-end justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-slate-800"><i data-lucide="smartphone" class="w-6 h-6 inline mr-1"></i>商户端原型(APP / 小程序)</h2>
-        <p class="text-slate-500 mt-1">滴滴会员风格 · 紫色尊贵感 · 手机视图</p>
-      </div>
-      <span class="text-sm text-slate-400">共 15 个页面</span>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <a href="app/splash.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-indigo-900 via-purple-700 to-amber-500 flex items-center justify-center text-white"><i data-lucide="sparkles" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-purple-600 font-medium mb-1">FRONT-SPLASH</div>
-          <div class="text-lg font-semibold text-slate-800">APP 开屏广告</div>
-          <div class="text-sm text-slate-500 mt-1">分态展示:利益诱导 / 进度驱动(可切换)</div>
-        </div>
-      </a>
-
-      <a href="app/home.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white"><i data-lucide="home" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-red-600 font-medium mb-1">FRONT-00</div>
-          <div class="text-lg font-semibold text-slate-800">APP 首页</div>
-          <div class="text-sm text-slate-500 mt-1">三态 Banner 轮播:利益/进度/冲刺</div>
-        </div>
-      </a>
-
-      <a href="app/landing.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-amber-400 via-purple-600 to-indigo-700 flex items-center justify-center text-white"><i data-lucide="sparkles" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-violet-600 font-medium mb-1">FRONT-00b</div>
-          <div class="text-lg font-semibold text-slate-800">会员权益升级落地页</div>
-          <div class="text-sm text-slate-500 mt-1">Banner 点击后的详细介绍页</div>
-        </div>
-      </a>
-
-      <a href="app/member.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 brand-gradient flex items-center justify-center text-white"><i data-lucide="crown" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-violet-600 font-medium mb-1">FRONT-01</div>
-          <div class="text-lg font-semibold text-slate-800">会员中心首页</div>
-          <div class="text-sm text-slate-500 mt-1">等级卡片 · 积分余额 · 权益入口</div>
-        </div>
-      </a>
-
-      <a href="app/coins.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white"><i data-lucide="coins" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-orange-600 font-medium mb-1">FRONT-02</div>
-          <div class="text-lg font-semibold text-slate-800">积分明细</div>
-          <div class="text-sm text-slate-500 mt-1">流水筛选 · 即将过期提醒</div>
-        </div>
-      </a>
-
-      <a href="app/level.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white"><i data-lucide="trending-up" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-indigo-600 font-medium mb-1">FRONT-03</div>
-          <div class="text-lg font-semibold text-slate-800">等级成长</div>
-          <div class="text-sm text-slate-500 mt-1">近 3 月成交 · 距下一等级差</div>
-        </div>
-      </a>
-
-      <a href="app/mall.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white"><i data-lucide="gift" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-rose-600 font-medium mb-1">FRONT-04</div>
-          <div class="text-lg font-semibold text-slate-800">权益商城</div>
-          <div class="text-sm text-slate-500 mt-1">积分兑换 · 分类筛选</div>
-        </div>
-      </a>
-
-      <a href="app/my-rewards.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white"><i data-lucide="ticket" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-teal-600 font-medium mb-1">FRONT-05</div>
-          <div class="text-lg font-semibold text-slate-800">我的权益卡</div>
-          <div class="text-sm text-slate-500 mt-1">已兑换 · 已使用 · 已过期</div>
-        </div>
-      </a>
-
-      <a href="app/profile.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white"><i data-lucide="user-circle" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-slate-600 font-medium mb-1">FRONT-06</div>
-          <div class="text-lg font-semibold text-slate-800">个人中心(未登录)</div>
-          <div class="text-sm text-slate-500 mt-1">登录入口 / 订单 / 服务</div>
-        </div>
-      </a>
-
-      <a href="app/login.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white"><i data-lucide="log-in" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-red-600 font-medium mb-1">FRONT-07</div>
-          <div class="text-lg font-semibold text-slate-800">登录页</div>
-          <div class="text-sm text-slate-500 mt-1">手机号 / 用户名双模式</div>
-        </div>
-      </a>
-
-      <a href="app/profile-loggedin.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-white"><i data-lucide="badge-check" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-violet-600 font-medium mb-1">FRONT-08</div>
-          <div class="text-lg font-semibold text-slate-800">个人中心(已登录)</div>
-          <div class="text-sm text-slate-500 mt-1">VIP 会员 · 专用账号 · 会员入口</div>
-        </div>
-      </a>
-
-      <a href="app/settings.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center text-white"><i data-lucide="settings" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-slate-600 font-medium mb-1">FRONT-09</div>
-          <div class="text-lg font-semibold text-slate-800">设置页</div>
-          <div class="text-sm text-slate-500 mt-1">协议/关于/退出登录/注销</div>
-        </div>
-      </a>
-
-      <a href="app/orders.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white"><i data-lucide="list-checks" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-orange-600 font-medium mb-1">FRONT-10</div>
-          <div class="text-lg font-semibold text-slate-800">我的订单列表</div>
-          <div class="text-sm text-slate-500 mt-1">全部/待支付/待确认/售后</div>
-        </div>
-      </a>
-
-      <a href="app/order-detail.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-rose-500 to-purple-700 flex items-center justify-center text-white"><i data-lucide="receipt-text" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-rose-600 font-medium mb-1">FRONT-11</div>
-          <div class="text-lg font-semibold text-slate-800">订单详情</div>
-          <div class="text-sm text-slate-500 mt-1">流程/车辆/会员权益/费用</div>
-        </div>
-      </a>
-
-      <a href="app/car-detail.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-red-500 via-rose-500 to-orange-500 flex items-center justify-center text-white"><i data-lucide="car-front" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-red-600 font-medium mb-1">FRONT-12</div>
-          <div class="text-lg font-semibold text-slate-800">车辆详情</div>
-          <div class="text-sm text-slate-500 mt-1">图片轮播 · 查维保浮窗 · 倒计时出价</div>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <!-- Admin Demos -->
+  <!-- 商户端（app/小程序） -->
   <section>
-    <div class="flex items-end justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-slate-800"><i data-lucide="monitor" class="w-6 h-6 inline mr-1"></i>运营管理后台(PC)</h2>
-        <p class="text-slate-500 mt-1">Ant Design 风格 · 熟悉的中后台体验</p>
-      </div>
-      <span class="text-sm text-slate-400">共 7 个页面</span>
+    <div class="section-title">
+      <i data-lucide="smartphone" class="w-5 h-5"></i>
+      商户端(app / 小程序)
+      <span class="section-count">共 19 个页面</span>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <a href="admin/dashboard.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white"><i data-lucide="bar-chart-3" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-blue-600 font-medium mb-1">ADMIN-01</div>
-          <div class="text-lg font-semibold text-slate-800">运营仪表盘</div>
-          <div class="text-sm text-slate-500 mt-1">会员分布 · 积分发放趋势</div>
-        </div>
-      </a>
-
-      <a href="admin/level-rule.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white"><i data-lucide="settings" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-cyan-600 font-medium mb-1">ADMIN-02</div>
-          <div class="text-lg font-semibold text-slate-800">等级设置</div>
-          <div class="text-sm text-slate-500 mt-1">台数门槛 · 评估周期 · 钻石规则</div>
-        </div>
-      </a>
-
-      <a href="admin/coin-rule.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center text-white"><i data-lucide="wrench" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-amber-600 font-medium mb-1">ADMIN-03</div>
-          <div class="text-lg font-semibold text-slate-800">积分规则配置</div>
-          <div class="text-sm text-slate-500 mt-1">发放数量 · 上限 · 有效期</div>
-        </div>
-      </a>
-
-      <a href="admin/rewards.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center text-white"><i data-lucide="ticket-check" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-fuchsia-600 font-medium mb-1">ADMIN-04</div>
-          <div class="text-lg font-semibold text-slate-800">商城商品配置</div>
-          <div class="text-sm text-slate-500 mt-1">目录 · 库存 · 上下架</div>
-        </div>
-      </a>
-
-      <a href="admin/members.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-white"><i data-lucide="users" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-slate-600 font-medium mb-1">ADMIN-05</div>
-          <div class="text-lg font-semibold text-slate-800">商户档案与流水</div>
-          <div class="text-sm text-slate-500 mt-1">搜索 · 积分调整 · 审计</div>
-        </div>
-      </a>
-
-      <a href="admin/orders.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white"><i data-lucide="receipt" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-orange-600 font-medium mb-1">ADMIN-06</div>
-          <div class="text-lg font-semibold text-slate-800">BMS · 订单列表</div>
-          <div class="text-sm text-slate-500 mt-1">会员等级 · 已享权益 · 售后</div>
-        </div>
-      </a>
-
-      <a href="admin/bms-orders.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white"><i data-lucide="list" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-slate-600 font-medium mb-1">ADMIN-06b</div>
-          <div class="text-lg font-semibold text-slate-800">BMS · 订单列表(现网复刻)</div>
-          <div class="text-sm text-slate-500 mt-1">竞价大厅 · 车牌 · 收款/订单状态</div>
-        </div>
-      </a>
-
-      <a href="admin/bms-order-detail.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white"><i data-lucide="file-text" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-orange-600 font-medium mb-1">ADMIN-07b</div>
-          <div class="text-lg font-semibold text-slate-800">BMS · 订单详情(现网复刻)</div>
-          <div class="text-sm text-slate-500 mt-1">订单状态 · 过户 · 款项拆分</div>
-        </div>
-      </a>
-
-      <a href="admin/bms-users.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-cyan-600 to-teal-700 flex items-center justify-center text-white"><i data-lucide="users" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-teal-600 font-medium mb-1">ADMIN-08b</div>
-          <div class="text-lg font-semibold text-slate-800">BMS · 用户列表(现网复刻)</div>
-          <div class="text-sm text-slate-500 mt-1">用户管理 · 多维筛选 · 账户余额</div>
-        </div>
-      </a>
-
-      <a href="admin/bms-user-detail.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-teal-600 to-emerald-700 flex items-center justify-center text-white"><i data-lucide="user-cog" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-emerald-600 font-medium mb-1">ADMIN-09b</div>
-          <div class="text-lg font-semibold text-slate-800">BMS · 用户详情(现网复刻)</div>
-          <div class="text-sm text-slate-500 mt-1">基础信息 · 认证 · 操作轨迹</div>
-        </div>
-      </a>
-
-      <a href="admin/order-detail.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-rose-600 to-pink-700 flex items-center justify-center text-white"><i data-lucide="file-text" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-rose-600 font-medium mb-1">ADMIN-07</div>
-          <div class="text-lg font-semibold text-slate-800">BMS · 订单详情</div>
-          <div class="text-sm text-slate-500 mt-1">商户信息 · 权益使用 · 售后处理</div>
-        </div>
-      </a>
-
-      <a href="admin/sales-orders.html" target="_blank" rel="noopener" class="card-hover block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-        <div class="h-40 bg-gradient-to-br from-indigo-500 to-violet-700 flex items-center justify-center text-white"><i data-lucide="bar-chart-3" class="w-14 h-14"></i></div>
-        <div class="p-5">
-          <div class="text-xs text-indigo-600 font-medium mb-1">ADMIN-10</div>
-          <div class="text-lg font-semibold text-slate-800">销售管理 · 销售订单</div>
-          <div class="text-sm text-slate-500 mt-1">B2C 零售订单 · 客户等级 · 积分抵扣</div>
-        </div>
-      </a>
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="row"><a href="app/splash.html" target="_blank" rel="noopener">APP 开屏广告</a><span class="file">app/splash.html</span></div>
+      <div class="row"><a href="app/home.html" target="_blank" rel="noopener">APP 首页</a><span class="file">app/home.html</span></div>
+      <div class="row"><a href="app/landing.html" target="_blank" rel="noopener">会员权益升级落地页</a><span class="file">app/landing.html</span></div>
+      <div class="row"><a href="app/member.html" target="_blank" rel="noopener">会员中心</a><span class="file">app/member.html</span></div>
+      <div class="row"><a href="app/coins.html" target="_blank" rel="noopener">积分明细</a><span class="file">app/coins.html</span></div>
+      <div class="row"><a href="app/level.html" target="_blank" rel="noopener">等级成长</a><span class="file">app/level.html</span></div>
+      <div class="row"><a href="app/mall.html" target="_blank" rel="noopener">权益商城</a><span class="file">app/mall.html</span></div>
+      <div class="row"><a href="app/my-rewards.html" target="_blank" rel="noopener">我的权益卡</a><span class="file">app/my-rewards.html</span></div>
+      <div class="row"><a href="app/coupons.html" target="_blank" rel="noopener">活动优惠券</a><span class="file">app/coupons.html</span></div>
+      <div class="row"><a href="app/won-orders.html" target="_blank" rel="noopener">我的订单(买到的车)</a><span class="file">app/won-orders.html</span></div>
+      <div class="row"><a href="app/won-order-detail.html" target="_blank" rel="noopener">订单详情</a><span class="file">app/won-order-detail.html</span></div>
+      <div class="row"><a href="app/car-detail.html" target="_blank" rel="noopener">车辆详情</a><span class="file">app/car-detail.html</span></div>
+      <div class="row"><a href="app/aftersale-apply.html" target="_blank" rel="noopener">申请售后</a><span class="file">app/aftersale-apply.html</span></div>
+      <div class="row"><a href="app/aftersale-approval-list.html" target="_blank" rel="noopener">售后审批列表</a><span class="file">app/aftersale-approval-list.html</span></div>
+      <div class="row"><a href="app/aftersale-approval-detail.html" target="_blank" rel="noopener">售后审批详情</a><span class="file">app/aftersale-approval-detail.html</span></div>
+      <div class="row"><a href="app/profile.html" target="_blank" rel="noopener">个人中心(未登录)</a><span class="file">app/profile.html</span></div>
+      <div class="row"><a href="app/login.html" target="_blank" rel="noopener">登录页</a><span class="file">app/login.html</span></div>
+      <div class="row"><a href="app/profile-loggedin.html" target="_blank" rel="noopener">个人中心(已登录)</a><span class="file">app/profile-loggedin.html</span></div>
+      <div class="row"><a href="app/settings.html" target="_blank" rel="noopener">设置页</a><span class="file">app/settings.html</span></div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="mt-16 py-8 text-center text-sm text-slate-400 border-t border-slate-200">
+  <!-- 商户端（pc） -->
+  <section>
+    <div class="section-title">
+      <i data-lucide="monitor" class="w-5 h-5"></i>
+      商户端(pc)
+      <span class="section-count">稍后添加</span>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="empty">暂无页面</div>
+    </div>
+  </section>
+
+  <!-- BMS 后台 -->
+  <section>
+    <div class="section-title">
+      <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+      BMS 后台
+      <span class="section-count">共 18 个页面</span>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="row"><a href="admin/dashboard.html" target="_blank" rel="noopener">运营仪表盘</a><span class="file">admin/dashboard.html</span></div>
+      <div class="row"><a href="admin/members.html" target="_blank" rel="noopener">商户档案与流水</a><span class="file">admin/members.html</span></div>
+      <div class="row"><a href="admin/bms-sales-buyers.html" target="_blank" rel="noopener">买家管理</a><span class="file">admin/bms-sales-buyers.html</span></div>
+      <div class="row"><a href="admin/bms-sales-buyer-detail.html" target="_blank" rel="noopener">买家详情</a><span class="file">admin/bms-sales-buyer-detail.html</span></div>
+      <div class="row"><a href="admin/bms-sales-orders.html" target="_blank" rel="noopener">销售订单</a><span class="file">admin/bms-sales-orders.html</span></div>
+      <div class="row"><a href="admin/sales-orders.html" target="_blank" rel="noopener">销售订单(旧版)</a><span class="file">admin/sales-orders.html</span></div>
+      <div class="row"><a href="admin/bms-orders.html" target="_blank" rel="noopener">业务数据 · 订单列表</a><span class="file">admin/bms-orders.html</span></div>
+      <div class="row"><a href="admin/bms-order-detail.html" target="_blank" rel="noopener">业务数据 · 订单详情</a><span class="file">admin/bms-order-detail.html</span></div>
+      <div class="row"><a href="admin/order-detail.html" target="_blank" rel="noopener">订单详情(旧版)</a><span class="file">admin/order-detail.html</span></div>
+      <div class="row"><a href="admin/bms-users.html" target="_blank" rel="noopener">用户列表</a><span class="file">admin/bms-users.html</span></div>
+      <div class="row"><a href="admin/bms-user-detail.html" target="_blank" rel="noopener">用户详情</a><span class="file">admin/bms-user-detail.html</span></div>
+      <div class="row"><a href="admin/level-rule.html" target="_blank" rel="noopener">等级设置</a><span class="file">admin/level-rule.html</span></div>
+      <div class="row"><a href="admin/coin-rule.html" target="_blank" rel="noopener">积分规则</a><span class="file">admin/coin-rule.html</span></div>
+      <div class="row"><a href="admin/rewards.html" target="_blank" rel="noopener">商城商品配置</a><span class="file">admin/rewards.html</span></div>
+      <div class="row"><a href="admin/bms-coin-log.html" target="_blank" rel="noopener">积分流水</a><span class="file">admin/bms-coin-log.html</span></div>
+      <div class="row"><a href="admin/bms-redeem-log.html" target="_blank" rel="noopener">兑换记录</a><span class="file">admin/bms-redeem-log.html</span></div>
+      <div class="row"><a href="admin/bms-aftersales.html" target="_blank" rel="noopener">售后服务</a><span class="file">admin/bms-aftersales.html</span></div>
+      <div class="row"><a href="admin/bms-aftersales-list.html" target="_blank" rel="noopener">售后列表</a><span class="file">admin/bms-aftersales-list.html</span></div>
+      <div class="row"><a href="admin/bms-aftersale-approval-list.html" target="_blank" rel="noopener">企微审批</a><span class="file">admin/bms-aftersale-approval-list.html</span></div>
+    </div>
+  </section>
+
+  <!-- FNC 后台 -->
+  <section>
+    <div class="section-title">
+      <i data-lucide="landmark" class="w-5 h-5"></i>
+      FNC 后台
+      <span class="section-count">稍后添加</span>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="empty">暂无页面</div>
+    </div>
+  </section>
+
+  <footer class="mt-8 pt-6 text-center text-sm text-slate-400 border-t border-slate-200">
     <div>唯普汽车 · 商户会员体系设计方案</div>
     <div class="mt-1">演示数据均为模拟,用于评审会员体系规则与交互设计</div>
   </footer>
 </main>
 
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script><script>lucide.createIcons();</script></body>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
 </html>
