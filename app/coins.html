@@ -107,30 +107,7 @@
       <button @click="showRuleModal = false" class="text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
     <div class="p-4 max-h-[72vh] overflow-y-auto">
-      <div class="mb-3 p-3 bg-amber-50 border border-amber-100 rounded-lg text-xs text-amber-800">
-        <strong>1 积分 ≈ {{ CFG.coin.unitYuan }} 元</strong>,可用于兑换平台权益卡
-      </div>
-      <div class="overflow-x-auto rounded-lg border border-slate-200">
-        <table class="w-full text-[11px] text-left border-collapse">
-          <thead class="bg-slate-50 text-slate-600">
-            <tr>
-              <th class="py-2 px-2 font-semibold text-left">具体行为</th>
-              <th class="py-2 px-2 font-semibold text-center whitespace-nowrap">积分值</th>
-              <th class="py-2 px-2 font-semibold text-left">规则说明</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white">
-            <tr v-for="it in allEarningItems" :key="it.action" class="border-t border-slate-100 align-top">
-              <td class="py-2 px-2 text-slate-800 font-medium leading-snug">{{ it.action }}</td>
-              <td class="py-2 px-2 text-center whitespace-nowrap">
-                <div class="text-sm font-bold text-amber-600">+{{ it.coin }}</div>
-                <div class="text-[9px] text-slate-400">{{ it.unit }}</div>
-              </td>
-              <td class="py-2 px-2 text-slate-500 leading-snug">{{ it.desc || '—' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <coin-earning-rules></coin-earning-rules>
       <div class="mt-3 p-3 bg-slate-900 text-white rounded-lg text-xs">
         <div class="font-semibold mb-1 flex items-center gap-1.5"><i data-lucide="hourglass" class="w-3.5 h-3.5"></i>积分有效期</div>
         <div class="text-slate-300 leading-relaxed">{{ CFG.coin.validityDesc }},到期自动清零</div>
@@ -150,10 +127,11 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script src="../shared/member-config.js"></script>
+<script src="../shared/coin-earning-rules.js"></script>
 <script>
 const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
-createApp({
+const app = createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
     const activeFilter = ref('all');
@@ -166,50 +144,119 @@ createApp({
       { key:'expire', label:'过期' }
     ];
 
-    const EARN_TYPES = ['deal','bid','share','invite','verify','vote','service','festival','weichezhuan'];
+    // 类目颜色 → tailwind 渐变 / 文字色
+    const colorBg = {
+      emerald: 'bg-gradient-to-br from-emerald-400 to-teal-500',
+      sky:     'bg-gradient-to-br from-sky-400 to-blue-500',
+      violet:  'bg-gradient-to-br from-violet-400 to-purple-500',
+      rose:    'bg-gradient-to-br from-rose-400 to-pink-500',
+      amber:   'bg-gradient-to-br from-amber-400 to-orange-500'
+    };
+    const colorText = {
+      emerald: 'text-emerald-600',
+      sky:     'text-sky-600',
+      violet:  'text-violet-600',
+      rose:    'text-rose-600',
+      amber:   'text-amber-600'
+    };
+
+    // 把 coinEarning / redeemableRewards 拍平成 id→item 字典(全部由 member-config 驱动)
+    const earningById = {};
+    CFG.coinEarning.forEach(g => g.items.forEach(it => {
+      earningById[it.id] = Object.assign({}, it, { category: g.category, color: g.color });
+    }));
+    const rewardById = {};
+    CFG.redeemableRewards.forEach(r => { rewardById[r.id] = r; });
+
+    function earn(id, meta, opts) {
+      const it = earningById[id];
+      const o = opts || {};
+      const coin = (o.coin != null) ? o.coin : it.coin;
+      return {
+        kind: 'earn', type: id,
+        title: o.title || it.action,
+        meta,
+        amount: '+' + coin,
+        amountColor: colorText[it.color] || 'text-slate-700',
+        note: o.note || ('有效期至 ' + o.expire),
+        icon: it.icon,
+        iconBg: colorBg[it.color]
+      };
+    }
+    function spend(rewardId, meta, opts) {
+      const r = rewardById[rewardId];
+      const o = opts || {};
+      return {
+        kind: 'spend', type: 'spend',
+        title: '兑换权益卡',
+        meta: r.name + (meta ? ' · ' + meta : ''),
+        amount: '-' + r.coin,
+        amountColor: 'text-rose-600',
+        note: o.note || '',
+        icon: r.icon || 'gift',
+        iconBg: colorBg.rose
+      };
+    }
+    function expire(meta, amount, note) {
+      return {
+        kind: 'expire', type: 'expire',
+        title: '积分过期清零', meta,
+        amount: '-' + amount,
+        amountColor: 'text-slate-500', note,
+        icon: 'hourglass',
+        iconBg: 'bg-gradient-to-br from-slate-400 to-slate-500'
+      };
+    }
 
     const groups = [
-      { date:'今天 · 2026-04-15', items:[
-        { type:'deal',  title:'成交奖励',       meta:'车源 XC2045 · 11:23', amount:'+50',  amountColor:'text-emerald-600', note:'有效期至 2027-04-15', icon:'wallet',    iconBg:'bg-gradient-to-br from-emerald-400 to-teal-500' },
-        { type:'share', title:'转发朋友圈',     meta:'车源 XC2103 · 09:45', amount:'+1',   amountColor:'text-violet-600',  note:'有效期至 2027-04-15', icon:'megaphone', iconBg:'bg-gradient-to-br from-violet-400 to-purple-500' },
-        { type:'bid',   title:'有效出价',       meta:'车源 XC2103 · 09:40', amount:'+10',  amountColor:'text-sky-600',     note:'有效期至 2027-04-15', icon:'gavel',     iconBg:'bg-gradient-to-br from-sky-400 to-blue-500' }
+      { date: '今天 · 2026-04-23', items: [
+        earn('deal',         '粤A78546 · 11:23',                        { expire:'2027-04-23' }),
+        earn('weekend_bid',  '闽A12345 · 10:45 · 双倍',                 { title:'周末双倍出价', coin:20, expire:'2027-04-23' }),
+        earn('share',        '闽A12345 · 09:45',                        { expire:'2027-04-23' }),
+        earn('bid',          '闽A12345 · 09:40',                        { expire:'2027-04-23' })
       ]},
-      { date:'昨天 · 2026-04-14', items:[
-        { type:'spend',  title:'兑换权益',       meta:'车辆中标价查询卡 · 15:10', amount:'-200', amountColor:'text-rose-600',    note:'余额 306',           icon:'gift',     iconBg:'bg-gradient-to-br from-rose-400 to-pink-500' },
-        { type:'deal',   title:'成交奖励',       meta:'车源 XC2038 · 14:30',      amount:'+50',  amountColor:'text-emerald-600', note:'有效期至 2027-04-14', icon:'wallet',   iconBg:'bg-gradient-to-br from-emerald-400 to-teal-500' },
-        { type:'bid',    title:'有效出价 × 3',   meta:'3 辆不同车源 · 10 积分/台', amount:'+30',  amountColor:'text-sky-600',     note:'已合并展示',         icon:'gavel',    iconBg:'bg-gradient-to-br from-sky-400 to-blue-500' },
-        { type:'service',title:'使用平台物流服务',meta:'车源 XC2038 · 11:05',      amount:'+5',   amountColor:'text-amber-600',   note:'有效期至 2027-04-14', icon:'truck',    iconBg:'bg-gradient-to-br from-amber-400 to-orange-500' }
+      { date: '昨天 · 2026-04-22', items: [
+        earn('agency_service', '粤A78546 · 平台代办过户 · 16:20',         { expire:'2027-04-22' }),
+        spend('r_crash_report','15:10',                                   { note:'余额 306' }),
+        earn('deal',           '粤HSB009 · 14:30',                        { expire:'2027-04-22' }),
+        earn('bid',            '3 辆不同车源 · 10 积分/台',               { title:'有效出价 × 3', coin:30, note:'已合并展示' }),
+        earn('value_service',  '粤A78546 · 平台物流服务 · 11:05',         { expire:'2027-04-22' })
       ]},
-      { date:'2026-04-10', items:[
-        { type:'expire', title:'积分过期清零',      meta:'2025-04-10 获得 · 满 12 月', amount:'-12', amountColor:'text-slate-500',   note:'余额 369',           icon:'hourglass',  iconBg:'bg-gradient-to-br from-slate-400 to-slate-500' },
-        { type:'deal',   title:'成交奖励',          meta:'车源 XC1998 · 10:22',        amount:'+50', amountColor:'text-emerald-600', note:'有效期至 2027-04-10', icon:'wallet',     iconBg:'bg-gradient-to-br from-emerald-400 to-teal-500' },
-        { type:'invite', title:'邀请好友开通会员',  meta:'好友 138****6621 · 09:18',   amount:'+2',  amountColor:'text-fuchsia-600', note:'有效期至 2027-04-10', icon:'user-plus',  iconBg:'bg-gradient-to-br from-fuchsia-400 to-pink-500' }
+      { date: '2026-04-18', items: [
+        earn('biz_verify',     '上传营业执照 · 一次性奖励 · 11:30',       { coin:5, expire:'2027-04-18' }),
+        earn('invite_member',  '好友 138****6621 · 09:18',                { expire:'2027-04-18' }),
+        earn('vote',           '4 月品牌偏好调研 · 08:50',                { coin:3, expire:'2027-04-18' })
+      ]},
+      { date: '2026-04-15', items: [
+        spend('r_transfer_fee','14:30',                                   { note:'余额 286' }),
+        earn('refer_deal',     '好友 130****8821 完成首笔交易 · 14:00',   { expire:'2027-04-15' }),
+        earn('weichezhuan',    '开通唯车转 · 一次性奖励 · 10:30',         { expire:'2027-04-15' }),
+        earn('festival',       '春节集福活动 · 09:00',                    { coin:3, expire:'2027-04-15' })
+      ]},
+      { date: '2026-04-10', items: [
+        expire('2025-04-10 获得 · 满 12 月', 12, '余额 369'),
+        earn('deal',           '闽AB6688 · 10:22',                        { expire:'2027-04-10' }),
+        earn('bank_verify',    '完善银行卡信息 · 一次性奖励 · 09:10',     { coin:3, expire:'2027-04-10' })
       ]}
     ];
 
     const visibleGroups = computed(() => {
       if (activeFilter.value === 'all') return groups;
       return groups
-        .map(g => ({
-          ...g,
-          items: g.items.filter(tx => {
-            if (activeFilter.value === 'earn') return EARN_TYPES.includes(tx.type);
-            return tx.type === activeFilter.value;
-          })
-        }))
+        .map(g => ({ date: g.date, items: g.items.filter(tx => tx.kind === activeFilter.value) }))
         .filter(g => g.items.length > 0);
     });
-
-    const allEarningItems = CFG ? CFG.coinEarning.reduce((acc, g) => acc.concat(g.items), []) : [];
 
     function back() { smartBack('member.html'); }
 
     watch([activeFilter, showRuleModal], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { CFG, activeFilter, filterTabs, visibleGroups, allEarningItems, showRuleModal, back };
+    return { CFG, activeFilter, filterTabs, visibleGroups, showRuleModal, back };
   }
-}).mount('#app');
+});
+app.component('coin-earning-rules', window.CoinEarningRulesComponent);
+app.mount('#app');
 </script>
 </body>
 </html>
