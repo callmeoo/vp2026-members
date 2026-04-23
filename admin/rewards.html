@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>商城商品配置 · 唯普会员体系后台</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; color:#303133; font-size:13px; }
+  [v-cloak] { display:none; }
   .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
   .ant-sider .logo { background: #263445; }
   .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
@@ -20,27 +22,32 @@
   .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
   .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
   .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+  .ant-header { height: 50px; background:#fff; border-bottom:1px solid #e4e7ed; }
+  .breadcrumb-link { cursor:pointer; } .breadcrumb-link:hover { color:#409eff; }
   .ant-card { background: #fff; border-radius: 8px; }
-  .ant-input { padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; width: 100%; }
-  .ant-btn { padding: 5px 16px; border-radius: 6px; font-size: 14px; border: 1px solid #d9d9d9; background: #fff; cursor: pointer; }
+  .ant-input { padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; width: 100%; box-sizing:border-box; }
+  .ant-btn { padding: 5px 16px; border-radius: 6px; font-size: 14px; border: 1px solid #d9d9d9; background: #fff; cursor:pointer; }
   .ant-btn:hover { color: #1677ff; border-color: #1677ff; }
-  .ant-btn-primary { background: #1677ff; color: #fff; border-color: #1677ff; padding: 5px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+  .ant-btn-primary { background: #1677ff; color: #fff; border-color: #1677ff; padding: 5px 16px; border-radius: 6px; font-size: 14px; cursor:pointer; }
   .ant-btn-primary:hover { background: #4096ff; }
   .ant-tag { display: inline-flex; align-items: center; padding: 0 7px; font-size: 12px; line-height: 20px; border-radius: 4px; }
-  .ant-tag-blue { background: #e6f4ff; color: #1677ff; border: 1px solid #91caff; }
-  .ant-tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
-  .ant-tag-orange { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
-  .ant-tag-red { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
-  .ant-tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
-  .ant-tag-cyan { background: #e6fffb; color: #08979c; border: 1px solid #87e8de; }
-  .ant-tag-default { background: #fafafa; color: #595959; border: 1px solid #d9d9d9; }
-  tr:hover { background: #fafafa; }
+  .tag-blue { background: #e6f4ff; color: #1677ff; border: 1px solid #91caff; }
+  .tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+  .tag-orange { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
+  .tag-red { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+  .tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
+  .tag-cyan { background: #e6fffb; color: #08979c; border: 1px solid #87e8de; }
+  .tag-default { background: #fafafa; color: #595959; border: 1px solid #d9d9d9; }
+  tbody tr:hover { background: #fafafa; }
+  .icon-tile { width:36px; height:36px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0; }
+  .new-chip { display:inline-block; font-size:10px; padding:1px 5px; background:#fff1f0; color:#cf1322; border-radius:3px; margin-left:4px; vertical-align:middle; }
+  .todo-chip { display:inline-block; font-size:10px; padding:1px 5px; background:#fff7e6; color:#d46b08; border-radius:3px; margin-left:4px; vertical-align:middle; }
 </style>
 </head>
 <body>
 
+<div id="app" v-cloak>
 <div class="flex min-h-screen">
-
   <aside class="ant-sider flex flex-col">
     <div class="logo h-14 flex flex-col items-center justify-center">
       <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
@@ -48,59 +55,53 @@
     </div>
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="location.href='bms-orders.html'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-
+      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></a>
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
-        <div class="sub-item">销售首页</div>
         <div class="sub-item">客户等级管理</div>
-        <div class="sub-item" onclick="location.href='bms-sales-buyers.html'">买家管理</div>
-        <div class="sub-item">B2C零售</div>
-        <div class="sub-item">门店奖励</div>
-        <div class="sub-item" onclick="location.href='bms-sales-orders.html'">销售订单</div>
-        <div class="sub-item" onclick="location.href='level-rule.html'">等级规则</div>
-        <div class="sub-item" onclick="location.href='coin-rule.html'">积分规则</div>
-        <div class="sub-item active">商城商品配置</div>
-        <div class="sub-item" onclick="location.href='bms-coin-log.html'">积分流水</div>
-        <div class="sub-item" onclick="location.href='bms-redeem-log.html'">兑换记录</div>
+        <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
+        <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
+        <a href="level-rule.html" class="sub-item">等级规则</a>
+        <a href="coin-rule.html" class="sub-item">积分规则</a>
+        <a href="rewards.html" class="sub-item active">商城商品配置</a>
+        <a href="bms-coin-log.html" class="sub-item">积分流水</a>
+        <a href="bms-redeem-log.html" class="sub-item">兑换记录</a>
       </div>
-
-      <div class="menu-item"><i data-lucide="briefcase" class="w-4 h-4"></i><span>政企大客户</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="package" class="w-4 h-4"></i><span>库存管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="search-check" class="w-4 h-4"></i><span>查验管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" style="display:none">
-        <div class="sub-item">内容管理</div>
-        <div class="sub-item">优惠券</div>
-        <div class="sub-item">权益卡管理</div>
-        <div class="sub-item">权益卡投放管理</div>
-        <div class="sub-item">权益卡发放管理</div>
-        <div class="sub-item">奖品投放</div>
+      <div class="menu-item" @click="toggleOps"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" v-show="opsOpen">
+        <div class="sub-item">内容管理</div><div class="sub-item">优惠券</div>
+        <div class="sub-item">权益卡管理</div><div class="sub-item">权益卡投放管理</div>
+        <div class="sub-item">权益卡发放管理</div><div class="sub-item">奖品投放</div>
       </div>
-      <div class="menu-item"><i data-lucide="users" class="w-4 h-4"></i><span>人力资源</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="store" class="w-4 h-4"></i><span>集团门店管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="share-2" class="w-4 h-4"></i><span>共享拍</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>配置管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="file-bar-chart" class="w-4 h-4"></i><span>报表管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item"><i data-lucide="monitor" class="w-4 h-4"></i><span>中控中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     </nav>
   </aside>
 
   <div class="flex-1 flex flex-col min-w-0">
-
-    <header class="bg-white border-b border-slate-200 h-14 px-6 flex items-center justify-between">
-      <div class="flex items-center gap-2 text-sm text-slate-600">
-        <span>首页</span><span>/</span><span>销售管理</span><span>/</span><span class="text-slate-800 font-medium">商城商品配置</span>
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-3 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+        <div class="flex items-center gap-1">
+          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span class="breadcrumb-link" onclick="location.href='../index.html'">首页</span>
+          <span class="text-slate-300">/</span>
+          <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>销售管理</span>
+          <span class="text-slate-300">/</span>
+          <span class="font-medium text-slate-700">商城商品配置</span>
+        </div>
       </div>
-      <div class="flex items-center gap-2 text-sm">
-        <div class="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">运</div>
-        <span>运营-小王</span>
+      <div class="flex items-center gap-4">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+          <span class="text-sm text-slate-600">ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
       </div>
     </header>
 
     <main class="flex-1 p-6 overflow-y-auto">
-
       <div class="flex items-center justify-between mb-5">
         <div>
           <h1 class="text-xl font-semibold text-slate-800">商城商品配置</h1>
@@ -110,21 +111,9 @@
       </div>
 
       <div class="grid grid-cols-4 gap-4 mb-5">
-        <div class="ant-card p-4">
-          <div class="text-xs text-slate-500">上架中</div>
-          <div class="text-2xl font-bold text-slate-800 mt-1">15</div>
-        </div>
-        <div class="ant-card p-4">
-          <div class="text-xs text-slate-500">已下架</div>
-          <div class="text-2xl font-bold text-slate-800 mt-1">3</div>
-        </div>
-        <div class="ant-card p-4">
-          <div class="text-xs text-slate-500">库存告警</div>
-          <div class="text-2xl font-bold text-rose-600 mt-1">2</div>
-        </div>
-        <div class="ant-card p-4">
-          <div class="text-xs text-slate-500">本月累计兑换</div>
-          <div class="text-2xl font-bold text-slate-800 mt-1">2,823</div>
+        <div v-for="s in stats" :key="s.label" class="ant-card p-4">
+          <div class="text-xs text-slate-500">{{ s.label }}</div>
+          <div class="text-2xl font-bold mt-1" :class="s.danger ? 'text-rose-600' : 'text-slate-800'">{{ s.value }}</div>
         </div>
       </div>
 
@@ -132,39 +121,33 @@
         <div class="grid grid-cols-5 gap-3 items-end">
           <div>
             <label class="text-xs text-slate-500 block mb-1">关键字</label>
-            <input class="ant-input" placeholder="权益名称 / 编码">
+            <input class="ant-input" v-model="filters.keyword" placeholder="权益名称 / 编码">
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">类别</label>
-            <select class="ant-input">
-              <option>全部</option>
-              <option>数据查询</option>
-              <option>交易折扣</option>
-              <option>额度免审</option>
-              <option>专属服务</option>
+            <select class="ant-input" v-model="filters.category">
+              <option value="">全部</option>
+              <option>数据查询</option><option>交易折扣</option>
+              <option>额度免审</option><option>专属服务</option><option>新人专享</option>
             </select>
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">获取方式</label>
-            <select class="ant-input">
-              <option>全部</option>
-              <option>金币兑换</option>
-              <option>等级直达</option>
+            <select class="ant-input" v-model="filters.source">
+              <option value="">全部</option>
+              <option>金币兑换</option><option>等级直达</option>
             </select>
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">最低等级</label>
-            <select class="ant-input">
-              <option>全部</option>
-              <option>V0</option>
-              <option>V1</option>
-              <option>V2</option>
-              <option>V3</option>
+            <select class="ant-input" v-model="filters.level">
+              <option value="">全部</option>
+              <option>V0</option><option>V1</option><option>V2</option><option>V3</option>
             </select>
           </div>
           <div class="flex gap-2">
             <button class="ant-btn-primary flex-1">搜索</button>
-            <button class="ant-btn flex-1">重置</button>
+            <button class="ant-btn flex-1" @click="resetFilter">重置</button>
           </div>
         </div>
       </div>
@@ -186,378 +169,47 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-
-            <!-- 数据查询类 -->
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
+            <tr v-for="p in filteredProducts" :key="p.code" :class="{ 'bg-amber-50': p.status==='待启用' }">
+              <td class="px-4 py-3"><input type="checkbox" :disabled="p.status==='待启用'"></td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white">🔍</div>
+                  <div class="icon-tile" :style="{background: p.status==='待启用' ? '#cbd5e1' : p.iconBg}">{{ p.iconEmoji }}</div>
                   <div>
-                    <div class="font-medium text-slate-800">车辆中标价查询卡</div>
-                    <div class="text-xs text-slate-400">CAR_BID_PRICE_QUERY</div>
+                    <div class="font-medium" :class="p.status==='待启用' ? 'text-slate-500' : 'text-slate-800'">
+                      {{ p.name }}<span v-if="p.isNew" class="new-chip">新</span><span v-if="p.isTodo" class="todo-chip">待定</span>
+                    </div>
+                    <div class="text-xs text-slate-400">{{ p.code }}</div>
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V0+</span></td>
-              <td class="px-4 py-3 text-right">823</td>
-              <td class="px-4 py-3 text-right">177</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
+              <td class="px-4 py-3"><span class="ant-tag" :class="categoryTagCls(p.category)">{{ p.category }}</span></td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white">📊</div>
-                  <div>
-                    <div class="font-medium text-slate-800">交易行情查询卡</div>
-                    <div class="text-xs text-slate-400">MARKET_QUERY</div>
-                  </div>
-                </div>
+                <span v-if="p.source" class="ant-tag" :class="sourceTagCls(p.source)">{{ p.source }}</span>
+                <span v-else class="ant-tag tag-default">未定义</span>
               </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V0+</span></td>
-              <td class="px-4 py-3 text-right">1,245</td>
-              <td class="px-4 py-3 text-right">498</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
+              <td class="px-4 py-3 text-right" :class="{ 'font-semibold': typeof p.coin === 'number', 'text-slate-400 text-xs': typeof p.coin !== 'number' && p.coin !== '免费' }">
+                {{ typeof p.coin === 'number' ? p.coin : p.coin || '—' }}
+              </td>
+              <td class="px-4 py-3"><span class="ant-tag tag-default">{{ p.levelReq }}</span></td>
+              <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stockWarn, 'text-slate-400': p.stock === '—' }">{{ p.stock }}</td>
+              <td class="px-4 py-3 text-right">{{ p.issued }}</td>
+              <td class="px-4 py-3 text-center"><span class="ant-tag" :class="statusTagCls(p.status)">{{ p.status }}</span></td>
               <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
+                <template v-if="p.status === '待启用'">
+                  <a href="#" class="text-blue-600">配置</a>
+                </template>
+                <template v-else>
+                  <a href="#" class="text-blue-600 mr-2">编辑</a>
+                  <a v-if="p.stockWarn" href="#" class="text-blue-600 mr-2">补库存</a>
+                  <a href="#" class="text-rose-600">{{ p.source === '等级直达' ? '禁用' : '下架' }}</a>
+                </template>
               </td>
             </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white">📜</div>
-                  <div>
-                    <div class="font-medium text-slate-800">历史数据查询卡 <span class="text-[10px] px-1 py-0.5 bg-rose-50 text-rose-600 rounded ml-1">新</span></div>
-                    <div class="text-xs text-slate-400">HISTORY_DATA</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V1+</span></td>
-              <td class="px-4 py-3 text-right">612</td>
-              <td class="px-4 py-3 text-right">88</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-fuchsia-400 to-pink-500 flex items-center justify-center text-white">🎯</div>
-                  <div>
-                    <div class="font-medium text-slate-800">保留价查询卡 <span class="text-[10px] px-1 py-0.5 bg-rose-50 text-rose-600 rounded ml-1">新</span></div>
-                    <div class="text-xs text-slate-400">RESERVE_PRICE_QUERY</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V1+</span></td>
-              <td class="px-4 py-3 text-right">480</td>
-              <td class="px-4 py-3 text-right">152</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white">🛠️</div>
-                  <div>
-                    <div class="font-medium text-slate-800">出险维保数据卡</div>
-                    <div class="text-xs text-slate-400">MAINTAIN_DATA</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">300</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V1+</span></td>
-              <td class="px-4 py-3 text-right text-rose-600 font-semibold">45</td>
-              <td class="px-4 py-3 text-right">155</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-orange">库存低</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-blue-600 mr-2">补库存</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white">🚗</div>
-                  <div>
-                    <div class="font-medium text-slate-800">碰撞报告查询卡</div>
-                    <div class="text-xs text-slate-400">CRASH_REPORT</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V1+</span></td>
-              <td class="px-4 py-3 text-right">688</td>
-              <td class="px-4 py-3 text-right">312</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <!-- 交易折扣 -->
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-white">🏷️</div>
-                  <div>
-                    <div class="font-medium text-slate-800">过户 9.5 折 / 复检 9.5 折</div>
-                    <div class="text-xs text-slate-400">DISCOUNT_95</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">交易折扣</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V2+</span></td>
-              <td class="px-4 py-3 text-right">128</td>
-              <td class="px-4 py-3 text-right">612</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white">🏷️</div>
-                  <div>
-                    <div class="font-medium text-slate-800">过户 8 折 / 复检 8 折</div>
-                    <div class="text-xs text-slate-400">DISCOUNT_80</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">交易折扣</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">200</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V3+</span></td>
-              <td class="px-4 py-3 text-right">50</td>
-              <td class="px-4 py-3 text-right">32</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <!-- 额度免审 -->
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-rose-400 to-red-500 flex items-center justify-center text-white">↩️</div>
-                  <div>
-                    <div class="font-medium text-slate-800">无理由退车 1 台卡</div>
-                    <div class="text-xs text-slate-400">REFUND_ONCE</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-red">额度免审</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">500</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V3+</span></td>
-              <td class="px-4 py-3 text-right text-rose-600 font-semibold">32</td>
-              <td class="px-4 py-3 text-right">178</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-orange">库存低</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-blue-600 mr-2">补库存</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
-            <!-- 等级直达 -->
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white">🎧</div>
-                  <div>
-                    <div class="font-medium text-slate-800">1V1 专属客服</div>
-                    <div class="text-xs text-slate-400">VIP_SUPPORT</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-cyan">专属服务</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-orange">等级直达</span></td>
-              <td class="px-4 py-3 text-right text-slate-400 text-xs">免费</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V1+</span></td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right">71,956</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">启用</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">禁用</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white">👨‍💼</div>
-                  <div>
-                    <div class="font-medium text-slate-800">专属销售顾问 <span class="text-[10px] px-1 py-0.5 bg-rose-50 text-rose-600 rounded ml-1">新</span></div>
-                    <div class="text-xs text-slate-400">SALES_ADVISOR</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-cyan">专属服务</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-orange">等级直达</span></td>
-              <td class="px-4 py-3 text-right text-slate-400 text-xs">免费</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V1+</span></td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right">71,956</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">启用</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">禁用</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white">🚛</div>
-                  <div>
-                    <div class="font-medium text-slate-800">代送车上门(代物流)<span class="text-[10px] px-1 py-0.5 bg-rose-50 text-rose-600 rounded ml-1">新</span></div>
-                    <div class="text-xs text-slate-400">DELIVERY_SERVICE</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-cyan">专属服务</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-orange">等级直达</span></td>
-              <td class="px-4 py-3 text-right text-slate-400 text-xs">免费</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V3+</span></td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right">3,910</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">启用</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">禁用</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white">🅿️</div>
-                  <div>
-                    <div class="font-medium text-slate-800">免费停车服务 <span class="text-[10px] px-1 py-0.5 bg-rose-50 text-rose-600 rounded ml-1">新</span></div>
-                    <div class="text-xs text-slate-400">FREE_PARKING</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-cyan">专属服务</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-orange">等级直达</span></td>
-              <td class="px-4 py-3 text-right text-slate-400 text-xs">免费</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V3+</span></td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right">3,910</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">启用</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">禁用</a>
-              </td>
-            </tr>
-
-            <tr class="bg-amber-50">
-              <td class="px-4 py-3"><input type="checkbox" disabled></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-slate-300 flex items-center justify-center text-white">✍️</div>
-                  <div>
-                    <div class="font-medium text-slate-500">代签名 <span class="text-[10px] px-1 py-0.5 bg-amber-100 text-amber-700 rounded ml-1">待定</span></div>
-                    <div class="text-xs text-slate-400">SIGN_SERVICE</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-cyan">专属服务</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">未定义</span></td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">未定</span></td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-right text-slate-400">—</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-default">待启用</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600">配置</a>
-              </td>
-            </tr>
-
-            <!-- V0 专享 -->
-            <tr>
-              <td class="px-4 py-3"><input type="checkbox"></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded bg-gradient-to-br from-pink-400 to-fuchsia-500 flex items-center justify-center text-white">🎁</div>
-                  <div>
-                    <div class="font-medium text-slate-800">新人首次服务包</div>
-                    <div class="text-xs text-slate-400">NEWBIE_PACK</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-cyan">新人专享</span></td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-purple">金币兑换</span></td>
-              <td class="px-4 py-3 text-right font-semibold">1</td>
-              <td class="px-4 py-3"><span class="ant-tag ant-tag-default">V0 专享</span></td>
-              <td class="px-4 py-3 text-right">5,000</td>
-              <td class="px-4 py-3 text-right">2,841</td>
-              <td class="px-4 py-3 text-center"><span class="ant-tag ant-tag-green">上架</span></td>
-              <td class="px-4 py-3 text-center text-xs">
-                <a href="#" class="text-blue-600 mr-2">编辑</a>
-                <a href="#" class="text-rose-600">下架</a>
-              </td>
-            </tr>
-
           </tbody>
         </table>
 
         <div class="px-4 py-3 border-t border-slate-100 flex items-center justify-between text-sm">
-          <div class="text-slate-500">共 15 条</div>
+          <div class="text-slate-500">共 {{ filteredProducts.length }} 条</div>
           <div class="flex items-center gap-2">
             <button class="ant-btn px-2 py-1">‹</button>
             <button class="px-3 py-1 bg-blue-500 text-white rounded">1</button>
@@ -573,6 +225,64 @@
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50">← Demo 导航</a>
 </div>
+</div><!-- /#app -->
 
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script><script>lucide.createIcons();</script></body>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, reactive, ref, computed, onMounted } = Vue;
+createApp({
+  setup() {
+    const stats = [
+      { label:'上架中', value:'15' },
+      { label:'已下架', value:'3' },
+      { label:'库存告警', value:'2', danger:true },
+      { label:'本月累计兑换', value:'2,823' }
+    ];
+    const filters = reactive({ keyword:'', category:'', source:'', level:'' });
+    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.source=''; filters.level=''; };
+
+    const products = reactive([
+      { code:'CAR_BID_PRICE_QUERY', name:'车辆中标价查询卡', iconEmoji:'🔍', iconBg:'linear-gradient(135deg,#38bdf8,#3b82f6)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V0+', stock:823, issued:177, status:'上架' },
+      { code:'MARKET_QUERY', name:'交易行情查询卡', iconEmoji:'📊', iconBg:'linear-gradient(135deg,#34d399,#14b8a6)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V0+', stock:'1,245', issued:498, status:'上架' },
+      { code:'HISTORY_DATA', name:'历史数据查询卡', iconEmoji:'📜', iconBg:'linear-gradient(135deg,#fbbf24,#f97316)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V1+', stock:612, issued:88, status:'上架', isNew:true },
+      { code:'RESERVE_PRICE_QUERY', name:'保留价查询卡', iconEmoji:'🎯', iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V1+', stock:480, issued:152, status:'上架', isNew:true },
+      { code:'MAINTAIN_DATA', name:'出险维保数据卡', iconEmoji:'🛠️', iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', source:'金币兑换', coin:300, levelReq:'V1+', stock:45, issued:155, status:'库存低', stockWarn:true },
+      { code:'CRASH_REPORT', name:'碰撞报告查询卡', iconEmoji:'🚗', iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', source:'金币兑换', coin:200, levelReq:'V1+', stock:688, issued:312, status:'上架' },
+      { code:'DISCOUNT_95', name:'过户 9.5 折 / 复检 9.5 折', iconEmoji:'🏷️', iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', source:'金币兑换', coin:200, levelReq:'V2+', stock:128, issued:612, status:'上架' },
+      { code:'DISCOUNT_80', name:'过户 8 折 / 复检 8 折', iconEmoji:'🏷️', iconBg:'linear-gradient(135deg,#fbbf24,#eab308)', category:'交易折扣', source:'金币兑换', coin:200, levelReq:'V3+', stock:50, issued:32, status:'上架' },
+      { code:'REFUND_ONCE', name:'无理由退车 1 台卡', iconEmoji:'↩️', iconBg:'linear-gradient(135deg,#fb7185,#ef4444)', category:'额度免审', source:'金币兑换', coin:500, levelReq:'V3+', stock:32, issued:178, status:'库存低', stockWarn:true },
+      { code:'VIP_SUPPORT', name:'1V1 专属客服', iconEmoji:'🎧', iconBg:'linear-gradient(135deg,#2dd4bf,#10b981)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用' },
+      { code:'SALES_ADVISOR', name:'专属销售顾问', iconEmoji:'👨‍💼', iconBg:'linear-gradient(135deg,#60a5fa,#6366f1)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用', isNew:true },
+      { code:'DELIVERY_SERVICE', name:'代送车上门(代物流)', iconEmoji:'🚛', iconBg:'linear-gradient(135deg,#fb923c,#f59e0b)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
+      { code:'FREE_PARKING', name:'免费停车服务', iconEmoji:'🅿️', iconBg:'linear-gradient(135deg,#22d3ee,#3b82f6)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
+      { code:'SIGN_SERVICE', name:'代签名', iconEmoji:'✍️', iconBg:'', category:'专属服务', source:'', coin:'—', levelReq:'未定', stock:'—', issued:'—', status:'待启用', isTodo:true },
+      { code:'NEWBIE_PACK', name:'新人首次服务包', iconEmoji:'🎁', iconBg:'linear-gradient(135deg,#f472b6,#d946ef)', category:'新人专享', source:'金币兑换', coin:1, levelReq:'V0 专享', stock:'5,000', issued:'2,841', status:'上架' }
+    ]);
+
+    const categoryTagCls = (c) => ({
+      '数据查询':'tag-blue','交易折扣':'tag-purple','额度免审':'tag-red',
+      '专属服务':'tag-cyan','新人专享':'tag-cyan'
+    })[c] || 'tag-default';
+    const sourceTagCls = (s) => s==='等级直达' ? 'tag-orange' : 'tag-purple';
+    const statusTagCls = (s) => ({ '上架':'tag-green', '启用':'tag-green', '库存低':'tag-orange', '已下架':'tag-default', '待启用':'tag-default' })[s] || 'tag-default';
+
+    const filteredProducts = computed(() => products.filter(p => {
+      if (filters.keyword) {
+        const k = filters.keyword.toLowerCase();
+        if (!p.name.toLowerCase().includes(k) && !p.code.toLowerCase().includes(k)) return false;
+      }
+      if (filters.category && p.category !== filters.category) return false;
+      if (filters.source && p.source !== filters.source) return false;
+      if (filters.level && !p.levelReq.includes(filters.level)) return false;
+      return true;
+    }));
+
+    const opsOpen = ref(false);
+    const toggleOps = () => opsOpen.value = !opsOpen.value;
+    onMounted(() => lucide.createIcons());
+    return { stats, filters, resetFilter, products, filteredProducts, categoryTagCls, sourceTagCls, statusTagCls, opsOpen, toggleOps };
+  }
+}).mount('#app');
+</script>
+</body>
 </html>

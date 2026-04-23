@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>活动优惠券 · 唯车拍</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; }
+  @media (min-width: 768px) { body { background: #f5f5f7; padding: 24px 0; } .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; } }
+  [v-cloak] { display: none; }
+
+  .coupon-card { position: relative; background: #fff; border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); overflow: hidden; }
+  .coupon-title { font-size: 17px; color: #1e293b; font-weight: 600; margin-bottom: 10px; }
+  .coupon-meta { font-size: 13px; color: #94a3b8; line-height: 1.85; }
+
+  /* 印章 */
+  .stamp {
+    position: absolute; top: 50%; right: 18px; transform: translateY(-50%) rotate(-12deg);
+    width: 70px; height: 70px; border-radius: 50%;
+    border: 2.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px; letter-spacing: 1px;
+    background: rgba(255,255,255,.4); opacity: .85;
+  }
+  .stamp::before, .stamp::after {
+    content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+    color: currentColor; font-size: 7px; letter-spacing: 1px;
+  }
+  .stamp::before { top: 6px; content: '★ ★ ★ ★'; }
+  .stamp::after  { bottom: 6px; content: '★ ★ ★ ★'; }
+  .stamp.green  { color: #22c55e; }
+  .stamp.gray   { color: #94a3b8; }
+  .stamp.orange { color: #fb923c; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell pb-8">
+
+  <!-- 状态栏 -->
+  <div class="flex items-center justify-between px-5 pt-2 text-[13px] text-slate-700">
+    <span>14:45</span>
+    <span class="flex items-center gap-1 opacity-70">
+      <i data-lucide="bell-off" class="w-3.5 h-3.5"></i>
+      <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+      <i data-lucide="battery-full" class="w-3.5 h-3.5"></i>
+      <span class="text-xs">39</span>
+    </span>
+  </div>
+
+  <!-- 头部 -->
+  <div class="flex items-center justify-between px-4 py-3 bg-white">
+    <button type="button" @click="back" class="text-slate-800"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+    <span class="text-[17px] font-semibold text-slate-900">活动优惠券</span>
+    <button class="text-rose-500 text-[14px] font-medium">使用兑换码</button>
+  </div>
+
+  <!-- 优惠券列表 -->
+  <div class="px-3 pt-3 space-y-3">
+    <div v-for="c in coupons" :key="c.id" class="coupon-card">
+      <div class="coupon-title pr-20">{{ c.name }}</div>
+      <div class="coupon-meta pr-20">
+        <div>获得时间:{{ c.gainAt }}</div>
+        <div>活动类型:{{ c.activity }}</div>
+        <div>券码:{{ c.code }}</div>
+        <div>有效期:{{ c.expire }}</div>
+        <div>适用范围:{{ c.scope }}</div>
+      </div>
+      <div :class="['stamp', c.stampColor]">{{ c.stamp }}</div>
+    </div>
+  </div>
+
+  <div class="text-center text-[12px] text-slate-400 mt-6">- 没有更多了 -</div>
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script>
+const { createApp, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const coupons = [
+      {
+        id: 'c001',
+        name: '100元过户抵扣券',
+        gainAt: '2026-04-22 16:15:28',
+        activity: '积分兑换',
+        code: '300681264626',
+        expire: '2026-07-22 23:59:59',
+        scope: '全平台过户服务费减免',
+        stamp: '待使用',
+        stampColor: 'green'
+      },
+      {
+        id: 'c002',
+        name: '出险查询券',
+        gainAt: '2026-04-15 10:32:11',
+        activity: '会员等级权益',
+        code: '300681264627',
+        expire: '2026-10-15 23:59:59',
+        scope: '车辆出险记录单次查询(含维保数据)',
+        stamp: '待使用',
+        stampColor: 'green'
+      },
+      {
+        id: 'c003',
+        name: '维保查询券',
+        gainAt: '2026-04-10 09:18:42',
+        activity: '新人专享',
+        code: '300681264628',
+        expire: '2026-05-10 23:59:59',
+        scope: '4S 店原厂维保记录单次查询',
+        stamp: '待使用',
+        stampColor: 'green'
+      }
+    ];
+
+    function back() { smartBack('profile-loggedin.html'); }
+
+    onMounted(() => lucide.createIcons());
+
+    return { coupons, back };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
