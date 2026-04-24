@@ -149,7 +149,7 @@
         <button class="auto-bid"><i data-lucide="zap" class="w-4 h-4"></i>自动出价</button>
 
         <!-- V 专享 · 查看保留价 -->
-        <button v-if="!revealed" class="vip-reveal" @click="revealed = true">
+        <button v-if="!revealed" class="vip-reveal" @click="onRevealClick">
           <i data-lucide="crown" class="w-3.5 h-3.5"></i>
           <span>查看保留价</span>
         </button>
@@ -194,7 +194,7 @@
   <!-- 底部固定区 -->
   <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] z-40">
     <div v-if="car" class="sticky-tip flex items-center justify-between gap-2">
-      <span class="truncate">当前竞价&lt;保留价,您的出价可自我超越,<a href="#" @click.prevent="revealed = true" class="underline font-semibold text-amber-700">立即加价锁定爱车</a></span>
+      <span class="truncate">当前竞价&lt;保留价,您的出价可自我超越,<a href="#" @click.prevent="onRevealClick" class="underline font-semibold text-amber-700">立即加价锁定爱车</a></span>
       <i data-lucide="hand-pointing-up" class="w-4 h-4 text-amber-700 flex-none"></i>
     </div>
 
@@ -206,6 +206,23 @@
       <button :class="['px-8 py-3 rounded-full font-semibold text-[15px] transition active:scale-95',
                        selectedStep ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-slate-200 text-white']"
               @click="confirmBid">确定出价</button>
+    </div>
+  </div>
+
+  <!-- 不符合资格弹框 -->
+  <div v-if="showAlert" class="fixed inset-0 z-50 flex items-center justify-center p-6" style="background:rgba(15,23,42,.6)">
+    <div class="bg-white rounded-2xl w-full max-w-[300px] overflow-hidden">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[16px] font-bold text-slate-800">查看保留价</div>
+        <div class="text-[13px] text-slate-500 mt-2 leading-relaxed">V2 及以上可查看车辆保留价</div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="showAlert = false" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">我知道了</button>
+        <a href="level.html" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">升级会员</a>
+      </div>
     </div>
   </div>
 
@@ -229,6 +246,7 @@ createApp({
     const steps = [2000, 1000, 500, 200];
     const selectedStep = ref(null);
     const revealed = ref(false);
+    const showAlert = ref(false);
 
     const totalPrice = computed(() => {
       if (!car.value) return 0;
@@ -241,11 +259,23 @@ createApp({
       if (!selectedStep.value) return;
       alert('已提交出价 ¥' + window.formatYuan(car.value.currentPrice + selectedStep.value));
     }
+    function onRevealClick() {
+      const user = window.VPUser && window.VPUser.get();
+      if (!user) {
+        location.href = 'login.html?from=' + encodeURIComponent(location.pathname + location.search);
+        return;
+      }
+      if (!window.VPUser.canSeeReserve()) {
+        showAlert.value = true;
+        return;
+      }
+      revealed.value = true;
+    }
 
     onMounted(() => lucide.createIcons());
-    watch([selectedStep, revealed], () => nextTick(() => lucide.createIcons()));
+    watch([selectedStep, revealed, showAlert], () => nextTick(() => lucide.createIcons()));
 
-    return { car, steps, selectedStep, revealed, totalPrice, pad, confirmBid, formatYuan: window.formatYuan };
+    return { car, steps, selectedStep, revealed, showAlert, totalPrice, pad, confirmBid, onRevealClick, formatYuan: window.formatYuan };
   }
 }).mount('#app');
 </script>

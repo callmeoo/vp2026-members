@@ -59,3 +59,20 @@ window.RESERVE_CARS = [
 ];
 
 window.formatYuan = function(n) { return n.toLocaleString('en-US'); };
+
+// 登录态 + 会员等级 · localStorage,demo 简化实现
+window.VPUser = {
+  KEY: 'vp_user',
+  get() {
+    try { return JSON.parse(localStorage.getItem(this.KEY)) || null; } catch (e) { return null; }
+  },
+  set(level) {
+    localStorage.setItem(this.KEY, JSON.stringify({ level: level || 'V0', loginAt: Date.now() }));
+  },
+  clear() { localStorage.removeItem(this.KEY); },
+  // V2 / V3 才能看保留价
+  canSeeReserve() {
+    var u = this.get();
+    return !!u && (u.level === 'V2' || u.level === 'V3');
+  }
+};

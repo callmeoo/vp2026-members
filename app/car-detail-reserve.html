@@ -127,9 +127,10 @@
       </div>
     </div>
 
-    <!-- 当前价 -->
-    <div class="bg-white mt-1.5 px-4 py-3">
-      <div class="flex items-center justify-between">
+    <!-- 价格 / 记价 / 总价 · 同卡 -->
+    <div class="bg-white mt-1.5">
+      <!-- 当前价 -->
+      <div class="px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-2 flex-wrap">
           <span class="text-sm text-slate-500">当前价</span>
           <span class="text-red-500 font-bold text-[22px] leading-none">¥{{ formatYuan(car.currentPrice) }}</span>
@@ -139,32 +140,32 @@
       </div>
 
       <!-- V 专享 · 查看保留价 -->
-      <div class="mt-3 flex items-center justify-between gap-2 bg-amber-50/60 border border-amber-100 rounded-lg px-3 py-2">
+      <div class="mx-4 mt-2 flex items-center justify-between gap-2 bg-amber-50/60 border border-amber-100 rounded-lg px-3 py-2">
         <div class="flex items-center gap-2 min-w-0">
           <i data-lucide="crown" class="w-4 h-4 text-amber-600 flex-none"></i>
-          <span class="text-[12px] text-amber-800 font-medium">V3 金卡专享 · 查看保留价</span>
+          <span class="text-[12px] text-amber-800 font-medium">查看车辆保留价</span>
         </div>
-        <button v-if="!revealed" class="vip-reveal" @click="revealed = true">
-          <i data-lucide="eye" class="w-3.5 h-3.5 crown"></i>
+        <button v-if="!revealed" class="vip-reveal" @click="onRevealClick">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
           <span>查看保留价</span>
         </button>
         <span v-else class="text-[15px] font-black text-red-500 leading-none">¥{{ formatYuan(car.reservePrice) }}</span>
       </div>
-    </div>
 
-    <!-- 记价小工具 -->
-    <div class="bg-white mt-1.5 px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="bg-pink-100 text-pink-600 text-[12px] px-2 py-0.5 rounded">记价小工具</span>
-        <span class="text-[13px] text-slate-400">未设置</span>
-        <i data-lucide="pencil" class="w-3.5 h-3.5 text-slate-400"></i>
+      <!-- 记价小工具 -->
+      <div class="px-4 py-2 mt-2 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="bg-pink-100 text-pink-600 text-[12px] px-2 py-0.5 rounded">记价小工具</span>
+          <span class="text-[13px] text-slate-400">未设置</span>
+          <i data-lucide="pencil" class="w-3.5 h-3.5 text-slate-400"></i>
+        </div>
       </div>
-    </div>
 
-    <!-- 总价 -->
-    <div class="bg-white mt-1.5 px-4 py-3 flex items-center justify-between">
-      <div class="text-[14px] text-slate-700">总价: <span class="font-semibold text-slate-900">¥{{ formatYuan(car.currentPrice + car.fee + car.platformFee + 2000) }}</span></div>
-      <button class="text-slate-500 text-[13px] flex items-center gap-1">明细 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i></button>
+      <!-- 总价 -->
+      <div class="mx-4 my-3 px-3 py-2.5 bg-slate-50 rounded-lg flex items-center justify-between">
+        <div class="text-[14px] text-slate-700">总价: <span class="font-semibold text-slate-900">¥{{ formatYuan(car.currentPrice + car.fee + car.platformFee + 2000) }}</span></div>
+        <button class="text-slate-500 text-[13px] flex items-center gap-1">明细 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i></button>
+      </div>
     </div>
 
     <!-- 占位段:配置 / 检测 / 报告 等(简化) -->
@@ -187,7 +188,7 @@
   <!-- 底部固定区:tip + 出价栏 -->
   <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 z-40">
     <div v-if="car" class="sticky-tip flex items-center justify-between gap-2">
-      <span class="truncate">当前竞价&lt;保留价,您的出价可自我超越,<a href="#" @click.prevent="revealed = true" class="underline font-semibold text-amber-700">立即加价锁定爱车</a></span>
+      <span class="truncate">当前竞价&lt;保留价,您的出价可自我超越,<a href="#" @click.prevent="onRevealClick" class="underline font-semibold text-amber-700">立即加价锁定爱车</a></span>
       <i data-lucide="hand-pointing-up" class="w-4 h-4 text-amber-700 flex-none"></i>
     </div>
 
@@ -216,6 +217,23 @@
     </div>
   </div>
 
+  <!-- 不符合资格弹框 -->
+  <div v-if="showAlert" class="fixed inset-0 z-50 flex items-center justify-center p-6" style="background:rgba(15,23,42,.6)">
+    <div class="bg-white rounded-2xl w-full max-w-[300px] overflow-hidden">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[16px] font-bold text-slate-800">查看保留价</div>
+        <div class="text-[13px] text-slate-500 mt-2 leading-relaxed">V2 及以上可查看车辆保留价</div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="showAlert = false" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">我知道了</button>
+        <a href="member.html" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">升级会员</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="hidden md:block fixed top-4 left-4 z-50">
@@ -233,13 +251,27 @@ createApp({
     const id = params.get('id') || 'r1';
     const car = ref((window.RESERVE_CARS || []).find(c => c.id === id) || (window.RESERVE_CARS || [])[0]);
     const revealed = ref(false);
+    const showAlert = ref(false);
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
-    onMounted(() => lucide.createIcons());
-    watch(revealed, () => nextTick(() => lucide.createIcons()));
+    function onRevealClick() {
+      const user = window.VPUser && window.VPUser.get();
+      if (!user) {
+        location.href = 'login.html?from=' + encodeURIComponent(location.pathname + location.search);
+        return;
+      }
+      if (!window.VPUser.canSeeReserve()) {
+        showAlert.value = true;
+        return;
+      }
+      revealed.value = true;
+    }
 
-    return { car, revealed, pad, formatYuan: window.formatYuan };
+    onMounted(() => lucide.createIcons());
+    watch([revealed, showAlert], () => nextTick(() => lucide.createIcons()));
+
+    return { car, revealed, showAlert, pad, onRevealClick, formatYuan: window.formatYuan };
   }
 }).mount('#app');
 </script>

@@ -36,13 +36,17 @@
   .bid-strip {
     position:absolute; left:0; right:0; bottom:0;
     background: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
-    color:#fff; font-size: 11px;
+    color:#fff; font-size: 10px; line-height: 1;
     display:flex; align-items:center; justify-content:space-between;
-    padding: 4px 8px; font-variant-numeric: tabular-nums;
+    padding: 4px 6px; font-variant-numeric: tabular-nums;
+    gap: 4px; white-space: nowrap; overflow: hidden;
   }
   .bid-strip .label {
-    background: rgba(0,0,0,.18); padding: 1px 6px; border-radius: 3px;
-    font-weight: 600;
+    background: rgba(0,0,0,.18); padding: 2px 5px; border-radius: 3px;
+    font-weight: 600; flex: none;
+  }
+  .bid-strip > span:last-child {
+    overflow: hidden; text-overflow: ellipsis;
   }
 
   /* tag */
@@ -51,6 +55,7 @@
     background:#f1f5f9; color:#64748b;
     font-size:11px; padding: 2px 8px; border-radius: 4px;
     border:1px solid #e2e8f0;
+    white-space: nowrap;
   }
   .meta-tag.fresh { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
 
@@ -127,16 +132,16 @@
 
       <!-- 文字 -->
       <div class="flex-1 min-w-0 flex flex-col justify-between">
-        <div>
+        <div class="min-w-0">
           <div class="flex items-start gap-1 leading-tight">
             <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500 flex-none mt-0.5"></i>
-            <div class="text-[14px] font-bold text-slate-800 break-all">
-              {{ car.city }}<span class="text-slate-300 mx-1">|</span>{{ car.brand }} {{ car.model }}
-              <span class="block">{{ car.spec }}</span>
+            <div class="min-w-0 flex-1">
+              <div class="text-[14px] font-bold text-slate-800 truncate">{{ car.city }}<span class="text-slate-300 mx-1">|</span>{{ car.brand }} {{ car.model }}</div>
+              <div class="text-[13px] font-semibold text-slate-700 truncate mt-0.5">{{ car.spec }}</div>
             </div>
           </div>
-          <div class="text-[11px] text-slate-500 mt-1">
-            {{ car.plate }}<span class="mx-1.5">|</span>{{ car.date }}<span class="mx-1.5">|</span>{{ car.mileage }}<template v-if="car.transfer"><span class="mx-1.5">|</span>{{ car.transfer }}</template>
+          <div class="text-[11px] text-slate-500 mt-1.5 truncate">
+            {{ car.plate }}<span class="mx-1">|</span>{{ car.date }}<span class="mx-1">|</span>{{ car.mileage }}<template v-if="car.transfer"><span class="mx-1">|</span>{{ car.transfer }}</template>
           </div>
           <div class="mt-1.5 flex items-center gap-1.5">
             <span :class="['meta-tag', car.isReserve ? 'fresh' : '']">{{ car.hall }}</span>
