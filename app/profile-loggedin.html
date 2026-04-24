@@ -267,28 +267,36 @@ createApp({
       ? Math.min(100, Math.round(currentDeals.value / target.value * 100))
       : 100);
 
-    // 全部会员权益(按等级从低到高聚合,去重);当前等级不含的标记 locked
-    // 积分兑换类(coin_exchange_*)视为同一项,优先展示当前等级具体文案
+    // 全部会员权益按固定顺序展示(历史行情 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无偿退车)
+    // 积分兑换类(coin_exchange_*)视为同一项,展示当前等级具体文案(1:1 / 95 折 / 8 折)
     const allBenefits = computed(() => {
       const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
       const currBenefits = currentLv.value.benefits || [];
+      const findIn = (lv, id) => (lv.benefits || []).find(b => b.id === id);
+      // 聚合所有等级 benefits,用于取 icon/label
+      const poolMap = {};
+      CFG.levels.forEach(lv => (lv.benefits || []).forEach(b => { poolMap[b.id] = b; }));
+      const hasCurr = (id) => !!findIn(currentLv.value, id);
+      const row = (id) => {
+        const b = poolMap[id];
+        return b ? { id, icon: b.icon, label: b.label, unlocked: hasCurr(id) } : null;
+      };
+      // 积分兑换槽:当前等级具体折扣(1:1 / 95 折 / 8 折)
       const currExchange = currBenefits.find(b => exchangeIds.includes(b.id));
       const fallbackExchange = CFG.levels[0].benefits.find(b => exchangeIds.includes(b.id));
       const exchange = currExchange || fallbackExchange;
-      const seen = new Set();
-      const list = [];
-      if (exchange) {
-        list.push({ id: exchange.id, icon: exchange.icon, label: exchange.label, unlocked: !!currExchange });
-        exchangeIds.forEach(id => seen.add(id));
-      }
-      CFG.levels.forEach(lv => {
-        (lv.benefits || []).forEach(b => {
-          if (seen.has(b.id)) return;
-          seen.add(b.id);
-          list.push({ id: b.id, icon: b.icon, label: b.label, unlocked: currBenefits.some(cb => cb.id === b.id) });
-        });
-      });
-      return list;
+      const exchangeRow = exchange
+        ? { id: exchange.id, icon: exchange.icon, label: exchange.label, unlocked: !!currExchange }
+        : null;
+      // 固定顺序
+      return [
+        row('history_data'),
+        row('reserve_price'),
+        row('sales_advisor'),
+        row('service_1v1'),
+        exchangeRow,
+        row('refund_1'),
+      ].filter(Boolean);
     });
 
     const bidMenu = [
