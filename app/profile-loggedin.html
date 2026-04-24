@@ -21,7 +21,7 @@
   .benefit-card.locked .benefit-label { color: rgba(255,255,255,.4); }
   .benefit-lock { position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.75); }
   .hscroll::-webkit-scrollbar { display: none; }
-  .hscroll { -ms-overflow-style: none; scrollbar-width: none; }
+  .hscroll { -ms-overflow-style: none; scrollbar-width: none; touch-action: pan-x; -webkit-overflow-scrolling: touch; }
 </style>
 </head>
 <body>
@@ -69,27 +69,30 @@
     </div>
 
     <!-- 等级 Banner + 进度 + 权益横滑 -->
-    <a href="member.html" class="block relative z-10 mx-4 mt-4 rounded-3xl member-banner p-4 shadow-2xl">
-      <div class="relative z-10 flex items-center justify-between mb-3">
-        <div class="flex items-baseline gap-2">
-          <span class="text-2xl font-black text-white">{{ currentLv.short }} {{ currentLv.name }}</span>
+    <!-- 等级 Banner 顶部 + 进度:点击跳转会员中心;权益横滑独立 div,避免 <a> 拦截手势 -->
+    <div class="relative z-10 mx-4 mt-4 rounded-3xl member-banner p-4 shadow-2xl">
+      <a href="member.html" class="block">
+        <div class="relative z-10 flex items-center justify-between mb-3">
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-black text-white">{{ currentLv.short }} {{ currentLv.name }}</span>
+          </div>
+          <div class="inline-flex items-center gap-1 bg-white/15 backdrop-blur text-xs font-semibold px-2.5 py-1 rounded-full text-white">
+            会员中心 <i data-lucide="chevron-right" class="w-3 h-3"></i>
+          </div>
         </div>
-        <div class="inline-flex items-center gap-1 bg-white/15 backdrop-blur text-xs font-semibold px-2.5 py-1 rounded-full text-white">
-          会员中心 <i data-lucide="chevron-right" class="w-3 h-3"></i>
+        <div class="relative z-10 mb-2 flex items-baseline justify-between">
+          <span class="text-[11px] text-indigo-200">近 3 月成交</span>
+          <span class="text-[12px] text-white">
+            <span class="text-amber-300 font-bold text-[15px]">{{ currentDeals }}</span>
+            <span class="opacity-70"> / {{ target }} 台</span>
+            <span v-if="nextLvShort" class="text-[10px] text-indigo-200 ml-2">升 {{ nextLvShort }}</span>
+          </span>
         </div>
-      </div>
-      <div class="relative z-10 mb-2 flex items-baseline justify-between">
-        <span class="text-[11px] text-indigo-200">近 3 月成交</span>
-        <span class="text-[12px] text-white">
-          <span class="text-amber-300 font-bold text-[15px]">{{ currentDeals }}</span>
-          <span class="opacity-70"> / {{ target }} 台</span>
-          <span v-if="nextLvShort" class="text-[10px] text-indigo-200 ml-2">升 {{ nextLvShort }}</span>
-        </span>
-      </div>
-      <div class="relative z-10 h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
-        <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full transition-all duration-300" :style="{ width: progress + '%' }"></div>
-      </div>
-      <!-- 权益横滑(展示全部等级权益,当前等级不享受的置灰加锁) -->
+        <div class="relative z-10 h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
+          <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full transition-all duration-300" :style="{ width: progress + '%' }"></div>
+        </div>
+      </a>
+      <!-- 权益横滑独立区(不在 <a> 内),避免触摸滑动被链接拦截 -->
       <div class="relative z-10 hscroll flex gap-2 overflow-x-auto pb-1">
         <div v-for="b in allBenefits" :key="b.id" :class="['benefit-card rounded-xl p-2.5 text-center', b.unlocked ? '' : 'locked']">
           <div class="h-8 flex items-center justify-center benefit-icon" :class="b.unlocked ? 'text-amber-300' : ''">
@@ -99,7 +102,7 @@
           <span v-if="!b.unlocked" class="benefit-lock"><i data-lucide="lock" class="w-2.5 h-2.5"></i></span>
         </div>
       </div>
-    </a>
+    </div>
   </div>
 
   <!-- 资产入口 -->
