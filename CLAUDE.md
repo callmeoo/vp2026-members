@@ -81,6 +81,8 @@
     <div class="brand-sub">www.chevip.com</div>
   </div>
   <nav class="flex-1 overflow-y-auto">
+    <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></a>
+
     <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu">
       <a href="dashboard.html"          class="sub-item">运营仪表盘</a>
@@ -94,16 +96,22 @@
       <a href="bms-redeem-log.html"     class="sub-item">兑换记录</a>
     </div>
 
-    <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <!-- 服务中心可折叠,当前页在其下时默认展开(menu-item 加 open + submenu 去 display:none) -->
+    <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <div class="submenu" style="display:none">
+      <a href="bms-aftersales.html"              class="sub-item">售后服务</a>
+      <a href="bms-aftersales-list.html"         class="sub-item">售后列表</a>
+      <a href="bms-aftersale-approval-list.html" class="sub-item">企微审批</a>
+    </div>
 
-    <!-- 运营部可折叠 —— Vue 页用 @click="toggleOps" + v-show,非 Vue 页用 onclick 脚手架 -->
-    <div class="menu-item" @click="toggleOps"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-    <div class="submenu" v-show="opsOpen">
+    <!-- 运营部可折叠 —— 同样脚手架 -->
+    <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <div class="submenu" style="display:none">
       <div class="sub-item">内容管理</div>
       <div class="sub-item">优惠券</div>
-      <div class="sub-item">权益卡管理</div>
-      <div class="sub-item">权益卡投放管理</div>
-      <div class="sub-item">权益卡发放管理</div>
+      <div class="sub-item">优惠券管理</div>
+      <div class="sub-item">优惠券投放管理</div>
+      <div class="sub-item">优惠券发放管理</div>
       <div class="sub-item">奖品投放</div>
     </div>
   </nav>
@@ -111,10 +119,11 @@
 ```
 
 规则:
-1. **一级项只能有 3 个,且顺序固定**:业务数据、销售管理(展开) / 服务中心 / 运营部(可折叠)。**严禁出现**:检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
+1. **一级项固定 4 个,按此顺序**:业务数据(链接)/ 销售管理(展开) / 服务中心(可折叠) / 运营部(可折叠)。**严禁出现**:检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
 2. **销售管理 submenu 固定 9 项,按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
-3. **当前页 active**:在对应 `sub-item` 上加 `active` 类;`客户等级管理` 默认没有专属页,不加 href。
-4. **运营部默认折叠**,点击展开;Vue 页使用 `opsOpen` + `toggleOps` 控制,非 Vue 页使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
+3. **服务中心 submenu 固定 3 项**:售后服务 / 售后列表 / 企微审批。对应 `bms-aftersales.html` / `bms-aftersales-list.html` / `bms-aftersale-approval-list.html`。
+4. **当前页 active**:在对应 `menu-item` 或 `sub-item` 上加 `active` 类。业务数据相关页(bms-orders / bms-order-detail / order-detail)在一级 `menu-item` 上加 active;销售管理/服务中心子页在对应 `sub-item` 上加 active。`客户等级管理` 默认没有专属页,不加 href。
+5. **服务中心 / 运营部默认折叠**,点击展开;当前页在某 submenu 下时,`menu-item` 加 `open` 且对应 `submenu` 去掉 `display:none`。脚手架统一使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
 
 
 ---
