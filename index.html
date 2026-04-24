@@ -83,7 +83,7 @@
         <i :data-lucide="t.icon" class="w-4 h-4"></i>
         <span>{{ t.label }}</span>
         <span class="count" v-if="tabCount(t)">{{ tabCount(t) }}</span>
-        <span class="count" v-else>稍后</span>
+        <span class="count" v-else-if="t.items && !t.items.length">稍后</span>
       </div>
     </div>
 
