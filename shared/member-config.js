@@ -155,7 +155,24 @@
     ],
 
     // ─────────────────────────────────────────────
-    // 三、唯金币可兑换的权益卡
+    // 三、推荐任务(会员中心展示,后台可配置)
+    // ─────────────────────────────────────────────
+    // highlight=true 为核心任务,在会员中心以红色标记为"核心任务"
+    // unit 为积分后缀(如 "/台" / "/次"),空表示纯数字
+    recommendedTasks: [
+      { id: 't_deal',        action: '完成车辆交易',                             points: 50, unit: '',   desc: '成交一台车可获得,退车则扣回',     highlight: true  },
+      { id: 't_bid',         action: '出价参与竞拍',                             points: 10, unit: '/台', desc: '仅计有效出价 1 台算 1 次,上不封顶', highlight: true  },
+      { id: 't_vote',        action: '参与平台投票 / 问卷 / 调研',               points: 2,  unit: '/次', desc: '' },
+      { id: 't_deposit',     action: '首次充值保证金',                           points: 5,  unit: '/次', desc: '' },
+      { id: 't_verify',      action: '首次实名认证',                             points: 5,  unit: '/次', desc: '' },
+      { id: 't_share',       action: '转发车源并成功分享朋友圈',                 points: 1,  unit: '',    desc: '' },
+      { id: 't_invite',      action: '邀请商户完成注册 + 实名认证 + 保证金',     points: 20, unit: '',    desc: '双方都有积分增送' },
+      { id: 't_festival',    action: '节日专属任务(如中秋 / 春节)出价双倍积分', points: 20, unit: '/台', desc: '以具体活动通知为准',             highlight: true  },
+      { id: 't_weichezhuan', action: '开通唯车转,并成为会员',                   points: 1,  unit: '',    desc: '完成开通 / 使用且会员激活后发放' }
+    ],
+
+    // ─────────────────────────────────────────────
+    // 四、唯金币可兑换的权益卡
     // ─────────────────────────────────────────────
     redeemableRewards: [
       { id: 'r_insurance',     name: '出险维保数据',       coin: 300, scope: '所有等级商户', icon: 'shield-check' },
