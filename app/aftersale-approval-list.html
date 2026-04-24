@@ -84,6 +84,7 @@
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
 <script>
 const { createApp, ref, onMounted } = Vue;
 
@@ -98,7 +99,7 @@ createApp({
 
     const showNav = ref(window === window.parent);
 
-    function back() { history.back(); }
+    function back() { smartBack('profile-loggedin.html'); }
 
     onMounted(() => lucide.createIcons());
 
