@@ -15,7 +15,11 @@
   .member-banner { background: linear-gradient(120deg, #1a0a42 0%, #3b1978 35%, #5b2ca8 65%, #7a3dd1 100%); position: relative; overflow: hidden; }
   .notification-badge { position: absolute; top: -4px; right: -8px; background: #ef4444; color: white; font-size: 10px; padding: 0 5px; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: bold; line-height: 1; }
   .dot-new { width: 7px; height: 7px; background: #ef4444; border-radius: 50%; display: inline-block; }
-  .benefit-card { flex: 0 0 88px; background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 100%); border: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(10px); }
+  .benefit-card { flex: 0 0 88px; background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 100%); border: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(10px); position: relative; }
+  .benefit-card.locked { background: linear-gradient(135deg, rgba(255,255,255,.03) 0%, rgba(255,255,255,.01) 100%); border-color: rgba(255,255,255,.05); }
+  .benefit-card.locked .benefit-icon { color: rgba(255,255,255,.3); }
+  .benefit-card.locked .benefit-label { color: rgba(255,255,255,.4); }
+  .benefit-lock { position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.75); }
   .hscroll::-webkit-scrollbar { display: none; }
   .hscroll { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
@@ -85,15 +89,15 @@
       <div class="relative z-10 h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
         <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full transition-all duration-300" :style="{ width: progress + '%' }"></div>
       </div>
-      <!-- 权益横滑(基于 member-config.js 当前等级 benefits) -->
+      <!-- 权益横滑(展示全部等级权益,当前等级不享受的置灰加锁) -->
       <div class="relative z-10 hscroll flex gap-2 overflow-x-auto pb-1">
-        <div v-for="b in currentLv.benefits" :key="b.id" class="benefit-card rounded-xl p-2.5 text-center">
-          <div class="h-8 flex items-center justify-center text-amber-300">
+        <div v-for="b in allBenefits" :key="b.id" :class="['benefit-card rounded-xl p-2.5 text-center', b.unlocked ? '' : 'locked']">
+          <div class="h-8 flex items-center justify-center benefit-icon" :class="b.unlocked ? 'text-amber-300' : ''">
             <i :data-lucide="b.icon" class="w-5 h-5"></i>
           </div>
-          <div class="text-[11px] font-semibold text-white mt-1 leading-tight">{{ b.label }}</div>
+          <div class="benefit-label text-[11px] font-semibold mt-1 leading-tight" :class="b.unlocked ? 'text-white' : ''">{{ b.label }}</div>
+          <span v-if="!b.unlocked" class="benefit-lock"><i data-lucide="lock" class="w-2.5 h-2.5"></i></span>
         </div>
-        <div v-if="!currentLv.benefits || !currentLv.benefits.length" class="text-[11px] text-indigo-200 px-2">暂无可享权益</div>
       </div>
     </a>
   </div>
@@ -263,6 +267,30 @@ createApp({
       ? Math.min(100, Math.round(currentDeals.value / target.value * 100))
       : 100);
 
+    // 全部会员权益(按等级从低到高聚合,去重);当前等级不含的标记 locked
+    // 积分兑换类(coin_exchange_*)视为同一项,优先展示当前等级具体文案
+    const allBenefits = computed(() => {
+      const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
+      const currBenefits = currentLv.value.benefits || [];
+      const currExchange = currBenefits.find(b => exchangeIds.includes(b.id));
+      const fallbackExchange = CFG.levels[0].benefits.find(b => exchangeIds.includes(b.id));
+      const exchange = currExchange || fallbackExchange;
+      const seen = new Set();
+      const list = [];
+      if (exchange) {
+        list.push({ id: exchange.id, icon: exchange.icon, label: exchange.label, unlocked: !!currExchange });
+        exchangeIds.forEach(id => seen.add(id));
+      }
+      CFG.levels.forEach(lv => {
+        (lv.benefits || []).forEach(b => {
+          if (seen.has(b.id)) return;
+          seen.add(b.id);
+          list.push({ id: b.id, icon: b.icon, label: b.label, unlocked: currBenefits.some(cb => cb.id === b.id) });
+        });
+      });
+      return list;
+    });
+
     const bidMenu = [
       { label:'进行中', icon:'gavel' },
       { label:'已结束', icon:'hourglass',       badge:'23' },
@@ -289,7 +317,7 @@ createApp({
 
     return {
       CFG, isVerified, currentLv, currentLvShort, currentDeals, target, nextLvShort, progress,
-      simulateLevel,
+      allBenefits, simulateLevel,
       bidMenu, orderMenu, serviceMenu
     };
   }
