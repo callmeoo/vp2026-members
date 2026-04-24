@@ -218,7 +218,85 @@
     </div>
   </section>
 
-  <!-- ========== Tab 2 · Q&A ========== -->
+  <!-- ========== Tab 2 · 积分说明 ========== -->
+  <section v-show="activeTab === 'coins'" class="pb-2 pt-5">
+    <!-- 什么是积分 -->
+    <div class="mx-4 p-4 rounded-2xl bg-amber-50 border border-amber-200">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white"><i data-lucide="coins" class="w-4 h-4"></i></div>
+        <span class="sub-title">什么是积分?</span>
+      </div>
+      <div class="body-text">
+        积分是唯普汽车平台的<strong style="color:#1e293b">商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong style="color:#1e293b">兑换平台权益卡</strong>或享受<strong style="color:#1e293b">折扣</strong>。
+      </div>
+    </div>
+
+    <!-- 获取方式表 · 三列:类别 / 具体行为 / 积分 -->
+    <div class="px-4 mt-5">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="h-4 w-1 bg-amber-500 rounded-full"></div>
+        <span class="sub-title">获取方式</span>
+      </div>
+      <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+        <table class="w-full earn-table border-collapse">
+          <thead>
+            <tr class="bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+              <th class="text-left border-r border-white/20" style="width:28%">类别</th>
+              <th class="text-left border-r border-white/20">具体行为</th>
+              <th class="text-center" style="width:28%">积分</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="g in earningTable" :key="g.category">
+              <tr v-for="(it, i) in g.items" :key="it.action" class="border-b border-slate-100 last:border-0">
+                <td v-if="i === 0" :rowspan="g.items.length" class="align-middle text-center border-r border-slate-200 font-semibold bg-slate-50" style="color:#334155">{{ g.category }}</td>
+                <td class="border-r border-slate-100" style="color:#334155">{{ it.action }}</td>
+                <td class="text-center font-bold whitespace-nowrap" style="color:#d97706">{{ it.coin }}</td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 消耗方式 -->
+    <div class="px-4 mt-5">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="h-4 w-1 bg-violet-500 rounded-full"></div>
+          <span class="sub-title">消耗方式</span>
+        </div>
+        <a href="mall.html" class="text-violet-600 flex items-center font-medium" style="font-size:14px">前往积分商城 <i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center flex-none">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="sub-title">积分商城兑换</div>
+            <div class="body-text mt-1">平台为您开设 <strong style="color:#1e293b">积分商城</strong>,您可使用积分在商城内兑换各类权益卡或实物商品,所兑即所得。</div>
+          </div>
+        </div>
+
+        <div class="h-px bg-slate-100 mx-4"></div>
+
+        <div class="p-4 flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center flex-none">
+            <i data-lucide="timer-off" class="w-5 h-5"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="sub-title">有效期到期自动扣除</div>
+            <div class="body-text mt-1">积分自获得当月起 <strong style="color:#1e293b">12 个自然月</strong> 内有效,到期未使用的积分将自动清零,建议尽早使用。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ========== Tab 3 · Q&A ========== -->
   <section v-show="activeTab === 'qa'" class="pt-5" style="padding-bottom: calc(80px + env(safe-area-inset-bottom))">
     <h2 class="sec-title">
       <i data-lucide="help-circle" class="w-[18px] h-[18px] text-violet-600"></i>Q&amp;A
@@ -291,6 +369,7 @@ createApp({
 
     const tabs = [
       { key: 'levels', label: '等级权益', icon: 'shield-check' },
+      { key: 'coins',  label: '积分说明', icon: 'coins' },
       { key: 'qa',     label: 'Q&A',      icon: 'help-circle' }
     ];
 
@@ -348,6 +427,15 @@ createApp({
       { q:'如何查看会员等级权益?', a:'<p>您可在会员页面通过切换等级的方式查看各等级的权益,其中未达到的等级显示为未解锁状态。</p><p>会员等级越高,可享权益越丰富。</p>' },
       { q:'会员等级有效期多久?', a:'<p>您的会员等级会在每月 1 日进行更新,更新后的等级有效期至当月最后一日。</p>' }
     ];
+
+    // 积分获取表 · 从 CFG.coinEarning 派生(已删「说明」列)
+    const earningTable = CFG.coinEarning.map(g => ({
+      category: g.category,
+      items: g.items.map(it => ({
+        action: it.action,
+        coin: String(it.coin) + (it.unit ? ' ' + it.unit : '')
+      }))
+    }));
 
     // 折扣显示 · 按等级派生
     const discountMap = {};
@@ -410,7 +498,7 @@ createApp({
     });
 
     return {
-      CFG, activeTab, showShareModal, openQa, tabs, levelRows, benefitMatrix, qaList, discountMap,
+      CFG, activeTab, showShareModal, openQa, tabs, levelRows, benefitMatrix, qaList, earningTable, discountMap,
       tabSentinel, isStuck,
       switchTab, toggleQa, back, shareToWechat, copyLink
     };
