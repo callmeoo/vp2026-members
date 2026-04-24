@@ -174,11 +174,7 @@
       <div class="brand-sub">www.chevip.com</div>
     </div>
     <nav class="flex-1 overflow-y-auto">
-      <div :class="['menu-item', { open: openGroup === 'biz' }]" @click="toggleGroup('biz')"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div v-show="openGroup === 'biz'" class="submenu">
-        <a href="bms-orders.html" class="sub-item">订单列表</a>
-        <a href="bms-users.html" class="sub-item active">用户管理</a>
-      </div>
+
       <div :class="['menu-item', { open: openGroup === 'sales' }]" @click="toggleGroup('sales')"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div v-show="openGroup === 'sales'" class="submenu">
         <div class="sub-item">客户等级管理</div>
@@ -662,7 +658,7 @@ createApp({
     const role = get('role', '买家');
     const levelCode = get('level', 'LV3');
 
-    const openGroup = ref('biz');
+    const openGroup = ref('sales');
     function toggleGroup(g) { openGroup.value = openGroup.value === g ? '' : g; }
 
     const activeTab = ref('basic');

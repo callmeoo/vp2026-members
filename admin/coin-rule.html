@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>积分规则配置 · 唯普会员体系后台</title>
+<title>积分规则 · 销售管理 · 唯普汽车</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
@@ -30,7 +30,7 @@
   .ant-btn { padding: 5px 16px; border-radius: 6px; font-size: 14px; border: 1px solid #d9d9d9; background: #fff; cursor:pointer; }
   .ant-btn-primary { background: #1677ff; color: #fff; border-color: #1677ff; padding:5px 16px; border-radius:6px; font-size:14px; cursor:pointer; }
   .ant-btn-primary:hover { background: #4096ff; }
-  .ant-alert-info { background: #e6f4ff; border: 1px solid #91caff; color: #002c8c; padding: 8px 15px; border-radius: 6px; font-size: 13px; }
+  .ant-alert-warning { background: #fffbe6; border: 1px solid #ffe58f; color: #874d00; padding: 10px 15px; border-radius: 6px; font-size: 13px; }
   .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
   .switch input { opacity: 0; width: 0; height: 0; }
   .slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 22px; transition: .3s; }
@@ -38,11 +38,50 @@
   .switch input:checked + .slider { background: #1677ff; }
   .switch input:checked + .slider:before { transform: translateX(22px); }
   .switch input:disabled + .slider { opacity: .7; cursor: not-allowed; }
-  .group-emerald { color:#059669; background:#ecfdf5; border-color:#a7f3d0; }
-  .group-sky { color:#0284c7; background:#f0f9ff; border-color:#bae6fd; }
-  .group-violet { color:#7c3aed; background:#f5f3ff; border-color:#ddd6fe; }
-  .group-rose { color:#e11d48; background:#fff1f2; border-color:#fecdd3; }
-  .group-amber { color:#d97706; background:#fffbeb; border-color:#fde68a; }
+  /* 一级 Tabs */
+  .el-tabs { border-bottom: 1px solid #e4e7ed; display:flex; }
+  .el-tab { display: inline-flex; align-items: center; gap:6px; height: 44px; padding: 0 22px; font-size: 14px; color: #606266; cursor: pointer; position: relative; }
+  .el-tab:hover { color: #1677ff; }
+  .el-tab.active { color: #1677ff; font-weight: 500; }
+  .el-tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #1677ff; }
+  /* 二级 Tabs(按 type 切换)*/
+  .sub-tabs { display:flex; gap:4px; padding: 12px 16px 0; border-bottom: 1px solid #ebeef5; background:#fafafa; }
+  .sub-tab { display:inline-flex; align-items:center; gap:6px; padding: 0 14px; height: 32px; font-size: 13px; color: #606266; cursor:pointer; border-radius: 4px 4px 0 0; border: 1px solid transparent; border-bottom: none; }
+  .sub-tab:hover { color:#1677ff; }
+  .sub-tab.active { background:#fff; color:#1677ff; border-color: #ebeef5; font-weight: 500; margin-bottom: -1px; }
+  .sub-tab .count { font-size: 11px; color:#c0c4cc; }
+  .sub-tab.active .count { color:#1677ff; }
+  /* 表格 */
+  .rule-table { width:100%; font-size:13px; }
+  .rule-table thead th { font-size: 12px; color:#909399; font-weight: 500; background:#fff; padding: 10px 12px; border-bottom: 1px solid #ebeef5; text-align: left; }
+  .rule-table tbody td { padding: 12px; border-bottom: 1px solid #f5f7fa; color:#303133; vertical-align: middle; }
+  .rule-table tbody tr:last-child td { border-bottom: none; }
+  /* 每个 tab 的保存栏 */
+  .save-bar { display:flex; align-items:center; justify-content:space-between; padding: 12px 20px; border-top:1px solid #ebeef5; background:#fafafa; }
+  .save-bar .time { font-size: 12px; color:#909399; }
+  /* 风控卡片 */
+  .risk-card { border: 1px solid #e4e7ed; border-radius: 8px; background:#fff; padding: 16px; }
+  .risk-card .rc-head { display:flex; align-items:center; justify-content:space-between; gap: 12px; }
+  .risk-card .rc-title { font-size: 14px; font-weight: 600; color: #303133; display:flex; align-items:center; gap:6px; }
+  .risk-card .rc-desc { font-size: 12px; color: #909399; margin-top: 4px; }
+  .risk-card .rc-body { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ebeef5; }
+  .tbd-chip { display:inline-flex; align-items:center; padding: 0 8px; height: 20px; border-radius: 10px; background:#fff7e6; color:#d46b08; font-size: 11px; border: 1px solid #ffd591; }
+  .bl-input { display:flex; gap: 8px; align-items:center; }
+  .bl-input input { flex: 1; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; box-sizing: border-box; }
+  .bl-input input:focus { border-color: #1677ff; }
+  .bl-list { display:flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .bl-tag { display:inline-flex; align-items:center; gap: 4px; padding: 0 8px; height: 24px; background:#fef0f0; color:#f56c6c; border: 1px solid #fbc4c4; border-radius: 4px; font-size: 12px; }
+  .bl-tag .x { cursor: pointer; color:#f56c6c; opacity: .7; }
+  .bl-tag .x:hover { opacity: 1; }
+  .ip-input { display:flex; align-items:center; gap: 8px; }
+  .ip-input input { width: 100px; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; text-align: center; box-sizing: border-box; }
+  .ip-input input:focus { border-color: #1677ff; }
+  .ip-input .unit { color: #909399; font-size: 12px; }
+  /* 研发需求说明 */
+  .rnd-spec { border:1px solid #d0e4ff; background:#f5fbff; border-radius: 8px; padding: 16px 18px; }
+  .rnd-spec h4 { font-size: 13px; font-weight: 600; color:#0958d9; display:flex; align-items:center; gap:6px; margin-bottom: 10px; }
+  .rnd-spec ol { margin: 0; padding-left: 18px; list-style: decimal; color:#303133; font-size: 13px; line-height: 1.9; }
+  .rnd-spec ol li { margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -55,8 +94,6 @@
       <div class="brand-sub">www.chevip.com</div>
     </div>
     <nav class="flex-1 overflow-y-auto">
-      <div class="menu-item"><i data-lucide="shield-check" class="w-4 h-4"></i><span>检测认证管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></a>
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
         <div class="sub-item">客户等级管理</div>
@@ -104,100 +141,176 @@
 
     <main class="flex-1 p-6 overflow-y-auto">
       <div class="mb-5">
-        <h1 class="text-xl font-semibold text-slate-800">积分规则配置</h1>
-        <p class="text-sm text-slate-500 mt-1">配置积分的发放数量、转发上限、有效期等参数。修改后实时生效。</p>
+        <h1 class="text-xl font-semibold text-slate-800">积分规则</h1>
+        <p class="text-sm text-slate-500 mt-1">按类型配置积分的发放规则与反作弊策略,修改后实时生效。</p>
       </div>
 
-      <div class="ant-alert-info mb-5 flex items-center gap-2">
-        <i data-lucide="info" class="w-4 h-4"></i>
-        <span>所有发放规则的前提是:<strong>用户必须处于登录状态</strong>,未登录行为不计入积分发放</span>
-      </div>
-
-      <!-- 积分发放规则 -->
-      <div class="ant-card p-6 mb-5">
-        <div class="flex items-center justify-between mb-5">
-          <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
-            <i data-lucide="coins" class="w-5 h-5 text-amber-500"></i>积分发放规则
+      <div class="ant-card overflow-hidden">
+        <div class="el-tabs px-4">
+          <div v-for="t in tabs" :key="t.key"
+               :class="['el-tab', { active: activeTab === t.key }]"
+               @click="activeTab = t.key">
+            <i :data-lucide="t.icon" class="w-4 h-4"></i>{{ t.label }}
           </div>
-          <div class="text-xs text-slate-400">单位:1 积分 ≈ {{ coin.unitYuan }} 元 · 数据源:<code>shared/member-config.js</code></div>
         </div>
 
-        <div class="space-y-4">
-          <div v-for="g in earning" :key="g.category" class="border border-slate-200 rounded-lg overflow-hidden">
-            <div :class="['px-4 py-2.5 border-b flex items-center gap-2 text-sm font-semibold', 'group-' + g.color]">
-              <i :data-lucide="g.icon" class="w-4 h-4"></i>{{ g.category }}
-              <span class="ml-auto text-xs font-normal text-slate-400">{{ g.items.length }} 条规则</span>
+        <!-- Tab 1: 积分发放规则(二级 tab 按 type 切换)-->
+        <div v-show="activeTab === 'earn'">
+          <div class="sub-tabs">
+            <div v-for="g in earning" :key="g.key"
+                 :class="['sub-tab', { active: activeType === g.key }]"
+                 @click="activeType = g.key">
+              <i :data-lucide="g.icon" class="w-3.5 h-3.5"></i>{{ g.label }}
+              <span class="count">({{ g.items.length }})</span>
             </div>
-            <table class="w-full text-sm">
-              <thead class="text-xs text-slate-500 bg-slate-50">
+          </div>
+          <div class="p-6">
+            <table class="rule-table">
+              <thead>
                 <tr>
-                  <th class="text-left px-4 py-2 font-medium">具体行为</th>
-                  <th class="text-left px-4 py-2 font-medium" style="width:130px">积分值</th>
-                  <th class="text-left px-4 py-2 font-medium" style="width:110px">单位</th>
-                  <th class="text-left px-4 py-2 font-medium">规则说明</th>
-                  <th class="text-center px-4 py-2 font-medium" style="width:70px">状态</th>
+                  <th style="width:36%">具体行为</th>
+                  <th style="width:160px">积分值</th>
+                  <th>规则说明</th>
+                  <th style="width:80px;text-align:center">状态</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
-                <tr v-for="it in g.items" :key="g.category + '-' + it.action">
-                  <td class="px-4 py-3 text-slate-700">{{ it.action }}</td>
-                  <td class="px-4 py-3"><input class="ant-input" v-model="it.coin" style="max-width:100px"></td>
-                  <td class="px-4 py-3 text-slate-500 text-xs">{{ it.unit }}</td>
-                  <td class="px-4 py-3 text-xs text-slate-500">{{ it.desc || '-' }}</td>
-                  <td class="px-4 py-3 text-center">
+              <tbody>
+                <tr v-for="it in currentType.items" :key="currentType.key + '-' + it.id">
+                  <td>{{ it.action }}</td>
+                  <td><input class="ant-input" v-model="it.coin" style="max-width:140px"></td>
+                  <td style="color:#606266">{{ it.desc || '—' }}</td>
+                  <td style="text-align:center">
                     <label class="switch"><input type="checkbox" v-model="it.enabled"><span class="slider"></span></label>
                   </td>
+                </tr>
+                <tr v-if="currentType.items.length === 0">
+                  <td colspan="4" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
-
-      <!-- 积分有效期 -->
-      <div class="ant-card p-6 mb-5">
-        <div class="text-base font-semibold text-slate-800 mb-5 flex items-center gap-2"><i data-lucide="hourglass" class="w-4 h-4 text-amber-500"></i>积分有效期</div>
-        <div class="flex items-start gap-5">
-          <div class="flex-1 max-w-md">
-            <label class="text-xs text-slate-500 block mb-1">有效期(月)</label>
-            <input class="ant-input" v-model.number="coin.validityMonths" type="number">
-            <div class="text-xs text-slate-400 mt-2">
-              积分自获得当月起,经过 <strong>{{ coin.validityMonths }} 个自然月</strong> 后到期清零。
-            </div>
-          </div>
-          <div class="flex-1 bg-slate-50 rounded-lg p-4 text-sm">
-            <div class="font-medium text-slate-700 mb-2 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-slate-500"></i>举例说明</div>
-            <div class="text-slate-600 space-y-1 text-xs">
-              <div>· 2026 年 4 月获得的积分,有效期至 <strong>2027 年 4 月 30 日</strong></div>
-              <div>· 每日凌晨执行过期清零任务</div>
-              <div>· 优先消耗即将过期的积分(FIFO)</div>
+          <div class="save-bar">
+            <div class="time">最后更新:{{ currentType.updatedAt }}</div>
+            <div class="flex gap-3">
+              <button class="ant-btn">取消</button>
+              <button class="ant-btn-primary">保存并实时生效</button>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 反作弊 -->
-      <div class="ant-card p-6 mb-5">
-        <div class="text-base font-semibold text-slate-800 mb-5 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>反作弊设置</div>
-        <div class="grid grid-cols-2 gap-5">
-          <div v-for="r in risk" :key="r.title" class="flex items-center justify-between border border-slate-200 rounded p-4">
-            <div>
-              <div class="text-sm font-medium text-slate-800">{{ r.title }}</div>
-              <div class="text-xs text-slate-500 mt-1">{{ r.desc }}</div>
+        <!-- Tab 2: 风控反作弊 -->
+        <div v-show="activeTab === 'risk'">
+          <div class="grid grid-cols-2 gap-4 p-6">
+            <template v-for="r in risk" :key="r.id">
+              <!-- 单开关(登录状态校验 / 行为日志留存 待定)-->
+              <div v-if="r.type === 'switch' || r.type === 'tbd'" class="risk-card">
+                <div class="rc-head">
+                  <div>
+                    <div class="rc-title">
+                      {{ r.title }}
+                      <span v-if="r.type === 'tbd'" class="tbd-chip">待定</span>
+                    </div>
+                    <div class="rc-desc">{{ r.desc }}</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" v-model="r.enabled" :disabled="r.locked">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 开关 + 次数输入(IP 频次)-->
+              <div v-else-if="r.type === 'switch-input'" class="risk-card">
+                <div class="rc-head">
+                  <div>
+                    <div class="rc-title">{{ r.title }}</div>
+                    <div class="rc-desc">{{ r.desc }}</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" v-model="r.enabled">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="rc-body">
+                  <div class="text-xs text-slate-500 mb-2">触发阈值</div>
+                  <div class="ip-input">
+                    <input type="number" min="1" v-model.number="r.limit" :disabled="!r.enabled">
+                    <span class="unit">{{ r.unit }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 黑名单(占整行)-->
+              <div v-else-if="r.type === 'blacklist'" class="risk-card" style="grid-column: span 2">
+                <div class="rc-head">
+                  <div>
+                    <div class="rc-title">{{ r.title }}</div>
+                    <div class="rc-desc">{{ r.desc }}</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" v-model="r.enabled">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="rc-body">
+                  <div class="bl-input">
+                    <input v-model="r.newAccount" placeholder="输入手机号 / 用户名后回车或点击添加"
+                           @keyup.enter="addBlacklist(r)" :disabled="!r.enabled">
+                    <button class="ant-btn-primary" @click="addBlacklist(r)" :disabled="!r.enabled">添加</button>
+                  </div>
+                  <div class="bl-list" v-if="r.accounts.length">
+                    <span v-for="(acc, i) in r.accounts" :key="acc" class="bl-tag">
+                      {{ acc }}
+                      <i data-lucide="x" class="w-3 h-3 x" @click="removeBlacklist(r, i)"></i>
+                    </span>
+                  </div>
+                  <div v-else class="text-xs text-slate-400 mt-2">暂无黑名单账号</div>
+                </div>
+              </div>
+            </template>
+          </div>
+          <div class="save-bar" style="justify-content:flex-end">
+            <div class="flex gap-3">
+              <button class="ant-btn">取消</button>
+              <button class="ant-btn-primary">保存并实时生效</button>
             </div>
-            <label class="switch">
-              <input type="checkbox" v-model="r.enabled" :disabled="r.locked">
-              <span class="slider"></span>
-            </label>
           </div>
         </div>
-      </div>
 
-      <div class="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 -mx-6 -mb-6 flex items-center justify-between">
-        <div class="text-xs text-slate-500">最后更新:2026-04-10 14:22 by 运营-小王</div>
-        <div class="flex gap-3">
-          <button class="ant-btn">取消</button>
-          <button class="ant-btn-primary">保存并实时生效</button>
+        <!-- Tab 3: 操作日志 -->
+        <div v-show="activeTab === 'log'" class="p-6">
+          <table class="rule-table">
+            <thead>
+              <tr>
+                <th style="width:160px">操作时间</th>
+                <th style="width:120px">操作人</th>
+                <th style="width:140px">分类</th>
+                <th>变更内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(l, i) in logs" :key="i">
+                <td style="color:#606266">{{ l.at }}</td>
+                <td>{{ l.user }}</td>
+                <td><span class="text-slate-500">{{ l.type }}</span></td>
+                <td>{{ l.action }}</td>
+              </tr>
+              <tr v-if="logs.length === 0">
+                <td colspan="4" style="padding:36px 0;text-align:center;color:#909399">暂无操作记录</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tab 4: 需求说明 -->
+        <div v-show="activeTab === 'spec'" class="p-6">
+          <div class="rnd-spec">
+            <h4><i data-lucide="clipboard-list" class="w-4 h-4"></i>研发需求说明</h4>
+            <ol>
+              <li>积分派送规则由后台系统决定。</li>
+              <li>当该功能关闭时,前台将不再显示对应的服务项,且对应的积分也会随之调整。</li>
+            </ol>
+          </div>
         </div>
       </div>
     </main>
@@ -212,26 +325,109 @@
 <script src="../shared/member-config.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-const { createApp, reactive, ref, onMounted, nextTick } = Vue;
+const { createApp, reactive, ref, computed, onMounted, watch, nextTick } = Vue;
 createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
-    const coin = reactive({ unitYuan: CFG.coin.unitYuan, validityMonths: CFG.coin.validityMonths });
-    const earning = reactive(CFG.coinEarning.map(g => ({
-      category: g.category, icon: g.icon, color: g.color,
-      items: g.items.map(it => ({ action: it.action, coin: it.coin, unit: it.unit, desc: it.desc, enabled: true }))
+
+    const tabs = [
+      { key:'earn', label:'积分发放规则', icon:'coins' },
+      { key:'risk', label:'风控反作弊',   icon:'shield-check' },
+      { key:'log',  label:'操作日志',     icon:'history' },
+      { key:'spec', label:'需求说明',     icon:'clipboard-list' }
+    ];
+    const activeTab = ref('earn');
+    const activeType = ref('deal');
+
+    // 4 个 type 定义,顺序固定
+    const typeDefs = [
+      { key:'deal',     label:'交易类',    icon:'wallet' },
+      { key:'behavior', label:'行为活动类', icon:'message-circle' },
+      { key:'limited',  label:'限时活动类', icon:'calendar-heart' },
+      { key:'value',    label:'增值服务类', icon:'wrench' }
+    ];
+
+    // 按 item.id 直接归类(稳定,不依赖 category 字符串)
+    //  交易类:完成车辆交易 + 有效出价参与竞拍
+    //  限时活动类:节日 + 周末双倍出价
+    //  增值服务类:唯车转 + 物流代驾复检 + 代办服务
+    //  行为活动类:其余(互动 / 社交裂变 等)
+    const idToType = {
+      deal: 'deal',
+      bid: 'deal',
+      festival: 'limited',
+      weekend_bid: 'limited',
+      weichezhuan: 'value',
+      value_service: 'value',
+      agency_service: 'value'
+    };
+    const bucket = { deal: [], behavior: [], limited: [], value: [] };
+    CFG.coinEarning.forEach(g => {
+      g.items.forEach(it => {
+        const tk = idToType[it.id] || 'behavior';
+        bucket[tk].push({
+          id: it.id, action: it.action, coin: it.coin, desc: it.desc || '', enabled: true
+        });
+      });
+    });
+    // 限时活动类:统一口径为"基于出价行为的积分 × 2"
+    (bucket['limited'] || []).forEach(it => {
+      if (it.id === 'festival') {
+        it.action = '节日专属活动(如中秋 / 春节)';
+        it.coin = '出价积分 × 2';
+        it.desc = '以具体活动通知为准';
+      }
+      if (it.id === 'weekend_bid') {
+        it.action = '周六日出价双倍积分';
+        it.coin = '出价积分 × 2';
+        it.desc = '以具体活动通知为准';
+      }
+    });
+    const defaultUpdatedAt = {
+      deal:     '2026-04-10 14:22',
+      behavior: '2026-03-28 09:05',
+      limited:  '2026-04-18 16:40',
+      value:    '2026-04-02 11:12'
+    };
+    const earning = reactive(typeDefs.map(t => ({
+      key: t.key, label: t.label, icon: t.icon,
+      items: bucket[t.key] || [],
+      updatedAt: defaultUpdatedAt[t.key] || '—'
     })));
+    const currentType = computed(() => earning.find(g => g.key === activeType.value) || earning[0]);
+
     const risk = reactive([
-      { title:'登录状态校验', desc:'非登录状态的行为不记积分', enabled:true, locked:true },
-      { title:'IP 频次限制', desc:'同一 IP 每分钟最多触发 10 次行为', enabled:true },
-      { title:'异常账号黑名单', desc:'系统识别的薅羊毛账号停止发放', enabled:true },
-      { title:'行为日志留存', desc:'保留 180 天,供审计追溯', enabled:true }
+      { id:'ip',        title:'IP 频次限制',    desc:'同一 IP 超过阈值将被暂停计分',     type:'switch-input', enabled:true,  limit:10, unit:'次 / 分钟' },
+      { id:'log',       title:'行为日志留存',   desc:'保留时长 / 留存方案待定',           type:'tbd',          enabled:false, locked:true },
+      { id:'blacklist', title:'异常账号黑名单', desc:'黑名单账号停止发放积分,支持手动维护', type:'blacklist',    enabled:true,  accounts:['13812340001','user_abc88','13999998888'], newAccount:'' }
     ]);
+    const addBlacklist = async (r) => {
+      const v = (r.newAccount || '').trim();
+      if (!v) return;
+      if (!r.accounts.includes(v)) r.accounts.push(v);
+      r.newAccount = '';
+      await nextTick();
+      lucide.createIcons();
+    };
+    const removeBlacklist = (r, idx) => r.accounts.splice(idx, 1);
+
+    // 操作日志
+    const logs = [
+      { at:'2026-04-22 16:40', user:'运营-小王', type:'交易类',    action:'将「完成车辆交易」从 30 积分调整为 50 积分' },
+      { at:'2026-04-18 16:05', user:'运营-小王', type:'限时活动类', action:'启用「周六日出价双倍积分」(出价积分 × 2)' },
+      { at:'2026-04-10 14:22', user:'产品-小李', type:'交易类',    action:'新增「有效出价参与竞拍」10 积分规则' },
+      { at:'2026-04-02 11:12', user:'运营-小王', type:'增值服务类', action:'将「物流 / 代驾 / 复检」由 3 积分/次 调整为 5 积分/次' },
+      { at:'2026-03-28 09:05', user:'运营-小王', type:'行为活动类', action:'关闭「投票 / 问卷 / 调研」临时期间发放' },
+      { at:'2026-03-20 15:42', user:'风控-Alex', type:'反作弊',    action:'启用「IP 频次限制」策略,阈值调整为 10 次/分钟' }
+    ];
+
     const opsOpen = ref(false);
     const toggleOps = () => opsOpen.value = !opsOpen.value;
 
     onMounted(async () => { await nextTick(); lucide.createIcons(); });
-    return { coin, earning, risk, opsOpen, toggleOps };
+    watch([activeTab, activeType], async () => { await nextTick(); lucide.createIcons(); });
+
+    return { tabs, activeTab, activeType, earning, currentType, risk, logs, addBlacklist, removeBlacklist, opsOpen, toggleOps };
   }
 }).mount('#app');
 </script>
