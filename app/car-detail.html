@@ -25,7 +25,7 @@
   .vp-banner { background: linear-gradient(90deg, #f43f5e 0%, #ef4444 50%, #f97316 100%); }
 
   /* 倒计时数字格 */
-  .ts-num { display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:22px; background:#ef4444; color:#fff; font-weight:700; font-size:12px; border-radius:3px; padding:0 4px; font-variant-numeric: tabular-nums; }
+  .ts-num { display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:20px; background:#ef4444; color:#fff; font-weight:700; font-size:12px; border-radius:3px; padding:0 3px; font-variant-numeric: tabular-nums; }
 
   /* tab 下划线 */
   .tab-active { color:#ef4444; font-weight:700; position:relative; }
@@ -306,32 +306,32 @@
   </div>
 
   <!-- 底部出价栏 -->
-  <div class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-3 pt-2 pb-3 z-40 flex items-center gap-3">
-    <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 pr-1">
-      <i data-lucide="clock" class="w-5 h-5"></i><span>出价记录</span>
+  <div class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-2 pt-2 pb-3 z-40 flex items-center gap-2">
+    <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 w-10">
+      <i data-lucide="clock" class="w-5 h-5"></i><span class="whitespace-nowrap">出价记录</span>
     </div>
-    <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 pr-2">
+    <div class="flex-none flex flex-col items-center text-[10px] text-slate-500 gap-0.5 w-8">
       <i data-lucide="heart" class="w-5 h-5"></i><span>关注</span>
     </div>
     <div class="flex-1 min-w-0">
-      <div class="text-[11px] text-slate-500 leading-none flex items-center gap-2">
+      <div class="text-[11px] text-slate-500 leading-none flex items-center gap-1.5 whitespace-nowrap">
         <span>当前价</span>
         <span class="text-slate-300">|</span>
         <button @click="showHistoryModal = true" class="inline-flex items-center gap-0.5 text-red-500 text-[11px]">
           <i data-lucide="trending-up" class="w-3 h-3"></i><span>历史成交价</span>
         </button>
       </div>
-      <div class="text-red-500 font-bold text-[20px] leading-tight">¥{{ formatNum(car.currentPrice) }}</div>
+      <div class="text-red-500 font-bold text-[18px] leading-tight mt-0.5 truncate">¥{{ formatNum(car.currentPrice) }}</div>
     </div>
-    <div class="flex-none text-right pr-1">
+    <div class="flex-none text-right">
       <div class="text-[11px] text-slate-500 leading-none mb-1">竞价剩余</div>
-      <div class="flex items-center gap-0.5">
+      <div class="flex items-center gap-0.5 whitespace-nowrap">
         <span class="ts-num">{{ pad(countdown.h) }}</span><span class="text-red-500 font-bold">:</span>
         <span class="ts-num">{{ pad(countdown.m) }}</span><span class="text-red-500 font-bold">:</span>
         <span class="ts-num">{{ pad(countdown.s) }}</span>
       </div>
     </div>
-    <button class="flex-none px-6 py-3 rounded-full text-white font-bold text-[15px] bg-gradient-to-r from-rose-500 to-red-500 shadow-lg shadow-red-500/30">
+    <button class="flex-none px-4 py-2.5 rounded-full text-white font-bold text-[14px] bg-gradient-to-r from-rose-500 to-red-500 shadow-lg shadow-red-500/30 whitespace-nowrap">
       我要出价
     </button>
   </div>

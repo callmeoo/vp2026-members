@@ -30,12 +30,12 @@
   /* 倒计时数字格 */
   .ts-num {
     display:inline-flex; align-items:center; justify-content:center;
-    min-width:22px; height:20px;
+    min-width:20px; height:20px;
     background:#1f2937; color:#fff; font-weight:700; font-size:11px;
-    border-radius:3px; padding:0 4px;
+    border-radius:3px; padding:0 3px;
     font-variant-numeric: tabular-nums;
   }
-  .ts-sep { color:#1f2937; font-size:11px; padding: 0 2px; }
+  .ts-sep { color:#1f2937; font-size:11px; padding: 0 1px; }
 
   /* 有保留价 tag */
   .reserve-tag {
@@ -192,20 +192,20 @@
       <i data-lucide="hand-pointing-up" class="w-4 h-4 text-amber-700 flex-none"></i>
     </div>
 
-    <div v-if="car" class="px-3 py-2 flex items-center gap-2">
-      <a href="#" class="flex flex-col items-center text-[10px] text-slate-500 w-12">
-        <i data-lucide="clock" class="w-5 h-5"></i><span>出价记录</span>
+    <div v-if="car" class="px-2 py-2 flex items-center gap-1.5">
+      <a href="#" class="flex-none flex flex-col items-center text-[10px] text-slate-500 w-10 gap-0.5">
+        <i data-lucide="clock" class="w-5 h-5"></i><span class="whitespace-nowrap">出价记录</span>
       </a>
-      <a href="#" class="flex flex-col items-center text-[10px] text-slate-500 w-12">
+      <a href="#" class="flex-none flex flex-col items-center text-[10px] text-slate-500 w-8 gap-0.5">
         <i data-lucide="heart" class="w-5 h-5"></i><span>关注</span>
       </a>
-      <a href="#" class="flex flex-col items-center text-[10px] text-slate-500 w-12">
+      <a href="#" class="flex-none flex flex-col items-center text-[10px] text-slate-500 w-8 gap-0.5">
         <i data-lucide="phone" class="w-5 h-5"></i><span>咨询</span>
       </a>
 
-      <div class="flex-1 ml-1">
-        <div class="text-[10px] text-slate-400">竞价剩余</div>
-        <div class="flex items-center gap-0.5 mt-0.5">
+      <div class="flex-1 min-w-0">
+        <div class="text-[10px] text-slate-400 leading-none mb-1">竞价剩余</div>
+        <div class="flex items-center gap-0.5 whitespace-nowrap">
           <span class="ts-num">{{ pad(car.countdown.d) }}</span><span class="ts-sep">天</span>
           <span class="ts-num">{{ pad(car.countdown.h) }}</span><span class="ts-sep">时</span>
           <span class="ts-num">{{ pad(car.countdown.m) }}</span><span class="ts-sep">分</span>
@@ -213,7 +213,7 @@
         </div>
       </div>
 
-      <a :href="'car-bid.html?id=' + car.id" class="px-6 py-3 rounded-full bg-red-500 text-white font-semibold text-[15px] shadow-lg shadow-red-500/30 active:scale-95 transition">我要出价</a>
+      <a :href="'car-bid.html?id=' + car.id" class="flex-none px-4 py-2.5 rounded-full bg-red-500 text-white font-semibold text-[14px] shadow-lg shadow-red-500/30 active:scale-95 transition whitespace-nowrap">我要出价</a>
     </div>
   </div>
 
