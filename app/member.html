@@ -81,9 +81,9 @@
           <span class="text-sm font-bold">我的积分</span>
         </div>
         <div class="flex items-center gap-3 text-xs">
-          <a href="landing.html" class="flex items-center opacity-90 hover:opacity-100">
+          <button type="button" @click="showEarnModal = true" class="flex items-center opacity-90 hover:opacity-100">
             <i data-lucide="help-circle" class="w-3 h-3 mr-0.5"></i>积分怎么拿
-          </a>
+          </button>
           <span class="w-px h-3 bg-white/30"></span>
           <a href="coins.html" class="opacity-90 flex items-center">明细 <i data-lucide="chevron-right" class="w-3 h-3"></i></a>
         </div>
@@ -131,7 +131,7 @@
           <span class="text-[11px] text-slate-400">完成任务获积分</span>
         </div>
         <div class="divide-y divide-slate-100">
-          <div v-for="t in CFG.recommendedTasks" :key="t.id" class="px-4 py-3.5 flex items-start gap-3">
+          <div v-for="t in visibleTasks" :key="t.id" class="px-4 py-3.5 flex items-start gap-3">
             <div class="flex-1 min-w-0">
               <div class="text-[15px] font-bold text-slate-800 leading-snug">{{ t.action }}</div>
               <div class="flex items-center flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-xs text-slate-400">
@@ -139,8 +139,13 @@
                 <span v-if="t.desc" class="truncate">{{ t.desc }}</span>
               </div>
             </div>
-            <button class="flex-none px-4 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-bold rounded-full whitespace-nowrap shadow-sm">
-              去完成
+            <a v-if="taskAction(t).href" :href="taskAction(t).href"
+               class="flex-none px-4 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-bold rounded-full whitespace-nowrap shadow-sm">
+              {{ taskAction(t).label }}
+            </a>
+            <button v-else disabled
+               class="flex-none px-4 py-1.5 bg-slate-100 text-slate-400 text-xs font-bold rounded-full whitespace-nowrap cursor-not-allowed">
+              {{ taskAction(t).label }}
             </button>
           </div>
         </div>
@@ -181,15 +186,35 @@
     <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
   </div>
 </div>
+<!-- 积分怎么拿 · 获取规则弹框 -->
+<div v-if="showEarnModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.55);backdrop-filter:blur(3px)" @click.self="showEarnModal = false">
+  <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
+    <div class="bg-gradient-to-r from-violet-600 to-indigo-600 p-4 text-white flex items-center justify-between">
+      <div class="flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-base font-bold">积分获取规则</span></div>
+      <button @click="showEarnModal = false" class="text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="p-4 max-h-[72vh] overflow-y-auto">
+      <coin-earning-rules></coin-earning-rules>
+      <div class="mt-3 p-3 bg-slate-900 text-white rounded-lg text-xs">
+        <div class="font-semibold mb-1 flex items-center gap-1.5"><i data-lucide="hourglass" class="w-3.5 h-3.5"></i>积分有效期</div>
+        <div class="text-slate-300 leading-relaxed">{{ CFG.coin.validityDesc }},到期自动清零</div>
+      </div>
+    </div>
+    <div class="p-3 border-t border-slate-100">
+      <button @click="showEarnModal = false" class="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-full text-sm font-bold">我知道了</button>
+    </div>
+  </div>
+</div>
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script src="../shared/member-config.js"></script>
+<script src="../shared/coin-earning-rules.js"></script>
 <script>
 const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
-createApp({
+const app = createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
     const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 12 };
@@ -198,6 +223,24 @@ createApp({
     const currentIdx = computed(() => CFG.levels.indexOf(currentLv.value));
     const selectedIdx = ref(currentIdx.value);
     const selectedLv = computed(() => CFG.levels[selectedIdx.value]);
+    const showEarnModal = ref(false);
+
+    // 推荐任务:首次实名 / 首次充值 仅 V0 展示;其他全部展示
+    const V0_ONLY_TASKS = new Set(['t_verify', 't_deposit']);
+    const visibleTasks = computed(() =>
+      CFG.recommendedTasks.filter(t => V0_ONLY_TASKS.has(t.id) ? currentLv.value.short === 'V0' : true)
+    );
+
+    // 按任务类型路由「去完成」按钮
+    // - 车辆交易 / 出价竞拍 / 转发车源 / 节日双倍:都到全部车源列表
+    // - 参与投票:调研页尚未实现,按钮置灰
+    // - 其余任务:先占位「去完成」,无跳转
+    const ALLCARS_TASKS = new Set(['t_deal', 't_bid', 't_share', 't_festival']);
+    function taskAction(t) {
+      if (ALLCARS_TASKS.has(t.id)) return { href: 'allcars.html', label: '去完成' };
+      if (t.id === 't_vote')        return { href: null,         label: '敬请期待' };
+      return { href: null, label: '去完成' };
+    }
 
     function simulateLevel(short) {
       currentDeals.value = DEALS_PRESET[short] ?? 0;
@@ -236,16 +279,20 @@ createApp({
 
     function back() { smartBack('profile-loggedin.html'); }
 
-    watch([currentDeals, selectedIdx], () => nextTick(() => window.lucide && lucide.createIcons()));
+    watch([currentDeals, selectedIdx, showEarnModal], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
       CFG, currentLv, currentDeals,
       selectedLv, heroDate, heroMain, heroProgress,
-      simulateLevel, back
+      simulateLevel, back,
+      visibleTasks, taskAction,
+      showEarnModal
     };
   }
-}).mount('#app');
+});
+app.component('coin-earning-rules', window.CoinEarningRulesComponent);
+app.mount('#app');
 </script>
 </body>
 </html>
