@@ -8,10 +8,21 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
-  .ant-sider { background: #001529; }
-  .ant-sider a { color: rgba(255,255,255,.65); }
-  .ant-sider a.active { background: #1677ff; color: #fff; }
-  .ant-sider a:hover:not(.active) { color: #fff; background: rgba(255,255,255,.06); }
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; text-decoration: none; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+  .ant-header { height: 50px; background:#fff; border-bottom:1px solid #e4e7ed; }
+  .breadcrumb-link { cursor:pointer; } .breadcrumb-link:hover { color:#409eff; }
   .ant-card { background: #fff; border-radius: 8px; }
   .ant-btn-primary { background: #1677ff; color: #fff; }
   .ant-btn-primary:hover { background: #4096ff; }
@@ -29,25 +40,52 @@
 <div class="flex min-h-screen">
 
   <!-- 左侧导航 -->
-  <aside class="ant-sider w-56 flex-none text-white">
-    <div class="h-14 flex items-center px-6 border-b border-white/10">
-      <span class="text-lg font-semibold flex items-center gap-2"><i data-lucide="crown" class="w-5 h-5"></i>会员体系后台</span>
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
     </div>
-    <nav class="py-3 text-sm">
-      <a href="dashboard.html" class="active flex items-center gap-3 px-6 py-2.5"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>运营仪表盘</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">规则配置</div>
-      <a href="level-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="settings" class="w-4 h-4"></i><span>等级设置</span></a>
-      <a href="coin-rule.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="wrench" class="w-4 h-4"></i><span>积分规则</span></a>
-      <a href="rewards.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="ticket-check" class="w-4 h-4"></i><span>商城商品配置</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">业务数据</div>
-      <a href="orders.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="receipt" class="w-4 h-4"></i><span>订单列表</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">商户运营</div>
-      <a href="members.html" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="users" class="w-4 h-4"></i><span>商户档案</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>积分流水</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="gift" class="w-4 h-4"></i><span>兑换记录</span></a>
-      <div class="px-6 py-2 text-xs text-white/40 mt-2">系统</div>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="bell" class="w-4 h-4"></i><span>公告推送</span></a>
-      <a href="#" class="flex items-center gap-3 px-6 py-2.5"><i data-lucide="user" class="w-4 h-4"></i><span>操作日志</span></a>
+    <nav class="flex-1 overflow-y-auto">
+      <!-- 业务管理 -->
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <a href="bms-orders.html" class="sub-item">订单管理</a>
+        <a href="bms-users.html" class="sub-item">用户管理</a>
+        <a href="bms-aftersales.html" class="sub-item">售后管理</a>
+      </div>
+
+      <!-- 销售管理 -->
+      <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <a href="dashboard.html" class="sub-item active">运营仪表盘</a>
+        <div class="sub-item">客户等级管理</div>
+        <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
+        <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
+        <a href="level-rule.html" class="sub-item">等级设置</a>
+        <a href="coin-rule.html" class="sub-item">积分规则</a>
+        <a href="rewards.html" class="sub-item">商城商品配置</a>
+        <a href="bms-coin-log.html" class="sub-item">积分流水</a>
+        <a href="bms-redeem-log.html" class="sub-item">兑换记录</a>
+      </div>
+
+      <!-- 服务中心 -->
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">客服工单</div>
+        <div class="sub-item">投诉处理</div>
+        <div class="sub-item">服务评价</div>
+      </div>
+
+      <!-- 运营部 -->
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">内容管理</div>
+        <div class="sub-item">优惠券</div>
+        <div class="sub-item">权益卡管理</div>
+        <div class="sub-item">权益卡投放管理</div>
+        <div class="sub-item">权益卡发放管理</div>
+        <div class="sub-item">奖品投放</div>
+      </div>
     </nav>
   </aside>
 
@@ -71,16 +109,7 @@
 
     <main class="flex-1 p-6 overflow-y-auto">
 
-      <!-- 欢迎条 -->
-      <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-5 mb-5 text-white flex items-center justify-between">
-        <div>
-          <div class="text-lg font-semibold flex items-center gap-2"><i data-lucide="hand" class="w-5 h-5"></i>Hi,运营小王,欢迎回来!</div>
-          <div class="text-sm opacity-90 mt-1">今日截至 19:50 · 下次月度结算:2026-05-01 01:00</div>
-        </div>
-        <button class="bg-white/20 backdrop-blur px-4 py-2 rounded text-sm font-medium inline-flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-4 h-4"></i>手动触发结算</button>
-      </div>
-
-      <!-- KPI 卡片 -->
+<!-- KPI 卡片 -->
       <div class="grid grid-cols-4 gap-4 mb-5">
         <div class="ant-card p-5">
           <div class="text-sm text-slate-500">总会员数</div>
@@ -111,25 +140,32 @@
         <div class="ant-card p-5">
           <div class="flex items-center justify-between mb-4">
             <div class="text-base font-semibold text-slate-800">会员等级分布</div>
-            <span class="text-xs text-slate-400">实时</span>
           </div>
           <div class="h-64"><canvas id="chartDist"></canvas></div>
           <div class="mt-3 space-y-1.5 text-xs">
-            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-slate-400 rounded-full"></span>V0</span><span class="text-slate-600 font-medium">125,003</span></div>
-            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-sky-500 rounded-full"></span>V1</span><span class="text-slate-600 font-medium">58,921</span></div>
-            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-violet-500 rounded-full"></span>V2</span><span class="text-slate-600 font-medium">12,035</span></div>
-            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-amber-500 rounded-full"></span>V3</span><span class="text-slate-600 font-medium">3,910</span></div>
+            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-slate-400 rounded-full"></span>V0 <span class="text-slate-400">62.54%</span></span><span class="text-slate-600 font-medium">125,003</span></div>
+            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-sky-500 rounded-full"></span>V1 <span class="text-slate-400">29.48%</span></span><span class="text-slate-600 font-medium">58,921</span></div>
+            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-violet-500 rounded-full"></span>V2 <span class="text-slate-400">6.02%</span></span><span class="text-slate-600 font-medium">12,035</span></div>
+            <div class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-amber-500 rounded-full"></span>V3 <span class="text-slate-400">1.96%</span></span><span class="text-slate-600 font-medium">3,910</span></div>
           </div>
         </div>
 
         <!-- 积分发放/消耗趋势 -->
         <div class="ant-card p-5 col-span-2">
-          <div class="flex items-center justify-between mb-4">
-            <div class="text-base font-semibold text-slate-800">积分发放 / 消耗趋势(近 30 日)</div>
-            <div class="flex gap-1 text-xs">
-              <button class="px-2 py-1 bg-blue-50 text-blue-600 rounded">30 日</button>
-              <button class="px-2 py-1 text-slate-500 hover:bg-slate-50 rounded">7 日</button>
-              <button class="px-2 py-1 text-slate-500 hover:bg-slate-50 rounded">90 日</button>
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div class="text-base font-semibold text-slate-800">积分发放 / 消耗趋势(<span id="trendRangeLabel">近 30 日</span>)</div>
+            <div class="flex items-center gap-2 text-xs">
+              <button data-range="7"  class="trend-range-btn px-2 py-1 text-slate-500 hover:bg-slate-50 rounded">7 日</button>
+              <button data-range="30" class="trend-range-btn px-2 py-1 bg-blue-50 text-blue-600 rounded">30 日</button>
+              <button data-range="60" class="trend-range-btn px-2 py-1 text-slate-500 hover:bg-slate-50 rounded">60 日</button>
+              <span class="text-slate-300">|</span>
+              <input id="trendFrom" type="date" class="h-7 px-2 border border-slate-200 rounded text-xs text-slate-600">
+              <span class="text-slate-400">~</span>
+              <input id="trendTo" type="date" class="h-7 px-2 border border-slate-200 rounded text-xs text-slate-600">
+              <button id="trendApply" class="px-2 py-1 border border-slate-200 hover:border-blue-500 hover:text-blue-500 rounded">应用</button>
+              <button id="trendExportCsv" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded">
+                <i data-lucide="download" class="w-3 h-3"></i>导出 CSV
+              </button>
             </div>
           </div>
           <div class="h-64"><canvas id="chartTrend"></canvas></div>
@@ -140,9 +176,9 @@
       <!-- 下面一行 -->
       <div class="grid grid-cols-3 gap-4 mb-5">
 
-        <!-- 积分获取渠道占比 -->
+        <!-- 积分获取占比 -->
         <div class="ant-card p-5">
-          <div class="text-base font-semibold text-slate-800 mb-4">积分获取渠道(本月)</div>
+          <div class="text-base font-semibold text-slate-800 mb-4">积分获取(本月)</div>
           <div class="space-y-3">
             <div>
               <div class="flex items-center justify-between text-xs mb-1">
@@ -172,11 +208,11 @@
           </div>
         </div>
 
-        <!-- 权益卡兑换 TOP5 -->
+        <!-- 商城兑换 Top 5 -->
         <div class="ant-card p-5 col-span-2">
           <div class="flex items-center justify-between mb-4">
-            <div class="text-base font-semibold text-slate-800">权益卡兑换 TOP 5(本月)</div>
-            <a href="rewards.html" class="text-xs text-blue-600">查看全部 ›</a>
+            <div class="text-base font-semibold text-slate-800">商城兑换 Top 5(本月)</div>
+            <a href="bms-redeem-log.html" class="text-xs text-blue-600">查看全部 ›</a>
           </div>
           <table class="w-full text-sm">
             <thead class="text-xs text-slate-500 bg-slate-50">
@@ -240,22 +276,17 @@
         <div class="flex items-center justify-between mb-4">
           <div class="text-base font-semibold text-slate-800 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i>近期关注事项</div>
         </div>
-        <div class="grid grid-cols-3 gap-4 text-sm">
+        <div class="grid grid-cols-2 gap-4 text-sm">
           <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
             <div class="font-medium text-amber-900 flex items-center gap-1.5"><i data-lucide="coins" class="w-4 h-4"></i>积分即将过期</div>
             <div class="text-xs text-amber-700 mt-1">本月将有 <strong>86,420</strong> 枚积分到期</div>
-            <a href="#" class="text-xs text-amber-700 mt-2 inline-block underline">查看明细</a>
           </div>
           <div class="p-4 bg-rose-50 rounded-lg border border-rose-200">
             <div class="font-medium text-rose-900 flex items-center gap-1.5"><i data-lucide="trending-down" class="w-4 h-4"></i>库存告警</div>
-            <div class="text-xs text-rose-700 mt-1"><strong>2</strong> 款权益卡库存低于 50 张</div>
+            <div class="text-xs text-rose-700 mt-1"><strong>2</strong> 款商品库存低于 50 张</div>
             <a href="rewards.html" class="text-xs text-rose-700 mt-2 inline-block underline">立即补库</a>
           </div>
-          <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div class="font-medium text-blue-900 flex items-center gap-1.5"><i data-lucide="calendar-clock" class="w-4 h-4"></i>月度结算倒计时</div>
-            <div class="text-xs text-blue-700 mt-1">距下次结算还有 <strong>16 天</strong></div>
-            <a href="#" class="text-xs text-blue-700 mt-2 inline-block underline">预览影响</a>
-          </div>
+
         </div>
       </div>
 
@@ -283,33 +314,108 @@ new Chart(document.getElementById('chartDist'), {
   }
 });
 
-// 趋势
-new Chart(document.getElementById('chartTrend'), {
-  type: 'line',
-  data: {
-    labels: Array.from({length: 30}, (_, i) => `${i+1}日`),
-    datasets: [
-      {
-        label: '发放',
-        data: [38200,42100,45300,39800,41200,44600,47100,50300,52100,49800,48200,51500,53400,55100,52800,50400,48600,51200,52300,54100,50900,48300,46100,49800,51200,53600,55400,52100,51300,52300],
-        borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, .08)', tension: .3, fill: true, borderWidth: 2
-      },
-      {
-        label: '消耗',
-        data: [15200,17400,16800,18200,17900,19100,18500,20100,19200,17500,18900,17800,18500,19600,17200,18100,17500,18800,19400,18200,17600,18900,17300,18500,18400,19100,18600,18000,17800,18400],
-        borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, .06)', tension: .3, fill: true, borderWidth: 2
-      }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 11 } } } },
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 10 } },
-      y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } }
-    }
+// 趋势 —— 支持 7/30/60 日 + 自定义时间段 + CSV 导出
+(function(){
+  // 生成近 90 天 mock 数据(基于今日)
+  const today = new Date('2026-04-23');
+  const total = 90;
+  const series = [];
+  for (let i = total - 1; i >= 0; i--) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    const iso = d.toISOString().slice(0,10);
+    // 平滑 + 随机 mock
+    const base = 48000 + Math.sin(i/7) * 7000;
+    const issued  = Math.round(base + (Math.random()-.5) * 8000);
+    const consumed = Math.round(14000 + Math.sin(i/5) * 3000 + (Math.random()-.5) * 3500);
+    series.push({ date: iso, issued, consumed });
   }
-});
+
+  const ctx = document.getElementById('chartTrend');
+  let chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { label: '积分发放', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, .08)', tension: .3, fill: true, borderWidth: 2 },
+      { label: '积分消耗', data: [], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, .06)', tension: .3, fill: true, borderWidth: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 11 } } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },
+        y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+
+  let currentSubset = [];
+  function applyRange(rows, label) {
+    currentSubset = rows;
+    chart.data.labels = rows.map(r => r.date.slice(5)); // MM-DD
+    chart.data.datasets[0].data = rows.map(r => r.issued);
+    chart.data.datasets[1].data = rows.map(r => r.consumed);
+    chart.update();
+    document.getElementById('trendRangeLabel').textContent = label;
+  }
+
+  function lastN(n) { return series.slice(-n); }
+
+  // 按钮 active 样式
+  function setActiveBtn(btn) {
+    document.querySelectorAll('.trend-range-btn').forEach(b => {
+      b.classList.remove('bg-blue-50','text-blue-600');
+      b.classList.add('text-slate-500','hover:bg-slate-50');
+    });
+    btn.classList.add('bg-blue-50','text-blue-600');
+    btn.classList.remove('text-slate-500','hover:bg-slate-50');
+  }
+
+  document.querySelectorAll('.trend-range-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = parseInt(btn.dataset.range, 10);
+      setActiveBtn(btn);
+      applyRange(lastN(n), `近 ${n} 日`);
+      // 清空自定义日期
+      document.getElementById('trendFrom').value = '';
+      document.getElementById('trendTo').value = '';
+    });
+  });
+
+  // 自定义时间段
+  document.getElementById('trendApply').addEventListener('click', () => {
+    const from = document.getElementById('trendFrom').value;
+    const to   = document.getElementById('trendTo').value;
+    if (!from || !to) { alert('请先选择起止日期'); return; }
+    if (from > to) { alert('开始日期不能晚于结束日期'); return; }
+    const rows = series.filter(r => r.date >= from && r.date <= to);
+    if (rows.length === 0) { alert('所选时间段内无数据'); return; }
+    document.querySelectorAll('.trend-range-btn').forEach(b => {
+      b.classList.remove('bg-blue-50','text-blue-600');
+      b.classList.add('text-slate-500','hover:bg-slate-50');
+    });
+    applyRange(rows, `${from} ~ ${to}`);
+  });
+
+  // 导出 CSV:日期 / 积分发放类型 / 积分发放 / 积分消耗
+  document.getElementById('trendExportCsv').addEventListener('click', () => {
+    const rows = currentSubset.length ? currentSubset : lastN(30);
+    const header = ['日期','积分发放类型','积分发放','积分消耗'];
+    const lines = [header.join(',')];
+    rows.forEach(r => {
+      lines.push([r.date, '日常', r.issued, r.consumed].join(','));
+    });
+    const csv = '\ufeff' + lines.join('\n'); // BOM 兼容 Excel 中文
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `积分发放消耗趋势_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // 初始:近 30 日
+  applyRange(lastN(30), '近 30 日');
+})();
 </script>
 
 <div class="fixed top-4 right-6 z-50">
