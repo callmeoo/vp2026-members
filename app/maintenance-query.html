@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>数据报告 · 维保出险查询</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 110px; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display:none; }
+
+  /* 选中态(标签 / 支付方式) */
+  .pill {
+    display:inline-flex; align-items:center; gap:6px;
+    padding: 7px 10px 7px 12px; background:#f5f6f8; color:#475569;
+    border-radius: 6px; font-size:13px;
+  }
+  .pill .x {
+    width:14px; height:14px; border-radius:50%; background:#cbd5e1;
+    color:#fff; display:inline-flex; align-items:center; justify-content:center;
+  }
+
+  .pay-card {
+    border:1px solid #e5e7eb; border-radius:8px;
+    padding: 10px 14px;
+    display:flex; align-items:center; gap:8px;
+    font-size:14px; color:#334155;
+    position:relative; min-width:140px;
+  }
+  .pay-card.active { border-color:#3b82f6; background:#eff6ff; color:#1d4ed8; }
+  .pay-card .check {
+    position:absolute; right:0; bottom:0; width:18px; height:18px;
+    background:#3b82f6; color:#fff;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    display:flex; align-items:flex-end; justify-content:flex-end;
+    padding: 1px 1px 1px 0; font-size:10px;
+  }
+
+  /* 二维码占位(SVG 棋盘) */
+  .qr {
+    width: 120px; height: 120px; background:#fff;
+    background-image:
+      linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111),
+      linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+    border:1px solid #e5e7eb;
+  }
+
+  .protocol-link { color:#3b82f6; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- Status bar -->
+  <div class="flex items-center justify-between px-5 py-2 bg-white text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- 顶部导航 -->
+  <div class="bg-white px-3 py-3 flex items-center gap-2 border-b border-slate-100">
+    <a href="javascript:history.back()" class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="chevron-left" class="w-6 h-6"></i></a>
+    <div class="flex-1 text-center text-[16px] font-semibold text-slate-800">数据报告</div>
+    <button class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="file-text" class="w-5 h-5"></i></button>
+  </div>
+
+  <!-- 车辆信息卡 -->
+  <div class="mx-3 mt-3 bg-white rounded-xl p-3 flex items-center gap-3">
+    <img :src="car.img" class="w-20 h-16 rounded-md object-cover bg-slate-100 flex-none" alt="车图">
+    <div class="flex-1 min-w-0 text-[12px] text-slate-500 leading-relaxed">
+      <div class="text-[15px] font-semibold text-slate-800 truncate">{{ car.name }}</div>
+      <div>VIN码 {{ car.vin }}</div>
+      <div class="flex items-center gap-2">
+        <span>车辆编号 {{ car.no }}</span>
+        <span class="text-blue-500" @click="copy(car.no)">复制</span>
+      </div>
+    </div>
+    <button class="flex-none px-3 py-1 rounded-full border border-blue-400 text-blue-500 text-[12px]">换台车</button>
+  </div>
+
+  <!-- 所选产品 -->
+  <div class="mx-3 mt-3 bg-white rounded-xl p-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="text-[15px] font-semibold text-slate-800">所选产品</div>
+      <span class="text-[12px] text-orange-500 bg-orange-50 px-2 py-0.5 rounded-l-full">报告样例</span>
+    </div>
+
+    <div class="bg-slate-50 rounded-lg p-3 relative">
+      <div class="flex flex-wrap gap-2 pr-8">
+        <span v-for="p in selectedProducts" :key="p.key" class="pill">
+          {{ p.label }}
+          <span class="x" @click="removeProduct(p.key)"><i data-lucide="x" class="w-2.5 h-2.5"></i></span>
+        </span>
+      </div>
+      <button class="absolute right-3 bottom-3 w-6 h-6 rounded-full bg-white shadow flex items-center justify-center text-slate-500" @click="showAll = !showAll">
+        <i :data-lucide="showAll ? 'chevron-up' : 'chevron-down'" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- 展开:可选产品 -->
+    <div v-if="showAll" class="mt-3 grid grid-cols-2 gap-2">
+      <button v-for="p in availableProducts" :key="p.key"
+              :class="['text-left p-3 rounded-lg border text-[13px]', isSelected(p.key) ? 'border-blue-400 bg-blue-50 text-blue-600' : 'border-slate-200 text-slate-600']"
+              @click="toggleProduct(p)">
+        <div class="font-semibold">{{ p.label }}</div>
+        <div class="text-[11px] text-slate-400 mt-0.5">¥{{ p.price }}</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 支付方式 -->
+  <div class="mx-3 mt-3 bg-white rounded-xl p-4">
+    <div class="text-[15px] font-semibold text-slate-800 mb-3">支付方式:</div>
+    <div class="flex gap-3">
+      <div :class="['pay-card', payMethod === 'wechat' && 'active']" @click="payMethod = 'wechat'">
+        <span class="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center"><i data-lucide="message-circle" class="w-3 h-3"></i></span>
+        微信支付
+        <span v-if="payMethod === 'wechat'" class="check"><i data-lucide="check" class="w-2.5 h-2.5"></i></span>
+      </div>
+      <div :class="['pay-card', payMethod === 'card' && 'active']" @click="payMethod = 'card'">
+        <span class="w-5 h-5 rounded bg-blue-500 text-white flex items-center justify-center"><i data-lucide="ticket" class="w-3 h-3"></i></span>
+        服务次卡
+        <span v-if="payMethod === 'card'" class="check"><i data-lucide="check" class="w-2.5 h-2.5"></i></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 购买帮助 -->
+  <div class="mx-3 mt-3 bg-white rounded-xl p-4">
+    <div class="text-[15px] font-semibold text-slate-800 mb-3">购买帮助</div>
+    <div class="text-[13px] text-slate-500 leading-relaxed space-y-3">
+      <div>
+        <div class="text-slate-400">1、预计查询时间是多久?</div>
+        <div class="mt-1">预计查询时间为 30 分钟,等待查询期间内您可以续浏览其它内容特报告查询成功后会系统将会有消息通知告知与您。您亦可通过顶部历史订单"查看此报告。</div>
+      </div>
+      <div>
+        <div class="text-slate-400">2、查询一定会有结果吗?</div>
+        <div class="mt-1">查询不一定每次成功,查询失败系统将会原路返回您的支付金额。</div>
+      </div>
+      <div>
+        <div class="text-slate-400">3、特别声明:</div>
+        <div class="mt-1">请注意,本查询服务所有致据源均来自行业大数据或第三方且并非实时数据(由提供方按固定周期定期更新),查得结果仅供参考,本查询服务不构成任何建议或承诺,亦不对查询人运用本查询服务做出的其它专业判断所产生的结果负责,请查询人务必结合被查询对象的实际情况,综合做出更全面更准确的决策。</div>
+      </div>
+    </div>
+
+    <!-- 二维码 -->
+    <div class="mt-5 grid grid-cols-2 gap-3 place-items-center">
+      <div class="text-center">
+        <div class="qr mx-auto"></div>
+        <div class="text-[12px] text-slate-500 mt-2">服务号</div>
+      </div>
+      <div class="text-center">
+        <div class="qr mx-auto"></div>
+        <div class="text-[12px] text-slate-500 mt-2">官方客服</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部固定栏 -->
+  <div class="fixed left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 z-40">
+    <!-- 协议 -->
+    <div class="px-4 py-2 flex items-center gap-2 text-[12px] text-slate-600 border-b border-slate-100">
+      <button @click="agreed = !agreed" class="w-4 h-4 rounded-full flex items-center justify-center flex-none"
+              :class="agreed ? 'bg-blue-500 text-white' : 'border border-slate-300 text-transparent'">
+        <i data-lucide="check" class="w-3 h-3"></i>
+      </button>
+      <span>我已阅读确认<a class="protocol-link">《用户服务协议》</a>和<a class="protocol-link">《个人信息共享授权书》</a></span>
+    </div>
+    <!-- 价格 + 查询 -->
+    <div class="px-3 py-2.5 flex items-end gap-3">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-baseline gap-1">
+          <span class="text-[12px] text-slate-700">实付:</span>
+          <span class="text-red-500 font-bold text-[22px] leading-none">¥{{ totalPrice.toFixed(2) }}</span>
+        </div>
+        <div class="flex items-center gap-2 mt-1 text-[11px]">
+          <span class="text-slate-400 line-through">原价¥{{ originalPrice.toFixed(2) }}</span>
+          <button @click="showDetail = !showDetail" class="text-red-500 flex items-center gap-0.5">查看明细 <i :data-lucide="showDetail ? 'chevron-down' : 'chevron-up'" class="w-3 h-3"></i></button>
+        </div>
+      </div>
+      <button :disabled="!agreed"
+              :class="['flex-none px-10 py-3 rounded-full font-bold text-[15px]', agreed ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-200 text-slate-400']"
+              @click="onSubmit">
+        查询
+      </button>
+    </div>
+  </div>
+
+  <!-- 明细弹层 -->
+  <div v-if="showDetail" class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,.5)" @click.self="showDetail = false">
+    <div class="w-full max-w-[420px] mx-auto bg-white rounded-t-2xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[15px] font-semibold">费用明细</div>
+        <button @click="showDetail = false"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+      </div>
+      <div class="space-y-2 text-[13px]">
+        <div v-for="p in selectedProducts" :key="p.key" class="flex items-center justify-between">
+          <span class="text-slate-600">{{ p.label }}</span>
+          <span class="text-slate-800">¥{{ p.price.toFixed(2) }}</span>
+        </div>
+        <div class="border-t border-slate-100 pt-2 mt-2 flex items-center justify-between">
+          <span class="text-slate-600">优惠</span>
+          <span class="text-red-500">-¥{{ (originalPrice - totalPrice).toFixed(2) }}</span>
+        </div>
+        <div class="flex items-center justify-between font-bold">
+          <span>合计</span>
+          <span class="text-red-500">¥{{ totalPrice.toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const car = {
+      name: '奥迪 A6L 2011款 2.4技术型',
+      vin:  'LGB***********454',
+      no:   '0015 3115',
+      img:  'https://images.unsplash.com/photo-1542362567-b07e54358753?w=300&h=200&fit=crop&auto=format&q=80'
+    };
+
+    const availableProducts = [
+      { key:'accident',     label:'出险报告(车信盟)', price: 68 },
+      { key:'mileage',      label:'里程数',           price: 30 },
+      { key:'maintenance',  label:'维保报告(柠檬查)', price: 90 },
+      { key:'mortgage',     label:'抵押查询',          price: 30 },
+      { key:'transfer',     label:'过户记录',          price: 20 }
+    ];
+
+    const selectedKeys = ref(['accident', 'mileage', 'maintenance']);
+    const showAll = ref(false);
+    const payMethod = ref('wechat');
+    const agreed = ref(true);
+    const showDetail = ref(false);
+
+    const selectedProducts = computed(() => availableProducts.filter(p => selectedKeys.value.includes(p.key)));
+    const originalPrice = computed(() => selectedProducts.value.reduce((s, p) => s + p.price, 0));
+    const totalPrice = computed(() => Math.max(originalPrice.value - discount.value, 0));
+    const discount = ref(0);
+
+    function isSelected(k){ return selectedKeys.value.includes(k); }
+    function toggleProduct(p){
+      const i = selectedKeys.value.indexOf(p.key);
+      if (i >= 0) selectedKeys.value.splice(i, 1);
+      else selectedKeys.value.push(p.key);
+    }
+    function removeProduct(k){
+      const i = selectedKeys.value.indexOf(k);
+      if (i >= 0) selectedKeys.value.splice(i, 1);
+    }
+    function copy(text){
+      if (navigator.clipboard) navigator.clipboard.writeText(text);
+    }
+    function onSubmit(){
+      if (!agreed.value) return;
+      alert(`已发起查询,实付 ¥${totalPrice.value.toFixed(2)}(${payMethod.value === 'wechat' ? '微信支付' : '服务次卡'})`);
+    }
+
+    // 模拟运营优惠:满 100 减 10
+    watch(originalPrice, (v) => { discount.value = v >= 100 ? 0 : 0; }, { immediate: true });
+
+    onMounted(() => lucide.createIcons());
+    watch([selectedKeys, showAll, payMethod, agreed, showDetail], () => nextTick(() => lucide.createIcons()), { deep: true });
+
+    return {
+      car, availableProducts, selectedProducts, selectedKeys, showAll,
+      payMethod, agreed, showDetail, originalPrice, totalPrice,
+      isSelected, toggleProduct, removeProduct, copy, onSubmit
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
