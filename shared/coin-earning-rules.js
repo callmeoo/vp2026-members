@@ -25,7 +25,7 @@
       '      <tr v-for="it in items" :key="it.action" class="border-t border-slate-100 align-top">',
       '        <td class="py-2 px-2 text-slate-800 font-medium leading-snug">{{ it.action }}</td>',
       '        <td class="py-2 px-2 text-center whitespace-nowrap">',
-      '          <div class="text-sm font-bold text-amber-600">+{{ it.coin }}</div>',
+      '          <div class="text-sm font-bold text-amber-600">{{ formatCoin(it.coin) }}</div>',
       '          <div class="text-[9px] text-slate-400">{{ it.unit }}</div>',
       '        </td>',
       '      </tr>',
@@ -40,6 +40,13 @@
         return cfg.coinEarning.reduce(function (acc, g) {
           return acc.concat(g.items);
         }, []);
+      }
+    },
+    methods: {
+      // 数字/数字区间前加 "+";倍率(如 x2)原样显示
+      formatCoin: function (v) {
+        var s = String(v);
+        return /^[\d\-]/.test(s) ? '+' + v : v;
       }
     }
   };
