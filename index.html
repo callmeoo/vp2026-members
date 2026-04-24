@@ -10,25 +10,38 @@
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
   [v-cloak] { display: none; }
   .brand-gradient { background: linear-gradient(135deg, #5b3fd9 0%, #8b5cf6 50%, #c084fc 100%); }
-  .tab-btn { position: relative; padding: 10px 18px; font-size: 14px; font-weight: 500; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; display:flex; align-items:center; gap:6px; }
+
+  .tab-btn { position: relative; padding: 10px 18px; font-size: 14px; font-weight: 500; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; display:flex; align-items:center; gap:6px; white-space: nowrap; }
   .tab-btn:hover { color: #5b3fd9; }
   .tab-btn.active { color: #5b3fd9; border-bottom-color: #5b3fd9; font-weight: 600; }
   .tab-btn .count { font-size: 11.5px; color: #94a3b8; font-weight: 400; }
   .tab-btn.active .count { color: #a78bfa; }
-  .row { display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 9px 14px; border-radius: 8px; font-size: 13.5px; }
+
+  .sub-tab { padding: 6px 14px; font-size: 13px; color: #64748b; cursor: pointer; border-radius: 6px; display:flex; align-items:center; gap:5px; }
+  .sub-tab:hover { background: #f1f5f9; color: #5b3fd9; }
+  .sub-tab.active { background: #ede9fe; color: #5b3fd9; font-weight: 600; }
+
+  .group-title { font-size: 11.5px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; padding: 4px 8px 8px; border-bottom: 1px solid #f1f5f9; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+
+  .row { display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 8px 10px; border-radius: 8px; font-size: 13.5px; }
   .row:hover { background: #f8fafc; }
   .row a { color: #5b3fd9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row a:hover { text-decoration: underline; }
-  .file { color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; white-space: nowrap; }
+  .file { color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; white-space: nowrap; }
+  .row.disabled { opacity: .5; cursor: not-allowed; }
+  .row.disabled a { color: #94a3b8; pointer-events: none; }
+
   .empty { color:#94a3b8; font-size: 13px; padding: 40px 0; text-align: center; }
+  .iframe-wrap { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; height: calc(100vh - 280px); min-height: 500px; }
+  .iframe-wrap iframe { width: 100%; height: 100%; border: 0; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
 <div id="app" v-cloak>
 
-<!-- Header (compact) -->
+<!-- Header -->
 <header class="brand-gradient text-white">
-  <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
+  <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
     <div>
       <div class="flex items-center gap-2 text-xs opacity-80 mb-1">
         <span class="px-1.5 py-0.5 bg-white/20 rounded text-[11px]">v1.1</span>
@@ -37,16 +50,17 @@
       <h1 class="text-xl font-bold">唯普汽车 · 商户会员体系</h1>
     </div>
     <div class="flex flex-wrap gap-2 text-xs">
-      <a href="docs/PRD.md" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="file-text" class="w-3.5 h-3.5 inline mr-1"></i>PRD</a>
+      <a href="docs/prd.html" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="clipboard-list" class="w-3.5 h-3.5 inline mr-1"></i>PRD</a>
       <a href="docs/DB-Schema.md" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="database" class="w-3.5 h-3.5 inline mr-1"></i>DB</a>
       <a href="docs/API.md" target="_blank" rel="noopener" class="px-2.5 py-1 bg-white/20 hover:bg-white/30 rounded"><i data-lucide="plug" class="w-3.5 h-3.5 inline mr-1"></i>API</a>
     </div>
   </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-6 py-5">
-  <!-- Tabs -->
+<main class="max-w-7xl mx-auto px-6 py-5">
   <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+
+    <!-- 主 tab -->
     <div class="flex border-b border-slate-200 px-2 overflow-x-auto">
       <div v-for="t in tabs" :key="t.key"
            class="tab-btn"
@@ -54,29 +68,73 @@
            @click="active = t.key">
         <i :data-lucide="t.icon" class="w-4 h-4"></i>
         <span>{{ t.label }}</span>
-        <span class="count">{{ t.items.length ? t.items.length : '稍后' }}</span>
+        <span class="count" v-if="tabCount(t)">{{ tabCount(t) }}</span>
+        <span class="count" v-else>稍后</span>
       </div>
     </div>
 
-    <!-- Tab panel · 左侧需求说明(可选) + 右侧 2 列页面 -->
-    <div class="p-3">
-      <div v-if="currentTab.items.length || currentTab.specs" class="flex gap-4">
-        <aside v-if="currentTab.specs" class="w-52 shrink-0 border-r border-slate-200 pr-3">
-          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-2 pb-1.5 pt-1 flex items-center gap-1.5">
-            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>需求说明
+    <div class="p-4">
+      <!-- 类型 1:分组列表(app / bms) -->
+      <div v-if="currentTab.groups" class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+        <section v-for="g in currentTab.groups" :key="g.label">
+          <div class="group-title">
+            <i :data-lucide="g.icon || 'folder'" class="w-3.5 h-3.5"></i>
+            {{ g.label }}
+            <span class="ml-auto text-slate-400 normal-case">{{ g.items.length }}</span>
           </div>
-          <div v-for="s in currentTab.specs" :key="s.title" class="row">
-            <span class="text-slate-700">{{ s.title }}</span>
-            <span class="file">{{ s.status }}</span>
+          <div v-if="g.items.length">
+            <div v-for="item in g.items" :key="item.file || item.title"
+                 class="row" :class="{ disabled: !item.file }">
+              <a v-if="item.file" :href="item.file" target="_blank" rel="noopener">{{ item.title }}</a>
+              <span v-else>{{ item.title }}</span>
+              <span class="file">{{ item.file || '待补充' }}</span>
+            </div>
           </div>
-        </aside>
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
-          <div v-for="item in currentTab.items" :key="item.file" class="row">
-            <a :href="item.file" target="_blank" rel="noopener">{{ item.title }}</a>
-            <span class="file">{{ item.file }}</span>
+          <div v-else class="empty" style="padding: 16px 0; font-size: 12.5px;">暂无页面</div>
+        </section>
+      </div>
+
+      <!-- 类型 2:需求说明(子 tab) -->
+      <div v-else-if="currentTab.type === 'spec'">
+        <div class="flex gap-1 mb-3 border-b border-slate-100 pb-2">
+          <div v-for="st in currentTab.subtabs" :key="st.key"
+               class="sub-tab" :class="{ active: subActive === st.key }"
+               @click="subActive = st.key">
+            <i :data-lucide="st.icon" class="w-3.5 h-3.5"></i>
+            {{ st.label }}
+          </div>
+        </div>
+
+        <!-- 原始 Word -->
+        <div v-if="subActive === 'word'" class="py-6">
+          <div class="max-w-xl mx-auto border-2 border-dashed border-slate-200 rounded-xl p-8 text-center">
+            <div class="w-16 h-16 mx-auto bg-blue-50 rounded-xl flex items-center justify-center mb-3">
+              <i data-lucide="file-text" class="w-8 h-8 text-blue-500"></i>
+            </div>
+            <div class="font-semibold text-slate-700 mb-1">唯普汽车商户会员体系 · 原始需求.docx</div>
+            <div class="text-xs text-slate-400 mb-4">业务方原始需求文档 · <span class="text-amber-600">待上传</span></div>
+            <button class="px-4 py-1.5 bg-slate-100 text-slate-400 rounded text-sm cursor-not-allowed" disabled>
+              <i data-lucide="download" class="w-3.5 h-3.5 inline mr-1"></i>下载查看
+            </button>
+            <div class="mt-3 text-[11px] text-slate-400">文件上传后此处自动展示,支持 .docx / .pdf 下载。</div>
+          </div>
+        </div>
+
+        <!-- 需求说明 PRD -->
+        <div v-if="subActive === 'prd'">
+          <div class="flex items-center justify-between mb-2 text-xs text-slate-500 px-1">
+            <span><i data-lucide="file-check" class="w-3.5 h-3.5 inline mr-1"></i>根据已生成原型整理的 PRD · 用于研发技术评审</span>
+            <a href="docs/prd.html" target="_blank" rel="noopener" class="text-purple-600 hover:underline">
+              在新窗口打开 <i data-lucide="external-link" class="w-3 h-3 inline"></i>
+            </a>
+          </div>
+          <div class="iframe-wrap">
+            <iframe src="docs/prd.html" loading="lazy"></iframe>
           </div>
         </div>
       </div>
+
+      <!-- 类型 3:空 -->
       <div v-else class="empty">暂无页面 · 稍后添加</div>
     </div>
   </div>
@@ -85,7 +143,6 @@
     唯普汽车 · 商户会员体系设计方案 · 演示数据均为模拟
   </footer>
 </main>
-
 </div>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -97,68 +154,125 @@
       const tabs = [
         {
           key: 'app', label: '商户端(app/小程序)', icon: 'smartphone',
-          specs: [
-            { title: '原始文档', status: '待补充' },
-            { title: '需求说明', status: '待补充' },
+          groups: [
+            {
+              label: '分类首页', icon: 'layout-grid',
+              items: [
+                { title: 'APP 开屏广告',       file: 'app/splash.html' },
+                { title: 'APP 首页',           file: 'app/home.html' },
+                { title: '会员权益升级落地页', file: 'app/landing.html' },
+                { title: '会员中心',           file: 'app/member.html' },
+                { title: '等级成长',           file: 'app/level.html' },
+                { title: '积分明细',           file: 'app/coins.html' },
+                { title: '权益商城',           file: 'app/mall.html' },
+                { title: '我的权益卡',         file: 'app/my-rewards.html' },
+                { title: '活动优惠券',         file: 'app/coupons.html' },
+              ],
+            },
+            {
+              label: '个人中心', icon: 'user-circle',
+              items: [
+                { title: '个人中心(未登录)',  file: 'app/profile.html' },
+                { title: '登录页',             file: 'app/login.html' },
+                { title: '个人中心(已登录)',  file: 'app/profile-loggedin.html' },
+                { title: '设置页',             file: 'app/settings.html' },
+                { title: '我的订单(买到的车)', file: 'app/won-orders.html' },
+                { title: '订单详情',           file: 'app/won-order-detail.html' },
+                { title: '申请售后',           file: 'app/aftersale-apply.html' },
+                { title: '售后审批列表',       file: 'app/aftersale-approval-list.html' },
+                { title: '售后审批详情',       file: 'app/aftersale-approval-detail.html' },
+              ],
+            },
+            {
+              label: '全部车源', icon: 'car',
+              items: [
+                { title: '全部车源(A 版)',   file: 'app/allcars.html' },
+                { title: '全部车源(B 版)',   file: 'app/all-cars.html' },
+                { title: '车辆详情',           file: 'app/car-detail.html' },
+                { title: '车辆详情(预约)',   file: 'app/car-detail-reserve.html' },
+                { title: '出价 / 竞拍',        file: 'app/car-bid.html' },
+                { title: '维保查询',           file: 'app/maintenance-query.html' },
+              ],
+            },
           ],
-          items: [
-            { title: 'APP 开屏广告',            file: 'app/splash.html' },
-            { title: 'APP 首页',                file: 'app/home.html' },
-            { title: '会员权益升级落地页',      file: 'app/landing.html' },
-            { title: '会员中心',                file: 'app/member.html' },
-            { title: '积分明细',                file: 'app/coins.html' },
-            { title: '等级成长',                file: 'app/level.html' },
-            { title: '权益商城',                file: 'app/mall.html' },
-            { title: '我的权益卡',              file: 'app/my-rewards.html' },
-            { title: '活动优惠券',              file: 'app/coupons.html' },
-            { title: '我的订单(买到的车)',      file: 'app/won-orders.html' },
-            { title: '订单详情',                file: 'app/won-order-detail.html' },
-            { title: '车辆详情',                file: 'app/car-detail.html' },
-            { title: '申请售后',                file: 'app/aftersale-apply.html' },
-            { title: '售后审批列表',            file: 'app/aftersale-approval-list.html' },
-            { title: '售后审批详情',            file: 'app/aftersale-approval-detail.html' },
-            { title: '个人中心(未登录)',        file: 'app/profile.html' },
-            { title: '登录页',                  file: 'app/login.html' },
-            { title: '个人中心(已登录)',        file: 'app/profile-loggedin.html' },
-            { title: '设置页',                  file: 'app/settings.html' },
+        },
+        {
+          key: 'spec', label: '需求说明', icon: 'clipboard-list',
+          type: 'spec',
+          subtabs: [
+            { key: 'word', label: '原始需求 Word', icon: 'file-text' },
+            { key: 'prd',  label: '需求说明',     icon: 'file-check' },
           ],
         },
         { key: 'pc', label: '商户端(pc)', icon: 'monitor', items: [] },
         {
           key: 'bms', label: 'BMS 后台', icon: 'layout-dashboard',
-          items: [
-            { title: '运营仪表盘',              file: 'admin/dashboard.html' },
-            { title: '商户档案与流水',          file: 'admin/members.html' },
-            { title: '买家管理',                file: 'admin/bms-sales-buyers.html' },
-            { title: '买家详情',                file: 'admin/bms-sales-buyer-detail.html' },
-            { title: '销售订单',                file: 'admin/bms-sales-orders.html' },
-            { title: '销售订单(旧版)',          file: 'admin/sales-orders.html' },
-            { title: '业务数据 · 订单列表',     file: 'admin/bms-orders.html' },
-            { title: '业务数据 · 订单详情',     file: 'admin/bms-order-detail.html' },
-            { title: '订单详情(旧版)',          file: 'admin/order-detail.html' },
-            { title: '用户列表',                file: 'admin/bms-users.html' },
-            { title: '用户详情',                file: 'admin/bms-user-detail.html' },
-            { title: '等级设置',                file: 'admin/level-rule.html' },
-            { title: '积分规则',                file: 'admin/coin-rule.html' },
-            { title: '商城商品配置',            file: 'admin/rewards.html' },
-            { title: '积分流水',                file: 'admin/bms-coin-log.html' },
-            { title: '兑换记录',                file: 'admin/bms-redeem-log.html' },
-            { title: '售后服务',                file: 'admin/bms-aftersales.html' },
-            { title: '售后列表',                file: 'admin/bms-aftersales-list.html' },
-            { title: '企微审批',                file: 'admin/bms-aftersale-approval-list.html' },
+          groups: [
+            {
+              label: '业务数据', icon: 'database',
+              items: [
+                { title: '订单列表',           file: 'admin/bms-orders.html' },
+                { title: '订单详情',           file: 'admin/bms-order-detail.html' },
+                { title: '订单详情(旧版)',    file: 'admin/order-detail.html' },
+              ],
+            },
+            {
+              label: '销售管理', icon: 'bar-chart-3',
+              items: [
+                { title: '运营仪表盘',         file: 'admin/dashboard.html' },
+                { title: '商户档案',           file: 'admin/members.html' },
+                { title: '买家管理',           file: 'admin/bms-sales-buyers.html' },
+                { title: '买家详情',           file: 'admin/bms-sales-buyer-detail.html' },
+                { title: '销售订单',           file: 'admin/bms-sales-orders.html' },
+                { title: '销售订单(旧版)',    file: 'admin/sales-orders.html' },
+                { title: '等级设置',           file: 'admin/level-rule.html' },
+                { title: '积分规则',           file: 'admin/coin-rule.html' },
+                { title: '商城商品配置',       file: 'admin/rewards.html' },
+                { title: '积分流水',           file: 'admin/bms-coin-log.html' },
+                { title: '兑换记录',           file: 'admin/bms-redeem-log.html' },
+                { title: '用户列表',           file: 'admin/bms-users.html' },
+                { title: '用户详情',           file: 'admin/bms-user-detail.html' },
+              ],
+            },
+            {
+              label: '服务中心', icon: 'headphones',
+              items: [
+                { title: '售后服务',           file: 'admin/bms-aftersales.html' },
+                { title: '售后列表',           file: 'admin/bms-aftersales-list.html' },
+                { title: '企微审批',           file: 'admin/bms-aftersale-approval-list.html' },
+              ],
+            },
+            {
+              label: '运营部', icon: 'settings',
+              items: [
+                { title: '内容管理' },
+                { title: '优惠券' },
+                { title: '权益卡管理' },
+                { title: '权益卡投放管理' },
+                { title: '权益卡发放管理' },
+                { title: '奖品投放' },
+              ],
+            },
           ],
         },
         { key: 'fnc', label: 'FNC 后台', icon: 'landmark', items: [] },
       ];
 
       const active = ref('app');
+      const subActive = ref('word');
       const currentTab = computed(() => tabs.find(t => t.key === active.value));
 
+      const tabCount = (t) => {
+        if (t.groups) return t.groups.reduce((s, g) => s + g.items.length, 0);
+        if (t.items) return t.items.length;
+        return null;
+      };
+
       const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
-      watch(active, refresh);
+      watch([active, subActive], refresh);
       onMounted(refresh);
 
-      return { tabs, active, currentTab };
+      return { tabs, active, subActive, currentTab, tabCount };
     },
   }).mount('#app');
 </script>
