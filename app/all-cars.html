@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>全部车源 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  /* 顶部 tab 激活态红色下划圆点 */
+  .top-tab-active { color:#ef4444; font-weight:800; position:relative; }
+  .top-tab-active::after {
+    content:''; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
+    width:26px; height:6px;
+    background: linear-gradient(90deg, transparent 0%, #ef4444 20%, #ef4444 80%, transparent 100%);
+    border-radius: 3px;
+  }
+
+  /* 竞价中标签 */
+  .bid-tag {
+    position:absolute; left:0; bottom:0; right:0;
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 4px 8px;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%);
+    color:#fff; font-size:11px;
+  }
+  .bid-badge {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    color:#fff; font-weight:700; font-size:11px;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .img-badge-65d {
+    position:absolute; top:6px; right:6px;
+    background: rgba(0,0,0,.55); color:#fff; font-size:10px;
+    padding: 1px 6px; border-radius: 3px; font-weight:600;
+  }
+  .img-badge-dot {
+    position:absolute; top:6px; right:6px;
+    background: rgba(255,255,255,.6); color:#fff;
+    width: 22px; height: 16px; border-radius: 3px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:11px; letter-spacing:1px; line-height:1;
+  }
+
+  /* 筛选项 */
+  .filter-pill { display:inline-flex; align-items:center; gap:2px; color:#475569; font-size:13px; }
+  .filter-pill.active { color:#ef4444; }
+
+  /* 车况 / 专场 pill */
+  .meta-pill {
+    display:inline-block; padding:1px 6px; border-radius:3px;
+    background:#f1f5f9; color:#64748b; font-size:11px;
+    margin-right: 6px;
+  }
+
+  /* 价格红 */
+  .price-num { color:#ef4444; font-weight:800; font-size:18px; }
+  .price-unit { color:#ef4444; font-size:11px; font-weight:600; margin-left:1px; }
+
+  /* 卡片过渡 */
+  .car-card { transition: background .15s; }
+  .car-card:active { background:#f8fafc; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell pb-16">
+
+  <!-- Status bar -->
+  <div class="flex items-center justify-between px-5 py-2 bg-white text-slate-800 text-sm">
+    <span>16:07</span>
+    <span class="flex items-center gap-1">
+      <i data-lucide="bluetooth" class="w-3.5 h-3.5"></i>
+      <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+      <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+      <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+      <i data-lucide="battery-full" class="w-3.5 h-3.5"></i>
+    </span>
+  </div>
+
+  <!-- 顶部 Tab + 搜索 -->
+  <div class="bg-white px-4 pt-2 pb-3 sticky top-0 z-30 border-b border-slate-100">
+    <div class="flex items-center gap-5">
+      <button
+        v-for="t in topTabs" :key="t.key"
+        @click="activeTop = t.key"
+        :class="['text-[17px]', activeTop === t.key ? 'top-tab-active' : 'text-slate-600']">
+        {{ t.label }}
+      </button>
+      <div class="flex-1"></div>
+      <button class="w-8 h-8 flex items-center justify-center text-slate-700">
+        <i data-lucide="search" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 筛选条 -->
+  <div class="bg-white px-4 py-2.5 flex items-center justify-between text-sm border-b border-slate-100">
+    <button v-for="f in filters" :key="f.key"
+            @click="onFilter(f.key)"
+            :class="['filter-pill', activeFilter === f.key && 'active']">
+      {{ f.label }}
+      <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+    </button>
+  </div>
+
+  <!-- 车源列表 -->
+  <div class="px-3 py-3 space-y-3">
+    <a v-for="(car, i) in carList" :key="i"
+       :href="'car-detail.html?id=' + i"
+       class="car-card flex gap-3 p-3 bg-white rounded-xl block">
+
+      <!-- 左图 -->
+      <div class="relative flex-none w-[150px] h-[110px] rounded-lg overflow-hidden bg-slate-200">
+        <img :src="car.img" :alt="car.title" class="w-full h-full object-cover">
+
+        <!-- 右上角标签 -->
+        <span v-if="car.topBadge === '65D'" class="img-badge-65d">65D</span>
+        <span v-else-if="car.topBadge === 'dots'" class="img-badge-dot">···</span>
+
+        <!-- 底部竞价中 + 倒计时 -->
+        <div class="bid-tag">
+          <span class="bid-badge">竞价中</span>
+          <span class="text-white text-[11px] tabular-nums">{{ car.countdown }}结束</span>
+        </div>
+      </div>
+
+      <!-- 右侧文字 -->
+      <div class="flex-1 min-w-0 flex flex-col">
+        <!-- 地点 + 标题 -->
+        <div class="text-[14px] font-semibold text-slate-800 leading-snug line-clamp-2">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-red-500 -mt-0.5"></i>
+          <span class="text-red-500 font-bold">{{ car.city }}</span>
+          <span class="text-slate-300 mx-1">|</span>
+          <span>{{ car.title }}</span>
+        </div>
+        <div class="text-[12px] text-slate-800 mt-1 leading-tight line-clamp-1">{{ car.model }}</div>
+
+        <!-- meta -->
+        <div class="text-[11px] text-slate-500 mt-1 truncate">{{ car.meta }}</div>
+
+        <!-- 标签 -->
+        <div class="mt-1.5">
+          <span v-for="tag in car.tags" :key="tag" class="meta-pill">{{ tag }}</span>
+        </div>
+
+        <!-- 价格 + 心 -->
+        <div class="mt-auto pt-2 flex items-end justify-between">
+          <div>
+            <span class="price-num">{{ car.price }}</span>
+            <span class="price-unit">万起</span>
+          </div>
+          <button @click.prevent.stop="toggleFav(i)"
+                  class="w-7 h-7 flex items-center justify-center">
+            <i :data-lucide="favs[i] ? 'heart' : 'heart'"
+               :class="['w-5 h-5', favs[i] ? 'text-red-500 fill-red-500' : 'text-slate-300']"></i>
+          </button>
+        </div>
+      </div>
+    </a>
+
+    <div class="text-center text-xs text-slate-400 py-4">— 没有更多了 —</div>
+  </div>
+
+  <!-- 底部导航 -->
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 px-2 py-2 grid grid-cols-5 text-[11px] z-40">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="home" class="w-5 h-5"></i>首页
+    </a>
+    <a href="all-cars.html" class="flex flex-col items-center gap-0.5 py-1 text-red-500 font-semibold">
+      <i data-lucide="car" class="w-5 h-5"></i>全部车源
+    </a>
+    <a class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="target" class="w-5 h-5"></i>专场车源
+    </a>
+    <a class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="heart" class="w-5 h-5"></i>关注订阅
+    </a>
+    <a href="profile.html" class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="user" class="w-5 h-5"></i>我的
+    </a>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, reactive, onMounted, watch, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const topTabs = [
+      { key: 'all',      label: '全部' },
+      { key: 'bid-hall', label: '竞价大厅' },
+      { key: 'reserve',  label: '有保留价' }
+    ];
+    const activeTop = ref('all');
+
+    const filters = [
+      { key: 'sort',    label: '默认排序' },
+      { key: 'brand',   label: '品牌' },
+      { key: 'cond',    label: '车况' },
+      { key: 'filter',  label: '筛选' }
+    ];
+    const activeFilter = ref('');
+
+    const carList = [
+      {
+        city: '东莞',
+        title: '五菱 五菱荣光V',
+        model: '2015款 1.5L标准型',
+        meta: '粤S | 2016-03 | 4.42万公里',
+        tags: ['竞价大厅'],
+        price: '0.75',
+        countdown: '00:52:46',
+        topBadge: '65D',
+        img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&h=400&fit=crop&auto=format&q=80'
+      },
+      {
+        city: '贵阳',
+        title: '一汽 森雅R7',
+        model: '2016款 1.6 手动 智能型',
+        meta: '贵H | 2016-10 | 5.51万公里 | 0次过户',
+        tags: ['竞价大厅', '上新'],
+        price: '0.35',
+        countdown: '01:52:46',
+        topBadge: 'dots',
+        img: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&h=400&fit=crop&auto=format&q=80'
+      },
+      {
+        city: '贵阳',
+        title: '海马 骑士',
+        model: '2013款 2.0L 手动 经典版',
+        meta: '贵A | 2013-05 | 11.88万公里',
+        tags: ['报废车专场', '上新'],
+        price: '0.2',
+        countdown: '01:52:46',
+        topBadge: null,
+        img: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?w=600&h=400&fit=crop&auto=format&q=80'
+      },
+      {
+        city: '潮州',
+        title: '丰田 凯美瑞',
+        model: '2019款 2.0S 锋尚版',
+        meta: '粤U | 2019-11 | 4.25万公里 | 0次过户',
+        tags: ['竞价大厅', '上新'],
+        price: '8.78',
+        countdown: '01:52:46',
+        topBadge: null,
+        img: 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=600&h=400&fit=crop&auto=format&q=80'
+      },
+      {
+        city: '深圳',
+        title: '比亚迪 唐 DM-i',
+        model: '2023款 112KM 旗舰型',
+        meta: '粤B | 2023-05 | 3.21万公里 | 0次过户',
+        tags: ['竞价大厅', '新能源'],
+        price: '14.28',
+        countdown: '02:15:32',
+        topBadge: 'dots',
+        img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&h=400&fit=crop&auto=format&q=80'
+      },
+      {
+        city: '广州',
+        title: '大众 帕萨特',
+        model: '2020款 330TSI 豪华版',
+        meta: '粤A | 2020-08 | 6.80万公里 | 1次过户',
+        tags: ['竞价大厅'],
+        price: '13.50',
+        countdown: '03:08:12',
+        topBadge: null,
+        img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=600&h=400&fit=crop&auto=format&q=80'
+      }
+    ];
+
+    const favs = reactive(carList.map(() => false));
+    function toggleFav(i) { favs[i] = !favs[i]; }
+    function onFilter(key) { activeFilter.value = activeFilter.value === key ? '' : key; }
+
+    onMounted(() => { lucide.createIcons(); });
+    watch([activeTop, activeFilter, favs], () => nextTick(() => lucide.createIcons()), { deep: true });
+
+    return { topTabs, activeTop, filters, activeFilter, carList, favs, toggleFav, onFilter };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
