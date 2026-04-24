@@ -6,6 +6,7 @@
 <title>唯普汽车 · 商户会员体系 · Demo 导航</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="shared/member-config.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
   [v-cloak] { display: none; }
@@ -175,31 +176,54 @@
             </ul>
           </div>
 
-          <!-- 2. 积分商城 -->
+          <!-- 2. 积分商城 · 读取 shared/member-config.js,与 BMS「积分规则」/「商城商品配置」同源 -->
           <div v-if="prdActive === 'c2'" class="prd-body">
             <h3>2.1 积分获取(发放)</h3>
-            <p>积分获取按行为类别配置,全部规则在 <code>member-config.coinEarning[]</code>。研发关注点:</p>
+            <p>积分获取按行为类别配置,数据源 <code>shared/member-config.js → coinEarning[]</code>,与 BMS 后台「<a href="admin/coin-rule.html" target="_blank" rel="noopener">积分规则</a>」页同源。单位换算:<code>1 积分 ≈ {{ coinConfig.unitYuan }} 元</code>。</p>
+            <table v-if="coinGroups.length">
+              <thead><tr><th style="width:120px">类别</th><th>行为</th><th style="width:120px">积分</th><th>说明</th></tr></thead>
+              <tbody>
+                <template v-for="g in coinGroups" :key="g.category">
+                  <tr v-for="(it, i) in g.items" :key="it.id">
+                    <td v-if="i === 0" :rowspan="g.items.length" style="vertical-align:top;background:#f8fafc;font-weight:600">{{ g.category }}</td>
+                    <td>{{ it.action }}</td>
+                    <td><code>+{{ it.coin }}</code> <span style="color:#64748b">{{ it.unit }}</span></td>
+                    <td style="color:#64748b">{{ it.desc || '—' }}</td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
             <ul>
-              <li><strong>交易类</strong>:成交 1 台 +50 积分;出价 1 次 +10 积分,不封顶。</li>
-              <li><strong>认证类</strong>:首次实名 +1~5、首次充值 +1~5,仅一次性。</li>
-              <li><strong>邀请类</strong>:邀请好友注册 +2,推荐首笔成交 +2(30 天内成交日核算,双方都得)。</li>
-              <li><strong>增值服务类</strong>:物流/代驾/复检/代办等,每单 +5 积分。</li>
-              <li><strong>节日任务类</strong>:活动期内出价积分 x2,后端需支持任务有效期 + 倍率配置。</li>
               <li>积分发放走<strong>异步事件</strong>,接入事件总线,避免阻塞主业务流程;失败重试 + 死信队列。</li>
+              <li>节日任务类(如 <code>x2</code> 倍率)需后端支持任务有效期 + 倍率叠加配置。</li>
             </ul>
+
             <h3>2.2 积分有效期</h3>
             <div class="callout info">
-              积分按<strong>获得月 + 12 个自然月</strong>滚动到期(非自然年末清零)。每日凌晨扫描 <code>coin_ledger</code>,将到期积分置为 <code>expired</code>,总余额实时扣减;app/coins.html「即将过期」基于剩余有效期 ≤ 30d。
+              {{ coinConfig.validityDesc || '积分按获得月 + 12 个自然月滚动到期' }}。每日凌晨扫描 <code>coin_ledger</code>,将到期积分置为 <code>expired</code>,总余额实时扣减;app/coins.html「即将过期」基于剩余有效期 ≤ 30d。
             </div>
+
             <h3>2.3 积分消耗(兑换)</h3>
+            <p>商城商品数据源 <code>shared/member-config.js → redeemableRewards[]</code>,与 BMS 后台「<a href="admin/rewards.html" target="_blank" rel="noopener">商城商品配置</a>」同源。</p>
+            <table v-if="rewards.length">
+              <thead><tr><th>优惠券</th><th style="width:90px">所需积分</th><th>适用等级</th><th style="width:90px">有效期</th></tr></thead>
+              <tbody>
+                <tr v-for="r in rewards" :key="r.id">
+                  <td>{{ r.name }}<div style="font-size:11.5px;color:#94a3b8">{{ r.desc }}</div></td>
+                  <td><code>{{ r.coin }}</code></td>
+                  <td>{{ r.scope }}</td>
+                  <td>{{ r.validityDays }} 天</td>
+                </tr>
+              </tbody>
+            </table>
             <ul>
-              <li>商城商品见 <code>member-config.rewards[]</code>:<code>coin</code>(所需积分)、<code>scope</code>(适用等级)、<code>validityDays</code>(优惠券有效期)。</li>
               <li>兑换价格按等级折扣动态计算:<code>需积分 = 定价 × 等级折扣率</code>(V0/V1 100%、V2 95%、V3 80%)。</li>
               <li>流程:扣积分 → 生成 <code>reward_card</code>(状态 <code>unused</code>)→ 推送到「我的优惠券」。</li>
               <li>审计:所有兑换写 <code>redeem_log</code>,后台「兑换记录」可查。</li>
             </ul>
+
             <h3>2.4 优惠券生命周期</h3>
-            <p><code>unused</code>(已兑换) → <code>used</code>(已使用,写入业务订单 ID) → <code>expired</code>(过期,定时任务扫描)。不支持退款/回滚。</p>
+            <p><code>unused</code>(已兑换) → <code>used</code>(已使用,写入业务订单 ID) → <code>expired</code>(过期,定时任务扫描)。</p>
           </div>
 
           <!-- 3. 客户端消耗逻辑 -->
@@ -380,6 +404,12 @@
         { key: 'c5', title: '待确认清单' },
       ];
       const prdActive = ref('c1');
+
+      // 读取 shared/member-config.js,驱动需求说明·积分商城章节
+      const memberCfg = window.MEMBER_CONFIG || {};
+      const coinConfig = memberCfg.coin || {};
+      const coinGroups = memberCfg.coinEarning || [];
+      const rewards = memberCfg.redeemableRewards || [];
       const currentTab = computed(() => tabs.find(t => t.key === active.value));
 
       const tabCount = (t) => {
@@ -392,7 +422,7 @@
       watch([active, subActive, prdActive], refresh);
       onMounted(refresh);
 
-      return { tabs, active, subActive, currentTab, tabCount, wordFile, prdChapters, prdActive };
+      return { tabs, active, subActive, currentTab, tabCount, wordFile, prdChapters, prdActive, coinConfig, coinGroups, rewards };
     },
   }).mount('#app');
 </script>

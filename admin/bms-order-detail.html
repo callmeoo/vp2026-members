@@ -649,14 +649,27 @@ createApp({
       showApplyAfs.value = true;
     }
 
+    // 勾选/取消「买家无理由退车权益」时的联动
+    // - 勾选:预填售后类型/结果/责任方/原因,在 情况说明 追加一行权益声明
+    // - 取消:移除该行权益声明(保留用户手动输入的其他内容)
+    const NO_REASON_DESC = '【已使用买家"无理由退车权益"】买家行使权益申请退车。';
     function onToggleNoReason() {
       if (applyForm.useNoReason) {
         applyForm.type = '售后类';
         applyForm.result = '直接退车';
         applyForm.duty = '买家';
         if (!applyForm.reason) applyForm.reason = '买家违约类-买家反悔';
-        if (!applyForm.desc.includes('无理由退车权益')) {
-          applyForm.desc = (applyForm.desc ? applyForm.desc + '\n' : '') + '【已使用买家"无理由退车权益"】买家行使权益申请退车,无需走责任方判定。';
+        if (!applyForm.desc.includes(NO_REASON_DESC)) {
+          applyForm.desc = (applyForm.desc ? applyForm.desc + '\n' : '') + NO_REASON_DESC;
+        }
+      } else {
+        // 取消勾选:把前面注入的声明行去掉(同时清掉可能的前导换行)
+        if (applyForm.desc) {
+          applyForm.desc = applyForm.desc
+            .replace('\n' + NO_REASON_DESC, '')
+            .replace(NO_REASON_DESC + '\n', '')
+            .replace(NO_REASON_DESC, '')
+            .replace(/^\n+/, '');
         }
       }
     }
