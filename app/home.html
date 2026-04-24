@@ -232,23 +232,19 @@
 
   <!-- 底部导航 -->
   <div class="sticky bottom-0 bg-white border-t border-slate-100 px-2 py-2 grid grid-cols-5 text-[11px]">
-    <a href="home.html" class="flex flex-col items-center gap-0.5 py-1 text-red-500 font-semibold">
-      <i data-lucide="home" class="w-5 h-5"></i>首页
-    </a>
-    <a href="allcars.html" class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
-      <i data-lucide="car" class="w-5 h-5"></i>全部车源
-    </a>
-    <a class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
-      <i data-lucide="gavel" class="w-5 h-5"></i>专场车源
-    </a>
-    <a class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
-      <i data-lucide="heart" class="w-5 h-5"></i>关注订阅
-    </a>
-    <a href="profile.html" class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
-      <i data-lucide="user" class="w-5 h-5"></i>我的
+    <a v-for="t in bottomTabs" :key="t.label"
+       :href="t.href || 'javascript:void(0)'"
+       @click="t.href ? null : toast('页面建设中,敬请期待')"
+       :class="['flex flex-col items-center gap-0.5 py-1 cursor-pointer', t.active ? 'text-red-500 font-semibold' : 'text-slate-500']">
+      <i :data-lucide="t.icon" class="w-5 h-5"></i>{{ t.label }}
     </a>
   </div>
 
+</div>
+
+<!-- Toast -->
+<div v-if="toastMsg" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+  <div class="bg-slate-800/90 text-white px-5 py-2.5 rounded-full text-sm shadow-xl">{{ toastMsg }}</div>
 </div>
 
 <!-- 首页弹窗:会员权益大升级 -->
@@ -262,7 +258,6 @@
           <i data-lucide="crown" class="w-9 h-9"></i>
         </div>
         <div class="text-[22px] font-black tracking-tight leading-tight text-amber-300">会员权益重磅上线</div>
-        <div class="text-[11px] text-amber-100/90 mt-2">成交即获积分 · 最高 8 折权益 · 无偿退车</div>
       </div>
 
       <div class="px-4 pb-1 space-y-2 relative z-10">
@@ -337,10 +332,26 @@ createApp({
       { name:'比亚迪元 PLUS 精英版',           meta:'2022-11 | 3.50万公里 | 成都', tag:'周转快', img:'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format&q=80' }
     ];
 
+    const bottomTabs = [
+      { label:'首页',     icon:'home',   href:'home.html', active:true },
+      { label:'全部车源', icon:'car',    href:'allcars.html' },
+      { label:'专场车源', icon:'target', href:'' },
+      { label:'关注订阅', icon:'heart',  href:'' },
+      { label:'我的',     icon:'user',   href:'profile.html' }
+    ];
+
+    const toastMsg = ref('');
+    let toastTimer = null;
+    function toast(msg) {
+      toastMsg.value = msg;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toastMsg.value = ''; }, 1500);
+    }
+
     const popupPoints = [
       { label:'成交即得奖励', icon:'hand-coins', iconBg:'bg-gradient-to-br from-amber-300 to-yellow-500',  iconColor:'text-amber-900', value:'+50',                          badgeStyle:'big' },
-      { label:'无理由退车',   icon:'undo-2',     iconBg:'bg-gradient-to-br from-pink-300 to-rose-400',      iconColor:'text-rose-900',  value:'V2 起',                         badgeStyle:'pill' },
-      { label:'积分最高兑换比例 8 折', icon:'tag', iconBg:'bg-gradient-to-br from-violet-300 to-purple-500', iconColor:'text-white', value:'8<span class="text-[11px] font-bold">折</span>', badgeStyle:'big' }
+      { label:'无理由退车',   icon:'undo-2',     iconBg:'bg-gradient-to-br from-pink-300 to-rose-400',      iconColor:'text-rose-900',  value:'V3',                            badgeStyle:'pill' },
+      { label:'积分商城',      icon:'tag', iconBg:'bg-gradient-to-br from-violet-300 to-purple-500', iconColor:'text-white', value:'8<span class="text-[11px] font-bold">折</span>', badgeStyle:'big' }
     ];
 
     function goBanner(i) { currentBanner.value = (i + totalBanners) % totalBanners; }
@@ -356,6 +367,7 @@ createApp({
 
     return {
       currentBanner, showVipPopup, quickEntries, zones, carList, popupPoints,
+      bottomTabs, toastMsg, toast,
       goBanner, startAuto, pauseAuto
     };
   }
