@@ -32,8 +32,22 @@
   .row.disabled a { color: #94a3b8; pointer-events: none; }
 
   .empty { color:#94a3b8; font-size: 13px; padding: 40px 0; text-align: center; }
-  .iframe-wrap { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; height: calc(100vh - 280px); min-height: 500px; }
-  .iframe-wrap iframe { width: 100%; height: 100%; border: 0; }
+
+  /* PRD 章节正文样式 */
+  .prd-body { font-size: 13.5px; color: #334155; line-height: 1.75; padding: 4px 2px; }
+  .prd-body h3 { font-size: 15px; font-weight: 600; color: #0f172a; margin: 16px 0 8px; padding-left: 10px; border-left: 3px solid #5b3fd9; }
+  .prd-body h3:first-child { margin-top: 0; }
+  .prd-body p { margin: 6px 0; }
+  .prd-body ul { padding-left: 22px; margin: 6px 0; list-style: disc; }
+  .prd-body code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; color: #5b3fd9; }
+  .prd-body table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 13px; }
+  .prd-body th, .prd-body td { border: 1px solid #e2e8f0; padding: 7px 11px; text-align: left; }
+  .prd-body th { background: #f8fafc; font-weight: 600; color: #475569; }
+  .prd-body .callout { border: 1px solid #fde68a; background: #fffbeb; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 13px; color: #78350f; }
+  .prd-body .callout.info { border-color: #bfdbfe; background: #eff6ff; border-left-color: #3b82f6; color: #1e3a8a; }
+  .prd-body .tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11.5px; font-weight: 500; }
+  .prd-body .tag-todo { background: #fef3c7; color: #92400e; }
+  .prd-body .tag-risk { background: #fee2e2; color: #991b1b; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -123,16 +137,122 @@
           <div class="text-center text-[11px] text-slate-400 mt-3">点击直接下载;如需替换新版本,更新 docs/ 下的同名文件即可。</div>
         </div>
 
-        <!-- 需求说明 PRD -->
+        <!-- 需求说明 PRD · 分章节 tab -->
         <div v-if="subActive === 'prd'">
-          <div class="flex items-center justify-between mb-2 text-xs text-slate-500 px-1">
-            <span><i data-lucide="file-check" class="w-3.5 h-3.5 inline mr-1"></i>根据已生成原型整理的 PRD · 用于研发技术评审</span>
-            <a href="docs/prd.html" target="_blank" rel="noopener" class="text-purple-600 hover:underline">
-              在新窗口打开 <i data-lucide="external-link" class="w-3 h-3 inline"></i>
-            </a>
+          <!-- 章节 tab -->
+          <div class="flex gap-1 mb-4 border-b border-slate-100 pb-2 flex-wrap">
+            <div v-for="(c, i) in prdChapters" :key="c.key"
+                 class="sub-tab" :class="{ active: prdActive === c.key }"
+                 @click="prdActive = c.key">
+              <span class="text-slate-400 mr-0.5">{{ i + 1 }}.</span>{{ c.title }}
+            </div>
           </div>
-          <div class="iframe-wrap">
-            <iframe src="docs/prd.html" loading="lazy"></iframe>
+
+          <!-- 1. 会员等级和权益 -->
+          <div v-if="prdActive === 'c1'" class="prd-body">
+            <h3>1.1 等级划分</h3>
+            <p>4 级会员:<code>V0 新人</code> / <code>V1 普通</code> / <code>V2 银卡</code> / <code>V3 金卡</code>。评定周期为<strong>滚动近 3 个月成交台数</strong>,每月 1 号凌晨定时计算,自动升/降级。</p>
+            <table>
+              <thead><tr><th>等级</th><th>近 3 月成交</th><th>账户金额</th><th>典型权益</th></tr></thead>
+              <tbody>
+                <tr><td>V0 新人</td><td>0 台</td><td>&lt; 2000</td><td>积分 1:1 兑换</td></tr>
+                <tr><td>V1 普通</td><td>1~2 台</td><td>≥ 2000</td><td>1:1 兑换 · 历史行情 · 保留价 · 销售顾问 · 1V1 客服</td></tr>
+                <tr><td>V2 银卡</td><td>3~9 台</td><td>≥ 2000</td><td>95 折兑换 + V1 全部权益</td></tr>
+                <tr><td>V3 金卡</td><td>≥ 10 台</td><td>≥ 2000</td><td>8 折兑换 + 专属客服 + 高阶权益</td></tr>
+              </tbody>
+            </table>
+            <h3>1.2 权益落地形式</h3>
+            <ul>
+              <li><strong>等级直达权益</strong>:到达等级即享,不消耗积分(如历史行情、保留价查询)。</li>
+              <li><strong>积分兑换权益卡</strong>:在商城消耗积分兑换权益卡,按有效期使用(详见 2)。</li>
+              <li>权益配置唯一数据源:<code>shared/member-config.js</code> → <code>levels[].benefits</code>,前后端同步。</li>
+            </ul>
+            <h3>1.3 等级变更规则</h3>
+            <ul>
+              <li>评估窗口:<code>T-90d ~ T-1d</code> 的有效成交台数(已付款 + 已过户)。</li>
+              <li>升降级立即生效,历史权益卡不受等级变化影响。</li>
+              <li>变更产生审计日志,写入 <code>level_change_log</code>,后台「变更日志」tab 可查。</li>
+            </ul>
+          </div>
+
+          <!-- 2. 积分商城 -->
+          <div v-if="prdActive === 'c2'" class="prd-body">
+            <h3>2.1 积分获取(发放)</h3>
+            <p>积分获取按行为类别配置,全部规则在 <code>member-config.coinEarning[]</code>。研发关注点:</p>
+            <ul>
+              <li><strong>交易类</strong>:成交 1 台 +50 积分;出价 1 次 +10 积分,不封顶。</li>
+              <li><strong>认证类</strong>:首次实名 +1~5、首次充值 +1~5,仅一次性。</li>
+              <li><strong>邀请类</strong>:邀请好友注册 +2,推荐首笔成交 +2(30 天内成交日核算,双方都得)。</li>
+              <li><strong>增值服务类</strong>:物流/代驾/复检/代办等,每单 +5 积分。</li>
+              <li><strong>节日任务类</strong>:活动期内出价积分 x2,后端需支持任务有效期 + 倍率配置。</li>
+              <li>积分发放走<strong>异步事件</strong>,接入事件总线,避免阻塞主业务流程;失败重试 + 死信队列。</li>
+            </ul>
+            <h3>2.2 积分有效期</h3>
+            <div class="callout info">
+              积分按<strong>获得月 + 12 个自然月</strong>滚动到期(非自然年末清零)。每日凌晨扫描 <code>coin_ledger</code>,将到期积分置为 <code>expired</code>,总余额实时扣减;app/coins.html「即将过期」基于剩余有效期 ≤ 30d。
+            </div>
+            <h3>2.3 积分消耗(兑换)</h3>
+            <ul>
+              <li>商城商品见 <code>member-config.rewards[]</code>:<code>coin</code>(所需积分)、<code>scope</code>(适用等级)、<code>validityDays</code>(权益卡有效期)。</li>
+              <li>兑换价格按等级折扣动态计算:<code>需积分 = 定价 × 等级折扣率</code>(V0/V1 100%、V2 95%、V3 80%)。</li>
+              <li>流程:扣积分 → 生成 <code>reward_card</code>(状态 <code>unused</code>)→ 推送到「我的权益卡」。</li>
+              <li>审计:所有兑换写 <code>redeem_log</code>,后台「兑换记录」可查。</li>
+            </ul>
+            <h3>2.4 权益卡生命周期</h3>
+            <p><code>unused</code>(已兑换) → <code>used</code>(已使用,写入业务订单 ID) → <code>expired</code>(过期,定时任务扫描)。不支持退款/回滚。</p>
+          </div>
+
+          <!-- 3. 客户端消耗逻辑 -->
+          <div v-if="prdActive === 'c3'" class="prd-body">
+            <h3>3.1 业务触发点</h3>
+            <ul>
+              <li><strong>下单抵扣</strong>:BMS 订单确认页选择一张未使用的权益卡抵扣费用,一单限一张。</li>
+              <li><strong>售后不回滚</strong>:退款/售后不退回已使用的权益卡,走补偿策略(退等值积分或替代权益卡,需业务决策)。</li>
+              <li><strong>并发控制</strong>:核销接口加<strong>行锁 / 版本号</strong>,防止同一张卡被多订单重复使用。</li>
+            </ul>
+            <h3>3.2 接口清单(详见 docs/API.md)</h3>
+            <table>
+              <thead><tr><th>接口</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr><td><code>GET  /api/member/profile</code></td><td>返回当前等级 + 积分余额 + 权益列表</td></tr>
+                <tr><td><code>GET  /api/coin/ledger</code></td><td>积分明细(支持筛选 + 分页)</td></tr>
+                <tr><td><code>POST /api/reward/redeem</code></td><td>兑换权益卡(幂等键 = 用户 + 商品 + 时间戳)</td></tr>
+                <tr><td><code>POST /api/reward/use</code></td><td>下单时核销一张权益卡,返回抵扣金额</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 4. 历史数据处理 -->
+          <div v-if="prdActive === 'c4'" class="prd-body">
+            <p>现网已有金币/权益/优惠券等数据,需与创新部/业务方对齐处理口径。本版本重点:</p>
+            <ul>
+              <li><strong>积分配置项</strong>:现网金币按 1:1 迁移到新积分(文案全量改为「积分」,变量名保留 coin 不动)。</li>
+              <li><strong>商城配置项</strong>:现有商城商品按新 <code>rewards[]</code> 结构重新录入,旧数据归档不删除。</li>
+            </ul>
+            <div class="callout">
+              <strong>A. 需和创新部确认:</strong> 现网「优惠券」与新「权益卡」是否共存?<br>
+              商品和积分的映射关系如何收敛(同一权益是否可能既卖钱又卖积分)?<br>
+              <span class="tag tag-risk">待确认</span> <strong>车信盟出险的能否使用?</strong>(与保险/理赔流程的联动)
+            </div>
+            <div class="callout info">
+              <strong>B. 历史数据如何处理?</strong><br>
+              已购权益照常使用和展示 —— 旧订单中已发放/已使用的权益卡不重写,「我的权益卡」按旧状态原样展示至过期。<br>
+              新规则仅对<strong>新发放</strong>生效,不追溯修改历史 ledger。
+            </div>
+          </div>
+
+          <!-- 5. 待确认清单 -->
+          <div v-if="prdActive === 'c5'" class="prd-body">
+            <table>
+              <thead><tr><th>#</th><th>议题</th><th>归属</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>优惠券与权益卡是否并存,商品×积分映射规则</td><td>创新部</td><td><span class="tag tag-todo">待确认</span></td></tr>
+                <tr><td>2</td><td>车信盟出险是否可使用平台权益</td><td>创新部 / 保险</td><td><span class="tag tag-risk">风险</span></td></tr>
+                <tr><td>3</td><td>历史订单权益迁移策略(只展示 vs 迁移)</td><td>产品 / 研发</td><td><span class="tag tag-todo">待确认</span></td></tr>
+                <tr><td>4</td><td>售后退款对已核销权益卡的补偿口径</td><td>产品</td><td><span class="tag tag-todo">待确认</span></td></tr>
+                <tr><td>5</td><td>等级评估周期由「滚动 3 月」调为「月度归档」?</td><td>业务</td><td><span class="tag tag-todo">待评估</span></td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -264,6 +384,15 @@
       const active = ref('spec');
       const subActive = ref('word');
       const wordFile = 'docs/' + encodeURIComponent('唯普汽车商户会员体系及积分运营方案(20260422).docx');
+
+      const prdChapters = [
+        { key: 'c1', title: '会员等级和权益' },
+        { key: 'c2', title: '积分商城' },
+        { key: 'c3', title: '客户端消耗逻辑' },
+        { key: 'c4', title: '历史数据处理' },
+        { key: 'c5', title: '待确认清单' },
+      ];
+      const prdActive = ref('c1');
       const currentTab = computed(() => tabs.find(t => t.key === active.value));
 
       const tabCount = (t) => {
@@ -273,10 +402,10 @@
       };
 
       const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
-      watch([active, subActive], refresh);
+      watch([active, subActive, prdActive], refresh);
       onMounted(refresh);
 
-      return { tabs, active, subActive, currentTab, tabCount, wordFile };
+      return { tabs, active, subActive, currentTab, tabCount, wordFile, prdChapters, prdActive };
     },
   }).mount('#app');
 </script>
