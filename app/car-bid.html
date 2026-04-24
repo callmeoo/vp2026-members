@@ -257,7 +257,7 @@ createApp({
 
     function pad(n) { return String(n).padStart(2, '0'); }
     function goBack() {
-      smartBack(car.value ? ('car-detail-reserve.html?id=' + car.value.id) : 'allcars.html');
+      smartBack(car.value ? ('car-detail-reserve.html?id=' + car.value.id) : 'allcars.html?tab=reserve');
     }
     function confirmBid() {
       if (!selectedStep.value) return;

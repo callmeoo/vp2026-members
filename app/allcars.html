@@ -194,7 +194,8 @@ const { createApp, ref, reactive, computed, onMounted, watch, nextTick } = Vue;
 
 createApp({
   setup() {
-    const activeTab = ref('all');
+    const initialTab = (new URLSearchParams(location.search).get('tab')) || 'all';
+    const activeTab = ref(['all','hall','reserve'].includes(initialTab) ? initialTab : 'all');
     const topTabs = [
       { key:'all',     label:'全部' },
       { key:'hall',    label:'竞价大厅' },
