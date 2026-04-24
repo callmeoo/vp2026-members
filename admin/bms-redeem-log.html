@@ -83,6 +83,7 @@
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
+        <a href="dashboard.html" class="sub-item">运营仪表盘</a>
         <div class="sub-item">客户等级管理</div>
         <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
         <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
@@ -93,11 +94,14 @@
         <a href="bms-redeem-log.html" class="sub-item active">兑换记录</a>
       </div>
       <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" @click="toggleOps"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" v-show="opsOpen">
-        <div class="sub-item">内容管理</div><div class="sub-item">优惠券</div>
-        <div class="sub-item">权益卡管理</div><div class="sub-item">权益卡投放管理</div>
-        <div class="sub-item">权益卡发放管理</div><div class="sub-item">奖品投放</div>
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">内容管理</div>
+        <div class="sub-item">优惠券</div>
+        <div class="sub-item">权益卡管理</div>
+        <div class="sub-item">权益卡投放管理</div>
+        <div class="sub-item">权益卡发放管理</div>
+        <div class="sub-item">奖品投放</div>
       </div>
     </nav>
   </aside>
@@ -179,10 +183,10 @@
                 <th>用户</th>
                 <th>商品名称</th>
                 <th>消耗积分</th>
-                <th>数量</th>
                 <th>状态</th>
                 <th>兑换时间</th>
                 <th>核销/退回时间</th>
+                <th>退回原因</th>
               </tr>
             </thead>
             <tbody>
@@ -192,11 +196,14 @@
                   <div class="text-xs text-slate-400">{{ r.phone }}</div>
                 </td>
                 <td style="text-align:left">{{ rewardName(r.rewardId) }}</td>
-                <td class="coin-num">{{ (rewardCoin(r.rewardId) * r.qty).toLocaleString() }}</td>
-                <td>×{{ r.qty }}</td>
+                <td class="coin-num">{{ rewardCoin(r.rewardId).toLocaleString() }}</td>
                 <td><span class="tag" :class="statusTag(r.status)">{{ r.status }}</span></td>
                 <td>{{ r.time }}</td>
                 <td>{{ r.dealTime }}</td>
+                <td style="text-align:left;color:#606266">
+                  <span v-if="r.reason">{{ r.reason }}</span>
+                  <span v-else style="color:#c0c4cc">—</span>
+                </td>
               </tr>
               <tr v-if="filteredRows.length === 0">
                 <td colspan="7" style="padding:48px 0;color:#909399">暂无数据</td>
@@ -237,17 +244,18 @@ createApp({
     const filters = reactive({ user:'', rewardId:'', dateFrom:'', dateTo:'' });
     const resetFilter = () => { filters.user=''; filters.rewardId=''; filters.dateFrom=''; filters.dateTo=''; activeTab.value='全部'; };
 
+    // 每条兑换记录数量固定为 1(暂不支持 1 次多换多张)
     const rows = [
-      { id:1,  user:"郑园",   phone:"189****2868", rewardId:"r_transfer_100", qty:1, status:"待核销", time:"2026-04-23 10:45:12", dealTime:"—" },
-      { id:2,  user:"刘洋",   phone:"130****8721", rewardId:"r_insurance",    qty:2, status:"已核销", time:"2026-04-23 09:32:04", dealTime:"2026-04-23 11:02:33" },
-      { id:3,  user:"林子墨", phone:"186****1145", rewardId:"r_crash",        qty:1, status:"待核销", time:"2026-04-23 08:16:30", dealTime:"—" },
-      { id:4,  user:"黄楚雄", phone:"135****2067", rewardId:"r_transfer_100", qty:1, status:"已核销", time:"2026-04-22 21:40:17", dealTime:"2026-04-23 10:20:01" },
-      { id:5,  user:"陈敏",   phone:"137****4410", rewardId:"r_crash",        qty:3, status:"已核销", time:"2026-04-22 17:15:58", dealTime:"2026-04-22 18:42:10" },
-      { id:6,  user:"陆嘉豪", phone:"158****6721", rewardId:"r_insurance",    qty:1, status:"已过期", time:"2026-04-01 15:12:09", dealTime:"—" },
-      { id:7,  user:"孙勇英", phone:"130****0277", rewardId:"r_crash",        qty:4, status:"已核销", time:"2026-04-22 13:40:02", dealTime:"2026-04-22 15:22:49" },
-      { id:8,  user:"张晓雯", phone:"159****0032", rewardId:"r_transfer_100", qty:1, status:"已退回", time:"2026-04-22 11:05:44", dealTime:"2026-04-22 14:30:00" },
-      { id:9,  user:"王磊",   phone:"138****7788", rewardId:"r_crash",        qty:1, status:"待核销", time:"2026-04-22 09:48:21", dealTime:"—" },
-      { id:10, user:"李景文", phone:"156****8688", rewardId:"r_transfer_100", qty:1, status:"已核销", time:"2026-04-22 08:15:36", dealTime:"2026-04-22 16:00:11" }
+      { id:1,  user:"郑园",   phone:"189****2868", rewardId:"r_transfer_100", status:"待核销", time:"2026-04-23 10:45:12", dealTime:"—",                    reason:"" },
+      { id:2,  user:"刘洋",   phone:"130****8721", rewardId:"r_insurance",    status:"已核销", time:"2026-04-23 09:32:04", dealTime:"2026-04-23 11:02:33", reason:"" },
+      { id:3,  user:"林子墨", phone:"186****1145", rewardId:"r_crash",        status:"待核销", time:"2026-04-23 08:16:30", dealTime:"—",                    reason:"" },
+      { id:4,  user:"黄楚雄", phone:"135****2067", rewardId:"r_transfer_100", status:"已核销", time:"2026-04-22 21:40:17", dealTime:"2026-04-23 10:20:01", reason:"" },
+      { id:5,  user:"陈敏",   phone:"137****4410", rewardId:"r_crash",        status:"已核销", time:"2026-04-22 17:15:58", dealTime:"2026-04-22 18:42:10", reason:"" },
+      { id:6,  user:"陆嘉豪", phone:"158****6721", rewardId:"r_insurance",    status:"已过期", time:"2026-04-01 15:12:09", dealTime:"2026-05-01 00:00:00", reason:"有效期 30 天内未使用,系统自动回收" },
+      { id:7,  user:"孙勇英", phone:"130****0277", rewardId:"r_crash",        status:"已核销", time:"2026-04-22 13:40:02", dealTime:"2026-04-22 15:22:49", reason:"" },
+      { id:8,  user:"张晓雯", phone:"159****0032", rewardId:"r_transfer_100", status:"已退回", time:"2026-04-22 11:05:44", dealTime:"2026-04-22 14:30:00", reason:"用户申请退回 · 已原额返还积分" },
+      { id:9,  user:"王磊",   phone:"138****7788", rewardId:"r_crash",        status:"待核销", time:"2026-04-22 09:48:21", dealTime:"—",                    reason:"" },
+      { id:10, user:"李景文", phone:"156****8688", rewardId:"r_transfer_100", status:"已核销", time:"2026-04-22 08:15:36", dealTime:"2026-04-22 16:00:11", reason:"" }
     ];
 
     const filteredRows = computed(() => rows.filter(r => {

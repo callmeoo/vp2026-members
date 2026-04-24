@@ -65,14 +65,33 @@
   .risk-card .rc-title { font-size: 14px; font-weight: 600; color: #303133; display:flex; align-items:center; gap:6px; }
   .risk-card .rc-desc { font-size: 12px; color: #909399; margin-top: 4px; }
   .risk-card .rc-body { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ebeef5; }
-  .tbd-chip { display:inline-flex; align-items:center; padding: 0 8px; height: 20px; border-radius: 10px; background:#fff7e6; color:#d46b08; font-size: 11px; border: 1px solid #ffd591; }
-  .bl-input { display:flex; gap: 8px; align-items:center; }
-  .bl-input input { flex: 1; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; box-sizing: border-box; }
-  .bl-input input:focus { border-color: #1677ff; }
-  .bl-list { display:flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .bl-tag { display:inline-flex; align-items:center; gap: 4px; padding: 0 8px; height: 24px; background:#fef0f0; color:#f56c6c; border: 1px solid #fbc4c4; border-radius: 4px; font-size: 12px; }
-  .bl-tag .x { cursor: pointer; color:#f56c6c; opacity: .7; }
-  .bl-tag .x:hover { opacity: 1; }
+  /* 黑名单表格 */
+  .bl-table { width:100%; font-size: 13px; }
+  .bl-table thead th { font-size: 12px; color:#909399; font-weight: 500; padding: 8px 12px; border-bottom: 1px solid #ebeef5; text-align: left; background:#fafafa; }
+  .bl-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f5f7fa; color:#303133; vertical-align: middle; }
+  .bl-table tbody tr:last-child td { border-bottom: none; }
+  .bl-empty { padding: 24px 0; text-align: center; color:#c0c4cc; font-size: 12px; }
+  .bl-topbar { display:flex; align-items:center; justify-content:space-between; padding: 10px 0; }
+  /* Modal */
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; display:flex; align-items:center; justify-content:center; }
+  .modal-box { width: 520px; max-width: 92vw; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+  .modal-head { padding: 14px 20px; border-bottom: 1px solid #ebeef5; font-size: 15px; font-weight: 600; color: #303133; display:flex; align-items:center; justify-content:space-between; }
+  .modal-head .close { cursor: pointer; color: #909399; }
+  .modal-body { padding: 20px; max-height: 65vh; overflow-y: auto; }
+  .modal-foot { padding: 12px 20px; border-top: 1px solid #ebeef5; display:flex; gap: 10px; justify-content:flex-end; background:#fafafa; }
+  .form-row { display:grid; grid-template-columns: 100px 1fr; gap: 12px; align-items:center; margin-bottom: 14px; }
+  .form-row label { font-size: 13px; color:#606266; text-align: right; }
+  .form-row textarea { padding: 8px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; width: 100%; resize: vertical; min-height: 72px; outline: none; box-sizing: border-box; }
+  .form-row textarea:focus { border-color: #1677ff; }
+  /* 用户联想搜索 */
+  .user-search { position: relative; }
+  .user-suggest { position: absolute; left:0; right:0; top: 100%; margin-top: 2px; background:#fff; border: 1px solid #dcdfe6; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.08); max-height: 240px; overflow-y: auto; z-index: 10; }
+  .user-suggest .item { padding: 8px 12px; cursor: pointer; font-size: 13px; display:flex; justify-content:space-between; align-items:center; gap: 12px; }
+  .user-suggest .item:hover { background: #f5f7fa; }
+  .user-suggest .item .meta { color:#909399; font-size: 12px; }
+  .user-suggest .empty { padding: 14px; text-align: center; color:#c0c4cc; font-size: 12px; }
+  .readonly-field { height: 32px; line-height: 32px; padding: 0 12px; border-radius: 4px; font-size: 13px; color:#303133; background:#f5f7fa; border: 1px dashed #dcdfe6; box-sizing: border-box; }
+  .readonly-field.empty { color:#c0c4cc; }
   .ip-input { display:flex; align-items:center; gap: 8px; }
   .ip-input input { width: 100px; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; text-align: center; box-sizing: border-box; }
   .ip-input input:focus { border-color: #1677ff; }
@@ -96,6 +115,7 @@
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
+        <a href="dashboard.html" class="sub-item">运营仪表盘</a>
         <div class="sub-item">客户等级管理</div>
         <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
         <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
@@ -106,11 +126,14 @@
         <a href="bms-redeem-log.html" class="sub-item">兑换记录</a>
       </div>
       <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" @click="toggleOps"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" v-show="opsOpen">
-        <div class="sub-item">内容管理</div><div class="sub-item">优惠券</div>
-        <div class="sub-item">权益卡管理</div><div class="sub-item">权益卡投放管理</div>
-        <div class="sub-item">权益卡发放管理</div><div class="sub-item">奖品投放</div>
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">内容管理</div>
+        <div class="sub-item">优惠券</div>
+        <div class="sub-item">权益卡管理</div>
+        <div class="sub-item">权益卡投放管理</div>
+        <div class="sub-item">权益卡发放管理</div>
+        <div class="sub-item">奖品投放</div>
       </div>
     </nav>
   </aside>
@@ -202,25 +225,8 @@
         <div v-show="activeTab === 'risk'">
           <div class="grid grid-cols-2 gap-4 p-6">
             <template v-for="r in risk" :key="r.id">
-              <!-- 单开关(登录状态校验 / 行为日志留存 待定)-->
-              <div v-if="r.type === 'switch' || r.type === 'tbd'" class="risk-card">
-                <div class="rc-head">
-                  <div>
-                    <div class="rc-title">
-                      {{ r.title }}
-                      <span v-if="r.type === 'tbd'" class="tbd-chip">待定</span>
-                    </div>
-                    <div class="rc-desc">{{ r.desc }}</div>
-                  </div>
-                  <label class="switch">
-                    <input type="checkbox" v-model="r.enabled" :disabled="r.locked">
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-
               <!-- 开关 + 次数输入(IP 频次)-->
-              <div v-else-if="r.type === 'switch-input'" class="risk-card">
+              <div v-if="r.type === 'switch-input'" class="risk-card">
                 <div class="rc-head">
                   <div>
                     <div class="rc-title">{{ r.title }}</div>
@@ -240,7 +246,7 @@
                 </div>
               </div>
 
-              <!-- 黑名单(占整行)-->
+              <!-- 黑名单(占整行,列表展示)-->
               <div v-else-if="r.type === 'blacklist'" class="risk-card" style="grid-column: span 2">
                 <div class="rc-head">
                   <div>
@@ -253,18 +259,37 @@
                   </label>
                 </div>
                 <div class="rc-body">
-                  <div class="bl-input">
-                    <input v-model="r.newAccount" placeholder="输入手机号 / 用户名后回车或点击添加"
-                           @keyup.enter="addBlacklist(r)" :disabled="!r.enabled">
-                    <button class="ant-btn-primary" @click="addBlacklist(r)" :disabled="!r.enabled">添加</button>
+                  <div class="bl-topbar">
+                    <div class="text-xs text-slate-500">当前共 {{ r.accounts.length }} 个黑名单账号</div>
+                    <button class="ant-btn-primary inline-flex items-center gap-1" @click="openAddBlacklist" :disabled="!r.enabled">
+                      <i data-lucide="plus" class="w-3.5 h-3.5"></i>添加
+                    </button>
                   </div>
-                  <div class="bl-list" v-if="r.accounts.length">
-                    <span v-for="(acc, i) in r.accounts" :key="acc" class="bl-tag">
-                      {{ acc }}
-                      <i data-lucide="x" class="w-3 h-3 x" @click="removeBlacklist(r, i)"></i>
-                    </span>
-                  </div>
-                  <div v-else class="text-xs text-slate-400 mt-2">暂无黑名单账号</div>
+                  <table class="bl-table">
+                    <thead>
+                      <tr>
+                        <th>用户名</th>
+                        <th>姓名</th>
+                        <th>绑定手机</th>
+                        <th>黑名单原因</th>
+                        <th style="width:80px;text-align:center">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-if="r.accounts.length === 0">
+                        <td colspan="5" class="bl-empty">暂无黑名单账号</td>
+                      </tr>
+                      <tr v-for="(a, i) in r.accounts" :key="a.username + '-' + i">
+                        <td>{{ a.username }}</td>
+                        <td>{{ a.name }}</td>
+                        <td>{{ a.phone }}</td>
+                        <td style="color:#606266">{{ a.reason }}</td>
+                        <td style="text-align:center">
+                          <a href="#" class="text-rose-600 text-xs" @click.prevent="askRemoveBlacklist(r, i)">移除</a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </template>
@@ -314,6 +339,86 @@
         </div>
       </div>
     </main>
+  </div>
+</div>
+
+<!-- 新增黑名单 modal -->
+<div v-if="blacklistModalOpen" class="modal-mask" @click.self="closeBlacklistModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      添加黑名单账号
+      <span class="close" @click="closeBlacklistModal"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>用户 <span class="text-rose-500">*</span></label>
+        <div class="user-search">
+          <input class="ant-input" v-model="blacklistForm.keyword"
+                 placeholder="输入手机号 / 用户名搜索"
+                 @input="onKeywordInput"
+                 @focus="showSuggest = true">
+          <div v-if="showSuggest" class="user-suggest">
+            <div v-if="userSuggestions.length === 0" class="empty">无匹配用户</div>
+            <div v-for="u in userSuggestions" :key="u.username" class="item" @mousedown.prevent="pickUser(u)">
+              <div>
+                <div class="font-medium">{{ u.username }}</div>
+                <div class="meta">{{ u.name }}</div>
+              </div>
+              <div class="meta">{{ u.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>姓名</label>
+        <div :class="['readonly-field', { empty: !blacklistForm.selected }]">
+          {{ blacklistForm.selected ? blacklistForm.selected.name : '选中用户后自动带出' }}
+        </div>
+      </div>
+      <div class="form-row">
+        <label>绑定手机</label>
+        <div :class="['readonly-field', { empty: !blacklistForm.selected }]">
+          {{ blacklistForm.selected ? blacklistForm.selected.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '选中用户后自动带出' }}
+        </div>
+      </div>
+      <div class="form-row">
+        <label>黑名单原因 <span class="text-rose-500">*</span></label>
+        <textarea v-model="blacklistForm.reason" placeholder="请说明加入黑名单的具体原因"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="ant-btn" @click="closeBlacklistModal">取消</button>
+      <button class="ant-btn-primary" @click="submitBlacklist">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 移除黑名单 · 确认弹框 -->
+<div v-if="confirmRemoveOpen" class="modal-mask" @click.self="cancelRemove">
+  <div class="modal-box" style="width:420px">
+    <div class="modal-head">
+      确认移除黑名单
+      <span class="close" @click="cancelRemove"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="flex items-start gap-3">
+        <i data-lucide="alert-triangle" class="w-5 h-5" style="color:#f97316;flex-shrink:0;margin-top:2px"></i>
+        <div class="text-sm" style="color:#303133">
+          <div>确定要将以下账号移出黑名单?</div>
+          <div v-if="pendingRemove.account" class="mt-2 p-2 rounded" style="background:#fafafa;border:1px solid #ebeef5">
+            <div><span class="text-slate-400 text-xs">用户名:</span> {{ pendingRemove.account.username }}</div>
+            <div><span class="text-slate-400 text-xs">姓名:</span> {{ pendingRemove.account.name }}</div>
+            <div><span class="text-slate-400 text-xs">绑定手机:</span> {{ pendingRemove.account.phone }}</div>
+            <div class="mt-1 text-xs text-slate-500">原因:{{ pendingRemove.account.reason }}</div>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">移除后该账号将恢复正常积分发放。</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="ant-btn" @click="cancelRemove">取消</button>
+      <button class="ant-btn-primary" style="background:#f56c6c;border-color:#f56c6c" @click="confirmRemove">确定移除</button>
+    </div>
   </div>
 </div>
 
@@ -397,19 +502,90 @@ createApp({
     const currentType = computed(() => earning.find(g => g.key === activeType.value) || earning[0]);
 
     const risk = reactive([
-      { id:'ip',        title:'IP 频次限制',    desc:'同一 IP 超过阈值将被暂停计分',     type:'switch-input', enabled:true,  limit:10, unit:'次 / 分钟' },
-      { id:'log',       title:'行为日志留存',   desc:'保留时长 / 留存方案待定',           type:'tbd',          enabled:false, locked:true },
-      { id:'blacklist', title:'异常账号黑名单', desc:'黑名单账号停止发放积分,支持手动维护', type:'blacklist',    enabled:true,  accounts:['13812340001','user_abc88','13999998888'], newAccount:'' }
+      { id:'ip', title:'IP 频次限制', desc:'同一 IP 超过阈值将被暂停计分', type:'switch-input', enabled:true, limit:10, unit:'次 / 分钟' },
+      { id:'blacklist', title:'异常账号黑名单', desc:'黑名单账号停止发放积分,支持手动维护', type:'blacklist', enabled:true, accounts:[
+          { username:'zhang_yuan',  name:'郑园',   phone:'189****2868', reason:'兑换后短时间内频繁申请退回' },
+          { username:'user_abc88',  name:'李明',   phone:'130****8721', reason:'IP 异常,疑似批量薅羊毛' },
+          { username:'lin_ziwen',   name:'林子墨', phone:'186****1145', reason:'多次违反平台规则,已封禁' }
+        ] }
     ]);
-    const addBlacklist = async (r) => {
-      const v = (r.newAccount || '').trim();
-      if (!v) return;
-      if (!r.accounts.includes(v)) r.accounts.push(v);
-      r.newAccount = '';
-      await nextTick();
-      lucide.createIcons();
+    // 平台用户池(支持联想搜索)
+    const mockUsers = [
+      { username:'zhang_yuan',  name:'郑园',   phone:'18978302868' },
+      { username:'liu_yang',    name:'刘洋',   phone:'13012348721' },
+      { username:'lin_ziwen',   name:'林子墨', phone:'18612341145' },
+      { username:'huang_chu',   name:'黄楚雄', phone:'13521342067' },
+      { username:'chen_min',    name:'陈敏',   phone:'13714414410' },
+      { username:'lu_jiahao',   name:'陆嘉豪', phone:'15867216721' },
+      { username:'sun_yongying',name:'孙勇英', phone:'13001300277' },
+      { username:'zhang_xw',    name:'张晓雯', phone:'15900320032' },
+      { username:'wang_lei',    name:'王磊',   phone:'13877887788' },
+      { username:'li_jingwen',  name:'李景文', phone:'15686888688' }
+    ];
+
+    // 黑名单新增弹框
+    const blacklistModalOpen = ref(false);
+    const blacklistForm = reactive({ keyword:'', selected:null, reason:'' });
+    const showSuggest = ref(false);
+    const userSuggestions = computed(() => {
+      const k = blacklistForm.keyword.trim().toLowerCase();
+      if (!k) return mockUsers.slice(0, 8);
+      return mockUsers.filter(u =>
+        u.username.toLowerCase().includes(k) || u.phone.includes(k) || u.name.includes(blacklistForm.keyword.trim())
+      ).slice(0, 8);
+    });
+    const pickUser = (u) => {
+      blacklistForm.selected = u;
+      blacklistForm.keyword = `${u.username}(${u.phone})`;
+      showSuggest.value = false;
     };
-    const removeBlacklist = (r, idx) => r.accounts.splice(idx, 1);
+    const onKeywordInput = () => {
+      // 输入变更时,若不再匹配已选用户,清空选择
+      if (blacklistForm.selected) {
+        const expected = `${blacklistForm.selected.username}(${blacklistForm.selected.phone})`;
+        if (blacklistForm.keyword !== expected) blacklistForm.selected = null;
+      }
+      showSuggest.value = true;
+    };
+    const openAddBlacklist = async () => {
+      blacklistForm.keyword = ''; blacklistForm.selected = null; blacklistForm.reason = '';
+      showSuggest.value = false;
+      blacklistModalOpen.value = true;
+      await nextTick(); lucide.createIcons();
+    };
+    const closeBlacklistModal = () => { blacklistModalOpen.value = false; showSuggest.value = false; };
+    const submitBlacklist = () => {
+      if (!blacklistForm.selected) { alert('请选择用户(通过手机号 / 用户名搜索并选中)'); return; }
+      if (!blacklistForm.reason.trim()) { alert('请填写黑名单原因'); return; }
+      const r = risk.find(x => x.id === 'blacklist');
+      const u = blacklistForm.selected;
+      // 去重:若已在黑名单中,提示
+      if (r.accounts.some(a => a.username === u.username)) { alert('该用户已在黑名单中'); return; }
+      r.accounts.push({
+        username: u.username,
+        name: u.name,
+        phone: u.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
+        reason: blacklistForm.reason.trim()
+      });
+      blacklistModalOpen.value = false;
+    };
+    // 黑名单移除确认
+    const confirmRemoveOpen = ref(false);
+    const pendingRemove = reactive({ r:null, idx:-1, account:null });
+    const askRemoveBlacklist = async (r, i) => {
+      pendingRemove.r = r;
+      pendingRemove.idx = i;
+      pendingRemove.account = r.accounts[i];
+      confirmRemoveOpen.value = true;
+      await nextTick(); lucide.createIcons();
+    };
+    const cancelRemove = () => { confirmRemoveOpen.value = false; };
+    const confirmRemove = () => {
+      if (pendingRemove.r && pendingRemove.idx > -1) {
+        pendingRemove.r.accounts.splice(pendingRemove.idx, 1);
+      }
+      confirmRemoveOpen.value = false;
+    };
 
     // 操作日志
     const logs = [
@@ -425,9 +601,13 @@ createApp({
     const toggleOps = () => opsOpen.value = !opsOpen.value;
 
     onMounted(async () => { await nextTick(); lucide.createIcons(); });
-    watch([activeTab, activeType], async () => { await nextTick(); lucide.createIcons(); });
+    watch([activeTab, activeType, blacklistModalOpen, confirmRemoveOpen], async () => { await nextTick(); lucide.createIcons(); });
 
-    return { tabs, activeTab, activeType, earning, currentType, risk, logs, addBlacklist, removeBlacklist, opsOpen, toggleOps };
+    return { tabs, activeTab, activeType, earning, currentType, risk, logs,
+             blacklistModalOpen, blacklistForm, userSuggestions, showSuggest, pickUser, onKeywordInput,
+             openAddBlacklist, closeBlacklistModal, submitBlacklist,
+             confirmRemoveOpen, pendingRemove, askRemoveBlacklist, cancelRemove, confirmRemove,
+             opsOpen, toggleOps };
   }
 }).mount('#app');
 </script>

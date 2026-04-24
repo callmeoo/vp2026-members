@@ -32,25 +32,30 @@
   .ant-btn-primary:hover { background: #4096ff; }
   .ant-tag { display: inline-flex; align-items: center; padding: 0 7px; font-size: 12px; line-height: 20px; border-radius: 4px; }
   .ant-tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
-  .lv-badge { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; font-weight:700; color:#fff; font-style:italic; letter-spacing:.5px; }
+  .lv-code { display:inline-block; min-width: 32px; padding: 2px 8px; border-radius: 4px; background:#f4f5f7; color:#303133; font-weight: 600; font-size: 13px; text-align: center; }
+  .ro-cell { color: #606266; }
   /* tabs */
   .el-tabs { border-bottom: 1px solid #e4e7ed; display:flex; }
   .el-tab { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; font-size: 14px; color: #606266; cursor: pointer; position: relative; }
   .el-tab:hover { color: #1677ff; }
   .el-tab.active { color: #1677ff; font-weight: 500; }
   .el-tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #1677ff; }
-  /* 权益卡片 */
-  .bf-card { border: 1px solid #ebeef5; border-radius: 10px; overflow: hidden; background: #fff; }
-  .bf-head { padding: 14px 16px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
-  .bf-head .lv-name { font-size: 15px; font-weight: 600; }
-  .bf-head .lv-code { font-size: 22px; font-weight: 700; opacity: .95; font-style: italic; letter-spacing: 1px; }
-  .bf-body { padding: 14px 16px; }
-  .bf-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px dashed #f0f2f5; }
-  .bf-row:last-child { border-bottom:none; }
-  .bf-row i { color:#8b5cf6; flex-shrink:0; margin-top:2px; }
-  .bf-row .bf-label { font-size:13px; color:#303133; font-weight:500; }
-  .bf-row .bf-desc { font-size:12px; color:#909399; margin-top:2px; line-height:1.45; }
-  .bf-empty { text-align:center; padding: 24px 0; color:#c0c4cc; font-size:12px; }
+  /* 权益配置(简洁表格)*/
+  .bf-section { border: 1px solid #ebeef5; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+  .bf-section .bf-head { padding: 10px 14px; background: #fafafa; border-bottom: 1px solid #ebeef5; display:flex; align-items:center; gap:10px; font-size: 13px; font-weight: 600; color:#303133; }
+  .bf-section .bf-head .count { margin-left:auto; font-weight: 400; font-size: 12px; color:#909399; }
+  .bf-table { width: 100%; font-size: 13px; }
+  .bf-table thead th { font-size: 12px; color:#909399; font-weight: 500; padding: 8px 12px; border-bottom: 1px solid #ebeef5; text-align: left; background:#fff; }
+  .bf-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f5f7fa; color:#303133; vertical-align: middle; }
+  .bf-table tbody tr:last-child td { border-bottom: none; }
+  .bf-empty { text-align:center; padding: 20px 0; color:#c0c4cc; font-size: 12px; }
+  /* switch */
+  .switch { position: relative; display: inline-block; width: 36px; height: 18px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 18px; transition: .3s; }
+  .slider:before { content: ''; position: absolute; height: 12px; width: 12px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .3s; }
+  .switch input:checked + .slider { background: #1677ff; }
+  .switch input:checked + .slider:before { transform: translateX(18px); }
 </style>
 </head>
 <body>
@@ -65,6 +70,7 @@
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
+        <a href="dashboard.html" class="sub-item">运营仪表盘</a>
         <div class="sub-item">客户等级管理</div>
         <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
         <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
@@ -75,11 +81,14 @@
         <a href="bms-redeem-log.html" class="sub-item">兑换记录</a>
       </div>
       <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" @click="toggleOps"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" v-show="opsOpen">
-        <div class="sub-item">内容管理</div><div class="sub-item">优惠券</div>
-        <div class="sub-item">权益卡管理</div><div class="sub-item">权益卡投放管理</div>
-        <div class="sub-item">权益卡发放管理</div><div class="sub-item">奖品投放</div>
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">内容管理</div>
+        <div class="sub-item">优惠券</div>
+        <div class="sub-item">权益卡管理</div>
+        <div class="sub-item">权益卡投放管理</div>
+        <div class="sub-item">权益卡发放管理</div>
+        <div class="sub-item">奖品投放</div>
       </div>
     </nav>
   </aside>
@@ -127,40 +136,29 @@
         <div v-show="activeTab === 'setup'" class="p-6">
           <div class="flex items-center justify-between mb-5">
             <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
-              <i data-lucide="ruler" class="w-5 h-5 text-violet-500"></i>定级门槛
+              <i data-lucide="ruler" class="w-5 h-5 text-slate-500"></i>定级门槛
             </div>
+            <span class="text-xs text-slate-400">仅「名称」可编辑,其余字段由产品统一规划</span>
           </div>
 
           <table class="w-full">
             <thead class="text-xs text-slate-500 border-b border-slate-200">
               <tr>
-                <th class="text-left py-3 font-medium">等级</th>
+                <th class="text-left py-3 font-medium" style="width:90px">等级</th>
                 <th class="text-left py-3 font-medium">名称</th>
                 <th class="text-left py-3 font-medium">最低成交台数</th>
                 <th class="text-left py-3 font-medium">最高成交台数</th>
                 <th class="text-left py-3 font-medium">账户金额门槛(元)</th>
-                <th class="text-left py-3 font-medium">商户数</th>
-                <th class="text-center py-3 font-medium">状态</th>
+                <th class="text-center py-3 font-medium" style="width:80px">状态</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
               <tr v-for="lv in levels" :key="lv.code">
-                <td class="py-4"><span class="lv-badge" :style="{background: lv.color}">{{ lv.short }}</span></td>
-                <td class="py-4"><input class="ant-input" v-model="lv.name" style="max-width:140px"></td>
-                <td class="py-4">
-                  <div class="flex items-center gap-2">
-                    <input class="ant-input" v-model.number="lv.threshold.dealsMin" type="number" style="max-width:90px">
-                    <span class="text-xs text-slate-500">台</span>
-                  </div>
-                </td>
-                <td class="py-4">
-                  <div class="flex items-center gap-2">
-                    <input class="ant-input" v-model="lv.dealsMaxDisplay" style="max-width:90px">
-                    <span class="text-xs text-slate-500">台</span>
-                  </div>
-                </td>
-                <td class="py-4"><input class="ant-input" v-model.number="lv.threshold.accountMin" type="number" style="max-width:120px"></td>
-                <td class="py-4 text-slate-600">{{ lv.merchantCount.toLocaleString() }}</td>
+                <td class="py-4"><span class="lv-code">{{ lv.short }}</span></td>
+                <td class="py-4"><input class="ant-input" v-model="lv.name" style="max-width:160px"></td>
+                <td class="py-4 ro-cell">{{ lv.threshold.dealsMin }} 台</td>
+                <td class="py-4 ro-cell">{{ lv.dealsMaxDisplay }}<span v-if="lv.dealsMaxDisplay !== '不限'"> 台</span></td>
+                <td class="py-4 ro-cell">{{ (lv.threshold.accountMin || 0).toLocaleString() }} 元</td>
                 <td class="py-4 text-center"><span class="ant-tag ant-tag-green">启用</span></td>
               </tr>
             </tbody>
@@ -169,9 +167,9 @@
           <!-- 评估周期 -->
           <div class="mt-6 pt-5 border-t border-slate-100">
             <div class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <i data-lucide="calendar" class="w-4 h-4 text-violet-500"></i>评估周期
+              <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>评估周期
             </div>
-            <div class="grid grid-cols-3 gap-5 max-w-4xl">
+            <div class="grid grid-cols-2 gap-5 max-w-2xl">
               <div>
                 <label class="text-xs text-slate-500 block mb-1.5">统计窗口(月)</label>
                 <input class="ant-input" v-model.number="period.windowMonths" type="number">
@@ -179,14 +177,7 @@
               </div>
               <div>
                 <label class="text-xs text-slate-500 block mb-1.5">结算频率</label>
-                <select class="ant-input" v-model="period.frequency">
-                  <option>每月 1 日凌晨滚动重算</option>
-                  <option>每季度末重算</option>
-                </select>
-              </div>
-              <div>
-                <label class="text-xs text-slate-500 block mb-1.5">下次结算</label>
-                <input class="ant-input" v-model="period.nextAt" readonly>
+                <input class="ant-input" value="每月 1 日凌晨滚动结算" readonly>
               </div>
             </div>
           </div>
@@ -201,35 +192,36 @@
         <div v-show="activeTab === 'benefits'" class="p-6">
           <div class="flex items-center justify-between mb-5">
             <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
-              <i data-lucide="gem" class="w-5 h-5 text-violet-500"></i>等级权益配置
+              <i data-lucide="list-checks" class="w-5 h-5 text-slate-500"></i>等级权益配置
             </div>
-            <span class="text-xs text-slate-400">数据源:<code>shared/member-config.js</code> · 各等级权益列表</span>
+            <span class="text-xs text-slate-400">全部权益汇总 · 按等级切换开关</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-5">
-            <div v-for="lv in levels" :key="'bf-'+lv.code" class="bf-card">
-              <div class="bf-head" :style="{background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')'}">
-                <div>
-                  <div class="lv-name">{{ lv.name }}</div>
-                  <div class="text-xs opacity-80 mt-1">{{ lv.thresholdText }}</div>
-                </div>
-                <div class="lv-code">{{ lv.short }}</div>
-              </div>
-              <div class="bf-body">
-                <div v-if="lv.benefits.length === 0" class="bf-empty">暂无权益</div>
-                <div v-for="b in lv.benefits" :key="b.id" class="bf-row">
-                  <i :data-lucide="b.icon || 'check'" class="w-4 h-4"></i>
-                  <div class="flex-1">
-                    <div class="bf-label">{{ b.label }}</div>
-                    <div v-if="b.desc" class="bf-desc">{{ b.desc }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <table class="bf-table">
+            <thead>
+              <tr>
+                <th style="width:24%">权益名称</th>
+                <th>说明</th>
+                <th v-for="c in levelCodes" :key="'h-'+c" style="width:70px;text-align:center">{{ c }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="b in allBenefits" :key="b.id">
+                <td>{{ b.label }}</td>
+                <td style="color:#606266">{{ b.desc || '—' }}</td>
+                <td v-for="c in levelCodes" :key="b.id + '-' + c" style="text-align:center">
+                  <label class="switch"><input type="checkbox" v-model="b.enabled[c]"><span class="slider"></span></label>
+                </td>
+              </tr>
+              <tr v-if="allBenefits.length === 0">
+                <td :colspan="2 + levelCodes.length" class="bf-empty">暂无权益</td>
+              </tr>
+            </tbody>
+          </table>
 
-          <div class="mt-5 text-xs text-slate-400 leading-relaxed">
-            说明:权益数据与前端商户会员中心 / 买家详情的会员卡来自同一数据源。修改 <code>shared/member-config.js</code> 后,全站生效。
+          <div class="mt-5 pt-5 border-t border-slate-100 flex items-center justify-end gap-3">
+            <button class="ant-btn">取消</button>
+            <button class="ant-btn-primary">保存</button>
           </div>
         </div>
 
@@ -286,18 +278,31 @@ createApp({
     ];
 
     const levels = reactive(CFG.levels.map(lv => ({
-      code: lv.code, short: lv.short, name: lv.name, color: lv.color,
-      gradient: lv.gradient || [lv.color, lv.color],
-      thresholdText: lv.thresholdText || '',
-      merchantCount: lv.merchantCount,
-      benefits: (lv.benefits || []).map(b => ({ id: b.id, icon: b.icon, label: b.label, desc: b.desc })),
+      code: lv.code, short: lv.short, name: lv.name,
       threshold: { dealsMin: lv.threshold.dealsMin, accountMin: lv.threshold.accountMin || 0 },
       dealsMaxDisplay: (lv.threshold.dealsMax !== undefined && lv.threshold.dealsMax > 0)
         ? String(lv.threshold.dealsMax)
         : (lv.threshold.dealsMin === 0 ? '0' : '不限')
     })));
 
-    const period = reactive({ windowMonths: 3, frequency: '每月 1 日凌晨滚动重算', nextAt: '2026-05-01 01:00' });
+    // 全量权益汇总,每条记录在 4 个等级的启用状态
+    // 排除的权益 id(不在等级设置中暴露配置)
+    const EXCLUDE_BENEFIT_IDS = new Set(['coin_exchange_100']); // 按 1 积分 = 0.093 元等值兑换
+    const levelCodes = CFG.levels.map(l => l.short);
+    const benefitMap = {};
+    CFG.levels.forEach(lv => {
+      (lv.benefits || []).forEach(b => {
+        if (EXCLUDE_BENEFIT_IDS.has(b.id)) return;
+        if (!benefitMap[b.id]) {
+          benefitMap[b.id] = { id: b.id, label: b.label, desc: b.desc || '', enabled: {} };
+          levelCodes.forEach(c => benefitMap[b.id].enabled[c] = false);
+        }
+        benefitMap[b.id].enabled[lv.short] = true;
+      });
+    });
+    const allBenefits = reactive(Object.values(benefitMap));
+
+    const period = reactive({ windowMonths: 3 });
     const history = [
       { at:'2026-03-20 15:42', content:'V2 门槛从 8 台调整为 10 台', by:'运营-小王', effectAt:'2026-04-01' },
       { at:'2026-02-10 10:20', content:'新增钻石荣誉规则(V3 年度 TOP500)', by:'产品-小李', effectAt:'2026-03-01' }
@@ -308,7 +313,7 @@ createApp({
     watch(activeTab, () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { levels, period, history, opsOpen, toggleOps, activeTab, tabs };
+    return { levels, levelCodes, allBenefits, period, history, opsOpen, toggleOps, activeTab, tabs };
   }
 }).mount('#app');
 </script>

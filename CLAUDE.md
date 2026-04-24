@@ -83,6 +83,7 @@
   <nav class="flex-1 overflow-y-auto">
     <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu">
+      <a href="dashboard.html"          class="sub-item">运营仪表盘</a>
       <div class="sub-item">客户等级管理</div>
       <a href="bms-sales-buyers.html"   class="sub-item">买家管理</a>
       <a href="bms-sales-orders.html"   class="sub-item">销售订单</a>
@@ -111,7 +112,7 @@
 
 规则:
 1. **一级项只能有 3 个,且顺序固定**:业务数据、销售管理(展开) / 服务中心 / 运营部(可折叠)。**严禁出现**:检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
-2. **销售管理 submenu 固定 8 项,按此顺序**:客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
+2. **销售管理 submenu 固定 9 项,按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
 3. **当前页 active**:在对应 `sub-item` 上加 `active` 类;`客户等级管理` 默认没有专属页,不加 href。
 4. **运营部默认折叠**,点击展开;Vue 页使用 `opsOpen` + `toggleOps` 控制,非 Vue 页使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
 

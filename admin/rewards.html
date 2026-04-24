@@ -26,6 +26,7 @@
   .breadcrumb-link { cursor:pointer; } .breadcrumb-link:hover { color:#409eff; }
   .ant-card { background: #fff; border-radius: 8px; }
   .ant-input { padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; width: 100%; box-sizing:border-box; }
+  .ant-input:focus { outline: none; border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,.1); }
   .ant-btn { padding: 5px 16px; border-radius: 6px; font-size: 14px; border: 1px solid #d9d9d9; background: #fff; cursor:pointer; }
   .ant-btn:hover { color: #1677ff; border-color: #1677ff; }
   .ant-btn-primary { background: #1677ff; color: #fff; border-color: #1677ff; padding: 5px 16px; border-radius: 6px; font-size: 14px; cursor:pointer; }
@@ -40,8 +41,21 @@
   .tag-default { background: #fafafa; color: #595959; border: 1px solid #d9d9d9; }
   tbody tr:hover { background: #fafafa; }
   .icon-tile { width:36px; height:36px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0; }
-  .new-chip { display:inline-block; font-size:10px; padding:1px 5px; background:#fff1f0; color:#cf1322; border-radius:3px; margin-left:4px; vertical-align:middle; }
-  .todo-chip { display:inline-block; font-size:10px; padding:1px 5px; background:#fff7e6; color:#d46b08; border-radius:3px; margin-left:4px; vertical-align:middle; }
+  /* 关键字搜索 */
+  .kw-wrap { position: relative; }
+  .kw-wrap .ant-input { padding-right: 110px; }
+  .kw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #909399; cursor: pointer; padding: 3px 8px; border-radius: 4px; border: 1px solid #dcdfe6; background: #fff; user-select: none; }
+  .kw-toggle.on { background: #e6f4ff; color: #1677ff; border-color: #91caff; }
+  /* Modal */
+  .modal-mask { position: fixed; inset:0; background: rgba(0,0,0,.45); z-index: 100; display:flex; align-items:center; justify-content:center; }
+  .modal-box { width: 560px; max-width: 92vw; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+  .modal-head { padding: 14px 20px; border-bottom: 1px solid #ebeef5; font-size: 15px; font-weight: 600; color:#303133; display:flex; align-items:center; justify-content:space-between; }
+  .modal-head .close { cursor: pointer; color:#909399; }
+  .modal-body { padding: 20px; max-height: 65vh; overflow-y: auto; }
+  .modal-foot { padding: 12px 20px; border-top: 1px solid #ebeef5; display:flex; gap: 10px; justify-content:flex-end; background:#fafafa; }
+  .form-row { display:grid; grid-template-columns: 110px 1fr; gap: 12px; align-items:center; margin-bottom: 14px; }
+  .form-row label { font-size: 13px; color:#606266; text-align: right; }
+  .form-row .hint { font-size: 11px; color: #909399; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -56,6 +70,7 @@
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
+        <a href="dashboard.html" class="sub-item">运营仪表盘</a>
         <div class="sub-item">客户等级管理</div>
         <a href="bms-sales-buyers.html" class="sub-item">买家管理</a>
         <a href="bms-sales-orders.html" class="sub-item">销售订单</a>
@@ -66,11 +81,14 @@
         <a href="bms-redeem-log.html" class="sub-item">兑换记录</a>
       </div>
       <div class="menu-item"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="menu-item" @click="toggleOps"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" v-show="opsOpen">
-        <div class="sub-item">内容管理</div><div class="sub-item">优惠券</div>
-        <div class="sub-item">权益卡管理</div><div class="sub-item">权益卡投放管理</div>
-        <div class="sub-item">权益卡发放管理</div><div class="sub-item">奖品投放</div>
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="settings" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">内容管理</div>
+        <div class="sub-item">优惠券</div>
+        <div class="sub-item">权益卡管理</div>
+        <div class="sub-item">权益卡投放管理</div>
+        <div class="sub-item">权益卡发放管理</div>
+        <div class="sub-item">奖品投放</div>
       </div>
     </nav>
   </aside>
@@ -103,9 +121,11 @@
       <div class="flex items-center justify-between mb-5">
         <div>
           <h1 class="text-xl font-semibold text-slate-800">商城商品配置</h1>
-          <p class="text-sm text-slate-500 mt-1">管理积分兑换型与等级直达型权益商品,支持目录、库存与上下架</p>
+          <p class="text-sm text-slate-500 mt-1">管理积分兑换型商品,支持目录、库存与上下架。</p>
         </div>
-        <button class="ant-btn-primary inline-flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i>新增商品</button>
+        <button class="ant-btn-primary inline-flex items-center gap-1" @click="openAdd">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>新增商品
+        </button>
       </div>
 
       <div class="grid grid-cols-4 gap-4 mb-5">
@@ -117,30 +137,24 @@
 
       <div class="ant-card p-4 mb-5">
         <div class="grid grid-cols-5 gap-3 items-end">
-          <div>
+          <div class="col-span-2">
             <label class="text-xs text-slate-500 block mb-1">关键字</label>
-            <input class="ant-input" v-model="filters.keyword" placeholder="权益名称 / 编码">
+            <input class="ant-input" v-model="filters.keyword" placeholder="商品名称,支持模糊 / 精准搜索">
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">类别</label>
             <select class="ant-input" v-model="filters.category">
               <option value="">全部</option>
-              <option>数据查询</option><option>交易折扣</option>
-              <option>额度免审</option><option>专属服务</option><option>新人专享</option>
+              <option>数据查询</option>
+              <option>交易折扣</option>
             </select>
           </div>
           <div>
-            <label class="text-xs text-slate-500 block mb-1">获取方式</label>
-            <select class="ant-input" v-model="filters.source">
+            <label class="text-xs text-slate-500 block mb-1">状态</label>
+            <select class="ant-input" v-model="filters.status">
               <option value="">全部</option>
-              <option>积分兑换</option><option>等级直达</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-xs text-slate-500 block mb-1">最低等级</label>
-            <select class="ant-input" v-model="filters.level">
-              <option value="">全部</option>
-              <option>V0</option><option>V1</option><option>V2</option><option>V3</option>
+              <option>上架</option>
+              <option>已下架</option>
             </select>
           </div>
           <div class="flex gap-2">
@@ -155,11 +169,10 @@
           <thead class="bg-slate-50 text-xs text-slate-600 border-b border-slate-200">
             <tr>
               <th class="text-left px-4 py-3 font-medium"><input type="checkbox"></th>
-              <th class="text-left px-4 py-3 font-medium">权益名称</th>
+              <th class="text-left px-4 py-3 font-medium">商品名称</th>
               <th class="text-left px-4 py-3 font-medium">类别</th>
-              <th class="text-left px-4 py-3 font-medium">获取方式</th>
               <th class="text-right px-4 py-3 font-medium">积分价</th>
-              <th class="text-left px-4 py-3 font-medium">等级门槛</th>
+              <th class="text-center px-4 py-3 font-medium">有效期(天)</th>
               <th class="text-right px-4 py-3 font-medium">库存</th>
               <th class="text-right px-4 py-3 font-medium">已发放</th>
               <th class="text-center px-4 py-3 font-medium">状态</th>
@@ -167,41 +180,25 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <tr v-for="p in filteredProducts" :key="p.code" :class="{ 'bg-amber-50': p.status==='待启用' }">
-              <td class="px-4 py-3"><input type="checkbox" :disabled="p.status==='待启用'"></td>
+            <tr v-for="p in filteredProducts" :key="p.code">
+              <td class="px-4 py-3"><input type="checkbox"></td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-3">
-                  <div class="icon-tile" :style="{background: p.status==='待启用' ? '#cbd5e1' : p.iconBg}"><i :data-lucide="p.icon" class="w-4 h-4"></i></div>
-                  <div>
-                    <div class="font-medium" :class="p.status==='待启用' ? 'text-slate-500' : 'text-slate-800'">
-                      {{ p.name }}<span v-if="p.isNew" class="new-chip">新</span><span v-if="p.isTodo" class="todo-chip">待定</span>
-                    </div>
-                    <div class="text-xs text-slate-400">{{ p.code }}</div>
-                  </div>
-                </div>
+                <div class="font-medium text-slate-800">{{ p.name }}</div>
+                <div class="text-xs text-slate-400">{{ p.code }}</div>
               </td>
               <td class="px-4 py-3"><span class="ant-tag" :class="categoryTagCls(p.category)">{{ p.category }}</span></td>
-              <td class="px-4 py-3">
-                <span v-if="p.source" class="ant-tag" :class="sourceTagCls(p.source)">{{ p.source }}</span>
-                <span v-else class="ant-tag tag-default">未定义</span>
-              </td>
-              <td class="px-4 py-3 text-right" :class="{ 'font-semibold': typeof p.coin === 'number', 'text-slate-400 text-xs': typeof p.coin !== 'number' && p.coin !== '免费' }">
-                {{ typeof p.coin === 'number' ? p.coin : p.coin || '—' }}
-              </td>
-              <td class="px-4 py-3"><span class="ant-tag tag-default">{{ p.levelReq }}</span></td>
-              <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stockWarn, 'text-slate-400': p.stock === '—' }">{{ p.stock }}</td>
-              <td class="px-4 py-3 text-right">{{ p.issued }}</td>
+              <td class="px-4 py-3 text-right font-semibold">{{ p.coin }}</td>
+              <td class="px-4 py-3 text-center">{{ p.validityDays }}</td>
+              <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stock < 100 }">{{ p.stock.toLocaleString() }}</td>
+              <td class="px-4 py-3 text-right">{{ p.issued.toLocaleString() }}</td>
               <td class="px-4 py-3 text-center"><span class="ant-tag" :class="statusTagCls(p.status)">{{ p.status }}</span></td>
               <td class="px-4 py-3 text-center text-xs">
-                <template v-if="p.status === '待启用'">
-                  <a href="#" class="text-blue-600">配置</a>
-                </template>
-                <template v-else>
-                  <a href="#" class="text-blue-600 mr-2">编辑</a>
-                  <a v-if="p.stockWarn" href="#" class="text-blue-600 mr-2">补库存</a>
-                  <a href="#" class="text-rose-600">{{ p.source === '等级直达' ? '禁用' : '下架' }}</a>
-                </template>
+                <a href="#" class="text-blue-600 mr-2" @click.prevent="openEdit(p)">编辑</a>
+                <a href="#" class="text-rose-600" @click.prevent="toggleStatus(p)">{{ p.status === '上架' ? '下架' : '上架' }}</a>
               </td>
+            </tr>
+            <tr v-if="filteredProducts.length === 0">
+              <td colspan="9" class="px-4 py-12 text-center text-slate-400">暂无匹配商品</td>
             </tr>
           </tbody>
         </table>
@@ -220,6 +217,59 @@
   </div>
 </div>
 
+<!-- 新增 / 编辑 商品 modal -->
+<div v-if="modalOpen" class="modal-mask" @click.self="closeModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      {{ editingIdx === -1 ? '新增商品' : '编辑商品' }}
+      <span class="close" @click="closeModal"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>商品名称 <span class="text-rose-500">*</span></label>
+        <input class="ant-input" v-model="form.name" placeholder="如:保留价查询权益">
+      </div>
+      <div class="form-row">
+        <label>商品编码</label>
+        <input class="ant-input" v-model="form.code" placeholder="系统唯一编码,留空自动生成">
+      </div>
+      <div class="form-row">
+        <label>类别</label>
+        <select class="ant-input" v-model="form.category">
+          <option>数据查询</option>
+          <option>交易折扣</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>积分价 <span class="text-rose-500">*</span></label>
+        <input class="ant-input" type="number" min="1" v-model.number="form.coin" placeholder="兑换所需积分数">
+      </div>
+      <div class="form-row">
+        <label>有效期(天) <span class="text-rose-500">*</span></label>
+        <div>
+          <input class="ant-input" type="number" min="1" v-model.number="form.validityDays" placeholder="如:30">
+          <div class="hint">用户兑换后,权益从发放日起 N 天内有效</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>库存 <span class="text-rose-500">*</span></label>
+        <input class="ant-input" type="number" min="1" v-model.number="form.stock" placeholder="剩余可兑换份数">
+      </div>
+      <div class="form-row">
+        <label>状态</label>
+        <select class="ant-input" v-model="form.status">
+          <option>上架</option>
+          <option>已下架</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="ant-btn" @click="closeModal">取消</button>
+      <button class="ant-btn-primary" @click="saveProduct">确定</button>
+    </div>
+  </div>
+</div>
+
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50"><i data-lucide="arrow-left" class="w-3 h-3 inline -mt-0.5"></i> Demo 导航</a>
 </div>
@@ -230,56 +280,91 @@
 const { createApp, reactive, ref, computed, onMounted, watch, nextTick } = Vue;
 createApp({
   setup() {
-    const stats = [
-      { label:'上架中', value:'15' },
-      { label:'已下架', value:'3' },
-      { label:'库存告警', value:'2', danger:true },
-      { label:'本月累计兑换', value:'2,823' }
-    ];
-    const filters = reactive({ keyword:'', category:'', source:'', level:'' });
-    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.source=''; filters.level=''; };
-
     const products = reactive([
-      { code:'CAR_BID_PRICE_QUERY', name:'车辆中标价查询卡', icon:'search', iconBg:'linear-gradient(135deg,#38bdf8,#3b82f6)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V0+', stock:823, issued:177, status:'上架' },
-      { code:'MARKET_QUERY', name:'交易行情查询卡', icon:'bar-chart-3', iconBg:'linear-gradient(135deg,#34d399,#14b8a6)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V0+', stock:'1,245', issued:498, status:'上架' },
-      { code:'HISTORY_DATA', name:'历史数据查询卡', icon:'scroll-text', iconBg:'linear-gradient(135deg,#fbbf24,#f97316)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V1+', stock:612, issued:88, status:'上架', isNew:true },
-      { code:'RESERVE_PRICE_QUERY', name:'保留价查询卡', icon:'target', iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V1+', stock:480, issued:152, status:'上架', isNew:true },
-      { code:'MAINTAIN_DATA', name:'出险维保数据卡', icon:'wrench', iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', source:'积分兑换', coin:300, levelReq:'V1+', stock:45, issued:155, status:'库存低', stockWarn:true },
-      { code:'CRASH_REPORT', name:'碰撞报告查询卡', icon:'car-front', iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', source:'积分兑换', coin:200, levelReq:'V1+', stock:688, issued:312, status:'上架' },
-      { code:'DISCOUNT_95', name:'过户 9.5 折 / 复检 9.5 折', icon:'tag', iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', source:'积分兑换', coin:200, levelReq:'V2+', stock:128, issued:612, status:'上架' },
-      { code:'DISCOUNT_80', name:'过户 8 折 / 复检 8 折', icon:'tag', iconBg:'linear-gradient(135deg,#fbbf24,#eab308)', category:'交易折扣', source:'积分兑换', coin:200, levelReq:'V3+', stock:50, issued:32, status:'上架' },
-      { code:'REFUND_ONCE', name:'无理由退车 1 台卡', icon:'undo-2', iconBg:'linear-gradient(135deg,#fb7185,#ef4444)', category:'额度免审', source:'积分兑换', coin:500, levelReq:'V3+', stock:32, issued:178, status:'库存低', stockWarn:true },
-      { code:'VIP_SUPPORT', name:'1V1 专属客服', icon:'headphones', iconBg:'linear-gradient(135deg,#2dd4bf,#10b981)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用' },
-      { code:'SALES_ADVISOR', name:'专属销售顾问', icon:'briefcase', iconBg:'linear-gradient(135deg,#60a5fa,#6366f1)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V1+', stock:'—', issued:'71,956', status:'启用', isNew:true },
-      { code:'DELIVERY_SERVICE', name:'代送车上门(代物流)', icon:'truck', iconBg:'linear-gradient(135deg,#fb923c,#f59e0b)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
-      { code:'FREE_PARKING', name:'免费停车服务', icon:'square-parking', iconBg:'linear-gradient(135deg,#22d3ee,#3b82f6)', category:'专属服务', source:'等级直达', coin:'免费', levelReq:'V3+', stock:'—', issued:'3,910', status:'启用', isNew:true },
-      { code:'SIGN_SERVICE', name:'代签名', icon:'pen-line', iconBg:'', category:'专属服务', source:'', coin:'—', levelReq:'未定', stock:'—', issued:'—', status:'待启用', isTodo:true },
-      { code:'NEWBIE_PACK', name:'新人首次服务包', icon:'gift', iconBg:'linear-gradient(135deg,#f472b6,#d946ef)', category:'新人专享', source:'积分兑换', coin:1, levelReq:'V0 专享', stock:'5,000', issued:'2,841', status:'上架' }
+      { code:'RESERVE_PRICE',  name:'保留价查询权益',      icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', coin:200, validityDays:30, stock:480,  issued:152, status:'上架' },
+      { code:'CXM_INSURANCE',  name:'车信盟出险查询优惠券', icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', coin:300, validityDays:30, stock:688,  issued:212, status:'上架' },
+      { code:'CRASH_REPORT',   name:'事故报告查询优惠券',   icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', coin:200, validityDays:30, stock:688,  issued:312, status:'上架' },
+      { code:'TRANSFER_100',   name:'过户费减免 100 元券',  icon:'percent',       iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', coin:500, validityDays:30, stock:128,  issued:612, status:'上架' }
     ]);
 
-    const categoryTagCls = (c) => ({
-      '数据查询':'tag-blue','交易折扣':'tag-purple','额度免审':'tag-red',
-      '专属服务':'tag-cyan','新人专享':'tag-cyan'
-    })[c] || 'tag-default';
-    const sourceTagCls = (s) => s==='等级直达' ? 'tag-orange' : 'tag-purple';
-    const statusTagCls = (s) => ({ '上架':'tag-green', '启用':'tag-green', '库存低':'tag-orange', '已下架':'tag-default', '待启用':'tag-default' })[s] || 'tag-default';
+    const stats = computed(() => {
+      const up = products.filter(p => p.status === '上架').length;
+      const down = products.filter(p => p.status === '已下架').length;
+      const low = products.filter(p => p.status === '上架' && p.stock < 100).length;
+      const issuedSum = products.reduce((s, p) => s + (p.issued || 0), 0);
+      return [
+        { label:'上架中', value: up },
+        { label:'已下架', value: down },
+        { label:'库存告警', value: low, danger: low > 0 },
+        { label:'累计兑换', value: issuedSum.toLocaleString() }
+      ];
+    });
+
+    const filters = reactive({ keyword:'', category:'', status:'' });
+    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.status=''; };
+
+    const categoryTagCls = (c) => ({ '数据查询':'tag-blue', '交易折扣':'tag-purple' })[c] || 'tag-default';
+    const statusTagCls = (s) => ({ '上架':'tag-green', '已下架':'tag-default' })[s] || 'tag-default';
 
     const filteredProducts = computed(() => products.filter(p => {
       if (filters.keyword) {
-        const k = filters.keyword.toLowerCase();
-        if (!p.name.toLowerCase().includes(k) && !p.code.toLowerCase().includes(k)) return false;
+        const kl = filters.keyword.trim().toLowerCase();
+        if (!p.name.toLowerCase().includes(kl) && !p.code.toLowerCase().includes(kl)) return false;
       }
       if (filters.category && p.category !== filters.category) return false;
-      if (filters.source && p.source !== filters.source) return false;
-      if (filters.level && !p.levelReq.includes(filters.level)) return false;
+      if (filters.status && p.status !== filters.status) return false;
       return true;
     }));
 
+    // 新增 / 编辑 商品 modal
+    const modalOpen = ref(false);
+    const editingIdx = ref(-1);
+    const blankForm = () => ({
+      code: '', name: '', category: '数据查询', coin: 200, validityDays: 30, stock: 100, status: '上架',
+      icon: 'gift', iconBg: 'linear-gradient(135deg,#38bdf8,#3b82f6)'
+    });
+    const form = reactive(blankForm());
+    const openAdd = async () => {
+      Object.assign(form, blankForm());
+      editingIdx.value = -1;
+      modalOpen.value = true;
+      await nextTick(); lucide.createIcons();
+    };
+    const openEdit = async (p) => {
+      editingIdx.value = products.indexOf(p);
+      Object.assign(form, { ...p });
+      modalOpen.value = true;
+      await nextTick(); lucide.createIcons();
+    };
+    const closeModal = () => { modalOpen.value = false; };
+    const saveProduct = () => {
+      if (!form.name.trim()) { alert('请填写商品名称'); return; }
+      if (!form.coin || form.coin <= 0) { alert('请填写积分价'); return; }
+      if (!form.validityDays || form.validityDays <= 0) { alert('请填写有效期(天)'); return; }
+      if (form.stock == null || form.stock === '' || form.stock <= 0) { alert('请填写库存'); return; }
+      const payload = { ...form };
+      if (!payload.code) payload.code = 'P_' + Date.now();
+      if (editingIdx.value === -1) {
+        products.push({ ...payload, issued: 0 });
+      } else {
+        Object.assign(products[editingIdx.value], payload);
+      }
+      modalOpen.value = false;
+    };
+    const toggleStatus = (p) => { p.status = p.status === '上架' ? '已下架' : '上架'; };
+
     const opsOpen = ref(false);
     const toggleOps = () => opsOpen.value = !opsOpen.value;
+
     onMounted(() => lucide.createIcons());
-    watch(filteredProducts, async () => { await nextTick(); lucide.createIcons(); });
-    return { stats, filters, resetFilter, products, filteredProducts, categoryTagCls, sourceTagCls, statusTagCls, opsOpen, toggleOps };
+    watch([filteredProducts, modalOpen], async () => { await nextTick(); lucide.createIcons(); });
+
+    return {
+      stats, filters, resetFilter, products, filteredProducts,
+      categoryTagCls, statusTagCls, toggleStatus,
+      modalOpen, editingIdx, form, openAdd, openEdit, closeModal, saveProduct,
+      opsOpen, toggleOps
+    };
   }
 }).mount('#app');
 </script>
