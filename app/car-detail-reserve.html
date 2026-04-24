@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>车辆详情 · 有保留价 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/reserve-cars.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 152px; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  /* 浮窗 · 查维保 */
+  .float-vp {
+    position:absolute; right:12px; top:140px;
+    background: linear-gradient(135deg, #f43f5e, #ef4444);
+    color:#fff; border-radius:9999px;
+    padding: 6px 10px 6px 8px;
+    display:flex; align-items:center; gap:4px;
+    font-size:12px; font-weight:600;
+    box-shadow: 0 6px 16px rgba(239,68,68,.4);
+  }
+
+  /* 倒计时数字格 */
+  .ts-num {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:22px; height:20px;
+    background:#1f2937; color:#fff; font-weight:700; font-size:11px;
+    border-radius:3px; padding:0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ts-sep { color:#1f2937; font-size:11px; padding: 0 2px; }
+
+  /* 有保留价 tag */
+  .reserve-tag {
+    display:inline-flex; align-items:center; gap:2px;
+    background:#fff7ed; color:#c2410c; font-size:11px;
+    padding: 2px 6px; border-radius: 4px; border:1px solid #fed7aa;
+  }
+  /* 查看保留价 V 专享按钮 */
+  .vip-reveal {
+    display:inline-flex; align-items:center; gap:4px;
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fde047 100%);
+    color: #78350f; font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 9999px;
+    box-shadow: 0 4px 10px rgba(245,158,11,.35);
+    border: 1px solid #fcd34d;
+  }
+  .vip-reveal .crown { color:#7c2d12; }
+
+  /* sticky tip */
+  .sticky-tip {
+    background: linear-gradient(90deg, #fffbeb, #fef3c7);
+    color: #92400e; font-size: 13px;
+    border-top: 1px solid #fde68a;
+    border-bottom: 1px solid #fde68a;
+    padding: 8px 12px;
+  }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- Status bar -->
+  <div class="flex items-center justify-between px-5 py-2 bg-white text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- 顶部导航 -->
+  <div class="bg-white px-3 py-2 flex items-center gap-2 sticky top-0 z-30 border-b border-slate-100">
+    <a href="allcars.html" class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="chevron-left" class="w-6 h-6"></i></a>
+    <div class="flex-1 text-center text-base font-semibold text-slate-800">车辆详情</div>
+    <button class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="headphones" class="w-5 h-5"></i></button>
+    <button class="w-8 h-8 flex items-center justify-center text-slate-700"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+  </div>
+
+  <template v-if="car">
+
+    <!-- 图片 -->
+    <div class="relative h-[260px] bg-slate-200">
+      <img :src="car.img" :alt="car.brand + car.model" class="w-full h-full object-cover">
+      <a href="#" class="float-vp"><i data-lucide="file-search" class="w-4 h-4"></i><span>查维保</span></a>
+      <div class="absolute left-0 right-0 bottom-0 px-4 pb-2 pt-8 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-between text-white">
+        <div class="flex items-center gap-2 text-[13px]">
+          <span>车辆编号:{{ car.carNo }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 bg-white/30 rounded">复制</span>
+        </div>
+        <div class="text-xs">1/6</div>
+      </div>
+    </div>
+
+    <!-- 车辆基本信息 -->
+    <div class="bg-white px-4 py-4">
+      <h2 class="text-[15px] font-semibold text-slate-800 leading-snug">
+        {{ car.city }} {{ car.plate }}|{{ car.brand }} {{ car.model }} {{ car.spec }}
+      </h2>
+      <div class="border-t border-dashed border-slate-200 mt-3 pt-3 grid grid-cols-5 gap-1 text-center">
+        <div>
+          <div class="text-[13px] font-semibold text-slate-800">{{ car.date.replace('-','.') }}</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">注册日期</div>
+        </div>
+        <div>
+          <div class="text-[13px] font-semibold text-slate-800">{{ car.mileage.replace('公里','') }}</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">表显里程</div>
+        </div>
+        <div>
+          <div class="text-[13px] font-semibold text-slate-800">{{ car.emission }}</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">排放标准</div>
+        </div>
+        <div>
+          <div class="text-[13px] font-semibold text-slate-800">{{ car.usage }}</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">使用性质</div>
+        </div>
+        <div>
+          <div class="text-[13px] font-semibold text-slate-800">{{ car.transferTimes }}</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">过户次数</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 价格 / 记价 / 总价 · 同卡 -->
+    <div class="bg-white mt-1.5">
+      <!-- 当前价 -->
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-sm text-slate-500">当前价</span>
+          <span class="text-red-500 font-bold text-[22px] leading-none">¥{{ formatYuan(car.currentPrice) }}</span>
+          <span class="reserve-tag"><i data-lucide="info" class="w-3 h-3"></i>有保留价</span>
+        </div>
+        <div class="text-xs text-slate-400">起拍价 ¥{{ formatYuan(car.basePrice) }}</div>
+      </div>
+
+      <!-- V 专享 · 查看保留价 -->
+      <div class="mx-4 mt-2 flex items-center justify-between gap-2 bg-amber-50/60 border border-amber-100 rounded-lg px-3 py-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <i data-lucide="crown" class="w-4 h-4 text-amber-600 flex-none"></i>
+          <span class="text-[12px] text-amber-800 font-medium">查看车辆保留价</span>
+        </div>
+        <button v-if="!revealed" class="vip-reveal" @click="onRevealClick">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>查看保留价</span>
+        </button>
+        <span v-else class="text-[15px] font-black text-red-500 leading-none">¥{{ formatYuan(car.reservePrice) }}</span>
+      </div>
+
+      <!-- 记价小工具 -->
+      <div class="px-4 py-2 mt-2 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="bg-pink-100 text-pink-600 text-[12px] px-2 py-0.5 rounded">记价小工具</span>
+          <span class="text-[13px] text-slate-400">未设置</span>
+          <i data-lucide="pencil" class="w-3.5 h-3.5 text-slate-400"></i>
+        </div>
+      </div>
+
+      <!-- 总价 -->
+      <div class="mx-4 my-3 px-3 py-2.5 bg-slate-50 rounded-lg flex items-center justify-between">
+        <div class="text-[14px] text-slate-700">总价: <span class="font-semibold text-slate-900">¥{{ formatYuan(car.currentPrice + car.fee + car.platformFee + 2000) }}</span></div>
+        <button class="text-slate-500 text-[13px] flex items-center gap-1">明细 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i></button>
+      </div>
+    </div>
+
+    <!-- 占位段:配置 / 检测 / 报告 等(简化) -->
+    <div class="bg-white mt-1.5 px-4 py-4">
+      <div class="text-[15px] font-semibold text-slate-800 mb-2">基本信息</div>
+      <div class="grid grid-cols-2 gap-y-3 text-[13px]">
+        <div><div class="text-slate-400 text-xs">车辆所在地</div><div class="text-slate-800 mt-1">{{ car.city }}</div></div>
+        <div><div class="text-slate-400 text-xs">车牌归属</div><div class="text-slate-800 mt-1">{{ car.plate }}</div></div>
+        <div><div class="text-slate-400 text-xs">排放标准</div><div class="text-slate-800 mt-1">{{ car.emission }}</div></div>
+        <div><div class="text-slate-400 text-xs">使用性质</div><div class="text-slate-800 mt-1">{{ car.usage }}</div></div>
+      </div>
+    </div>
+
+  </template>
+
+  <template v-else>
+    <div class="text-center py-20 text-slate-400 text-sm">未找到该车辆</div>
+  </template>
+
+  <!-- 底部固定区:tip + 出价栏 -->
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 z-40">
+    <div v-if="car" class="sticky-tip flex items-center justify-between gap-2">
+      <span class="truncate">当前竞价&lt;保留价,您的出价可自我超越,<a href="#" @click.prevent="onRevealClick" class="underline font-semibold text-amber-700">立即加价锁定爱车</a></span>
+      <i data-lucide="hand-pointing-up" class="w-4 h-4 text-amber-700 flex-none"></i>
+    </div>
+
+    <div v-if="car" class="px-3 py-2 flex items-center gap-2">
+      <a href="#" class="flex flex-col items-center text-[10px] text-slate-500 w-12">
+        <i data-lucide="clock" class="w-5 h-5"></i><span>出价记录</span>
+      </a>
+      <a href="#" class="flex flex-col items-center text-[10px] text-slate-500 w-12">
+        <i data-lucide="heart" class="w-5 h-5"></i><span>关注</span>
+      </a>
+      <a href="#" class="flex flex-col items-center text-[10px] text-slate-500 w-12">
+        <i data-lucide="phone" class="w-5 h-5"></i><span>咨询</span>
+      </a>
+
+      <div class="flex-1 ml-1">
+        <div class="text-[10px] text-slate-400">竞价剩余</div>
+        <div class="flex items-center gap-0.5 mt-0.5">
+          <span class="ts-num">{{ pad(car.countdown.d) }}</span><span class="ts-sep">天</span>
+          <span class="ts-num">{{ pad(car.countdown.h) }}</span><span class="ts-sep">时</span>
+          <span class="ts-num">{{ pad(car.countdown.m) }}</span><span class="ts-sep">分</span>
+          <span class="ts-num">{{ pad(car.countdown.s) }}</span><span class="ts-sep">秒</span>
+        </div>
+      </div>
+
+      <a :href="'car-bid.html?id=' + car.id" class="px-6 py-3 rounded-full bg-red-500 text-white font-semibold text-[15px] shadow-lg shadow-red-500/30 active:scale-95 transition">我要出价</a>
+    </div>
+  </div>
+
+  <!-- 不符合资格弹框 -->
+  <div v-if="showAlert" class="fixed inset-0 z-50 flex items-center justify-center p-6" style="background:rgba(15,23,42,.6)">
+    <div class="bg-white rounded-2xl w-full max-w-[300px] overflow-hidden">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[16px] font-bold text-slate-800">查看保留价</div>
+        <div class="text-[13px] text-slate-500 mt-2 leading-relaxed">V2 及以上可查看车辆保留价</div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="showAlert = false" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">我知道了</button>
+        <a href="member.html" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">升级会员</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'r1';
+    const car = ref((window.RESERVE_CARS || []).find(c => c.id === id) || (window.RESERVE_CARS || [])[0]);
+    const revealed = ref(false);
+    const showAlert = ref(false);
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function onRevealClick() {
+      const user = window.VPUser && window.VPUser.get();
+      if (!user) {
+        location.href = 'login.html?from=' + encodeURIComponent(location.pathname + location.search);
+        return;
+      }
+      if (!window.VPUser.canSeeReserve()) {
+        showAlert.value = true;
+        return;
+      }
+      revealed.value = true;
+    }
+
+    onMounted(() => lucide.createIcons());
+    watch([revealed, showAlert], () => nextTick(() => lucide.createIcons()));
+
+    return { car, revealed, showAlert, pad, onRevealClick, formatYuan: window.formatYuan };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

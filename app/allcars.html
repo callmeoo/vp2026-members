@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>全部车源 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/reserve-cars.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  /* 顶部 tab */
+  .top-tab { font-size: 16px; color: #94a3b8; padding: 6px 0; position: relative; }
+  .top-tab.active { color: #0f172a; font-weight: 800; font-size: 22px; }
+  .top-tab.active::after {
+    content:''; position:absolute; left:50%; bottom:-2px; transform:translateX(-50%) skewX(-18deg);
+    width: 60%; height: 4px; background:#ef4444; border-radius:2px;
+  }
+
+  /* 卡片图片角标(65D 等) */
+  .corner-num {
+    position:absolute; top:8px; right:8px;
+    background: rgba(0,0,0,.55); color:#fff;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px;
+    backdrop-filter: blur(2px);
+  }
+  /* 竞价中标签条 */
+  .bid-strip {
+    position:absolute; left:0; right:0; bottom:0;
+    background: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
+    color:#fff; font-size: 10px; line-height: 1;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 4px 6px; font-variant-numeric: tabular-nums;
+    gap: 4px; white-space: nowrap; overflow: hidden;
+  }
+  .bid-strip .label {
+    background: rgba(0,0,0,.18); padding: 2px 5px; border-radius: 3px;
+    font-weight: 600; flex: none;
+  }
+  .bid-strip > span:last-child {
+    overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* tag */
+  .meta-tag {
+    display:inline-flex; align-items:center;
+    background:#f1f5f9; color:#64748b;
+    font-size:11px; padding: 2px 8px; border-radius: 4px;
+    border:1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .meta-tag.fresh { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
+
+  /* 顶部公告条 */
+  .notice-bar {
+    background: linear-gradient(90deg, #fffbeb, #fef3c7);
+    color:#92400e;
+    border-bottom: 1px solid #fde68a;
+  }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell pb-20">
+
+  <!-- Status bar -->
+  <div class="flex items-center justify-between px-5 py-2 bg-white text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- 顶部 tab + 搜索 -->
+  <div class="bg-white px-4 pt-2 pb-3 flex items-end justify-between">
+    <div class="flex items-end gap-6">
+      <span v-for="t in topTabs" :key="t.key"
+            :class="['top-tab', { active: activeTab === t.key }]"
+            @click="activeTab = t.key">{{ t.label }}</span>
+    </div>
+    <button class="w-9 h-9 flex items-center justify-center text-slate-700">
+      <i data-lucide="search" class="w-5 h-5"></i>
+    </button>
+  </div>
+
+  <!-- 日期筛选条 · 仅有保留价 tab -->
+  <div v-if="activeTab === 'reserve'" class="bg-white px-4 py-2.5 flex items-center justify-between border-b border-slate-100">
+    <div class="flex gap-2">
+      <button class="px-4 py-1 rounded-full bg-red-500 text-white text-[13px] font-semibold">全部</button>
+      <button class="px-4 py-1 rounded-full bg-slate-100 text-slate-700 text-[13px]">04.30 <span class="text-slate-400 ml-0.5">周四</span></button>
+    </div>
+    <button class="text-red-500 text-[13px] flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5"></i>竞价须知</button>
+  </div>
+
+  <!-- 筛选条 -->
+  <div class="bg-white px-4 py-2.5 grid grid-cols-4 text-sm text-slate-700 border-b border-slate-100">
+    <button v-for="f in filters" :key="f" class="flex items-center justify-center gap-1">
+      <span>{{ f }}</span>
+      <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+    </button>
+  </div>
+
+  <!-- 公告条 -->
+  <div v-if="activeTab !== 'reserve'" class="notice-bar px-4 py-2.5 flex items-center justify-between text-[13px]">
+    <span>车辆状态已发生变化,请刷新</span>
+    <button class="w-7 h-7 flex items-center justify-center text-amber-600">
+      <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <!-- 车源列表 -->
+  <div class="p-3 space-y-3">
+    <a v-for="(car, i) in displayCars" :key="car.id || i"
+       :href="(car.isReserve ? 'car-detail-reserve.html' : 'car-detail.html') + '?id=' + (car.id || i)"
+       class="bg-white rounded-xl p-3 flex gap-3 active:opacity-80 block">
+      <!-- 图片 -->
+      <div class="relative w-32 h-24 rounded-lg overflow-hidden bg-slate-200 flex-none">
+        <img :src="car.img" :alt="car.brand + car.model" class="w-full h-full object-cover">
+        <span v-if="car.cornerNum" class="corner-num">{{ car.cornerNum }}</span>
+        <div class="bid-strip">
+          <span class="label">竞价中</span>
+          <span>{{ car.endTime }}结束</span>
+        </div>
+      </div>
+
+      <!-- 文字 -->
+      <div class="flex-1 min-w-0 flex flex-col justify-between">
+        <div class="min-w-0">
+          <div class="flex items-start gap-1 leading-tight">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500 flex-none mt-0.5"></i>
+            <div class="min-w-0 flex-1">
+              <div class="text-[14px] font-bold text-slate-800 truncate">{{ car.city }}<span class="text-slate-300 mx-1">|</span>{{ car.brand }} {{ car.model }}</div>
+              <div class="text-[13px] font-semibold text-slate-700 truncate mt-0.5">{{ car.spec }}</div>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-1.5 truncate">
+            {{ car.plate }}<span class="mx-1">|</span>{{ car.date }}<span class="mx-1">|</span>{{ car.mileage }}<template v-if="car.transfer"><span class="mx-1">|</span>{{ car.transfer }}</template>
+          </div>
+          <div class="mt-1.5 flex items-center gap-1.5">
+            <span :class="['meta-tag', car.isReserve ? 'fresh' : '']">{{ car.hall }}</span>
+            <span v-if="car.isNew" class="meta-tag fresh">上新</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 价格 + 收藏 -->
+      <div class="flex flex-col items-end justify-between flex-none pl-1">
+        <button class="w-6 h-6 text-slate-300" @click.prevent.stop="toggleFav(car.id || i)">
+          <i data-lucide="heart" :class="['w-5 h-5', favs[car.id || i] ? 'text-red-500 fill-red-500' : '']"></i>
+        </button>
+        <div class="text-red-500 leading-none">
+          <span class="text-xl font-black">{{ car.price }}</span><span class="text-xs font-semibold ml-0.5">万起</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- 底部导航 -->
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-white border-t border-slate-100 px-2 py-2 grid grid-cols-5 text-[11px]">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="home" class="w-5 h-5"></i>首页
+    </a>
+    <a href="allcars.html" class="flex flex-col items-center gap-0.5 py-1 text-red-500 font-semibold">
+      <i data-lucide="car" class="w-5 h-5"></i>全部车源
+    </a>
+    <a class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="gavel" class="w-5 h-5"></i>专场车源
+    </a>
+    <a class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="heart" class="w-5 h-5"></i>关注订阅
+    </a>
+    <a href="profile.html" class="flex flex-col items-center gap-0.5 py-1 text-slate-500">
+      <i data-lucide="user" class="w-5 h-5"></i>我的
+    </a>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, reactive, computed, onMounted, watch, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const activeTab = ref('all');
+    const topTabs = [
+      { key:'all',     label:'全部' },
+      { key:'hall',    label:'竞价大厅' },
+      { key:'reserve', label:'有保留价' }
+    ];
+    const filters = ['默认排序','品牌','车况','筛选'];
+
+    const hallCars = [
+      {
+        city:'东莞', brand:'五菱', model:'五菱荣光V',
+        spec:'2015款 1.5L标准型',
+        plate:'粤S', date:'2016-03', mileage:'4.42万公里', transfer:null,
+        hall:'竞价大厅', isNew:false, isReserve:false,
+        price:'0.75', endTime:'00:00:00', cornerNum:'65D',
+        img:'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop&auto=format&q=80'
+      },
+      {
+        city:'贵阳', brand:'一汽', model:'森雅R7',
+        spec:'2016款 1.6 手动 智能型',
+        plate:'贵H', date:'2016-10', mileage:'5.51万公里', transfer:'0次过户',
+        hall:'竞价大厅', isNew:true, isReserve:false,
+        price:'0.35', endTime:'00:00:00', cornerNum:'',
+        img:'https://images.unsplash.com/photo-1542362567-b07e54358753?w=400&h=300&fit=crop&auto=format&q=80'
+      },
+      {
+        city:'贵阳', brand:'海马', model:'骑士',
+        spec:'2013款 2.0L 手动 经典版',
+        plate:'贵A', date:'2013-05', mileage:'11.88万公里', transfer:null,
+        hall:'报废车专场', isNew:true, isReserve:false,
+        price:'0.2', endTime:'00:00:00', cornerNum:'',
+        img:'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format&q=80'
+      },
+      {
+        city:'潮州', brand:'丰田', model:'凯美瑞',
+        spec:'2019款 2.0S 锋尚版',
+        plate:'粤U', date:'2019-11', mileage:'4.25万公里', transfer:'0次过户',
+        hall:'竞价大厅', isNew:true, isReserve:false,
+        price:'4.25', endTime:'00:00:00', cornerNum:'',
+        img:'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=400&h=300&fit=crop&auto=format&q=80'
+      },
+      {
+        city:'广州', brand:'比亚迪', model:'秦 PLUS',
+        spec:'2021款 DM-i 55KM 旗舰版',
+        plate:'粤A', date:'2021-08', mileage:'3.20万公里', transfer:'0次过户',
+        hall:'竞价大厅', isNew:false, isReserve:false,
+        price:'7.98', endTime:'00:00:00', cornerNum:'',
+        img:'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&h=300&fit=crop&auto=format&q=80'
+      },
+      {
+        city:'深圳', brand:'比亚迪', model:'唐 DM-i',
+        spec:'2023款 旗舰版 7座',
+        plate:'粤B', date:'2023-05', mileage:'1.80万公里', transfer:'0次过户',
+        hall:'竞价大厅', isNew:true, isReserve:false,
+        price:'18.5', endTime:'00:00:00', cornerNum:'',
+        img:'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop&auto=format&q=80'
+      }
+    ];
+
+    // 注入"有保留价"车源(来自 shared/reserve-cars.js)
+    const reserveCars = (window.RESERVE_CARS || []).map(c => ({
+      id: c.id, isReserve: true, isNew: false,
+      city: c.city, brand: c.brand, model: c.model, spec: c.spec,
+      plate: c.plate, date: c.date, mileage: c.mileage, transfer: c.transferTimes + '过户',
+      hall: '有保留价',
+      price: c.listPrice, endTime: c.endTime, cornerNum: '',
+      img: c.img
+    }));
+
+    const allCars = [...hallCars, ...reserveCars];
+
+    const displayCars = computed(() => {
+      if (activeTab.value === 'reserve') return allCars.filter(c => c.isReserve);
+      if (activeTab.value === 'hall')    return allCars.filter(c => !c.isReserve);
+      return allCars;
+    });
+
+    const favs = reactive({});
+
+    function toggleFav(key) {
+      favs[key] = !favs[key];
+      nextTick(() => lucide.createIcons());
+    }
+
+    onMounted(() => {
+      lucide.createIcons();
+    });
+
+    watch([activeTab, displayCars], () => nextTick(() => lucide.createIcons()));
+
+    return { activeTab, topTabs, filters, displayCars, favs, toggleFav };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
