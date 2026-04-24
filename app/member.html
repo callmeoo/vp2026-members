@@ -143,6 +143,10 @@
                class="flex-none px-4 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-bold rounded-full whitespace-nowrap shadow-sm">
               {{ taskAction(t).label }}
             </a>
+            <button v-else-if="taskAction(t).action" @click="taskAction(t).action()"
+               class="flex-none px-4 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-bold rounded-full whitespace-nowrap shadow-sm">
+              {{ taskAction(t).label }}
+            </button>
             <button v-else disabled
                class="flex-none px-4 py-1.5 bg-slate-100 text-slate-400 text-xs font-bold rounded-full whitespace-nowrap cursor-not-allowed">
               {{ taskAction(t).label }}
@@ -234,11 +238,17 @@ const app = createApp({
     // 按任务类型路由「去完成」按钮
     // - 车辆交易 / 出价竞拍 / 转发车源 / 节日双倍:都到全部车源列表
     // - 参与投票:调研页尚未实现,按钮置灰
+    // - 唯车转:跳转「唯车转」微信小程序(真实需 wx-open-launch-weapp,demo 用 alert 占位)
     // - 其余任务:先占位「去完成」,无跳转
     const ALLCARS_TASKS = new Set(['t_deal', 't_bid', 't_share', 't_festival']);
+    function openWeichezhuan() {
+      // TODO: 真实环境用微信 JSSDK <wx-open-launch-weapp username="..." path="...">
+      alert('即将打开「唯车转」小程序');
+    }
     function taskAction(t) {
-      if (ALLCARS_TASKS.has(t.id)) return { href: 'allcars.html', label: '去完成' };
-      if (t.id === 't_vote')        return { href: null,         label: '敬请期待' };
+      if (ALLCARS_TASKS.has(t.id))    return { href: 'allcars.html',    label: '去完成' };
+      if (t.id === 't_vote')          return { href: null,              label: '敬请期待' };
+      if (t.id === 't_weichezhuan')   return { href: null,              label: '去完成', action: openWeichezhuan };
       return { href: null, label: '去完成' };
     }
 
