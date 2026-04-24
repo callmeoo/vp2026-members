@@ -108,9 +108,8 @@
     </div>
     <div class="p-4 max-h-[72vh] overflow-y-auto">
       <coin-earning-rules></coin-earning-rules>
-      <div class="mt-3 p-3 bg-slate-900 text-white rounded-lg text-xs">
-        <div class="font-semibold mb-1 flex items-center gap-1.5"><i data-lucide="hourglass" class="w-3.5 h-3.5"></i>积分有效期</div>
-        <div class="text-slate-300 leading-relaxed">{{ CFG.coin.validityDesc }},到期自动清零</div>
+      <div class="mt-3 text-xs text-slate-600 leading-relaxed">
+        <span class="font-semibold text-slate-800 mr-1">积分有效期:</span>{{ CFG.coin.validityDesc }},到期自动清零
       </div>
     </div>
     <div class="p-3 border-t border-slate-100">
@@ -216,11 +215,11 @@ const app = createApp({
         earn('bid',          '闽A12345 · 09:40',                        { expire:'2027-04-23' })
       ]},
       { date: '昨天 · 2026-04-22', items: [
-        earn('agency_service', '粤A78546 · 平台代办过户 · 16:20',         { expire:'2027-04-22' }),
+        earn('weichezhuan',    '使用唯车转下单 · 16:20',                  { expire:'2027-04-22' }),
         spend('r_crash','15:10',                                          { note:'余额 306' }),
         earn('deal',           '粤HSB009 · 14:30',                        { expire:'2027-04-22' }),
         earn('bid',            '3 辆不同车源 · 10 积分/台',               { title:'有效出价 × 3', coin:30, note:'已合并展示' }),
-        earn('value_service',  '粤A78546 · 平台物流服务 · 11:05',         { expire:'2027-04-22' })
+        earn('share',          '粤A78546 · 分享朋友圈 · 11:05',           { expire:'2027-04-22' })
       ]},
       { date: '2026-04-18', items: [
         earn('biz_verify',     '上传营业执照 · 一次性奖励 · 11:30',       { coin:5, expire:'2027-04-18' }),

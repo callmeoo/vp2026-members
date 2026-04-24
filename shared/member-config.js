@@ -146,9 +146,7 @@
         color: 'amber',
         icon: 'wrench',
         items: [
-          { id: 'weichezhuan', action: '使用唯车转', coin: 1, unit: '积分', desc: '下单', icon: 'repeat' },
-          { id: 'value_service', action: '使用物流 / 代驾 / 复检 / 购专业检测等服务', coin: 5, unit: '积分/次', desc: '按实际使用台次结算', icon: 'truck' },
-          { id: 'agency_service', action: '使用平台代办服务(过户 / 年审 / 续保 / 配件)', coin: 5, unit: '积分/次', desc: '按实际使用台次结算', icon: 'clipboard-check' }
+          { id: 'weichezhuan', action: '使用唯车转', coin: 1, unit: '积分', desc: '下单', icon: 'repeat' }
         ]
       }
     ],
