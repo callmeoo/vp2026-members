@@ -85,7 +85,6 @@
           { id: 'history_data', icon: 'scroll-text', label: '历史行情查询', desc: '查询车源历史成交数据' },
           { id: 'reserve_price', icon: 'target', label: '保留价查询', desc: '查询车辆保留底价' },
           { id: 'coin_exchange_80', icon: 'tag', label: '积分 8 折兑换', desc: '兑换优惠券时享 8 折' },
-          { id: 'service_pack', icon: 'package', label: '服务中心权益包', desc: '停车费减免、物流、代驾等上门服务' },
           { id: 'refund_1', icon: 'undo-2', label: '无偿退车 1 台', desc: '每定级周期可享 1 台无偿退车' },
           { id: 'sales_advisor', icon: 'briefcase', label: '专属销售顾问', desc: '1 对 1 销售顾问服务' },
           { id: 'service_1v1', icon: 'headphones', label: '1V1 客服', desc: '专属客服通道' }

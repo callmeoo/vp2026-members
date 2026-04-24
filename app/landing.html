@@ -409,14 +409,13 @@ createApp({
     // V0: 仅 1:1
     // V1: 1:1 + 历史行情 + 保留价 + 销售顾问 + 1V1 客服
     // V2: 95 折 + 历史行情 + 保留价 + 销售顾问 + 1V1 客服
-    // V3: 8 折 + 历史行情 + 保留价 + 销售顾问 + 服务中心权益包 + 无偿退车 1 台
+    // V3: 8 折 + 历史行情 + 保留价 + 销售顾问 + 1V1 客服 + 无偿退车 1 台
     const matrixRows = [
       { label:'积分兑换折扣', render: lv => '<span class="' + tickClass(lv.short) + '">' + discountOf(lv) + '</span>' },
       { label:'历史行情查询', render: lv => cellFor(lv, 'history_data') },
       { label:'保留价查询',   render: lv => cellFor(lv, 'reserve_price') },
       { label:'专属销售顾问', render: lv => cellFor(lv, 'sales_advisor') },
       { label:'1V1 专属客服', render: lv => cellFor(lv, 'service_1v1') },
-      { label:'服务中心权益包', render: lv => cellFor(lv, 'service_pack') },
       { label:'无偿退车',     render: lv => cellFor(lv, 'refund_1', '1 台') }
     ];
     const benefitMatrix = matrixRows.map(r => ({
