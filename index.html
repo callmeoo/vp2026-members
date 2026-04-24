@@ -179,7 +179,7 @@
           <!-- 2. 积分商城 · 读取 shared/member-config.js,与 BMS「积分规则」/「商城商品配置」同源 -->
           <div v-if="prdActive === 'c2'" class="prd-body">
             <h3>2.1 积分获取(发放)</h3>
-            <p>积分获取按行为类别配置,数据源 <code>shared/member-config.js → coinEarning[]</code>,与 BMS 后台「<a href="admin/coin-rule.html" target="_blank" rel="noopener">积分规则</a>」页同源。单位换算:<code>1 积分 ≈ {{ coinConfig.unitYuan }} 元</code>。</p>
+            <p>积分获取按行为类别配置,数据源 <code>shared/member-config.js → coinEarning[]</code>,与 BMS 后台「<a href="admin/coin-rule.html" target="_blank" rel="noopener">积分规则</a>」页同源。</p>
             <table v-if="coinGroups.length">
               <thead><tr><th style="width:120px">类别</th><th>行为</th><th style="width:120px">积分</th><th>说明</th></tr></thead>
               <tbody>
@@ -231,7 +231,7 @@
             <h3>3.1 业务触发点</h3>
             <ul>
               <li><strong>下单抵扣</strong>:BMS 订单确认页选择一张未使用的优惠券抵扣费用,一单限一张。</li>
-              <li><strong>售后不回滚</strong>:退款/售后不退回已使用的优惠券,走补偿策略(退等值积分或替代优惠券,需业务决策)。</li>
+              <li><strong>售后退车回滚</strong></li>
               <li><strong>并发控制</strong>:核销接口加<strong>行锁 / 版本号</strong>,防止同一张卡被多订单重复使用。</li>
             </ul>
           </div>
@@ -257,13 +257,13 @@
           <!-- 5. 待确认清单 -->
           <div v-if="prdActive === 'c5'" class="prd-body">
             <table>
-              <thead><tr><th>#</th><th>议题</th><th>归属</th><th>状态</th></tr></thead>
+              <thead><tr><th>#</th><th>议题</th><th>状态</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>商品×积分映射规则</td><td>创新部</td><td><span class="tag tag-todo">待确认</span></td></tr>
-                <tr><td>2</td><td>车信盟出险是否可使用平台权益</td><td>创新部 / 保险</td><td><span class="tag tag-risk">风险</span></td></tr>
-                <tr><td>3</td><td>历史订单权益迁移策略(只展示 vs 迁移)</td><td>产品 / 研发</td><td><span class="tag tag-todo">待确认</span></td></tr>
-                <tr><td>4</td><td>售后退款对已核销优惠券的补偿口径</td><td>产品</td><td><span class="tag tag-todo">待确认</span></td></tr>
-                <tr><td>5</td><td>等级评估周期由「滚动 3 月」调为「月度归档」?</td><td>业务</td><td><span class="tag tag-todo">待评估</span></td></tr>
+                <tr><td>1</td><td>商品×积分映射规则</td><td><span class="tag tag-todo">待确认</span></td></tr>
+                <tr><td>2</td><td>车信盟出险是否可使用平台权益</td><td><span class="tag tag-risk">风险</span></td></tr>
+                <tr><td>3</td><td>历史订单权益迁移策略(只展示 vs 迁移)</td><td><span class="tag tag-todo">待确认</span></td></tr>
+                <tr><td>4</td><td>售后退款对已核销优惠券的补偿口径</td><td><span class="tag tag-todo">待确认</span></td></tr>
+                <tr><td>5</td><td>等级评估周期由「滚动 3 月」调为「月度归档」?</td><td><span class="tag tag-todo">待评估</span></td></tr>
               </tbody>
             </table>
           </div>
