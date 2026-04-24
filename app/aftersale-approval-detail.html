@@ -79,10 +79,10 @@
   </div>
 
   <div class="top-bar">
-    <a href="aftersale-approval-list.html" class="back">
+    <button type="button" onclick="smartBack('aftersale-approval-list.html')" class="back">
       <i data-lucide="chevron-left" class="w-5 h-5"></i>
       <span>返回</span>
-    </a>
+    </button>
     <span class="title">{{ veh.plate }}</span>
   </div>
 
@@ -154,6 +154,7 @@
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
 <script>
 const { createApp, ref, watch, nextTick, onMounted } = Vue;
 
