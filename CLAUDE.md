@@ -81,7 +81,15 @@
     <div class="brand-sub">www.chevip.com</div>
   </div>
   <nav class="flex-1 overflow-y-auto">
-    <a href="bms-orders.html" class="menu-item"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></a>
+    <!-- 业务数据可折叠,当前页在其下时默认展开(menu-item 加 open + submenu 去 display:none) -->
+    <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <div class="submenu" style="display:none">
+      <a href="bms-orders.html" class="sub-item">订单列表</a>
+      <a href="bms-users.html"  class="sub-item">用户列表</a>
+    </div>
+    <!-- 当前页是 bms-orders / bms-order-detail / order-detail 时:订单列表 加 active,业务数据 menu-item 加 open,submenu 去掉 style="display:none" -->
+    <!-- 当前页是 bms-users / bms-user-detail 时:用户列表 加 active,同上 -->
+
 
     <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu">
@@ -119,11 +127,12 @@
 ```
 
 规则:
-1. **一级项固定 4 个,按此顺序**:业务数据(链接)/ 销售管理(展开) / 服务中心(可折叠) / 运营部(可折叠)。**严禁出现**:检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
-2. **销售管理 submenu 固定 9 项,按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
-3. **服务中心 submenu 固定 3 项**:售后服务 / 售后列表 / 企微审批。对应 `bms-aftersales.html` / `bms-aftersales-list.html` / `bms-aftersale-approval-list.html`。
-4. **当前页 active**:在对应 `menu-item` 或 `sub-item` 上加 `active` 类。业务数据相关页(bms-orders / bms-order-detail / order-detail)在一级 `menu-item` 上加 active;销售管理/服务中心子页在对应 `sub-item` 上加 active。`客户等级管理` 默认没有专属页,不加 href。
-5. **服务中心 / 运营部默认折叠**,点击展开;当前页在某 submenu 下时,`menu-item` 加 `open` 且对应 `submenu` 去掉 `display:none`。脚手架统一使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
+1. **一级项固定 4 个,按此顺序**:业务数据(可折叠)/ 销售管理(展开) / 服务中心(可折叠) / 运营部(可折叠)。**严禁出现**:检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
+2. **业务数据 submenu 固定 2 项**:订单列表 / 用户列表。对应 `bms-orders.html` / `bms-users.html`。详情页(bms-order-detail / bms-user-detail / order-detail)归属对应列表 sub-item active。
+3. **销售管理 submenu 固定 9 项,按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
+4. **服务中心 submenu 固定 3 项**:售后服务 / 售后列表 / 企微审批。对应 `bms-aftersales.html` / `bms-aftersales-list.html` / `bms-aftersale-approval-list.html`。
+5. **当前页 active**:仅在对应 `sub-item` 上加 `active` 类。`客户等级管理` 默认没有专属页,不加 href。
+6. **业务数据 / 服务中心 / 运营部默认折叠**,点击展开;当前页在某 submenu 下时,`menu-item` 加 `open` 且对应 `submenu` 去掉 `display:none`(`onclick` 始终保留,允许手动收起)。脚手架统一使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
 
 
 ---
