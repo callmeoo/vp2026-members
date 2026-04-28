@@ -300,7 +300,7 @@ createApp({
 
     // 全量权益汇总,每条记录在 4 个等级的启用状态
     // 排除的权益 id(不在等级设置中暴露配置)
-    const EXCLUDE_BENEFIT_IDS = new Set(['coin_exchange_100']); // 按 1 积分 = 0.093 元等值兑换
+    const EXCLUDE_BENEFIT_IDS = new Set(['coin_exchange_100']); // 按 1 积分 = 0.1 元等值兑换
     const levelCodes = CFG.levels.map(l => l.short);
     const benefitMap = {};
     CFG.levels.forEach(lv => {
