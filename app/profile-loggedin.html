@@ -270,7 +270,7 @@ createApp({
       ? Math.min(100, Math.round(currentDeals.value / target.value * 100))
       : 100);
 
-    // 全部会员权益按固定顺序展示(历史行情 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无偿退车)
+    // 全部会员权益按固定顺序展示(历史数据 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无理由退车)
     // 积分兑换类(coin_exchange_*)视为同一项,展示当前等级具体文案(1:1 / 95 折 / 8 折)
     const allBenefits = computed(() => {
       const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
