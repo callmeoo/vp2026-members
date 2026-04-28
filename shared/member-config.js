@@ -29,10 +29,9 @@
         threshold: { dealsMin: 0, dealsMax: 0, accountMin: 0, accountMax: 2000 },
         thresholdText: '账户金额 < 2000 且近 3 个月无成交',
         feature: '基础商户,无成交记录,平台行为少',
-        merchantCount: 14438,
         benefits: [
-          { id: 'coin_exchange_100', icon: 'coins',     label: '积分 1:1 兑换',     desc: '按 1 积分 = 0.1 元等值兑换' },
-          { id: 'sales_advisor',     icon: 'briefcase', label: '专属销售顾问',     desc: '1 对 1 销售顾问服务' }
+          { id: 'coin_exchange_100', icon: 'coins',     label: '积分 1:1 兑换', desc: '按 1 积分 = 0.1 元等值兑换' },
+          { id: 'sales_advisor',     icon: 'briefcase', label: '专属销售顾问', desc: '1 对 1 销售顾问服务' }
         ]
       },
       {
@@ -44,13 +43,12 @@
         threshold: { dealsMin: 1, dealsMax: 3, accountMin: 2000 },
         thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 1-3 台',
         feature: '入门成交商户,有基础交易行为,低频次使用增值产品',
-        merchantCount: 499,
         benefits: [
-          { id: 'coin_exchange_100', icon: 'coins',       label: '积分 1:1 兑换',  desc: '按 1 积分 = 0.1 元等值兑换' },
-          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',  desc: '查询车源历史成交数据' },
-          { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
-          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',  desc: '1 对 1 销售顾问服务' },
-          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',       desc: '专属客服通道' }
+          { id: 'coin_exchange_100', icon: 'coins',       label: '积分 1:1 兑换', desc: '按 1 积分 = 0.1 元等值兑换' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询', desc: '查询车源历史成交数据' },
+          { id: 'reserve_price',     icon: 'target',      label: '保留价查询',    desc: '查询车辆保留底价' },
+          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问', desc: '1 对 1 销售顾问服务' },
+          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',      desc: '专属客服通道' }
         ]
       },
       {
@@ -62,13 +60,12 @@
         threshold: { dealsMin: 4, dealsMax: 14, accountMin: 2000 },
         thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 4-14 台',
         feature: '稳定成交商户,有固定交易节奏,中度使用增值产品',
-        merchantCount: 310,
         benefits: [
           { id: 'coin_exchange_95',  icon: 'tag',         label: '积分 95 折兑换', desc: '兑换时享 95 折' },
-          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',  desc: '查询车源历史成交数据' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',   desc: '查询车源历史成交数据' },
           { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
-          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',  desc: '1 对 1 销售顾问服务' },
-          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',       desc: '专属客服通道' }
+          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',   desc: '1 对 1 销售顾问服务' },
+          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',        desc: '专属客服通道' }
         ]
       },
       {
@@ -80,14 +77,13 @@
         threshold: { dealsMin: 15, accountMin: 2000 },
         thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 ≥ 15 台',
         feature: '高贡献商户,平台营收中坚,高频使用核心增值产品',
-        merchantCount: 121,
         benefits: [
-          { id: 'coin_exchange_80',  icon: 'tag',         label: '积分 8 折兑换',  desc: '兑换优惠券时享 8 折' },
-          { id: 'refund_1',          icon: 'undo-2',      label: '无偿退车 1 台',  desc: '每定级周期可享 1 台无偿退车' },
-          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',  desc: '查询车源历史成交数据' },
+          { id: 'coin_exchange_80',  icon: 'tag',         label: '积分 8 折兑换',   desc: '兑换优惠券时享 8 折' },
+          { id: 'refund_1',          icon: 'undo-2',      label: '无理由退车 1 台', desc: '每定级周期可享 1 台无理由退车' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',   desc: '查询车源历史成交数据' },
           { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
-          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',  desc: '1 对 1 销售顾问服务' },
-          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',       desc: '专属客服通道' }
+          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',   desc: '1 对 1 销售顾问服务' },
+          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',        desc: '专属客服通道' }
         ]
       }
     ],
@@ -108,8 +104,8 @@
         color: 'emerald',
         icon: 'wallet',
         items: [
-          { id: 'deal', action: '完成车辆交易', coin: 50, unit: '积分', desc: '成交一台车可获得', icon: 'wallet' },
-          { id: 'bid', action: '出价参与竞拍', coin: 10, unit: '积分/台', desc: '出价 1 台车 1 次,不封顶', icon: 'gavel' }
+          { id: 'deal', action: '完成车辆交易', coin: 50, unit: '积分', desc: '过户后可获得', icon: 'wallet' },
+          { id: 'bid',  action: '出价竞拍',     coin: 10, unit: '积分/台', desc: '出价 1 台获取积分 1 次,不封顶', icon: 'gavel' }
         ]
       },
       {
@@ -117,9 +113,9 @@
         color: 'sky',
         icon: 'message-circle',
         items: [
-          { id: 'vote', action: '参与平台投票 / 问卷 / 调研', coin: '5', unit: '积分/次', desc: '视当期互动方案,回馈平台商户', icon: 'clipboard-list' },
-          { id: 'bank_verify', action: '首次充值保证金', coin: '1-5', unit: '积分/次', desc: '一次性奖励,仅首次完善有效', icon: 'credit-card' },
-          { id: 'biz_verify', action: '首次实名认证', coin: '1-5', unit: '积分/次', desc: '一次性奖励,仅首次认证有效', icon: 'badge-check' }
+          { id: 'vote',        action: '参与平台投票 / 问卷 / 调研', coin: '5',   unit: '积分/次', desc: '视当期互动方案,回馈平台商户', icon: 'clipboard-list' },
+          { id: 'bank_verify', action: '首次充值保证金',              coin: '1-5', unit: '积分/次', desc: '一次性奖励,仅首次完善有效',   icon: 'credit-card' },
+          { id: 'biz_verify',  action: '首次实名认证',                coin: '1-5', unit: '积分/次', desc: '一次性奖励,仅首次认证有效',   icon: 'badge-check' }
         ]
       },
       {
@@ -127,9 +123,7 @@
         color: 'violet',
         icon: 'share-2',
         items: [
-          { id: 'share', action: '转发车源并成功分享朋友圈', coin: 1, unit: '积分', desc: '', icon: 'megaphone' },
-          { id: 'invite_member', action: '邀请好友注册并实名认证', coin: 2, unit: '积分', desc: '双方都有积分增送,好友需完成实名认证', icon: 'user-plus' },
-          { id: 'refer_deal', action: '推荐好友完成首笔交易', coin: 2, unit: '积分', desc: '好友需在 30 天内通过平台完成有效成交,成交日核算', icon: 'users' }
+          { id: 'share', action: '转发车源并成功分享朋友圈', coin: 1, unit: '积分', desc: '', icon: 'megaphone' }
         ]
       },
       {
@@ -137,15 +131,7 @@
         color: 'rose',
         icon: 'calendar-heart',
         items: [
-          { id: 'festival', action: '节日专属任务(如中秋 / 春节)', coin: 'x2', unit: '出价双倍积分', desc: '以具体活动通知为准', icon: 'gift' },
-        ]
-      },
-      {
-        category: '增值服务类(待定)',
-        color: 'amber',
-        icon: 'wrench',
-        items: [
-          { id: 'weichezhuan', action: '使用唯车转', coin: 1, unit: '积分', desc: '下单', icon: 'repeat' }
+          { id: 'festival', action: '节日专属任务(如春节)', coin: '以活动为准', unit: '出价多倍积分', desc: '以具体活动通知为准', icon: 'gift' }
         ]
       }
     ],
@@ -156,24 +142,23 @@
     // highlight=true 为核心任务,在会员中心以红色标记为"核心任务"
     // unit 为积分后缀(如 "/台" / "/次"),空表示纯数字
     recommendedTasks: [
-      { id: 't_deal',        action: '完成车辆交易',                             points: 50, unit: '',    desc: '成交一台车可获得,退车则扣回',       highlight: true },
-      { id: 't_bid',         action: '出价竞拍',                             points: 10, unit: '/台', desc: '仅计有效出价 1 台算 1 次,上不封顶', highlight: true },
-      { id: 't_vote',        action: '参与平台投票 / 问卷 / 调研',               points: 2,  unit: '/次', desc: '' },
-      { id: 't_deposit',     action: '首次充值保证金',                           points: 5,  unit: '/次', desc: '' },
-      { id: 't_verify',      action: '首次实名认证',                             points: 5,  unit: '/次', desc: '' },
-      { id: 't_share',       action: '转发车源并成功分享朋友圈',                 points: 1,  unit: '',    desc: '' },
-      { id: 't_invite',      action: '邀请商户完成注册 + 实名认证 + 保证金',     points: 20, unit: '',    desc: '双方都有积分增送' },
-      { id: 't_festival',    action: '节日专属任务出价双倍积分',                 points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true },
-      { id: 't_weichezhuan', action: '使用唯车转下单',                   points: 1,  unit: '',    desc: '使用唯车转下单' }
+      { id: 't_deal',     action: '车辆成交',                       points: 50, unit: '',    desc: '成交一台车可获得,退车则扣回',       highlight: true },
+      { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '仅计有效出价 1 台算 1 次,上不封顶', highlight: true },
+      { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
+      { id: 't_deposit',  action: '首次充值保证金',                 points: 5,  unit: '/次', desc: '' },
+      { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '' },
+      { id: 't_share',    action: '转发车源并成功分享朋友圈',       points: 1,  unit: '',    desc: '' },
+      { id: 't_festival', action: '节日专属任务出价多倍积分',       points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true }
     ],
 
     // ─────────────────────────────────────────────
     // 四、积分可兑换的权益卡(含有效期配置,用于商城与我的权益卡)
     // ─────────────────────────────────────────────
     redeemableRewards: [
-      { id: 'r_transfer_100',  name: '过户减免100元券', desc: '过户手续费直减 100 元',   coin: 500, scope: '所有等级商户', icon: 'percent',     validityDays: 30 },
-      { id: 'r_insurance',     name: '出险查询券',      desc: '查询单台车出险记录',      coin: 300, scope: '所有等级商户', icon: 'shield-alert', validityDays: 30 },
-      { id: 'r_crash',         name: '碰撞查询券',      desc: '查询单台车碰撞报告',      coin: 200, scope: '所有等级商户', icon: 'car-front',    validityDays: 30 }
+      { id: 'r_compfee_50',     name: '综合服务费 50 元券',      desc: '综合服务费直减 50 元;限平台成交车辆(非报废车)',                   coin: 500, scope: '所有等级商户', icon: 'percent',      validityDays: 30 },
+      { id: 'r_servicecenter_100', name: '服务中心消费 100 元券', desc: '过户服务费直减 100 元;限非平台成交车辆,在南沙、白云、佛山、东莞服务中心办理过户服务', coin: 500, scope: '所有等级商户', icon: 'building-2',   validityDays: 30 },
+      { id: 'r_dataquery_5',    name: '数据查询服务优惠券 5 元',  desc: '数据查询服务直减 5 元;优惠券不可叠加使用,V2/V3 等级打折兑换', coin: 50,  scope: '所有等级商户', icon: 'shield-alert', validityDays: 30 },
+      { id: 'r_dataquery_10',   name: '数据查询服务优惠券 10 元', desc: '数据查询服务直减 10 元;优惠券不可叠加使用,V2/V3 等级打折兑换', coin: 100, scope: '所有等级商户', icon: 'car-front',    validityDays: 30 }
     ]
   };
 
