@@ -14,7 +14,7 @@
 
   var MEMBER_CONFIG = {
     version: '2026.04',
-    updatedAt: '2026-04-17',
+    updatedAt: '2026-04-28',
 
     // ─────────────────────────────────────────────
     // 一、会员等级体系(根据近 3 月累计成交台数 + 账户金额门槛评定)
@@ -23,71 +23,71 @@
       {
         code: 'LV0',
         short: 'V0',
-        name: '新人会员',
+        name: '普通会员',
         color: '#94a3b8',
         gradient: ['#64748b', '#94a3b8'],
         threshold: { dealsMin: 0, dealsMax: 0, accountMin: 0, accountMax: 2000 },
-        thresholdText: '账户金额 < 2000且近 3 个月无成交',
+        thresholdText: '账户金额 < 2000 且近 3 个月无成交',
         feature: '基础商户,无成交记录,平台行为少',
         merchantCount: 14438,
-        // 该等级享有的会员权益(以会员权益为主,积分为辅)
         benefits: [
-          { id: 'coin_exchange_100', icon: 'coins', label: '积分 1:1 兑换', desc: '按 1 积分 = 0.093 元等值兑换权益卡' }
+          { id: 'coin_exchange_100', icon: 'coins',     label: '积分 1:1 兑换',     desc: '按 1 积分 = 0.1 元等值兑换' },
+          { id: 'sales_advisor',     icon: 'briefcase', label: '专属销售顾问',     desc: '1 对 1 销售顾问服务' }
         ]
       },
       {
         code: 'LV1',
         short: 'V1',
-        name: '普通会员',
+        name: '金卡会员',
         color: '#0ea5e9',
         gradient: ['#38bdf8', '#0ea5e9'],
-        threshold: { dealsMin: 1, dealsMax: 2, accountMin: 2000 },
-        thresholdText: '账户金额 ≥ 2000且近 3 个月交易量 1-2 台',
+        threshold: { dealsMin: 1, dealsMax: 3, accountMin: 2000 },
+        thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 1-3 台',
         feature: '入门成交商户,有基础交易行为,低频次使用增值产品',
         merchantCount: 499,
         benefits: [
-          { id: 'history_data', icon: 'scroll-text', label: '历史行情查询', desc: '查询车源历史成交数据' },
-          { id: 'reserve_price', icon: 'target', label: '保留价查询', desc: '查询车辆保留底价' },
-          { id: 'coin_exchange_100', icon: 'coins', label: '积分 1:1 兑换', desc: '按 1 积分 = 0.1 元等值兑换' },
-          { id: 'sales_advisor', icon: 'briefcase', label: '专属销售顾问', desc: '1 对 1 销售顾问服务' },
-          { id: 'service_1v1', icon: 'headphones', label: '1V1 客服', desc: '专属客服通道' }
+          { id: 'coin_exchange_100', icon: 'coins',       label: '积分 1:1 兑换',  desc: '按 1 积分 = 0.1 元等值兑换' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',  desc: '查询车源历史成交数据' },
+          { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
+          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',  desc: '1 对 1 销售顾问服务' },
+          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',       desc: '专属客服通道' }
         ]
       },
       {
         code: 'LV2',
         short: 'V2',
-        name: '银卡会员',
+        name: '白金会员',
         color: '#8b5cf6',
         gradient: ['#a78bfa', '#8b5cf6'],
-        threshold: { dealsMin: 3, dealsMax: 9, accountMin: 2000 },
-        thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 3-9 台',
+        threshold: { dealsMin: 4, dealsMax: 14, accountMin: 2000 },
+        thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 4-14 台',
         feature: '稳定成交商户,有固定交易节奏,中度使用增值产品',
         merchantCount: 310,
         benefits: [
-          { id: 'history_data', icon: 'scroll-text', label: '历史行情查询', desc: '查询车源历史成交数据' },
-          { id: 'reserve_price', icon: 'target', label: '保留价查询', desc: '查询车辆保留底价' },
-          { id: 'coin_exchange_95', icon: 'tag', label: '积分 95 折兑换', desc: '兑换时享 95 折' },
-          { id: 'sales_advisor', icon: 'briefcase', label: '专属销售顾问', desc: '1 对 1 销售顾问服务' },
-          { id: 'service_1v1', icon: 'headphones', label: '1V1 客服', desc: '专属客服通道' }
+          { id: 'coin_exchange_95',  icon: 'tag',         label: '积分 95 折兑换', desc: '兑换时享 95 折' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',  desc: '查询车源历史成交数据' },
+          { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
+          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',  desc: '1 对 1 销售顾问服务' },
+          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',       desc: '专属客服通道' }
         ]
       },
       {
         code: 'LV3',
         short: 'V3',
-        name: '金卡会员',
+        name: '钻石会员',
         color: '#f59e0b',
         gradient: ['#fbbf24', '#f59e0b'],
-        threshold: { dealsMin: 10, accountMin: 2000 },
-        thresholdText: '账户金额 ≥ 2000且近 3 个月交易量 ≥ 10 台',
+        threshold: { dealsMin: 15, accountMin: 2000 },
+        thresholdText: '账户金额 ≥ 2000 且近 3 个月交易量 ≥ 15 台',
         feature: '高贡献商户,平台营收中坚,高频使用核心增值产品',
         merchantCount: 121,
         benefits: [
-          { id: 'history_data', icon: 'scroll-text', label: '历史行情查询', desc: '查询车源历史成交数据' },
-          { id: 'reserve_price', icon: 'target', label: '保留价查询', desc: '查询车辆保留底价' },
-          { id: 'coin_exchange_80', icon: 'tag', label: '积分 8 折兑换', desc: '兑换优惠券时享 8 折' },
-          { id: 'refund_1', icon: 'undo-2', label: '无偿退车 1 台', desc: '每定级周期可享 1 台无偿退车' },
-          { id: 'sales_advisor', icon: 'briefcase', label: '专属销售顾问', desc: '1 对 1 销售顾问服务' },
-          { id: 'service_1v1', icon: 'headphones', label: '1V1 客服', desc: '专属客服通道' }
+          { id: 'coin_exchange_80',  icon: 'tag',         label: '积分 8 折兑换',  desc: '兑换优惠券时享 8 折' },
+          { id: 'refund_1',          icon: 'undo-2',      label: '无偿退车 1 台',  desc: '每定级周期可享 1 台无偿退车' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',  desc: '查询车源历史成交数据' },
+          { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
+          { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',  desc: '1 对 1 销售顾问服务' },
+          { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',       desc: '专属客服通道' }
         ]
       }
     ],
@@ -96,7 +96,7 @@
     // 二、积分规则 · 根据商户行为动态赋值
     // ─────────────────────────────────────────────
     coin: {
-      unitYuan: 0.093,                 // 一个积分 = 0.093 元
+      unitYuan: 0.1,                   // 一个积分 = 0.1 元
       validityMonths: 12,              // 自获得当月起 12 个自然月内有效
       validityDesc: '商户获得积分后,有效期为获得当月的 12 个自然月'
     },
