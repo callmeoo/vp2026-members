@@ -49,6 +49,22 @@
   .prd-body .tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11.5px; font-weight: 500; }
   .prd-body .tag-todo { background: #fef3c7; color: #92400e; }
   .prd-body .tag-risk { background: #fee2e2; color: #991b1b; }
+
+  /* 原始需求 Word · 内联展示样式(模拟 Word 排版) */
+  .word-doc { max-width: 880px; margin: 0 auto; padding: 32px 48px; background: #fff; color: #1f2937; font-size: 14px; line-height: 1.85; font-family: "PingFang SC", "Microsoft YaHei", "SimSun", serif; }
+  .word-doc .word-title { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: 1px; }
+  .word-doc .word-subtitle { text-align: center; font-size: 16px; color: #475569; margin-bottom: 24px; }
+  .word-doc h2 { font-size: 17px; font-weight: 700; margin: 24px 0 10px; color: #0f172a; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+  .word-doc p { margin: 6px 0; }
+  .word-doc ul { padding-left: 24px; margin: 6px 0; list-style: disc; }
+  .word-doc ul li { margin: 4px 0; }
+  .word-doc strong { color: #0f172a; }
+  .word-doc .word-red { color: #dc2626; }
+  .word-doc .word-todo { color: #dc2626; font-weight: 500; }
+  .word-doc .word-table { border-collapse: collapse; width: 100%; margin: 10px 0 14px; font-size: 13px; }
+  .word-doc .word-table th, .word-doc .word-table td { border: 1px solid #94a3b8; padding: 8px 10px; vertical-align: top; text-align: left; }
+  .word-doc .word-table th { background: #f1f5f9; font-weight: 600; text-align: center; color: #1e293b; }
+  .word-doc .word-table th .th-sub { display: block; font-weight: 400; font-size: 12px; color: #64748b; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -119,22 +135,209 @@
           </div>
         </div>
 
-        <!-- 原始 Word -->
-        <div v-if="subActive === 'word'" class="py-6">
-          <div class="max-w-xl mx-auto border border-slate-200 rounded-xl p-6 flex items-center gap-4">
-            <div class="w-14 h-14 shrink-0 bg-blue-50 rounded-xl flex items-center justify-center">
-              <i data-lucide="file-text" class="w-7 h-7 text-blue-500"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold text-slate-700 truncate">唯普汽车商户会员体系及积分运营方案(20260428-已沟通).docx</div>
-              <div class="text-xs text-slate-400 mt-0.5">业务方原始需求文档 · 22 KB · 2026-04-28</div>
-            </div>
-            <a :href="wordFile" download
-               class="shrink-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">
-              <i data-lucide="download" class="w-3.5 h-3.5 inline mr-1"></i>下载
-            </a>
-          </div>
-          <div class="text-center text-[11px] text-slate-400 mt-3">点击直接下载;如需替换新版本,更新 docs/ 下的同名文件即可。</div>
+        <!-- 原始 Word · 直接展示 -->
+        <div v-if="subActive === 'word'" class="word-doc">
+          <div class="word-title">唯普汽车商户会员体系及积分运营方案</div>
+          <div class="word-subtitle">(初稿)</div>
+
+          <h2>一、方案总则</h2>
+          <p><strong>1. 目的</strong></p>
+          <p style="text-indent:2em">以<strong>真实成交、有效出价、增值服务、合规拉新</strong>为核心激励,用清晰等级 + 可感知积分,提升高贡献商户粘性,激活沉睡商户,控制积分成本,推动平台交易与收入增长。</p>
+          <p><strong>2. 适用对象:全平台买家商户:V0、V1、V2、V3</strong></p>
+          <p><strong>3. 核心规则</strong></p>
+          <p>唯积分:<strong>仅靠经营行为获取,无充值、不可转让、不可提现</strong></p>
+          <p>积分价值:<strong>1 积分 = 0.1 元 <span class="word-todo">待定</span></strong></p>
+          <p>等级周期:<strong>3 个月滚动评估,按近 3 个月成交台数定等级</strong></p>
+          <p>积分有效期:<strong>到账当日起 12 个自然月,到期清零</strong></p>
+
+          <h2>二、会员等级体系设计</h2>
+          <p><strong>1、等级划分与定级标准:</strong></p>
+          <p>等级定名:普通会员→金卡会员→白金会员→钻石会员</p>
+          <p>等级调整:每月 1 号自动更新,按过去 90 天成交计算;达标升级,不达标降级</p>
+          <table class="word-table">
+            <thead>
+              <tr>
+                <th style="width:18%">会员等级</th>
+                <th style="width:32%">核心定级门槛<br><span class="th-sub">(满足其一 + 积分门槛)</span></th>
+                <th>权益内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>V0 - 普通会员</td>
+                <td>帐户金额&lt;2000,且三个月无成交</td>
+                <td>积分 1:1 兑换<br>专属销售顾问</td>
+              </tr>
+              <tr>
+                <td>V1 - 金卡会员</td>
+                <td>帐户金额≧2000,且三个月交易量 <span class="word-red">1-3</span> 台</td>
+                <td>积分 1:1 兑换<br>历史数据查询<br>保留价查询<br>专属销售顾问<br>1V1 客服</td>
+              </tr>
+              <tr>
+                <td>V2 - 白金会员</td>
+                <td>帐户金额≧2000,且三个月交易量 <span class="word-red">4-14</span> 台</td>
+                <td>积分 95 折兑换<br>历史数据查询<br>保留价查询<br>专属销售顾问</td>
+              </tr>
+              <tr>
+                <td>V3 - 钻石会员</td>
+                <td>帐户金额≧2000,且三个月交易量 <span class="word-red">≥15</span> 台</td>
+                <td>唯积分 8 折兑换<br>无偿退车 1 台<br>历史数据查询<br>保留价查询<br>专属销售顾问</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p><strong>2、等级有效期与动态调整</strong></p>
+          <ul>
+            <li>有效期:等级当月有效;</li>
+            <li>等级确定规则:3 个月为一个评估周期,以周期内的交易台次来评级。例如:4.1 日取 1.1-3.31 日的总成交数据(抛仲裁退车)和账号总额(含保证金冻结);3 个月成交台次决定下一个月的等级。每月等级会有变动(原会员等级规则不变)</li>
+            <li>动态调整:达标自动升级,未达标按规则保级 / 降级。</li>
+          </ul>
+
+          <h2>三、唯积分获取规则</h2>
+          <p><strong>1、唯积分说明</strong></p>
+          <ul>
+            <li>积分计算:会员积分基于用户在唯普平台行为的累积分</li>
+            <li>积分商城的产品设计(一期产品),积分兑换。</li>
+            <li>积分扣除:详见下方细表</li>
+          </ul>
+
+          <p><strong>2、唯积分获取规则</strong>(唯一渠道:有效经营行为,无充值入口)</p>
+          <ul>
+            <li>唯积分作为会员成长核心载体,通过行为赚积分 - 积分促成长 - 成长享权益的逻辑,获取相应的权益奖励</li>
+            <li>唯积分不具有货币或现金价值,不可兑换,不可转让</li>
+            <li>唯积分可在唯普会员商城兑换各类权益,具体以积分兑换及活动页面展示为准。</li>
+          </ul>
+
+          <p><strong>3、唯积分的获取方式</strong></p>
+          <ul>
+            <li>在平台消费可得积分</li>
+            <li>商户完成打卡任务,获取相应的积分</li>
+            <li>积分获取无充值渠道,只能通过有效经营行为可获得。</li>
+          </ul>
+
+          <p><strong>4、唯积分积分值及规则</strong></p>
+          <p style="margin-left:2em">一个积分 = 0.1 元</p>
+          <table class="word-table">
+            <thead>
+              <tr>
+                <th style="width:11%">获取类别</th>
+                <th style="width:18%">具体行为</th>
+                <th style="width:9%">积分值</th>
+                <th style="width:7%">优先级</th>
+                <th style="width:25%">规则说明</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="2">商户行为<br>&amp; 核心交易类</td>
+                <td>完成车辆交易<br><span class="word-red">(非报废车)</span></td>
+                <td>50 积分</td>
+                <td>100</td>
+                <td>成交一台车可获得,退车则扣回<br>限定:非报废车</td>
+                <td><span class="word-red">发放时机:过户完成/订单完结<br>订单完结后发生仲裁退车,系统自动加减,记录原因;仅扣减成交积分,不扣减出价积分;支持人工加减积分;</span></td>
+              </tr>
+              <tr>
+                <td>出价竞拍</td>
+                <td>10 积分/台</td>
+                <td>100</td>
+                <td>仅计有效出价 1 台算 1 次,上不封顶</td>
+                <td><span class="word-red">发放时机:竞价结束发放<br>回退机制:无</span></td>
+              </tr>
+              <tr>
+                <td rowspan="3">活跃互动类<br>(低门槛)</td>
+                <td>参与平台投票 / 问卷 / 调研</td>
+                <td>2 积分/次</td>
+                <td></td>
+                <td><span class="word-red">第一期一定做?问卷内容待定</span></td>
+                <td><span class="word-red">回退机制:无</span></td>
+              </tr>
+              <tr>
+                <td>首次充值保证金</td>
+                <td>5 积分/次</td>
+                <td>99</td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>首次实名认证</td>
+                <td>5 积分/次</td>
+                <td>99</td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>社交裂变类<br>(高积分)</td>
+                <td>转发车源并成功分享朋友圈<br>(不能仅自己可见、不能分组可见)</td>
+                <td>1 积分</td>
+                <td>98</td>
+                <td>根据技术实现情况处理;<br>如阉割版,限制:单一用户 1 天限 1 积分;<br>非阉割版单一用户 1 天限 5 积分。</td>
+                <td><span class="word-red">需技术确认能否实现<br>如不能实现,是否能接受阉割版,比如转发朋友圈但是设置了仅自己可见..(能接受)</span></td>
+              </tr>
+              <tr>
+                <td>限时活动类<br>(不定期)</td>
+                <td>节日专属任务(如中秋 / 春节):<span class="word-red">出价 x 倍积分、成交 y 倍积分</span></td>
+                <td>以活动说明为准</td>
+                <td>97</td>
+                <td>以具体活动通知为准<br>时间段</td>
+                <td><span class="word-red">限定时间内;</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top:18px"><strong>唯积分可兑换的权益</strong></p>
+          <table class="word-table">
+            <thead>
+              <tr>
+                <th style="width:30%">权益名称</th>
+                <th style="width:14%">所需积分</th>
+                <th style="width:12%">适用等级</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>查看保留价</td>
+                <td>50 积分</td>
+                <td>所有</td>
+                <td>有效期 1 个月</td>
+              </tr>
+              <tr>
+                <td>数据查询服务优惠券 5 元</td>
+                <td>50 积分</td>
+                <td>所有</td>
+                <td rowspan="5"><span class="word-red">优惠券不可叠加使用;<br>V2V3 等级打折兑换<br>有效期:兑换后 30 天有效</span></td>
+              </tr>
+              <tr><td>数据查询服务优惠券 10 元</td><td>100 积分</td><td>所有</td></tr>
+              <tr><td>数据查询服务优惠券 20 元</td><td>150 积分</td><td>所有</td></tr>
+              <tr><td>数据查询服务优惠券 30 元</td><td>300 积分</td><td>所有</td></tr>
+              <tr><td>数据查询服务优惠券 50 元</td><td>500 积分</td><td>所有</td></tr>
+              <tr>
+                <td>综合服务费优惠券 50 元</td>
+                <td>500 积分</td>
+                <td>所有</td>
+                <td><span class="word-red">限制:平台成交车辆(非报废车)<br>有效期:兑换后 30 天有效</span></td>
+              </tr>
+              <tr>
+                <td>服务中心消费抵扣券 100 元</td>
+                <td>500 积分</td>
+                <td>所有</td>
+                <td>限制:非平台成交车辆,在南沙、白云、佛山、东莞服务中心办理过户服务<br><span class="word-red">服务中心:人工线下核销 待确认细节</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top:18px"><strong>5、唯积分的有效期</strong></p>
+          <ul>
+            <li>商户获得积分后,有效期为获得当月的 12 个自然月(1.30 日获取的积分,12 月 31 日过期)</li>
+          </ul>
+
+          <h2>五、落地执行流程</h2>
+          <p style="margin-left:2em">系统配置:开通 积分入口,配置等级自动计算</p>
+          <p style="margin-left:2em">规则宣导:商户端一句话说明 + 一张图规则</p>
+          <p style="margin-left:2em">数据看板:实时监控积分发放、消耗、兑换、成本</p>
+          <p style="margin-left:2em">月度复盘:按成本与效果调整积分与权益</p>
+          <p style="margin-left:2em">异常处理:刷单、恶意退车直接冻结积分并降级</p>
         </div>
 
         <!-- 需求说明 PRD · 分章节 tab -->
