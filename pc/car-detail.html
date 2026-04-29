@@ -41,12 +41,13 @@
   .spec-arrow { font-size: 11px; color: #9ca3af; margin-left: 4px; }
 
   /* ---------- 图片画廊 ---------- */
-  .gallery-main { background: #f8f8f8; border-radius: 4px; overflow: hidden; aspect-ratio: 4/3; position: relative; }
-  .gallery-main img { width:100%; height:100%; object-fit: cover; }
+  .gallery-main { background: #f8f8f8; border-radius: 4px; overflow: hidden; aspect-ratio: 4/3; min-height: 380px; position: relative; }
+  .gallery-main img { width:100%; height:100%; object-fit: cover; display:block; }
   .gallery-arrow { position:absolute; top:50%; transform:translateY(-50%); width:32px; height:48px; background: rgba(0,0,0,.35); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
   .gallery-arrow:hover { background: rgba(0,0,0,.55); }
   .gallery-arrow.left { left: 0; border-radius: 0 4px 4px 0; }
   .gallery-arrow.right { right: 0; border-radius: 4px 0 0 4px; }
+  .gallery-counter { position:absolute; right: 12px; bottom: 10px; background: rgba(0,0,0,.55); color:#fff; font-size: 12px; padding: 3px 10px; border-radius: 999px; font-variant-numeric: tabular-nums; }
   .gallery-thumbs { display:flex; gap:8px; margin-top: 10px; }
   .gallery-thumb { flex:1; aspect-ratio: 4/3; background:#f1f1f1; border-radius: 2px; overflow:hidden; cursor:pointer; border: 2px solid transparent; }
   .gallery-thumb.active { border-color: #e60012; }
@@ -143,9 +144,25 @@
   .modal-close:hover { color:#111827; }
 
   /* ---------- 演示态切换条 ---------- */
-  .demo-toggle { position: fixed; right: 16px; bottom: 16px; background: #111827; color:#fff; padding: 8px 14px; font-size: 12px; border-radius: 999px; z-index: 60; display:flex; align-items:center; gap: 8px; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
-  .demo-toggle button { background: #1f2937; color: #fff; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+  .demo-toggle { position: fixed; right: 16px; bottom: 16px; background: #111827; color:#fff; padding: 8px 14px; font-size: 12px; border-radius: 12px; z-index: 60; display:flex; flex-direction:column; gap: 6px; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+  .demo-toggle .row { display:flex; align-items:center; gap: 6px; }
+  .demo-toggle button { background: #1f2937; color: #fff; padding: 4px 10px; border-radius: 999px; cursor: pointer; font-size: 11px; }
   .demo-toggle button.on { background: #e60012; }
+  .demo-toggle .lvl { font-weight: 700; padding: 4px 8px; }
+
+  /* ---------- 保留价权益卡 ---------- */
+  .reserve-card { border: 1px dashed #ffccc7; background: linear-gradient(180deg,#fff5f5,#fff); border-radius: 4px; padding: 14px 16px; }
+  .reserve-card.locked { border-color: #e5e7eb; background: linear-gradient(180deg,#fafafa,#fff); }
+  .lvl-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; padding: 2px 8px; border-radius: 999px; color:#fff; }
+  .lvl-v0 { background:#94a3b8; }
+  .lvl-v1 { background:#0ea5e9; }
+  .lvl-v2 { background:#8b5cf6; }
+  .lvl-v3 { background:#f59e0b; }
+  .reserve-num { color:#e60012; font-weight:700; font-size:20px; font-variant-numeric:tabular-nums; }
+  .btn-upgrade { background:linear-gradient(90deg,#f59e0b,#f97316); color:#fff; height:30px; padding:0 14px; font-size:12px; font-weight:600; border-radius:999px; border:none; cursor:pointer; }
+  .btn-upgrade:hover { filter: brightness(1.05); }
+  .btn-view-reserve { background:#fff; color:#e60012; border:1px solid #e60012; height:30px; padding:0 14px; font-size:12px; font-weight:600; border-radius:999px; cursor:pointer; }
+  .btn-view-reserve:hover { background:#fff1f0; }
 
   /* ---------- 占位图(SVG 渐变) ---------- */
   .ph { width:100%; height:100%; display:block; }
@@ -234,34 +251,19 @@
         <!-- 左:图片画廊 -->
         <div>
           <div class="gallery-main">
-            <component :is="'svg'" viewBox="0 0 600 450" class="ph">
-              <defs>
-                <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#374151"/><stop offset="100%" stop-color="#1f2937"/>
-                </linearGradient>
-              </defs>
-              <rect width="600" height="450" fill="url(#bg1)"/>
-              <g transform="translate(110,140)">
-                <rect x="0" y="60" width="380" height="100" rx="20" fill="#0f172a"/>
-                <rect x="40" y="20" width="300" height="80" rx="14" fill="#111827"/>
-                <circle cx="80" cy="170" r="28" fill="#0b1220" stroke="#374151" stroke-width="3"/>
-                <circle cx="300" cy="170" r="28" fill="#0b1220" stroke="#374151" stroke-width="3"/>
-                <rect x="60" y="40" width="120" height="50" rx="8" fill="#1f2937"/>
-                <rect x="200" y="40" width="120" height="50" rx="8" fill="#1f2937"/>
-              </g>
-              <text x="300" y="420" text-anchor="middle" fill="#475569" font-size="14">{{ '车辆主图(占位)' }}</text>
-            </component>
-            <div class="gallery-arrow left"><i data-lucide="chevron-left" class="w-5 h-5"></i></div>
-            <div class="gallery-arrow right"><i data-lucide="chevron-right" class="w-5 h-5"></i></div>
+            <img :src="car.images[activeImageIndex]" :alt="car.title"
+                 loading="eager" referrerpolicy="no-referrer"
+                 @error="onImgError($event)">
+            <div class="gallery-arrow left" @click="prevImage"><i data-lucide="chevron-left" class="w-5 h-5"></i></div>
+            <div class="gallery-arrow right" @click="nextImage"><i data-lucide="chevron-right" class="w-5 h-5"></i></div>
+            <div class="gallery-counter">{{ activeImageIndex + 1 }} / {{ car.images.length }}</div>
           </div>
           <div class="gallery-thumbs">
-            <div v-for="i in 4" :key="i" class="gallery-thumb" :class="{ active: i === 1 }">
-              <component :is="'svg'" viewBox="0 0 100 75" class="ph">
-                <rect width="100" height="75" :fill="['#374151','#475569','#64748b','#475569'][i-1]"/>
-                <rect x="20" y="35" width="60" height="20" rx="4" fill="#0f172a"/>
-                <circle cx="32" cy="58" r="5" fill="#0b1220"/>
-                <circle cx="68" cy="58" r="5" fill="#0b1220"/>
-              </component>
+            <div v-for="(img, i) in car.images.slice(0, 4)" :key="i"
+                 class="gallery-thumb"
+                 :class="{ active: i === activeImageIndex }"
+                 @click="activeImageIndex = i">
+              <img :src="img" :alt="'缩略图 ' + (i+1)" loading="lazy" referrerpolicy="no-referrer" @error="onImgError($event)">
             </div>
           </div>
           <div class="flex items-center justify-between mt-3 text-[13px] text-slate-500">
@@ -306,6 +308,57 @@
             <span class="pill-tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e">有保留价
               <i data-lucide="info" class="w-3 h-3 inline -mt-0.5 ml-0.5"></i>
             </span>
+          </div>
+
+          <!-- 保留价权益卡:V0 锁定 / V1+ 可查看 -->
+          <div v-if="loggedIn" class="reserve-card mb-3" :class="{ locked: !canViewReserve }">
+            <!-- V0:不能查看 -->
+            <template v-if="!canViewReserve">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                  <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
+                  <div>
+                    <div class="flex items-center gap-2 text-[13.5px] text-slate-700 font-medium">
+                      保留价
+                      <span class="lvl-badge lvl-v0">V0 普通</span>
+                      <span class="text-[12px] text-slate-400 font-normal">当前等级不可查看</span>
+                    </div>
+                    <div class="text-[12px] text-slate-500 mt-0.5">升级<span class="vp-red">金卡及以上</span>会员即可查看车辆保留底价,精准锁价不踏空</div>
+                  </div>
+                </div>
+                <button class="btn-upgrade" @click="goLevelUpgrade">立即升级</button>
+              </div>
+            </template>
+
+            <!-- V1+:可以查看 -->
+            <template v-else>
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                  <i data-lucide="target" class="w-4 h-4 vp-red"></i>
+                  <div>
+                    <div class="flex items-center gap-2 text-[13.5px] text-slate-700 font-medium">
+                      保留价
+                      <span class="lvl-badge" :class="'lvl-' + levelCode.toLowerCase()">{{ levelCode }} {{ levelName }}</span>
+                      <span class="text-[12px] text-emerald-600 font-normal flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i>等级权益已解锁</span>
+                    </div>
+                    <div class="text-[12px] text-slate-500 mt-0.5" v-if="!reserveRevealed">点击查看本车保留价,作为出价决策参考</div>
+                    <div v-else class="mt-1 flex items-baseline gap-2">
+                      <span class="reserve-num">¥{{ formatNum(car.reservePrice) }}</span>
+                      <span class="text-[12px] text-slate-400">({{ (car.reservePrice/10000).toFixed(2) }}万)</span>
+                      <span class="pill-tag" :class="car.currentPrice >= car.reservePrice ? 'pill-info' : 'pill-mute'" style="margin-left:4px">
+                        {{ car.currentPrice >= car.reservePrice ? '当前已过保留价' : '当前未过保留价 · 还差 ¥' + formatNum(car.reservePrice - car.currentPrice) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button v-if="!reserveRevealed" class="btn-view-reserve" @click="reserveRevealed = true">
+                  <i data-lucide="eye" class="w-3 h-3 inline -mt-0.5 mr-1"></i>查看保留价
+                </button>
+                <button v-else class="btn-view-reserve" @click="reserveRevealed = false" style="border-color:#d1d5db;color:#6b7280">
+                  <i data-lucide="eye-off" class="w-3 h-3 inline -mt-0.5 mr-1"></i>收起
+                </button>
+              </div>
+            </template>
           </div>
 
           <!-- 提示条 -->
@@ -597,15 +650,14 @@
           <div class="card p-6 text-center text-slate-400 text-[13px]">底盘检测结果(占位)</div>
         </section>
         <section :id="'sec-imgs'">
-          <h3 class="text-[18px] font-semibold text-slate-800 mb-3">车辆图片</h3>
+          <h3 class="text-[18px] font-semibold text-slate-800 mb-3">车辆图片 <span class="text-slate-400 text-[13px] font-normal">共 {{ car.gallery.length }} 张</span></h3>
           <div class="grid grid-cols-4 gap-3">
-            <div v-for="i in 12" :key="i" class="aspect-[4/3] bg-slate-100 rounded">
-              <component :is="'svg'" viewBox="0 0 100 75" class="ph">
-                <rect width="100" height="75" fill="#e5e7eb"/>
-                <rect x="20" y="35" width="60" height="20" rx="4" fill="#94a3b8"/>
-                <circle cx="32" cy="58" r="5" fill="#475569"/>
-                <circle cx="68" cy="58" r="5" fill="#475569"/>
-              </component>
+            <div v-for="(img, i) in car.gallery" :key="i"
+                 class="aspect-[4/3] bg-slate-100 rounded overflow-hidden cursor-pointer group relative">
+              <img :src="img.url" :alt="img.label" loading="lazy" referrerpolicy="no-referrer"
+                   @error="onImgError($event)"
+                   class="w-full h-full object-cover transition-transform group-hover:scale-105">
+              <div class="absolute left-2 bottom-2 px-2 py-0.5 bg-black/55 text-white text-[11px] rounded">{{ img.label }}</div>
             </div>
           </div>
         </section>
@@ -639,10 +691,19 @@
 
   <!-- ============== 演示态切换 ============== -->
   <div class="demo-toggle">
-    <span>演示态:</span>
-    <button :class="{ on: !loggedIn }" @click="loggedIn = false">未登录</button>
-    <button :class="{ on: loggedIn }" @click="loggedIn = true">已登录</button>
-    <button @click="showHistory = true" style="background:#374151">弹窗</button>
+    <div class="row">
+      <span class="opacity-70">登录:</span>
+      <button :class="{ on: !loggedIn }" @click="loggedIn = false">未登录</button>
+      <button :class="{ on: loggedIn }" @click="loggedIn = true">已登录</button>
+      <button @click="showHistory = true" style="background:#374151">历史成交</button>
+    </div>
+    <div class="row">
+      <span class="opacity-70">等级:</span>
+      <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
+              class="lvl"
+              :class="{ on: levelCode === lv }"
+              @click="levelCode = lv; reserveRevealed = false">{{ lv }}</button>
+    </div>
   </div>
 
 </div>
@@ -656,6 +717,16 @@ createApp({
     // 演示状态
     const loggedIn = ref(true);
     const showHistory = ref(false);
+    const levelCode = ref('V2'); // 默认 V2 演示「可查看保留价」
+    const reserveRevealed = ref(false);
+
+    // V1+ 才有保留价查询权益(对齐 shared/member-config.js)
+    const LEVEL_NAMES = { V0: '普通', V1: '金卡', V2: '白金', V3: '钻石' };
+    const canViewReserve = computed(() => levelCode.value !== 'V0');
+    const levelName = computed(() => LEVEL_NAMES[levelCode.value] || '');
+    const goLevelUpgrade = () => {
+      window.alert('跳转「会员中心 · 升级路径」(演示态)');
+    };
 
     const user = { name: 'cptest01' };
 
@@ -674,7 +745,30 @@ createApp({
       code: '0732 5948',
       currentPrice: 40800,
       startPrice: 38000,
+      reservePrice: 41000,
       passReserve: false,
+      // 主图轮播(顶部 4 张)— 黑色 SUV / 同款车不同角度
+      images: [
+        'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1200&h=900&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1200&h=900&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1542362567-b07e54358753?w=1200&h=900&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&h=900&fit=crop&q=80',
+      ],
+      // 完整车辆图片(车辆图片 section)
+      gallery: [
+        { label: '正前 45°',  url: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=450&fit=crop&q=80' },
+        { label: '正前',     url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&h=450&fit=crop&q=80' },
+        { label: '正侧',     url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&h=450&fit=crop&q=80' },
+        { label: '正后',     url: 'https://images.unsplash.com/photo-1592805144716-feeccccef5ac?w=600&h=450&fit=crop&q=80' },
+        { label: '后 45°',   url: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?w=600&h=450&fit=crop&q=80' },
+        { label: '前舱',     url: 'https://images.unsplash.com/photo-1493238792000-8113da705763?w=600&h=450&fit=crop&q=80' },
+        { label: '中控台',   url: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=600&h=450&fit=crop&q=80' },
+        { label: '仪表盘',   url: 'https://images.unsplash.com/photo-1494905998402-395d579af36f?w=600&h=450&fit=crop&q=80' },
+        { label: '主驾座椅', url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&h=450&fit=crop&q=80' },
+        { label: '后排',     url: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&h=450&fit=crop&q=80' },
+        { label: '轮毂',     url: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=600&h=450&fit=crop&q=80' },
+        { label: '后备箱',   url: 'https://images.unsplash.com/photo-1554223090-7e482851df45?w=600&h=450&fit=crop&q=80' },
+      ],
       transferTimes: 0,
       fee: 2000,
       platformFee: 300,
@@ -787,10 +881,42 @@ createApp({
       bidInput.value = String(cur + n);
     };
 
+    // 主图轮播
+    const activeImageIndex = ref(0);
+    const prevImage = () => {
+      const len = car.value.images.length;
+      activeImageIndex.value = (activeImageIndex.value - 1 + len) % len;
+    };
+    const nextImage = () => {
+      const len = car.value.images.length;
+      activeImageIndex.value = (activeImageIndex.value + 1) % len;
+    };
+
+    // 图片加载失败兜底:替换为 inline SVG 占位
+    const FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" preserveAspectRatio="xMidYMid slice">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#475569"/><stop offset="100%" stop-color="#1e293b"/>
+        </linearGradient></defs>
+        <rect width="600" height="450" fill="url(#g)"/>
+        <g transform="translate(110,140)" fill="#0b1220" stroke="#334155" stroke-width="3">
+          <rect x="0" y="60" width="380" height="100" rx="20"/>
+          <rect x="40" y="20" width="300" height="80" rx="14" fill="#111827"/>
+          <circle cx="80" cy="170" r="28"/>
+          <circle cx="300" cy="170" r="28"/>
+        </g>
+        <text x="300" y="410" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="PingFang SC,sans-serif">图片加载中...</text>
+      </svg>`
+    );
+    const onImgError = (e) => {
+      if (e.target.src.startsWith('data:')) return;
+      e.target.src = FALLBACK;
+    };
+
     const formatNum = (n) => Number(n).toLocaleString('en-US');
 
     const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
-    watch([loggedIn, showHistory, detailActive], refresh);
+    watch([loggedIn, showHistory, detailActive, levelCode, reserveRevealed, activeImageIndex], refresh);
     onMounted(refresh);
 
     // 滚动联动 active tab
@@ -810,10 +936,12 @@ createApp({
 
     return {
       loggedIn, user, showHistory,
+      levelCode, levelName, canViewReserve, reserveRevealed, goLevelUpgrade,
       car, countdownText,
       ratings, basic, transfer, configRows,
       detailTabs, detailActive, scrollTo,
       bidInput, addBid, formatNum,
+      activeImageIndex, prevImage, nextImage, onImgError,
     };
   }
 }).mount('#app');
