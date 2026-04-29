@@ -39,25 +39,28 @@ window.PC_COMMON = {
     { key: 'reserved', label: '是否有保留价' },
   ],
 
-  // mock 车辆库 —— 字段对齐截图
-  cars: [
-    { id: 'c1',  pro: true,  status: '竞价中', score: '90C', title: '广州市|奔驰 唯雅诺 2011款 2.5L 尊贵版',                     plate: '粤A', date: '2012-10', km: '10.48万公里', pass: '0次过户', tags: ['竞价大厅'],          price: '1.9',  endIn: '0小时00分51秒' },
-    { id: 'c2',  pro: true,  status: '竞价中', score: '90C', title: '惠州市|五菱 宏光 2014款 五菱S 1.5L 手动豪华型',           plate: '粤L', date: '2014-06', km: '6.75万公里',  pass: '0次过户', tags: ['竞价大厅','上新'], price: '0.5',  endIn: '0小时01分06秒' },
-    { id: 'c3',  pro: true,  status: '竞价中', score: '80B', title: '广州市|大众 朗境 2014款 1.4T DSG双离合',                    plate: '粤A', date: '2015-02', km: '10.54万公里', pass: '0次过户', tags: ['竞价大厅','上新'], price: '1.8',  endIn: '0小时01分17秒' },
-    { id: 'c4',  pro: true,  status: '竞价中', score: '80B', title: '广州市|奥迪 A6L 2018款 1.8TFSI 双离合 30周年年型 进取型', plate: '桂N', date: '2018-07', km: '11.71万公里', pass: '0次过户', tags: ['竞价大厅','上新'], price: '9.6',  endIn: '0小时01分19秒' },
-    { id: 'c5',  pro: false, status: '竞价中', score: '——',  title: '广州市|雷诺 Koleos 2010款 Koleos 2.5 无级 两驱',           plate: '粤L', date: '2011-03', km: '16.49万公里', pass: '',         tags: ['报废车专场'],     price: '0.45', endIn: '4月29日 14:2结束', scrap: true },
-    { id: 'c6',  pro: true,  status: '竞价中', score: '80C', title: '广州市|埃安 Aion S 2020款 魅 580 出行标准版',              plate: '粤A', date: '2022-05', km: '17.08万公里', pass: '0次过户', tags: ['竞价大厅','上新','新能源'], price: '3.3',  endIn: '0小时00分16秒', energy: true },
-    { id: 'c7',  pro: true,  status: '竞价中', score: '85B', title: '广州市|雪佛兰 科鲁泽 2019款 RS 330T自动畅快版',            plate: '湘M', date: '2019-12', km: '10.49万公里', pass: '0次过户', tags: ['竞价大厅','上新'], price: '1.8',  endIn: '0小时00分31秒' },
-    { id: 'c8',  pro: true,  status: '竞价中', score: '85B', title: '东莞市|领克 领克01 2017款 2.0T 手自一体 型Pro',            plate: '粤B', date: '2019-01', km: '6.13万公里',  pass: '0次过户', tags: ['有保留价','降价'], price: '3.8',  endIn: '0小时01分06秒', reserved: true },
-    { id: 'c9',  pro: false, status: '竞价中', score: '——',  title: '惠州市|本田 雅阁 2004款 2.0L 自动 标准型',                  plate: '粤L', date: '2004-10', km: '仪表盘已损坏', pass: '',         tags: ['报废车专场','降价'], price: '0.48', endIn: '0小时01分09秒', scrap: true },
-    { id: 'c10', pro: false, status: '竞价中', score: '65D', title: '深圳市|比亚迪 e2 2019款 标准续航版 智.舒适型',              plate: '粤B', date: '2020-07', km: '21.74万公里', pass: '0次过户', tags: ['竞价大厅','上新','新能源'], price: '0.8',  endIn: '0小时01分16秒', energy: true },
-    { id: 'c11', pro: false, status: '竞价中', score: '85C', title: '惠州市|铃木 锋驭 2014款 锋驭 1.6 无级 尊型',                 plate: '粤L', date: '2014-09', km: '28.18万公里', pass: '',         tags: ['竞价大厅'],         price: '0.6',  endIn: '0小时01分20秒' },
-    { id: 'c12', pro: false, status: '竞价中', score: '——',  title: '南昌市|别克 君威 2015款 2.0L 精英时尚型',                  plate: '赣A', date: '2017-05', km: '4.37万公里',  pass: '',         tags: ['有保留价','上新'], price: '3',    endIn: '4月30日 15:30结束', reserved: true },
-    { id: 'c13', pro: false, status: '竞价中', score: '——',  title: '南昌市|江铃 X7 2015款 2.0T 全景旗舰版',                    plate: '赣A', date: '2016-01', km: '6.04万公里',  pass: '',         tags: ['有保留价'],         price: '1.8',  endIn: '4月30日 15:30结束', reserved: true },
-    { id: 'c14', pro: false, status: '竞价中', score: '——',  title: '南昌市|腾势 D9 2022款 DM-i 970 四驱尊荣型',                plate: '赣A', date: '2023-04', km: '9.18万公里',  pass: '',         tags: ['有保留价','新能源'], price: '19',   endIn: '4月30日 15:30结束', reserved: true, energy: true },
-    { id: 'c15', pro: false, status: '竞价中', score: '——',  title: '南昌市|红旗 H5 2024款 2.0T 自动智联旗畅版',                plate: '赣A', date: '2024-08', km: '2.15万公里',  pass: '',         tags: ['有保留价'],         price: '10',   endIn: '4月30日 15:30结束', reserved: true },
-    { id: 'c16', pro: false, status: '竞价中', score: '——',  title: '南昌市|红旗 H5 2024款 2.0T 自动智联畅快版',                plate: '赣A', date: '2024-07', km: '2.73万公里',  pass: '',         tags: ['有保留价'],         price: '10',   endIn: '4月30日 15:30结束', reserved: true },
-  ],
+  // mock 车辆库 —— 字段对齐截图;img 用 Unsplash CDN 真实车辆图,与 app 端一致
+  cars: (function () {
+    const u = (id) => `https://images.unsplash.com/photo-${id}?w=600&h=400&fit=crop&auto=format&q=80`;
+    return [
+      { id: 'c1',  img: u('1552519507-da3b142c6e3d'), pro: true,  status: '竞价中', score: '90C', title: '广州市|奔驰 唯雅诺 2011款 2.5L 尊贵版',                     plate: '粤A', date: '2012-10', km: '10.48万公里', pass: '0次过户', tags: ['竞价大厅'],          price: '1.9',  endIn: '0小时00分51秒' },
+      { id: 'c2',  img: u('1617788138017-80ad40651399'), pro: true,  status: '竞价中', score: '90C', title: '惠州市|五菱 宏光 2014款 五菱S 1.5L 手动豪华型',           plate: '粤L', date: '2014-06', km: '6.75万公里',  pass: '0次过户', tags: ['竞价大厅','上新'], price: '0.5',  endIn: '0小时01分06秒' },
+      { id: 'c3',  img: u('1494976388531-d1058494cdd8'), pro: true,  status: '竞价中', score: '80B', title: '广州市|大众 朗境 2014款 1.4T DSG双离合',                    plate: '粤A', date: '2015-02', km: '10.54万公里', pass: '0次过户', tags: ['竞价大厅','上新'], price: '1.8',  endIn: '0小时01分17秒' },
+      { id: 'c4',  img: u('1550355291-bbee04a92027'), pro: true,  status: '竞价中', score: '80B', title: '广州市|奥迪 A6L 2018款 1.8TFSI 双离合 30周年年型 进取型', plate: '桂N', date: '2018-07', km: '11.71万公里', pass: '0次过户', tags: ['竞价大厅','上新'], price: '9.6',  endIn: '0小时01分19秒' },
+      { id: 'c5',  img: u('1553440569-bcc63803a83d'), pro: false, status: '竞价中', score: '——',  title: '广州市|雷诺 Koleos 2010款 Koleos 2.5 无级 两驱',           plate: '粤L', date: '2011-03', km: '16.49万公里', pass: '',         tags: ['报废车专场'],     price: '0.45', endIn: '4月29日 14:2结束', scrap: true },
+      { id: 'c6',  img: u('1542362567-b07e54358753'), pro: true,  status: '竞价中', score: '80C', title: '广州市|埃安 Aion S 2020款 魅 580 出行标准版',              plate: '粤A', date: '2022-05', km: '17.08万公里', pass: '0次过户', tags: ['竞价大厅','上新','新能源'], price: '3.3',  endIn: '0小时00分16秒', energy: true },
+      { id: 'c7',  img: u('1544636331-e26879cd4d9b'), pro: true,  status: '竞价中', score: '85B', title: '广州市|雪佛兰 科鲁泽 2019款 RS 330T自动畅快版',            plate: '湘M', date: '2019-12', km: '10.49万公里', pass: '0次过户', tags: ['竞价大厅','上新'], price: '1.8',  endIn: '0小时00分31秒' },
+      { id: 'c8',  img: u('1590362891991-f776e747a588'), pro: true,  status: '竞价中', score: '85B', title: '东莞市|领克 领克01 2017款 2.0T 手自一体 型Pro',            plate: '粤B', date: '2019-01', km: '6.13万公里',  pass: '0次过户', tags: ['有保留价','降价'], price: '3.8',  endIn: '0小时01分06秒', reserved: true },
+      { id: 'c9',  img: u('1549317661-bd32c8ce0db2'), pro: false, status: '竞价中', score: '——',  title: '惠州市|本田 雅阁 2004款 2.0L 自动 标准型',                  plate: '粤L', date: '2004-10', km: '仪表盘已损坏', pass: '',         tags: ['报废车专场','降价'], price: '0.48', endIn: '0小时01分09秒', scrap: true },
+      { id: 'c10', img: u('1542362567-b07e54358753'), pro: false, status: '竞价中', score: '65D', title: '深圳市|比亚迪 e2 2019款 标准续航版 智.舒适型',              plate: '粤B', date: '2020-07', km: '21.74万公里', pass: '0次过户', tags: ['竞价大厅','上新','新能源'], price: '0.8',  endIn: '0小时01分16秒', energy: true },
+      { id: 'c11', img: u('1494976388531-d1058494cdd8'), pro: false, status: '竞价中', score: '85C', title: '惠州市|铃木 锋驭 2014款 锋驭 1.6 无级 尊型',                 plate: '粤L', date: '2014-09', km: '28.18万公里', pass: '',         tags: ['竞价大厅'],         price: '0.6',  endIn: '0小时01分20秒' },
+      { id: 'c12', img: u('1550355291-bbee04a92027'), pro: false, status: '竞价中', score: '——',  title: '南昌市|别克 君威 2015款 2.0L 精英时尚型',                  plate: '赣A', date: '2017-05', km: '4.37万公里',  pass: '',         tags: ['有保留价','上新'], price: '3',    endIn: '4月30日 15:30结束', reserved: true },
+      { id: 'c13', img: u('1553440569-bcc63803a83d'), pro: false, status: '竞价中', score: '——',  title: '南昌市|江铃 X7 2015款 2.0T 全景旗舰版',                    plate: '赣A', date: '2016-01', km: '6.04万公里',  pass: '',         tags: ['有保留价'],         price: '1.8',  endIn: '4月30日 15:30结束', reserved: true },
+      { id: 'c14', img: u('1552519507-da3b142c6e3d'), pro: false, status: '竞价中', score: '——',  title: '南昌市|腾势 D9 2022款 DM-i 970 四驱尊荣型',                plate: '赣A', date: '2023-04', km: '9.18万公里',  pass: '',         tags: ['有保留价','新能源'], price: '19',   endIn: '4月30日 15:30结束', reserved: true, energy: true },
+      { id: 'c15', img: u('1549317661-bd32c8ce0db2'), pro: false, status: '竞价中', score: '——',  title: '南昌市|红旗 H5 2024款 2.0T 自动智联旗畅版',                plate: '赣A', date: '2024-08', km: '2.15万公里',  pass: '',         tags: ['有保留价'],         price: '10',   endIn: '4月30日 15:30结束', reserved: true },
+      { id: 'c16', img: u('1617788138017-80ad40651399'), pro: false, status: '竞价中', score: '——',  title: '南昌市|红旗 H5 2024款 2.0T 自动智联畅快版',                plate: '赣A', date: '2024-07', km: '2.73万公里',  pass: '',         tags: ['有保留价'],         price: '10',   endIn: '4月30日 15:30结束', reserved: true },
+    ];
+  })(),
 
   // 专场数据
   specials: [

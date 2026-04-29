@@ -85,7 +85,7 @@
       <a v-for="c in cars" :key="c.id" class="car-card" href="#">
         <div class="car-img">
           <span v-if="c.pro" class="badge-pro">专业<br>检测</span>
-          <i data-lucide="car" class="w-12 h-12"></i>
+          <img :src="c.img" :alt="c.title" loading="lazy" class="w-full h-full object-cover">
         </div>
         <div class="status-bar">
           <span>{{ c.status }}</span><span>{{ c.score }}</span>
