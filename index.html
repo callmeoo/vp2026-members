@@ -540,7 +540,21 @@
             },
           ],
         },
-        { key: 'pc', label: '商户端(pc)', icon: 'monitor', items: [] },
+        {
+          key: 'pc', label: '商户端(pc)', icon: 'monitor',
+          groups: [
+            {
+              label: '主站点', icon: 'globe',
+              items: [
+                { title: '首页',         file: 'pc/home.html' },
+                { title: '全部车源',     file: 'pc/sources.html' },
+                { title: '竞价大厅',     file: 'pc/auction.html' },
+                { title: '有保留价',     file: 'pc/reserved.html' },
+                { title: '专场车源',     file: 'pc/special.html' },
+              ],
+            },
+          ],
+        },
         {
           key: 'bms', label: 'BMS 后台', icon: 'layout-dashboard',
           groups: [

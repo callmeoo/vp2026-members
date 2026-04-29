@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>唯普汽车 · 专场车源</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <!-- 场次过滤 -->
+    <div class="pc-section-tabs">
+      <div v-for="t in tabs" :key="t" class="pc-tab" :class="{ active: tab === t }" @click="tab = t">{{ t }}</div>
+    </div>
+
+    <!-- 专场卡片 -->
+    <div class="special-grid">
+      <a v-for="s in specials" :key="s.id" class="special-card" href="#">
+        <div class="cover">
+          <span class="scene-tag">{{ s.scene }}</span>
+          <span class="label">{{ s.title }}</span>
+        </div>
+        <div class="body">
+          <h3>{{ s.title }}</h3>
+          <div class="meta"><span><i data-lucide="calendar" class="w-3.5 h-3.5 inline -mt-0.5"></i> {{ s.date }}</span></div>
+          <div class="stats">
+            <span>车源 <strong>{{ s.total }}</strong> 台</span>
+            <span>已参与 <strong>{{ s.joined }}</strong> 人</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  const { createApp, ref, onMounted, watch, nextTick } = Vue;
+  createApp({
+    setup() {
+      const header = PC_COMMON.renderHeader('special');
+      const footer = PC_COMMON.renderFooter();
+
+      const tabs = ['全部','今日','明日','本周','下周'];
+      const tab = ref('全部');
+      const specials = PC_COMMON.specials;
+
+      const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
+      watch([tab], refresh);
+      onMounted(refresh);
+
+      return { header, footer, tabs, tab, specials };
+    },
+  }).mount('#app');
+</script>
+</body>
+</html>

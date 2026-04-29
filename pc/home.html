@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>唯普汽车 · 首页</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <!-- Banner -->
+    <div class="hero-banner">
+      <div>
+        <h1>专业 · 透明 · 高效 <span class="accent">竞</span>买好车</h1>
+        <p>专业检测 · 真实车况 · 三天无理由退车保障</p>
+        <div class="hero-cta">
+          <a href="auction.html" class="btn btn-primary">进入竞价大厅</a>
+          <a href="sources.html" class="btn btn-ghost">浏览全部车源</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快速入口 -->
+    <div class="quick-entry">
+      <a href="auction.html" class="entry-card">
+        <div class="icon-wrap"><i data-lucide="gavel" class="w-5 h-5"></i></div>
+        <div><div class="entry-text">竞价大厅</div><div class="entry-sub">实时出价</div></div>
+      </a>
+      <a href="reserved.html" class="entry-card">
+        <div class="icon-wrap"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+        <div><div class="entry-text">有保留价</div><div class="entry-sub">底价托底</div></div>
+      </a>
+      <a href="special.html" class="entry-card">
+        <div class="icon-wrap"><i data-lucide="calendar-clock" class="w-5 h-5"></i></div>
+        <div><div class="entry-text">专场车源</div><div class="entry-sub">主题精选</div></div>
+      </a>
+      <a href="sources.html" class="entry-card">
+        <div class="icon-wrap"><i data-lucide="car" class="w-5 h-5"></i></div>
+        <div><div class="entry-text">全部车源</div><div class="entry-sub">海量在售</div></div>
+      </a>
+      <a href="#" class="entry-card">
+        <div class="icon-wrap"><i data-lucide="badge-check" class="w-5 h-5"></i></div>
+        <div><div class="entry-text">专业检测</div><div class="entry-sub">车况报告</div></div>
+      </a>
+    </div>
+
+    <!-- 今日竞价 -->
+    <div class="section-title">
+      <h2>今日竞价 · 即将结束</h2>
+      <a href="auction.html" class="more">查看全部 ›</a>
+    </div>
+    <div class="car-grid">
+      <a v-for="c in cars.slice(0,4)" :key="c.id" class="car-card" href="#">
+        <div class="car-img">
+          <span v-if="c.pro" class="badge-pro">专业<br>检测</span>
+          <i data-lucide="car" class="w-12 h-12"></i>
+        </div>
+        <div class="status-bar">
+          <span>{{ c.status }}</span><span>{{ c.score }}</span>
+        </div>
+        <div class="car-body">
+          <div class="car-title"><i data-lucide="map-pin" class="pin w-3.5 h-3.5 inline -mt-0.5"></i>{{ c.title }}</div>
+          <div class="car-meta">{{ c.plate }} | {{ c.date }} | {{ c.km }} <span v-if="c.pass"> | {{ c.pass }}</span></div>
+          <div class="car-tags">
+            <span v-for="t in c.tags" :key="t" class="car-tag" :class="{ energy: t==='新能源', reserved: t==='有保留价', new: t==='上新', scrap: t==='报废车专场', discount: t==='降价' }">{{ t }}</span>
+          </div>
+          <div class="car-price">
+            <div class="price-num">¥<strong>{{ c.price }}</strong> 万起</div>
+            <div class="car-time">{{ c.endIn }}</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- 推荐车源 -->
+    <div class="section-title">
+      <h2>推荐车源</h2>
+      <a href="sources.html" class="more">查看全部 ›</a>
+    </div>
+    <div class="car-grid">
+      <a v-for="c in cars.slice(4,12)" :key="c.id" class="car-card" href="#">
+        <div class="car-img">
+          <span v-if="c.pro" class="badge-pro">专业<br>检测</span>
+          <i data-lucide="car" class="w-12 h-12"></i>
+        </div>
+        <div class="status-bar">
+          <span>{{ c.status }}</span><span>{{ c.score }}</span>
+        </div>
+        <div class="car-body">
+          <div class="car-title"><i data-lucide="map-pin" class="pin w-3.5 h-3.5 inline -mt-0.5"></i>{{ c.title }}</div>
+          <div class="car-meta">{{ c.plate }} | {{ c.date }} | {{ c.km }} <span v-if="c.pass"> | {{ c.pass }}</span></div>
+          <div class="car-tags">
+            <span v-for="t in c.tags" :key="t" class="car-tag" :class="{ energy: t==='新能源', reserved: t==='有保留价', new: t==='上新', scrap: t==='报废车专场', discount: t==='降价' }">{{ t }}</span>
+          </div>
+          <div class="car-price">
+            <div class="price-num">¥<strong>{{ c.price }}</strong> 万起</div>
+            <div class="car-time">{{ c.endIn }}</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  const { createApp, onMounted, nextTick } = Vue;
+  createApp({
+    setup() {
+      const header = PC_COMMON.renderHeader('home');
+      const footer = PC_COMMON.renderFooter();
+      const cars = PC_COMMON.cars;
+      onMounted(() => nextTick(() => window.lucide && lucide.createIcons()));
+      return { header, footer, cars };
+    },
+  }).mount('#app');
+</script>
+</body>
+</html>
