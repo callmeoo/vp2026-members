@@ -540,7 +540,17 @@
             },
           ],
         },
-        { key: 'pc', label: '商户端(pc)', icon: 'monitor', items: [] },
+        {
+          key: 'pc', label: '商户端(pc)', icon: 'monitor',
+          groups: [
+            {
+              label: '车辆详情', icon: 'car',
+              items: [
+                { title: '车辆详情(PC)', file: 'pc/car-detail.html' },
+              ],
+            },
+          ],
+        },
         {
           key: 'bms', label: 'BMS 后台', icon: 'layout-dashboard',
           groups: [
