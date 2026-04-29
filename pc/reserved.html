@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>唯普汽车 · 有保留价</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <!-- 场次 -->
+    <div class="pc-section-tabs">
+      <div v-for="t in scenes" :key="t.key" class="pc-tab" :class="{ active: scene === t.key }" @click="scene = t.key">{{ t.label }}</div>
+    </div>
+
+    <!-- 筛选(无更多·是否新能源/无能源类型 重复保留;移除"是否有保留价") -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-label">品牌:</div>
+        <div class="filter-chips">
+          <span class="chip" :class="{ active: brand === '热门' }" @click="brand = '热门'">热门</span>
+          <span v-for="l in brandReservedLetters" :key="l" class="chip" :class="{ active: brand === l }" @click="brand = l">{{ l }}</span>
+        </div>
+      </div>
+      <div class="filter-row" style="border-top: none; padding-top: 0;">
+        <div class="filter-label"></div>
+        <div class="filter-chips">
+          <span class="chip" :class="{ active: brandPick === '不限' }" @click="brandPick = '不限'">不限</span>
+          <span v-for="b in brandReservedHot" :key="b" class="chip" :class="{ active: brandPick === b }" @click="brandPick = b">{{ b }}</span>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-label">价格:</div>
+        <div class="filter-chips">
+          <span class="chip" :class="{ active: price === '不限' }" @click="price = '不限'">不限</span>
+          <span v-for="p in priceRanges" :key="p" class="chip" :class="{ active: price === p }" @click="price = p">{{ p }}</span>
+          <input class="range-input" /> <span class="text-slate-400 text-xs">万</span>
+          <span class="text-slate-400">-</span>
+          <input class="range-input" /> <span class="text-slate-400 text-xs">万</span>
+          <button class="confirm-btn">确定</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-label">车源地:</div>
+        <div class="filter-chips">
+          <span class="chip" :class="{ active: region === '不限' }" @click="region = '不限'">不限</span>
+          <span v-for="r in regionsReserved" :key="r" class="chip" :class="{ active: region === r }" @click="region = r">{{ r }}</span>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-label">更多:</div>
+        <div class="filter-chips">
+          <select v-for="m in moreFiltersReserved" :key="m.key" class="more-select"><option>{{ m.label }}</option></select>
+        </div>
+      </div>
+      <div class="filter-foot">
+        <div>当前筛选: <span class="text-slate-400" style="border:1px solid #e2e8f0; padding: 1px 14px; margin: 0 8px;">空</span> <span class="reset">重置条件</span></div>
+        <div class="right-links">
+          <a>竞价须知 ›</a>
+          <a>充值保证金 ›</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 列表 toolbar -->
+    <div class="list-toolbar">
+      <div class="list-tabs">
+        <div v-for="t in listTabs" :key="t" class="list-tab" :class="{ active: listTab === t }" @click="listTab = t">{{ t }}</div>
+      </div>
+      <div class="list-sort">
+        <span class="sort-item active">默认排序<i data-lucide="arrow-up" class="w-3 h-3"></i></span>
+        <span class="sort-item">上牌时间<i data-lucide="arrow-down" class="w-3 h-3"></i></span>
+        <span class="sort-item">竞价价格<i data-lucide="arrow-down" class="w-3 h-3"></i></span>
+      </div>
+    </div>
+
+    <!-- 列表(只显示带「有保留价」标签的车) -->
+    <div class="car-grid">
+      <a v-for="c in cars" :key="c.id" class="car-card" href="#">
+        <div class="car-img">
+          <span v-if="c.pro" class="badge-pro">专业<br>检测</span>
+          <i data-lucide="car" class="w-12 h-12"></i>
+        </div>
+        <div class="status-bar">
+          <span>{{ c.status }}</span><span>{{ c.score }}</span>
+        </div>
+        <div class="car-body">
+          <div class="car-title"><i data-lucide="map-pin" class="pin w-3.5 h-3.5 inline -mt-0.5"></i>{{ c.title }}</div>
+          <div class="car-meta">{{ c.plate }} | {{ c.date }} | {{ c.km }} <span v-if="c.pass"> | {{ c.pass }}</span></div>
+          <div class="car-tags">
+            <span v-for="t in c.tags" :key="t" class="car-tag" :class="{ energy: t==='新能源', reserved: t==='有保留价', new: t==='上新', scrap: t==='报废车专场', discount: t==='降价' }">{{ t }}</span>
+          </div>
+          <div class="car-price">
+            <div class="price-num">¥<strong>{{ c.price }}</strong> 万起</div>
+            <div class="car-time">{{ c.endIn }}</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pc-pagination">
+      <span class="page-item" disabled>‹</span>
+      <span class="page-item active">1</span>
+      <span class="page-item">2</span>
+      <span class="page-item">3</span>
+      <span class="page-item">›</span>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
+  createApp({
+    setup() {
+      const header = PC_COMMON.renderHeader('reserved');
+      const footer = PC_COMMON.renderFooter();
+
+      const scenes = [
+        { key: 'all',      label: '全部' },
+        { key: 'today',    label: '今日场' },
+        { key: 'tomorrow', label: '明日场' },
+      ];
+      const scene = ref('all');
+
+      const brand = ref('热门');
+      const brandPick = ref('不限');
+      const price = ref('不限');
+      const region = ref('不限');
+
+      const listTabs = ['全部竞价车辆','未出价车辆','已出价车辆'];
+      const listTab = ref('全部竞价车辆');
+
+      const cars = PC_COMMON.cars.filter(c => c.tags.includes('有保留价'));
+
+      const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
+      watch([scene, brand, brandPick, price, region, listTab], refresh);
+      onMounted(refresh);
+
+      return {
+        header, footer, scenes, scene,
+        brand, brandPick, price, region,
+        // 有保留价库存通常品牌/区域较少 —— 复刻截图筛选项
+        brandReservedLetters: ['B','H','J','L','T'],
+        brandReservedHot:     ['红旗','别克','江铃','领克','腾势'],
+        priceRanges:          PC_COMMON.priceRanges,
+        regionsReserved:      ['江西','广东'],
+        moreFiltersReserved:  PC_COMMON.moreFilters.filter(m => m.key !== 'reserved'),
+        listTabs, listTab, cars,
+      };
+    },
+  }).mount('#app');
+</script>
+</body>
+</html>
