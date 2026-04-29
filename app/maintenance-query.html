@@ -8,10 +8,17 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
-  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 110px; }
+  .stage { display:flex; gap:24px; align-items:flex-start; justify-content:center; }
+  .phone-shell { width: 100%; max-width: 420px; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 110px; flex: 0 0 420px; }
+  .api-panel { display:none; }
   @media (min-width: 768px) {
     body { background: #f5f5f7; padding: 24px 0; }
     .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+    .api-panel {
+      display:block; width: 460px; flex: 0 0 460px;
+      background: #fff; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.06);
+      max-height: calc(100vh - 48px); overflow-y: auto;
+    }
   }
   [v-cloak] { display:none; }
 
@@ -54,11 +61,39 @@
   }
 
   .protocol-link { color:#3b82f6; }
+
+  /* 优惠券列表 */
+  .coupon-row {
+    display:flex; align-items:center; gap:10px;
+    padding: 10px 12px; border:1px solid #e5e7eb; border-radius:10px;
+    background:#fff; cursor:pointer; transition: all .15s;
+  }
+  .coupon-row.active { border-color:#3b82f6; background:#eff6ff; }
+  .coupon-row.disabled { opacity:.5; cursor:not-allowed; }
+  .coupon-amt { color:#ef4444; font-weight:700; font-size:18px; min-width:64px; text-align:center; }
+  .coupon-amt .yuan { font-size:12px; font-weight:600; }
+  .coupon-meta { flex:1; min-width:0; font-size:12px; color:#64748b; }
+  .coupon-meta .t { color:#1e293b; font-size:13px; font-weight:600; }
+  .expire-soon { color:#f97316; }
+
+  /* API 面板 */
+  .api-panel h3 { font-size:14px; font-weight:600; color:#0f172a; }
+  .api-panel pre {
+    background:#0f172a; color:#e2e8f0; border-radius:8px;
+    padding:12px; font-size:12px; line-height:1.6; overflow-x:auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .api-panel .method { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; color:#fff; margin-right:6px; }
+  .api-panel .method.get { background:#10b981; }
+  .api-panel .method.post { background:#3b82f6; }
+  .api-panel .endpoint { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:#334155; }
+  .api-panel .tbd-tag { display:inline-block; padding:1px 6px; border-radius:4px; background:#fef3c7; color:#b45309; font-size:11px; font-weight:600; margin-left:6px; }
 </style>
 </head>
 <body>
 
 <div id="app" v-cloak>
+<div class="stage">
 <div class="phone-shell">
 
   <!-- Status bar -->
@@ -121,7 +156,7 @@
   <!-- 支付方式 -->
   <div class="mx-3 mt-3 bg-white rounded-xl p-4">
     <div class="text-[15px] font-semibold text-slate-800 mb-3">支付方式:</div>
-    <div class="flex gap-3">
+    <div class="flex flex-wrap gap-3">
       <div :class="['pay-card', payMethod === 'wechat' && 'active']" @click="payMethod = 'wechat'">
         <span class="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center"><i data-lucide="message-circle" class="w-3 h-3"></i></span>
         微信支付
@@ -131,6 +166,43 @@
         <span class="w-5 h-5 rounded bg-blue-500 text-white flex items-center justify-center"><i data-lucide="ticket" class="w-3 h-3"></i></span>
         服务次卡
         <span v-if="payMethod === 'card'" class="check"><i data-lucide="check" class="w-2.5 h-2.5"></i></span>
+      </div>
+      <div :class="['pay-card', payMethod === 'coupon' && 'active']" @click="payMethod = 'coupon'">
+        <span class="w-5 h-5 rounded bg-orange-500 text-white flex items-center justify-center"><i data-lucide="ticket-percent" class="w-3 h-3"></i></span>
+        优惠券
+        <span v-if="availableCoupons.length" class="text-[11px] text-orange-500 ml-0.5">({{ availableCoupons.length }})</span>
+        <span v-if="payMethod === 'coupon'" class="check"><i data-lucide="check" class="w-2.5 h-2.5"></i></span>
+      </div>
+    </div>
+
+    <!-- 优惠券列表(选中优惠券支付时展开) -->
+    <div v-if="payMethod === 'coupon'" class="mt-4">
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-[13px] text-slate-600">可用优惠券<span class="text-slate-400">(按到期时间)</span></div>
+        <button v-if="selectedCouponId" @click="selectedCouponId = null" class="text-[12px] text-slate-400">不使用</button>
+      </div>
+      <div v-if="!availableCoupons.length" class="text-[13px] text-slate-400 py-4 text-center bg-slate-50 rounded-lg">
+        暂无可用优惠券
+      </div>
+      <div v-else class="space-y-2">
+        <div v-for="c in availableCoupons" :key="c.id"
+             :class="['coupon-row', selectedCouponId === c.id && 'active', !canUseCoupon(c) && 'disabled']"
+             @click="canUseCoupon(c) && (selectedCouponId = selectedCouponId === c.id ? null : c.id)">
+          <div class="coupon-amt">¥<span>{{ c.amount }}</span></div>
+          <div class="coupon-meta">
+            <div class="t">{{ c.title }}</div>
+            <div>满 ¥{{ c.threshold }} 可用 · 适用于报告查询</div>
+            <div :class="daysToExpire(c) <= 7 ? 'expire-soon' : ''">
+              <i data-lucide="clock" class="w-3 h-3 inline-block mr-0.5" style="vertical-align:-2px"></i>
+              {{ c.expireAt }} 过期
+              <span v-if="daysToExpire(c) <= 7">(剩 {{ daysToExpire(c) }} 天)</span>
+            </div>
+          </div>
+          <div class="flex-none w-5 h-5 rounded-full border flex items-center justify-center"
+               :class="selectedCouponId === c.id ? 'bg-blue-500 border-blue-500 text-white' : 'border-slate-300'">
+            <i v-if="selectedCouponId === c.id" data-lucide="check" class="w-3 h-3"></i>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -208,6 +280,10 @@
           <span class="text-slate-600">{{ p.label }}</span>
           <span class="text-slate-800">¥{{ p.price.toFixed(2) }}</span>
         </div>
+        <div v-if="couponDiscount > 0" class="flex items-center justify-between">
+          <span class="text-slate-600">优惠券抵扣</span>
+          <span class="text-red-500">-¥{{ couponDiscount.toFixed(2) }}</span>
+        </div>
         <div class="border-t border-slate-100 pt-2 mt-2 flex items-center justify-between">
           <span class="text-slate-600">优惠</span>
           <span class="text-red-500">-¥{{ (originalPrice - totalPrice).toFixed(2) }}</span>
@@ -220,7 +296,98 @@
     </div>
   </div>
 
-</div>
+</div><!-- /.phone-shell -->
+
+<!-- 优惠券接口文档(桌面端) -->
+<aside class="api-panel p-5">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2">
+      <i data-lucide="code-2" class="w-5 h-5 text-slate-700"></i>
+      <h2 class="text-[16px] font-semibold text-slate-900">优惠券接口文档</h2>
+    </div>
+    <span class="tbd-tag">待定</span>
+  </div>
+  <p class="text-[12px] text-slate-500 leading-relaxed mb-4">
+    以下为前端联调占位草案,字段名/路径以后端最终定稿为准。
+  </p>
+
+  <!-- 接口 1 -->
+  <div class="mb-5">
+    <h3 class="mb-1">1. 获取可用优惠券列表</h3>
+    <div class="mb-2">
+      <span class="method get">GET</span>
+      <span class="endpoint">/api/coupons/available</span>
+    </div>
+    <div class="text-[12px] text-slate-600 mb-1">Query 参数</div>
+    <pre>{
+  "scene": "MAINTENANCE_QUERY",  // 业务场景:报告查询
+  "amount": 188,                 // 订单金额(元),用于满减判断
+  "userId": "string"             // 用户 ID(后端从 token 解)
+}</pre>
+    <div class="text-[12px] text-slate-600 mt-2 mb-1">响应 (按 expireAt 升序返回)</div>
+    <pre>{
+  "code": 0,
+  "data": [
+    {
+      "id": "C202604001",
+      "title": "报告查询满减券",
+      "amount": 20,            // 面额(元)
+      "threshold": 100,        // 使用门槛(元)
+      "scene": "MAINTENANCE_QUERY",
+      "expireAt": "2026-05-06",
+      "status": "AVAILABLE"    // AVAILABLE / USED / EXPIRED
+    }
+  ]
+}</pre>
+  </div>
+
+  <!-- 接口 2 -->
+  <div class="mb-5">
+    <h3 class="mb-1">2. 校验并锁定优惠券</h3>
+    <div class="mb-2">
+      <span class="method post">POST</span>
+      <span class="endpoint">/api/coupons/lock</span>
+    </div>
+    <div class="text-[12px] text-slate-600 mb-1">Body</div>
+    <pre>{
+  "couponId": "C202604001",
+  "orderNo":  "MQ20260429000123"
+}</pre>
+    <div class="text-[12px] text-slate-600 mt-2 mb-1">响应</div>
+    <pre>{
+  "code": 0,
+  "data": { "locked": true, "discount": 20 }
+}</pre>
+  </div>
+
+  <!-- 接口 3 -->
+  <div class="mb-2">
+    <h3 class="mb-1">3. 下单(含优惠券)</h3>
+    <div class="mb-2">
+      <span class="method post">POST</span>
+      <span class="endpoint">/api/maintenance-query/order</span>
+    </div>
+    <div class="text-[12px] text-slate-600 mb-1">Body</div>
+    <pre>{
+  "vin": "LGB***********454",
+  "products": ["accident", "mileage", "maintenance"],
+  "payMethod": "COUPON",       // WECHAT / CARD / COUPON
+  "couponId": "C202604001"     // payMethod=COUPON 时必填
+}</pre>
+  </div>
+
+  <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-[12px] text-amber-800">
+    <div class="font-semibold mb-1"><i data-lucide="info" class="w-3.5 h-3.5 inline-block" style="vertical-align:-2px"></i> 排序与筛选</div>
+    <ul class="list-disc pl-4 space-y-0.5">
+      <li>列表按 <code>expireAt</code> 升序(最快过期的在前)。</li>
+      <li>仅返回 <code>status = AVAILABLE</code> 且 <code>expireAt &gt; now</code> 的记录。</li>
+      <li>不满足 <code>threshold</code> 的优惠券前端置灰、不可选。</li>
+      <li>距过期 ≤ 7 天的标橙色提示。</li>
+    </ul>
+  </div>
+</aside>
+
+</div><!-- /.stage -->
 
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
@@ -255,10 +422,43 @@ createApp({
     const agreed = ref(true);
     const showDetail = ref(false);
 
+    // 优惠券(模拟数据,按过期时间升序)
+    const allCoupons = [
+      { id:'C202604001', title:'报告查询满减券', amount: 10, threshold: 50,  expireAt:'2026-05-03' },
+      { id:'C202604002', title:'报告查询满减券', amount: 20, threshold: 100, expireAt:'2026-05-06' },
+      { id:'C202604003', title:'新人专享券',     amount: 30, threshold: 150, expireAt:'2026-05-20' },
+      { id:'C202604004', title:'会员专享券',     amount: 50, threshold: 200, expireAt:'2026-06-15' },
+      { id:'C202604005', title:'年度大额券',     amount: 80, threshold: 300, expireAt:'2026-12-31' }
+    ];
+    const today = new Date('2026-04-29');
+    const availableCoupons = computed(() =>
+      allCoupons
+        .filter(c => new Date(c.expireAt) > today)
+        .sort((a, b) => new Date(a.expireAt) - new Date(b.expireAt))
+    );
+    const selectedCouponId = ref(null);
+    const selectedCoupon = computed(() => availableCoupons.value.find(c => c.id === selectedCouponId.value) || null);
+
+    function canUseCoupon(c){ return originalPrice.value >= c.threshold; }
+    function daysToExpire(c){
+      return Math.max(0, Math.ceil((new Date(c.expireAt) - today) / 86400000));
+    }
+
     const selectedProducts = computed(() => availableProducts.filter(p => selectedKeys.value.includes(p.key)));
     const originalPrice = computed(() => selectedProducts.value.reduce((s, p) => s + p.price, 0));
-    const totalPrice = computed(() => Math.max(originalPrice.value - discount.value, 0));
+    const couponDiscount = computed(() => {
+      if (payMethod.value !== 'coupon' || !selectedCoupon.value) return 0;
+      if (originalPrice.value < selectedCoupon.value.threshold) return 0;
+      return selectedCoupon.value.amount;
+    });
+    const totalPrice = computed(() => Math.max(originalPrice.value - discount.value - couponDiscount.value, 0));
     const discount = ref(0);
+
+    // 切走优惠券支付时清空所选券;门槛不满足时也清空
+    watch([payMethod, originalPrice], () => {
+      if (payMethod.value !== 'coupon') { selectedCouponId.value = null; return; }
+      if (selectedCoupon.value && !canUseCoupon(selectedCoupon.value)) selectedCouponId.value = null;
+    });
 
     function isSelected(k){ return selectedKeys.value.includes(k); }
     function toggleProduct(p){
@@ -275,18 +475,26 @@ createApp({
     }
     function onSubmit(){
       if (!agreed.value) return;
-      alert(`已发起查询,实付 ¥${totalPrice.value.toFixed(2)}(${payMethod.value === 'wechat' ? '微信支付' : '服务次卡'})`);
+      const labelMap = { wechat:'微信支付', card:'服务次卡', coupon:'优惠券' };
+      let extra = '';
+      if (payMethod.value === 'coupon') {
+        if (!selectedCoupon.value) { alert('请先选择优惠券'); return; }
+        extra = ` · 已用券 ${selectedCoupon.value.title} ¥${selectedCoupon.value.amount}`;
+      }
+      alert(`已发起查询,实付 ¥${totalPrice.value.toFixed(2)}(${labelMap[payMethod.value]})${extra}`);
     }
 
     // 模拟运营优惠:满 100 减 10
     watch(originalPrice, (v) => { discount.value = v >= 100 ? 0 : 0; }, { immediate: true });
 
     onMounted(() => lucide.createIcons());
-    watch([selectedKeys, showAll, payMethod, agreed, showDetail], () => nextTick(() => lucide.createIcons()), { deep: true });
+    watch([selectedKeys, showAll, payMethod, agreed, showDetail, selectedCouponId], () => nextTick(() => lucide.createIcons()), { deep: true });
 
     return {
       car, availableProducts, selectedProducts, selectedKeys, showAll,
       payMethod, agreed, showDetail, originalPrice, totalPrice,
+      availableCoupons, selectedCouponId, selectedCoupon, couponDiscount,
+      canUseCoupon, daysToExpire,
       isSelected, toggleProduct, removeProduct, copy, onSubmit
     };
   }
