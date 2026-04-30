@@ -120,9 +120,10 @@
 
 /* ── Bottom CTA bar ── */
 .mi-bottom-cta { margin-top: 48px; background: linear-gradient(110deg, #0f172a 0%, #1a2e50 50%, #1c1000 100%); border-radius: 12px; padding: 36px 40px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
-.mi-bottom-cta .left h3 { font-size: 22px; font-weight: 700; color: #fff; }
-.mi-bottom-cta .mid { display: flex; flex-direction: column; gap: 10px; flex: 1; padding: 0 20px; }
-.mi-bottom-cta .mid-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: rgba(255,255,255,.82); }
+.mi-bottom-cta .left h3 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+.mi-bottom-cta .left { display: flex; flex-direction: column; }
+.mi-bottom-cta .mid-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: rgba(255,255,255,.82); margin-bottom: 8px; }
+.mi-bottom-cta .mid-item:last-child { margin-bottom: 0; }
 .mi-bottom-cta .mid-item i { color: #fbbf24; flex-shrink: 0; }
 .mi-bottom-cta .right a { height: 46px; padding: 0 32px; background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #0f172a; font-size: 15px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: opacity .2s; }
 .mi-bottom-cta .right a:hover { opacity: .88; }
@@ -293,15 +294,13 @@
     <div class="mi-bottom-cta">
       <div class="left">
         <h3>开始享受您的会员权益</h3>
-      </div>
-      <div class="mid">
         <div class="mid-item"><i data-lucide="scroll-text" class="w-4 h-4"></i>历史行情查询</div>
         <div class="mid-item"><i data-lucide="target" class="w-4 h-4"></i>保留价查询</div>
         <div class="mid-item"><i data-lucide="rotate-ccw" class="w-4 h-4"></i>无理由退车</div>
       </div>
       <div class="right">
         <a href="member.html">
-          <i data-lucide="crown" class="w-5 h-5"></i>查看我的会员中心
+          <i data-lucide="crown" class="w-5 h-5"></i>查看我的会员权益
         </a>
       </div>
     </div>
