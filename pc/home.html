@@ -13,7 +13,16 @@
 .banner-track { display: flex; transition: transform .55s cubic-bezier(.4,0,.2,1); will-change: transform; }
 .banner-slide { flex: 0 0 100%; }
 .hero-banner { margin-bottom: 0; border-radius: 0; }
-.member-banner { background: linear-gradient(110deg, #0f172a 0%, #1a2e50 45%, #1c1000 100%); }
+.banner-slide-1 {
+  background:
+    linear-gradient(110deg, rgba(30,41,59,.82) 0%, rgba(185,28,28,.65) 100%),
+    url('https://images.unsplash.com/photo-1590362891991-f776e747a588?w=1200&h=360&fit=crop&auto=format&q=80') center/cover no-repeat;
+}
+.member-banner {
+  background:
+    linear-gradient(110deg, rgba(15,23,42,.90) 0%, rgba(26,46,80,.82) 45%, rgba(28,16,0,.88) 100%),
+    url('https://images.unsplash.com/photo-1542362567-b07e54358753?w=1200&h=360&fit=crop&auto=format&q=80') center/cover no-repeat;
+}
 .member-banner h1 { font-size: 38px; font-weight: 700; letter-spacing: 2px; line-height: 1.25; }
 .member-banner h1 span { color: #fbbf24; }
 .member-new-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #0f172a; font-size: 13px; font-weight: 700; border-radius: 20px; margin-bottom: 16px; letter-spacing: 1px; }
@@ -37,7 +46,7 @@
     <div class="banner-carousel" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
       <div class="banner-track" :style="{ transform: `translateX(-${currentBanner * 100}%)` }">
         <!-- Slide 1: 竞价好车 -->
-        <div class="hero-banner banner-slide">
+        <div class="hero-banner banner-slide banner-slide-1">
           <div>
             <h1>专业 · 透明 · 高效 <span class="accent">竞</span>买好车</h1>
             <p>专业检测 · 真实车况 · 三天无理由退车保障</p>
