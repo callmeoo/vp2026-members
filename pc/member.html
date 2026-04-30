@@ -525,7 +525,7 @@ createApp({
     );
     const ALLCARS_TASKS = new Set(['t_deal', 't_bid', 't_share', 't_festival']);
     function taskAction(t) {
-      if (ALLCARS_TASKS.has(t.id)) return { href: '../pc/sources.html', label: '去完成' };
+      if (ALLCARS_TASKS.has(t.id)) return { href: 'sources.html', label: '去完成' };
       if (t.id === 't_vote')       return { href: null, label: '敬请期待' };
       return { href: null, label: '去完成' };
     }

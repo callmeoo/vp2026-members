@@ -346,7 +346,7 @@ createApp({
     const earnTasks = CFG.recommendedTasks.filter(t => !V0_ONLY_EARN.has(t.id));
     function earnTaskAction(t) {
       if (PENDING_EARN.has(t.id)) return { href: null, label: '敬请期待' };
-      return { href: '../pc/sources.html', label: '去完成' };
+      return { href: 'sources.html', label: '去完成' };
     }
 
     return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, earnTasks, earnTaskAction, header, footer };
