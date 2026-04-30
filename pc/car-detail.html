@@ -664,27 +664,13 @@
 
   <!-- ============== 保留价 · 展示弹窗(V2/V3) ============== -->
   <div v-if="reserveModal === 'show'" class="modal-mask" @click.self="reserveModal = null">
-    <div class="modal-box" style="width: 380px; padding: 32px 28px 24px;">
+    <div class="modal-box" style="width: 380px; padding: 36px 28px 24px;">
       <div class="modal-close" @click="reserveModal = null"><i data-lucide="x" class="w-5 h-5"></i></div>
       <div class="flex flex-col items-center text-center">
-        <div class="reserve-circle">
-          <i data-lucide="key-round" class="w-7 h-7"></i>
-        </div>
-        <div class="text-[14px] text-slate-500 mt-5 mb-1 flex items-center gap-2">
-          本车保留价
-          <span class="lvl-badge" :class="'lvl-' + levelCode.toLowerCase()">{{ levelCode }} {{ levelName }}</span>
-        </div>
-        <div class="reserve-num text-[34px] my-2">¥{{ formatNum(car.reservePrice) }}</div>
+        <div class="text-[14px] text-slate-500 mb-2">本车保留价</div>
+        <div class="reserve-num text-[36px] my-1">¥{{ formatNum(car.reservePrice) }}</div>
         <div class="text-[12px] text-slate-400 mb-5">({{ (car.reservePrice/10000).toFixed(2) }}万)</div>
-        <div class="w-full px-2 py-3 rounded text-[12.5px]" :class="car.currentPrice >= car.reservePrice ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">
-          <template v-if="car.currentPrice >= car.reservePrice">
-            <i data-lucide="check-circle" class="w-3.5 h-3.5 inline -mt-0.5"></i> 当前竞价已过保留价
-          </template>
-          <template v-else>
-            <i data-lucide="alert-circle" class="w-3.5 h-3.5 inline -mt-0.5"></i> 当前竞价未过保留价 · 还差 <span class="font-semibold">¥{{ formatNum(car.reservePrice - car.currentPrice) }}</span>
-          </template>
-        </div>
-        <button class="btn-modal-primary w-full mt-5" @click="reserveModal = null">我知道了</button>
+        <button class="btn-modal-primary w-full" @click="reserveModal = null">我知道了</button>
       </div>
     </div>
   </div>
