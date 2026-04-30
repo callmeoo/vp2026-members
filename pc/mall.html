@@ -65,12 +65,12 @@
 .redeem-btn:hover { background: #6d28d9; }
 .redeem-btn:disabled { background: #ddd6fe; cursor: not-allowed; }
 
-/* 兑换说明卡 */
-.tips-card { background: #fff; border: 1px solid var(--pc-border); border-top: none; padding: 20px 24px; }
-.tips-title { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.tips-list { list-style: none; padding: 0; margin: 0; }
-.tips-list li { font-size: 12.5px; color: #64748b; padding: 4px 0; display: flex; align-items: flex-start; gap: 6px; }
-.tips-list li::before { content: '·'; color: #a78bfa; font-size: 18px; line-height: 1.2; flex-shrink: 0; }
+/* 兑换说明按钮 */
+.rules-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border: 1px solid #e9d5ff; border-radius: 100px; background: #faf5ff; color: #7c3aed; font-size: 12px; font-weight: 500; cursor: pointer; transition: background .12s; }
+.rules-btn:hover { background: #f3e8ff; }
+/* 兑换说明弹窗列表 */
+.rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.rules-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #374151; line-height: 1.6; }
 
 /* 确认弹窗 */
 .modal-mask { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); }
@@ -151,21 +151,16 @@
           </div>
         </div>
 
-        <!-- 提示条 -->
-        <div class="redeem-note">
-          <i data-lucide="info" class="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5"></i>
-          <div class="text-xs text-violet-700 leading-relaxed">
-            兑换后即时生效,权益卡可在
-            <a href="member.html" style="color:#7c3aed;text-decoration:underline">会员中心</a>
-            查看;优惠券不可叠加使用,过期自动作废。
-          </div>
-        </div>
-
         <!-- 商品列表 -->
         <div class="rewards-wrap">
           <div class="section-head">
             <h3>可兑换权益</h3>
-            <span class="text-xs text-slate-400">共 {{ rewards.length }} 项</span>
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-slate-400">共 {{ rewards.length }} 项</span>
+              <button @click="showRules = true" class="rules-btn">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i>兑换说明
+              </button>
+            </div>
           </div>
 
           <div v-for="r in rewards" :key="r.id" class="reward-row">
@@ -196,23 +191,33 @@
           </div>
         </div>
 
-        <!-- 说明 -->
-        <div class="tips-card">
-          <div class="tips-title"><i data-lucide="info" class="w-4 h-4 text-violet-500"></i>兑换说明</div>
-          <ul class="tips-list">
-            <li>兑换后即时生效,可在「会员中心 → 我的资产 → 权益卡」查看</li>
-            <li>有效期自兑换之日起计算,过期自动作废</li>
-            <li>优惠券一经兑换不可退换,不可转让或折现</li>
-            <li>同类优惠券不可叠加使用,每次消费限用 1 张</li>
-            <li v-if="discountRate < 1">{{ mockLv.name }} 专享折扣仅限兑换权益,积分有效期不变</li>
-          </ul>
-        </div>
 
       </div>
     </div>
   </div>
 
   <div v-html="footer"></div>
+
+  <!-- 兑换说明弹窗 -->
+  <div v-if="showRules" class="modal-mask" @click.self="showRules = false">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-icon"><i data-lucide="info" class="w-6 h-6"></i></div>
+        <div class="text-base font-semibold">兑换说明</div>
+      </div>
+      <div class="modal-body" style="text-align:left;padding-bottom:8px">
+        <ul class="rules-list">
+          <li><i data-lucide="check-circle" class="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5"></i><span>兑换后即时生效，可在「会员中心 → 我的资产」查看</span></li>
+          <li><i data-lucide="clock" class="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5"></i><span>有效期自兑换之日起计算，过期自动作废</span></li>
+          <li><i data-lucide="x-circle" class="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5"></i><span>优惠券一经兑换不可退换，不可转让或折现</span></li>
+          <li><i data-lucide="layers" class="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5"></i><span>同类优惠券不可叠加使用，每次消费限用 1 张</span></li>
+        </ul>
+      </div>
+      <div class="modal-footer" style="justify-content:center">
+        <button class="btn-confirm" style="max-width:160px" @click="showRules = false">我知道了</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 兑换确认弹窗 -->
   <div v-if="redeemItem" class="modal-mask" @click.self="redeemItem = null">
@@ -274,6 +279,7 @@ createApp({
     const rewards = CFG.redeemableRewards;
     const redeemItem = ref(null);
     const toastText = ref('');
+    const showRules = ref(false);
 
     function openRedeem(r) { redeemItem.value = r; }
     function confirmRedeem() {
@@ -308,12 +314,12 @@ createApp({
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch([redeemItem, toastText], () => nextTick(() => lucide.createIcons()));
+    watch([redeemItem, toastText, showRules], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
       CFG, mockLv, discountRate, discountLabel, actualCost,
-      balance, rewards, redeemItem, toastText,
+      balance, rewards, redeemItem, toastText, showRules,
       openRedeem, confirmRedeem, header, footer
     };
   }
