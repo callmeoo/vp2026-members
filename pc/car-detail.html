@@ -656,7 +656,7 @@
         <div class="text-[15px] text-slate-700 my-5">V2 及以上可查看车辆保留价</div>
         <div class="flex items-center gap-3 w-full">
           <button class="btn-modal-ghost flex-1" @click="reserveModal = null">我知道了</button>
-          <button class="btn-modal-primary flex-1" @click="reserveModal = null">积分兑换</button>
+          <button class="btn-modal-primary flex-1" @click="goPointsMall">积分兑换</button>
         </div>
       </div>
     </div>
@@ -712,6 +712,11 @@ createApp({
     const levelName = computed(() => LEVEL_NAMES[levelCode.value] || '');
     const onClickReserve = () => {
       reserveModal.value = canViewReserve.value ? 'show' : 'lock';
+    };
+    // PC 积分商城上线后,把这里替换为 window.location.href = 'mall.html?xxx'
+    const goPointsMall = () => {
+      reserveModal.value = null;
+      window.alert('PC 积分商城建设中,敬请期待');
     };
 
     const user = { name: 'cptest01' };
@@ -922,7 +927,7 @@ createApp({
 
     return {
       loggedIn, user, showHistory,
-      levelCode, levelName, canViewReserve, reserveModal, onClickReserve,
+      levelCode, levelName, canViewReserve, reserveModal, onClickReserve, goPointsMall,
       car, countdownText,
       ratings, basic, transfer, configRows,
       detailTabs, detailActive, scrollTo,
