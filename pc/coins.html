@@ -67,8 +67,13 @@
 .tx-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 .tx-amount { font-size: 16px; font-weight: 700; line-height: 1; }
 .tx-note { font-size: 11px; color: #94a3b8; margin-top: 3px; text-align: right; }
-.load-more { text-align: center; padding: 16px; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9; cursor: pointer; }
-.load-more:hover { color: var(--pc-red); }
+/* 分页 */
+.pager { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 14px 16px; border-top: 1px solid #f1f5f9; background: #fff; }
+.pager-btn { min-width: 32px; height: 32px; padding: 0 10px; border: 1px solid #e2e8f0; background: #fff; color: #475569; font-size: 13px; cursor: pointer; border-radius: 4px; transition: all .12s; }
+.pager-btn:hover:not(:disabled):not(.active) { border-color: var(--pc-red); color: var(--pc-red); }
+.pager-btn.active { background: var(--pc-red); color: #fff; border-color: var(--pc-red); cursor: default; }
+.pager-btn:disabled { color: #cbd5e1; cursor: not-allowed; background: #f8fafc; }
+.pager-info { font-size: 12px; color: #94a3b8; margin-left: 8px; }
 
 /* 推荐任务列表 */
 .earn-rules-wrap { background: #fff; border: 1px solid var(--pc-border); border-top: none; }
@@ -189,7 +194,14 @@
               </div>
             </div>
           </template>
-          <div class="load-more">查看更多 ›</div>
+          <div v-if="totalPages > 1" class="pager">
+            <button class="pager-btn" :disabled="currentPage === 1" @click="currentPage--">上一页</button>
+            <button v-for="p in totalPages" :key="p"
+              :class="['pager-btn', currentPage === p ? 'active' : '']"
+              @click="currentPage = p">{{ p }}</button>
+            <button class="pager-btn" :disabled="currentPage === totalPages" @click="currentPage++">下一页</button>
+            <span class="pager-info">共 {{ totalItems }} 条</span>
+          </div>
         </div>
 
         <!-- 如何赚积分 -->
@@ -276,9 +288,9 @@ createApp({
         amount: '-' + r.coin, amountColor: 'text-rose-600',
         note: '', icon: r.icon || 'gift', iconBg: colorBg.rose };
     }
-    function expire(meta, amount, note) {
+    function expire(meta, amount) {
       return { kind: 'expire', title: '积分过期清零', meta, amount: '-' + amount,
-        amountColor: 'text-slate-400', note, icon: 'hourglass',
+        amountColor: 'text-slate-400', note: '', icon: 'hourglass',
         iconBg: 'bg-gradient-to-br from-slate-400 to-slate-500' };
     }
 
@@ -304,17 +316,42 @@ createApp({
         earn('festival', '春节集福活动 · 2026-04-15 09:00:00', { coin: 3, expire: '2027-04-15' })
       ]},
       { date: '2026-04-10', items: [
-        expire('2025-04-10 获得 · 满 12 月 · 2026-04-10 00:00:00', 12, ''),
+        expire('2025-04-10 获得 · 满 12 月 · 2026-04-10 00:00:00', 12),
         earn('deal', '闽AB6688 · 2026-04-10 10:22:47', { expire: '2027-04-10' }),
         earn('bank_verify', '完善银行卡信息 · 一次性奖励 · 2026-04-10 09:15:00', { coin: 3, expire: '2027-04-10' })
       ]}
     ];
 
+    const PAGE_SIZE = 10;
+    const currentPage = ref(1);
+
+    // 按 filter 平铺并保留分组日期
+    const flatItems = computed(() => {
+      const arr = [];
+      groups.forEach(g => {
+        g.items.forEach(tx => {
+          if (activeFilter.value === 'all' || tx.kind === activeFilter.value) {
+            arr.push({ ...tx, _date: g.date });
+          }
+        });
+      });
+      return arr;
+    });
+    const totalItems = computed(() => flatItems.value.length);
+    const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / PAGE_SIZE)));
+
+    // filter 切换时重置到第 1 页
+    watch(activeFilter, () => { currentPage.value = 1; });
+
     const visibleGroups = computed(() => {
-      if (activeFilter.value === 'all') return groups;
-      return groups
-        .map(g => ({ date: g.date, items: g.items.filter(tx => tx.kind === activeFilter.value) }))
-        .filter(g => g.items.length > 0);
+      const start = (currentPage.value - 1) * PAGE_SIZE;
+      const paged = flatItems.value.slice(start, start + PAGE_SIZE);
+      const map = new Map();
+      paged.forEach(it => {
+        if (!map.has(it._date)) map.set(it._date, { date: it._date, items: [] });
+        map.get(it._date).items.push(it);
+      });
+      return Array.from(map.values());
     });
 
     const header = (function () {
@@ -338,7 +375,7 @@ createApp({
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch([activeTab, activeFilter], () => nextTick(() => lucide.createIcons()));
+    watch([activeTab, activeFilter, currentPage], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     const V0_ONLY_EARN = new Set(['t_verify', 't_deposit']);
@@ -349,7 +386,7 @@ createApp({
       return { href: 'sources.html', label: '去完成' };
     }
 
-    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, earnTasks, earnTaskAction, header, footer };
+    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, earnTasks, earnTaskAction, header, footer };
   }
 }).mount('#app');
 </script>
