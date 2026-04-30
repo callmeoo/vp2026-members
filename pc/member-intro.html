@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员等级权益 · 积分商城说明 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+<style>
+[v-cloak] { display: none; }
+
+/* ── Hero ── */
+.mi-hero {
+  background: linear-gradient(110deg, #0f172a 0%, #1a2e50 45%, #1c1000 100%);
+  padding: 56px 20px 52px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.mi-hero::before {
+  content: '';
+  position: absolute;
+  top: -60%; left: -40%; width: 180%; height: 220%;
+  background: radial-gradient(ellipse at center, rgba(245,158,11,.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+.mi-hero-inner { position: relative; z-index: 2; max-width: 760px; margin: 0 auto; }
+.mi-hero .badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 18px;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  color: #0f172a; font-size: 13px; font-weight: 700;
+  border-radius: 20px; letter-spacing: 1px; margin-bottom: 20px;
+}
+.mi-hero h1 { font-size: 40px; font-weight: 700; color: #fff; letter-spacing: 2px; margin-bottom: 12px; }
+.mi-hero h1 span { color: #fbbf24; }
+.mi-hero p { font-size: 17px; color: rgba(255,255,255,.72); letter-spacing: 1px; }
+.mi-hero-cta { margin-top: 28px; display: inline-flex; gap: 12px; }
+.mi-cta-btn { height: 44px; padding: 0 28px; font-size: 15px; font-weight: 600; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: opacity .2s; }
+.mi-cta-btn.gold { background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #0f172a; }
+.mi-cta-btn.ghost { border: 1px solid rgba(255,255,255,.45); color: #fff; }
+.mi-cta-btn:hover { opacity: .88; }
+
+/* ── Tab bar ── */
+.mi-tabs-wrap { background: #fff; border-bottom: 2px solid #e5e7eb; position: sticky; top: 0; z-index: 30; }
+.mi-tabs { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; gap: 0; }
+.mi-tab {
+  padding: 15px 30px; font-size: 15px; font-weight: 500; color: #6b7280;
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  border: none; background: none; position: relative; transition: color .2s;
+  white-space: nowrap;
+}
+.mi-tab:hover { color: var(--pc-red); }
+.mi-tab.active { color: var(--pc-red); font-weight: 600; }
+.mi-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--pc-red); }
+
+/* ── Content wrapper ── */
+.mi-body { max-width: 1200px; margin: 0 auto; padding: 36px 20px 60px; }
+
+/* ── Section title ── */
+.sec-hd { font-size: 18px; font-weight: 700; color: #111827; margin: 0 0 18px; display: flex; align-items: center; gap: 10px; }
+.sec-hd::before { content: ''; width: 4px; height: 18px; background: var(--pc-red); border-radius: 2px; flex-shrink: 0; }
+.sec-hd i { color: var(--pc-red); }
+
+/* ── Level cards ── */
+.level-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 36px; }
+.level-card { border-radius: 12px; padding: 22px 18px 20px; color: #fff; position: relative; overflow: hidden; }
+.level-card .lv-tag { font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: .85; text-transform: uppercase; margin-bottom: 8px; }
+.level-card .lv-short { font-size: 32px; font-weight: 900; line-height: 1; }
+.level-card .lv-name { font-size: 15px; font-weight: 600; margin-top: 4px; opacity: .95; }
+.level-card .lv-threshold { font-size: 12px; opacity: .72; margin-top: 14px; line-height: 1.6; border-top: 1px solid rgba(255,255,255,.2); padding-top: 12px; }
+.level-card .lv-bg-icon { position: absolute; bottom: -12px; right: -12px; opacity: .12; }
+
+/* ── Tables ── */
+.mi-table-wrap { background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 1px 6px rgba(0,0,0,.04); margin-bottom: 36px; }
+.mi-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.mi-table thead tr { background: linear-gradient(90deg, #1f2937, #374151); }
+.mi-table thead th { padding: 14px 16px; font-size: 14px; font-weight: 600; color: #fff; text-align: center; }
+.mi-table thead th:first-child { text-align: left; }
+.mi-table tbody td { padding: 13px 16px; text-align: center; border-bottom: 1px solid #f1f5f9; color: #374151; }
+.mi-table tbody td:first-child { text-align: left; font-weight: 500; color: #1f2937; }
+.mi-table tbody tr:last-child td { border-bottom: none; }
+.mi-table tbody tr:nth-child(even) td { background: #f9fafb; }
+.tick-v3 { color: #f59e0b; font-weight: 700; }
+.tick-v2 { color: #8b5cf6; font-weight: 700; }
+.tick-v1 { color: #0ea5e9; font-weight: 700; }
+.tick-v0 { color: #64748b; font-weight: 600; }
+.no-tick { color: #d1d5db; }
+
+/* ── 积分说明 two-col layout ── */
+.coins-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
+@media (max-width: 900px) { .coins-grid { grid-template-columns: 1fr; } }
+
+/* ── 积分介绍卡 ── */
+.coins-intro { background: linear-gradient(135deg,#fffbeb,#fef3c7); border: 1px solid #fde68a; border-radius: 10px; padding: 20px 22px; margin-bottom: 28px; display: flex; align-items: flex-start; gap: 14px; }
+.coins-intro .icon-box { width: 44px; height: 44px; border-radius: 10px; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+.coins-intro p { font-size: 15px; color: #374151; line-height: 1.7; margin: 0; }
+
+/* ── 使用方式 cards ── */
+.spend-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 14px; }
+.spend-card .icon-box { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; }
+.spend-card .title { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 6px; }
+.spend-card .desc { font-size: 13.5px; color: #6b7280; line-height: 1.65; }
+
+/* ── Q&A accordion ── */
+.qa-list { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; background: #fff; }
+.qa-item { border-bottom: 1px solid #f1f5f9; }
+.qa-item:last-child { border-bottom: none; }
+.qa-q { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; cursor: pointer; gap: 16px; transition: background .15s; }
+.qa-q:hover { background: #fafafa; }
+.qa-q span { font-size: 15px; font-weight: 600; color: #1f2937; flex: 1; line-height: 1.45; }
+.qa-q .chevron { transition: transform .3s; color: #9ca3af; flex-shrink: 0; }
+.qa-q .chevron.open { transform: rotate(180deg); }
+.qa-a { overflow: hidden; transition: max-height .35s ease; }
+.qa-a-inner { padding: 0 20px 18px; font-size: 14px; color: #4b5563; line-height: 1.75; }
+.qa-a-inner p { margin: 0 0 8px; }
+.qa-a-inner p:last-child { margin-bottom: 0; }
+
+/* ── Bottom CTA bar ── */
+.mi-bottom-cta { margin-top: 48px; background: linear-gradient(110deg, #0f172a 0%, #1a2e50 50%, #1c1000 100%); border-radius: 12px; padding: 36px 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.mi-bottom-cta .left h3 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.mi-bottom-cta .left p { font-size: 14px; color: rgba(255,255,255,.65); }
+.mi-bottom-cta .right a { height: 46px; padding: 0 32px; background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #0f172a; font-size: 15px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: opacity .2s; }
+.mi-bottom-cta .right a:hover { opacity: .88; }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <!-- Hero -->
+  <div class="mi-hero">
+    <div class="mi-hero-inner">
+      <div class="badge">
+        <i data-lucide="crown" class="w-3.5 h-3.5"></i>会员体系 · 正式上线
+      </div>
+      <h1>会员等级权益 · <span>积分商城</span></h1>
+      <p>出价有奖 · 成交返金 · 专属权益直达会员</p>
+      <div class="mi-hero-cta">
+        <a href="member.html" class="mi-cta-btn gold">
+          <i data-lucide="crown" class="w-4 h-4"></i>查看我的会员权益
+        </a>
+        <a href="mall.html" class="mi-cta-btn ghost">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>前往积分商城
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="mi-tabs-wrap">
+    <div class="mi-tabs">
+      <button v-for="t in tabs" :key="t.key"
+              :class="['mi-tab', { active: activeTab === t.key }]"
+              @click="switchTab(t.key)">
+        <i :data-lucide="t.icon" class="w-4 h-4"></i>{{ t.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="mi-body">
+
+    <!-- ===== Tab 1: 等级权益 ===== -->
+    <div v-show="activeTab === 'levels'">
+      <!-- 等级说明卡 -->
+      <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:18px 20px;margin-bottom:32px;font-size:14.5px;color:#0c4a6e;line-height:1.8">
+        <strong>会员等级</strong>根据账号内<strong>保证金余额（含冻结）</strong>及前 3 个自然月完成成交的<strong>车辆台数</strong>计算,每月 1 日更新。成交台数越高,当月等级越高,可获得平台特定等级权益。
+      </div>
+
+      <!-- 4 级等级卡 -->
+      <h2 class="sec-hd"><i data-lucide="layers" class="w-5 h-5"></i>会员等级</h2>
+      <div class="level-cards">
+        <div v-for="lv in levelCards" :key="lv.code" class="level-card" :style="{ background: `linear-gradient(135deg, ${lv.g0}, ${lv.g1})` }">
+          <div class="lv-tag">{{ lv.code }}</div>
+          <div class="lv-short">{{ lv.short }}</div>
+          <div class="lv-name">{{ lv.name }}</div>
+          <div class="lv-threshold" v-html="lv.threshold"></div>
+          <div class="lv-bg-icon">
+            <i :data-lucide="lv.icon" class="w-20 h-20"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- 权益对比矩阵 -->
+      <h2 class="sec-hd"><i data-lucide="shield-check" class="w-5 h-5"></i>会员权益对比</h2>
+      <div class="mi-table-wrap">
+        <table class="mi-table">
+          <thead>
+            <tr>
+              <th style="width:22%;text-align:left">权益类目</th>
+              <th v-for="lv in levelCards" :key="lv.code" style="width:19.5%">
+                <span :style="{ color: lv.color }">{{ lv.short }}</span> {{ lv.name }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, i) in benefitMatrix" :key="i">
+              <td>{{ row.label }}</td>
+              <td v-for="(v, j) in row.values" :key="j" v-html="v"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12.5px;color:#9ca3af;text-align:right;margin-top:-28px;margin-bottom:36px">以实际页面展示为准,平台保留调整权</p>
+    </div>
+
+    <!-- ===== Tab 2: 积分说明 ===== -->
+    <div v-show="activeTab === 'coins'">
+      <!-- 积分介绍 -->
+      <div class="coins-intro">
+        <div class="icon-box"><i data-lucide="coins" class="w-5 h-5"></i></div>
+        <p>积分是唯普汽车平台的<strong>商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong>兑换平台权益卡</strong>或享受<strong>折扣优惠</strong>。<strong>1 积分 = 0.1 元</strong>,有效期 12 个自然月,按获得月滚动到期。</p>
+      </div>
+
+      <div class="coins-grid">
+        <!-- 左: 积分获取方式 -->
+        <div>
+          <h2 class="sec-hd"><i data-lucide="plus-circle" class="w-5 h-5"></i>积分获取方式</h2>
+          <div class="mi-table-wrap">
+            <table class="mi-table">
+              <thead>
+                <tr>
+                  <th style="width:22%;text-align:left">类别</th>
+                  <th style="text-align:left">具体行为</th>
+                  <th style="width:24%">积分</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="g in earningTable" :key="g.category">
+                  <tr v-for="(it, i) in g.items" :key="it.action">
+                    <td v-if="i === 0" :rowspan="g.items.length" style="vertical-align:middle;background:#f9fafb;font-weight:600;color:#374151">{{ g.category }}</td>
+                    <td style="text-align:left;color:#374151">{{ it.action }}</td>
+                    <td style="font-weight:700;color:#d97706">{{ it.coin }}</td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 右: 积分使用方式 -->
+        <div>
+          <h2 class="sec-hd"><i data-lucide="shopping-bag" class="w-5 h-5"></i>积分使用方式</h2>
+          <div class="spend-card">
+            <div class="icon-box" style="background:#8b5cf6"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div>
+            <div>
+              <div class="title">积分商城兑换</div>
+              <div class="desc">在<a href="mall.html" style="color:#d12c1f">积分商城</a>使用积分兑换权益卡或实物商品,所兑即所得。V2 白金享 95 折,V3 钻石享 8 折优惠。</div>
+            </div>
+          </div>
+          <div class="spend-card">
+            <div class="icon-box" style="background:#0ea5e9"><i data-lucide="tag" class="w-5 h-5"></i></div>
+            <div>
+              <div class="title">等级兑换折扣</div>
+              <div class="desc">
+                <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">
+                  <div>V0 普通 · V1 金卡 — 1:1 等值</div>
+                  <div>V2 白金 — <strong style="color:#8b5cf6">95 折</strong></div>
+                  <div>V3 钻石 — <strong style="color:#f59e0b">8 折</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="spend-card">
+            <div class="icon-box" style="background:#f59e0b"><i data-lucide="timer-off" class="w-5 h-5"></i></div>
+            <div>
+              <div class="title">有效期提示</div>
+              <div class="desc">积分自获得当月起 <strong>12 个自然月</strong>内有效,到期未使用自动清零,建议尽早使用。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Tab 3: Q&A ===== -->
+    <div v-show="activeTab === 'qa'">
+      <h2 class="sec-hd"><i data-lucide="help-circle" class="w-5 h-5"></i>常见问题</h2>
+      <div class="qa-list">
+        <div v-for="(qa, i) in qaList" :key="i" class="qa-item">
+          <div class="qa-q" @click="toggleQa(i)">
+            <span>{{ i + 1 }}. {{ qa.q }}</span>
+            <i data-lucide="chevron-down" :class="['chevron w-4 h-4', { open: openQa === i }]"></i>
+          </div>
+          <div class="qa-a" :style="{ maxHeight: openQa === i ? '600px' : '0' }">
+            <div class="qa-a-inner" v-html="qa.a"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="mi-bottom-cta">
+      <div class="left">
+        <h3>开始享受您的会员权益</h3>
+        <p>每月 1 日自动计算等级,成交越多权益越丰富</p>
+      </div>
+      <div class="right">
+        <a href="member.html">
+          <i data-lucide="crown" class="w-5 h-5"></i>查看我的会员中心
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /mi-body -->
+
+  <div v-html="footer"></div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/member-config.js"></script>
+<script>
+const { createApp, ref, onMounted, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+    const header = PC_COMMON.renderHeader('');
+    const footer = PC_COMMON.renderFooter();
+
+    const activeTab = ref('levels');
+    const openQa = ref(0);
+
+    const tabs = [
+      { key: 'levels', label: '等级权益', icon: 'shield-check' },
+      { key: 'coins',  label: '积分说明', icon: 'coins' },
+      { key: 'qa',     label: 'Q&A',      icon: 'help-circle' },
+    ];
+
+    // Level cards
+    const lvIcons = ['user', 'credit-card', 'gem', 'diamond'];
+    const levelCards = CFG.levels.map((lv, i) => ({
+      code: lv.code,
+      short: lv.short,
+      name: lv.name,
+      color: lv.color,
+      g0: lv.gradient[0],
+      g1: lv.gradient[1],
+      threshold: lv.thresholdText.replace(/≥/g, '≥').replace(/</g, '&lt;'),
+      icon: lvIcons[i] || 'star',
+    }));
+
+    // Benefits matrix
+    function discountOf(lv) {
+      if (lv.benefits.find(b => b.id === 'coin_exchange_80')) return '8 折';
+      if (lv.benefits.find(b => b.id === 'coin_exchange_95')) return '95 折';
+      return '1:1';
+    }
+    function tickCls(lv) {
+      if (lv.short === 'V3') return 'tick-v3';
+      if (lv.short === 'V2') return 'tick-v2';
+      if (lv.short === 'V1') return 'tick-v1';
+      return 'tick-v0';
+    }
+    const dash = '<span class="no-tick">—</span>';
+    function cellFor(lv, id, label) {
+      if (!lv.benefits.find(b => b.id === id)) return dash;
+      return `<span class="${tickCls(lv)}">${label || '<i data-lucide="check" class="w-4 h-4 inline"></i>'}</span>`;
+    }
+
+    const matrixDefs = [
+      { label: '积分兑换折扣', render: lv => `<span class="${tickCls(lv)}">${discountOf(lv)}</span>` },
+      { label: '历史数据查询', render: lv => cellFor(lv, 'history_data') },
+      { label: '保留价查询',   render: lv => cellFor(lv, 'reserve_price') },
+      { label: '专属销售顾问', render: lv => cellFor(lv, 'sales_advisor') },
+      { label: '1V1 专属客服', render: lv => cellFor(lv, 'service_1v1') },
+      { label: '无理由退车',   render: lv => cellFor(lv, 'refund_1', '1 台') },
+    ];
+    const benefitMatrix = matrixDefs.map(d => ({
+      label: d.label,
+      values: CFG.levels.map(lv => d.render(lv)),
+    }));
+
+    // Earning table
+    const earningTable = CFG.coinEarning.map(g => ({
+      category: g.category,
+      items: g.items.map(it => ({
+        action: it.action,
+        coin: String(it.coin) + (it.unit ? ' ' + it.unit : ''),
+      })),
+    }));
+
+    const qaList = [
+      { q: '等级体系介绍', a: '<p>唯普会员等级每月 1 日更新,由用户最近 3 个自然月(不含本月)的累计成交台数决定。用户最近 3 个自然月(含本月)的累计成交台数达到更高等级门槛,即可实时升级。</p><p>每个等级可享受不同类型的权益,等级越高权益越丰富。</p>' },
+      { q: '什么是成交台数?', a: '<p>成交台数是用户最近 3 个自然月(含本月)在唯普平台完成过户或付款的车辆数量。不同成交方式对应不同的倍数系数。</p><p>特别提示:退车、退款等反向交易将冲减对应的成交台数。</p>' },
+      { q: '如何累积成交台数?', a: '<p>使用唯普平台进行竞价、保留价购买、专场活动等方式成交车辆,均可累积成交台数。</p><p>成交台数以<strong>过户完成</strong>或<strong>付款完成</strong>为准,仅计算近 3 个自然月的数据。</p>' },
+      { q: '唯普会员等级变化规则', a: '<p>每月 1 日,系统将根据用户上一周期(本月前最近的 3 个自然月,不含本月)的累计成交台数进行定级。</p><p>达标则等级将更新。您可在会员等级页面查看最新的等级和对应的权益。</p><p><strong>注意:</strong>本月中,若您最近 3 个自然月(含本月)累计成交台数达到更高等级的门槛,将进行实时升级。但如月底时台数不足,则可能在下月 1 日降回对应等级。</p>' },
+      { q: '如何查看会员等级权益?', a: '<p>您可在会员页面通过切换等级的方式查看各等级的权益,其中未达到的等级显示为未解锁状态。</p><p>会员等级越高,可享权益越丰富。</p>' },
+      { q: '会员等级有效期多久?', a: '<p>您的会员等级会在每月 1 日进行更新,更新后的等级有效期至当月最后一日。</p>' },
+      { q: '积分有效期如何计算?', a: '<p>积分自<strong>获得当月</strong>起 12 个自然月内有效,到期自动清零。例如 2026 年 4 月获得的积分,有效期至 2027 年 4 月 30 日。</p><p>建议定期登录积分明细页确认积分余额与到期情况,及时前往积分商城兑换使用。</p>' },
+      { q: '如何前往积分商城?', a: '<p>您可通过以下入口前往积分商城:① 会员中心 → 积分商城;② 首页顶部导航 → 积分商城。</p><p>积分商城内可兑换权益卡、保值服务等商品,V2 白金及以上等级可享受折扣优惠。</p>' },
+    ];
+
+    function switchTab(key) {
+      activeTab.value = key;
+      nextTick(() => window.lucide && lucide.createIcons());
+    }
+    function toggleQa(i) {
+      openQa.value = openQa.value === i ? -1 : i;
+      nextTick(() => window.lucide && lucide.createIcons());
+    }
+
+    onMounted(() => {
+      lucide.createIcons();
+    });
+
+    return {
+      header, footer, activeTab, openQa,
+      tabs, levelCards, benefitMatrix, earningTable, qaList,
+      switchTab, toggleQa,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

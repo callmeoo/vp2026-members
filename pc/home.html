@@ -8,22 +8,66 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <link rel="stylesheet" href="common.css">
 <script src="_partials.js"></script>
+<style>
+.banner-carousel { position: relative; overflow: hidden; margin-bottom: 16px; border-radius: 4px; }
+.banner-track { display: flex; transition: transform .55s cubic-bezier(.4,0,.2,1); will-change: transform; }
+.banner-slide { flex: 0 0 100%; }
+.hero-banner { margin-bottom: 0; border-radius: 0; }
+.member-banner { background: linear-gradient(110deg, #0f172a 0%, #1a2e50 45%, #1c1000 100%); }
+.member-banner h1 { font-size: 38px; font-weight: 700; letter-spacing: 2px; line-height: 1.25; }
+.member-banner h1 span { color: #fbbf24; }
+.member-new-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #0f172a; font-size: 13px; font-weight: 700; border-radius: 20px; margin-bottom: 16px; letter-spacing: 1px; }
+.btn-gold { background: linear-gradient(90deg,#f59e0b,#fbbf24); color: #0f172a !important; font-weight: 700; }
+.btn-gold:hover { opacity: .88; }
+.banner-dots { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; }
+.banner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.45); cursor: pointer; transition: all .25s ease; border: none; padding: 0; }
+.banner-dot.active { width: 24px; border-radius: 4px; background: #fff; }
+.banner-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 40px; height: 40px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); color: #fff; font-size: 22px; cursor: pointer; border-radius: 4px; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; transition: background .2s; line-height: 1; }
+.banner-arrow:hover { background: rgba(255,255,255,.3); }
+.banner-arrow.left { left: 16px; }
+.banner-arrow.right { right: 16px; }
+</style>
 </head>
 <body>
 <div id="app" v-cloak>
   <div v-html="header"></div>
 
   <div class="pc-main">
-    <!-- Banner -->
-    <div class="hero-banner">
-      <div>
-        <h1>专业 · 透明 · 高效 <span class="accent">竞</span>买好车</h1>
-        <p>专业检测 · 真实车况 · 三天无理由退车保障</p>
-        <div class="hero-cta">
-          <a href="auction.html" class="btn btn-primary">进入竞价大厅</a>
-          <a href="sources.html" class="btn btn-ghost">浏览全部车源</a>
+    <!-- Banner Carousel -->
+    <div class="banner-carousel" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+      <div class="banner-track" :style="{ transform: `translateX(-${currentBanner * 100}%)` }">
+        <!-- Slide 1: 竞价好车 -->
+        <div class="hero-banner banner-slide">
+          <div>
+            <h1>专业 · 透明 · 高效 <span class="accent">竞</span>买好车</h1>
+            <p>专业检测 · 真实车况 · 三天无理由退车保障</p>
+            <div class="hero-cta">
+              <a href="auction.html" class="btn btn-primary">进入竞价大厅</a>
+              <a href="sources.html" class="btn btn-ghost">浏览全部车源</a>
+            </div>
+          </div>
+        </div>
+        <!-- Slide 2: 会员权益上线 -->
+        <div class="hero-banner banner-slide member-banner">
+          <div>
+            <div class="member-new-badge"><i data-lucide="crown" class="w-3.5 h-3.5"></i>会员体系 · 正式上线</div>
+            <h1>会员等级权益 · 积分商城<br><span>全面升级</span></h1>
+            <p style="margin-top:14px;font-size:16px;color:rgba(255,255,255,.8);letter-spacing:1px">出价有奖 · 成交返金 · 专属权益直达会员</p>
+            <div class="hero-cta">
+              <a href="member-intro.html" class="btn btn-gold">立即了解权益</a>
+              <a href="member.html" class="btn btn-ghost">查看我的会员</a>
+            </div>
+          </div>
         </div>
       </div>
+      <!-- Dots -->
+      <div class="banner-dots">
+        <button class="banner-dot" :class="{active:currentBanner===0}" @click="goToBanner(0)"></button>
+        <button class="banner-dot" :class="{active:currentBanner===1}" @click="goToBanner(1)"></button>
+      </div>
+      <!-- Arrows -->
+      <button class="banner-arrow left" @click="goToBanner((currentBanner-1+2)%2)">&#8249;</button>
+      <button class="banner-arrow right" @click="goToBanner((currentBanner+1)%2)">&#8250;</button>
     </div>
 
     <!-- 快速入口 -->
@@ -112,14 +156,28 @@
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  const { createApp, onMounted, nextTick } = Vue;
+  const { createApp, ref, onMounted, onUnmounted, nextTick } = Vue;
   createApp({
     setup() {
       const header = PC_COMMON.renderHeader('home');
       const footer = PC_COMMON.renderFooter();
       const cars = PC_COMMON.cars;
-      onMounted(() => nextTick(() => window.lucide && lucide.createIcons()));
-      return { header, footer, cars };
+
+      const currentBanner = ref(0);
+      const TOTAL = 2;
+      let timer = null;
+
+      function goToBanner(i) { currentBanner.value = (i + TOTAL) % TOTAL; }
+      function pauseCarousel() { clearInterval(timer); timer = null; }
+      function resumeCarousel() { if (!timer) timer = setInterval(() => goToBanner(currentBanner.value + 1), 5000); }
+
+      onMounted(() => {
+        nextTick(() => window.lucide && lucide.createIcons());
+        timer = setInterval(() => goToBanner(currentBanner.value + 1), 5000);
+      });
+      onUnmounted(() => clearInterval(timer));
+
+      return { header, footer, cars, currentBanner, goToBanner, pauseCarousel, resumeCarousel };
     },
   }).mount('#app');
 </script>
