@@ -76,23 +76,6 @@
 .level-progress-bar { height: 6px; background: rgba(255,255,255,.22); border-radius: 100px; overflow: hidden; max-width: 300px; margin-top: 10px; }
 .level-progress-fill { height: 100%; background: rgba(255,255,255,.85); border-radius: 100px; transition: width .5s ease; }
 
-/* 积分面板 */
-.coin-panel {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border-radius: 10px; padding: 20px 28px;
-  color: #fff; display: flex; align-items: center; gap: 32px;
-}
-.coin-amount { font-size: 44px; font-weight: 900; line-height: 1; }
-.coin-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 22px; background: #f59e0b; color: #fff;
-  font-size: 14px; font-weight: 700; border-radius: 6px;
-  cursor: pointer; text-decoration: none; transition: background .15s;
-}
-.coin-btn:hover { background: #d97706; }
-.coin-link { color: #94a3b8; font-size: 13px; text-decoration: none; }
-.coin-link:hover { color: #fff; }
-
 /* 可享权益 */
 .benefit-section { background: #fff; border: 1px solid var(--pc-border); }
 .benefit-head { padding: 15px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
@@ -142,6 +125,22 @@
 .pending-num { font-size: 32px; font-weight: 700; color: #d12c1f; }
 .pending-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
 .pending-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+/* 积分行 (在我的资产内) */
+.coin-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid #f1f5f9;
+}
+.coin-row-num { font-size: 28px; font-weight: 700; color: #7c3aed; line-height: 1; }
+.coin-row-link { font-size: 13px; color: #64748b; text-decoration: none; }
+.coin-row-link:hover { color: #d12c1f; }
+.coin-row-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 18px; background: #f59e0b; color: #fff;
+  font-size: 13px; font-weight: 700; border-radius: 5px;
+  text-decoration: none; transition: background .15s;
+}
+.coin-row-btn:hover { background: #d97706; }
 
 /* 关注的车 */
 .watch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
@@ -247,38 +246,10 @@
           </div>
         </div>
 
-        <!-- 积分面板 -->
-        <div class="coin-panel">
-          <div class="flex-shrink-0">
-            <div class="flex items-center gap-2 text-slate-400 text-sm mb-1.5">
-              <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
-              <span>我的积分</span>
-            </div>
-            <div class="coin-amount">356</div>
-            <div class="text-slate-500 text-xs mt-1.5">
-              30 天内 <span class="text-amber-400 font-semibold">50 积分</span> 即将过期
-            </div>
-          </div>
-          <div class="flex-1">
-            <div class="text-slate-500 text-xs mb-3">1 积分 = 0.1 元 · 有效期 12 个自然月</div>
-            <div class="flex items-center gap-4">
-              <a href="#" class="coin-btn">
-                <i data-lucide="shopping-bag" class="w-4 h-4"></i>去兑换权益
-              </a>
-              <a href="#" class="coin-link">积分明细 ›</a>
-              <a href="#" class="coin-link">如何获取积分 ›</a>
-            </div>
-          </div>
-        </div>
-
         <!-- 可享权益 -->
         <div class="benefit-section">
           <div class="benefit-head">
             <h3>可享权益</h3>
-            <span class="text-xs text-slate-400">
-              <span class="font-semibold" :style="{ color: currentLv.color }">{{ currentLv.name }}</span>
-              已解锁 {{ allBenefits.filter(b => b.unlocked).length }} / {{ allBenefits.length }} 项
-            </span>
           </div>
           <div class="benefit-grid">
             <div v-for="b in allBenefits" :key="b.id" :class="['ben-cell', b.unlocked ? '' : 'locked']">
@@ -295,6 +266,7 @@
             <h3>我的资产</h3>
           </div>
           <div class="c-body">
+            <!-- 权益卡 + 优惠券 -->
             <div class="asset-row">
               <div class="asset-box">
                 <div class="asset-icon-wrap bg-red-50">
@@ -313,6 +285,25 @@
                   <div class="asset-num">0</div>
                   <div class="asset-sub">张优惠券未使用</div>
                 </div>
+              </div>
+            </div>
+            <!-- 积分 -->
+            <div class="coin-row">
+              <div class="flex items-center gap-3">
+                <div class="asset-icon-wrap bg-violet-50 flex-shrink-0" style="width:44px;height:44px;">
+                  <i data-lucide="coins" class="w-6 h-6 text-violet-500"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-slate-400 mb-0.5">我的积分</div>
+                  <div class="coin-row-num">356</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <a href="#" class="coin-row-link">积分明细 ›</a>
+                <a href="#" class="coin-row-link">如何获取积分 ›</a>
+                <a href="#" class="coin-row-btn">
+                  <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>去兑换权益
+                </a>
               </div>
             </div>
           </div>
@@ -382,24 +373,24 @@
   </div><!-- /pc-main -->
 
   <div v-html="footer"></div>
-</div><!-- /#app -->
 
-<!-- 模拟等级切换 · Demo -->
-<div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
-  <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
-    <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+  <!-- 模拟等级切换 · Demo -->
+  <div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <button v-for="lv in CFG.levels" :key="lv.code"
+        @click="simulateLevel(lv.short)"
+        :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-[120px] text-left',
+          currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-slate-300 scale-[1.04]' : 'opacity-70 hover:opacity-100']"
+        :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
+        {{ lv.short }} · {{ lv.name }}
+      </button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
   </div>
-  <div class="flex flex-col gap-1.5">
-    <button v-for="lv in CFG.levels" :key="lv.code"
-      @click="simulateLevel(lv.short)"
-      :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-[120px] text-left',
-        currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-slate-300 scale-[1.04]' : 'opacity-70 hover:opacity-100']"
-      :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
-      {{ lv.short }} · {{ lv.name }}
-    </button>
-  </div>
-  <div class="text-[10px] text-slate-400 mt-2">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
-</div>
+</div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="../shared/member-config.js"></script>
