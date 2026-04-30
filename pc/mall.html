@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>积分兑换 · 个人中心 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+<style>
+[v-cloak] { display: none; }
+
+.profile-layout { display: grid; grid-template-columns: 212px 1fr; gap: 20px; align-items: start; }
+
+/* 左侧 */
+.side-panel { display: flex; flex-direction: column; gap: 12px; }
+.side-card { background: #fff; border: 1px solid var(--pc-border); }
+.user-profile { padding: 22px 16px 18px; text-align: center; }
+.avatar-wrap { width: 72px; height: 72px; border-radius: 50%; background: #f1f5f9; border: 3px solid #e2e8f0; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+.user-name { font-size: 15px; font-weight: 700; color: #1f2937; }
+.lv-badge-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 12px; border-radius: 100px; font-size: 12px; font-weight: 700; color: #fff; margin-top: 8px; }
+.validity-text { font-size: 11px; color: #94a3b8; margin-top: 8px; }
+.account-summary { padding: 12px 16px 14px; }
+.acct-row { padding: 7px 0; border-bottom: 1px solid #f8fafc; }
+.acct-row:last-child { border-bottom: none; }
+.acct-label { font-size: 11.5px; color: #94a3b8; }
+.acct-value { font-size: 12px; font-weight: 600; color: #1f2937; margin-top: 2px; }
+.acct-actions { display: flex; gap: 8px; margin-top: 2px; }
+.acct-link { color: #d12c1f; font-size: 11px; cursor: pointer; }
+.acct-link:hover { text-decoration: underline; }
+
+/* 右侧 */
+.main-content { display: flex; flex-direction: column; gap: 0; }
+
+/* 余额 banner */
+.balance-banner { background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 60%, #7c3aed 100%); border-radius: 8px 8px 0 0; padding: 24px 28px 20px; color: #fff; }
+.balance-label { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.balance-num { font-size: 52px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+.balance-unit { font-size: 16px; font-weight: 400; opacity: .7; margin-left: 4px; }
+.discount-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 100px; padding: 3px 10px; font-size: 12px; font-weight: 600; margin-top: 10px; }
+
+/* 兑换说明 */
+.redeem-note { background: #fdf4ff; border: 1px solid #e9d5ff; border-top: none; padding: 11px 20px; display: flex; align-items: flex-start; gap: 8px; }
+
+/* 商品列表 */
+.rewards-wrap { background: #fff; border: 1px solid var(--pc-border); border-top: none; }
+.section-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 24px; border-bottom: 1px solid #f1f5f9; }
+.section-head h3 { font-size: 15px; font-weight: 700; color: #1f2937; }
+
+.reward-row { display: flex; align-items: center; gap: 16px; padding: 16px 24px; border-bottom: 1px solid #f8fafc; transition: background .1s; }
+.reward-row:last-child { border-bottom: none; }
+.reward-row:hover { background: #fafafa; }
+.reward-icon { width: 52px; height: 52px; border-radius: 12px; background: #f3e8ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.reward-name { font-size: 14px; font-weight: 700; color: #1f2937; }
+.reward-desc { font-size: 12px; color: #64748b; margin-top: 3px; line-height: 1.5; }
+.reward-meta { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+.validity-chip { font-size: 11px; color: #94a3b8; display: inline-flex; align-items: center; gap: 3px; }
+.scope-chip { font-size: 11px; background: #f1f5f9; color: #64748b; border-radius: 4px; padding: 1px 6px; }
+
+.reward-price-col { flex-shrink: 0; text-align: right; min-width: 130px; }
+.price-original { font-size: 12px; color: #94a3b8; text-decoration: line-through; margin-bottom: 2px; }
+.price-now { font-size: 20px; font-weight: 800; color: #7c3aed; line-height: 1; }
+.price-unit { font-size: 12px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
+.redeem-btn { margin-top: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 18px; background: #7c3aed; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .1s; }
+.redeem-btn:hover { background: #6d28d9; }
+.redeem-btn:disabled { background: #ddd6fe; cursor: not-allowed; }
+
+/* 兑换说明卡 */
+.tips-card { background: #fff; border: 1px solid var(--pc-border); border-top: none; padding: 20px 24px; }
+.tips-title { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.tips-list { list-style: none; padding: 0; margin: 0; }
+.tips-list li { font-size: 12.5px; color: #64748b; padding: 4px 0; display: flex; align-items: flex-start; gap: 6px; }
+.tips-list li::before { content: '·'; color: #a78bfa; font-size: 18px; line-height: 1.2; flex-shrink: 0; }
+
+/* 确认弹窗 */
+.modal-mask { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); }
+.modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 420px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.modal-header { background: linear-gradient(135deg, #6d28d9, #7c3aed); padding: 20px 24px 16px; text-align: center; color: #fff; }
+.modal-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+.modal-body { padding: 24px 28px; text-align: center; }
+.modal-footer { display: flex; gap: 12px; padding: 16px 24px; border-top: 1px solid #f1f5f9; }
+.modal-footer button { flex: 1; height: 40px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+.btn-cancel { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0 !important; }
+.btn-cancel:hover { background: #f1f5f9; }
+.btn-confirm { background: #7c3aed; color: #fff; }
+.btn-confirm:hover { background: #6d28d9; }
+
+/* Toast */
+.toast-wrap { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 60; }
+.toast-inner { background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 100px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.25); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <div class="profile-layout">
+
+      <!-- 左侧 -->
+      <div class="side-panel">
+        <div class="side-card">
+          <div class="user-profile">
+            <div class="avatar-wrap"><i data-lucide="user" class="w-9 h-9"></i></div>
+            <div class="user-name">cptest01</div>
+            <div class="flex justify-center">
+              <span class="lv-badge-pill" :style="{ background: 'linear-gradient(135deg,' + mockLv.gradient[0] + ',' + mockLv.gradient[1] + ')' }">
+                <i data-lucide="crown" class="w-3 h-3"></i>{{ mockLv.short }} · {{ mockLv.name }}
+              </span>
+            </div>
+            <div class="validity-text">会员有效期至 2026-06-30</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="account-summary">
+            <div class="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
+              <i data-lucide="wallet" class="w-3.5 h-3.5"></i>专用账号
+            </div>
+            <div class="acct-row">
+              <div class="acct-label">可用余额</div>
+              <div class="acct-value">139,648,697.94 元</div>
+              <div class="acct-actions"><span class="acct-link">充值</span><span class="acct-link">提现</span></div>
+            </div>
+            <div class="acct-row">
+              <div class="acct-label">可用保证金</div>
+              <div class="acct-value">75,500.00 元</div>
+              <div class="acct-actions"><span class="acct-link">充值</span><span class="acct-link">提取</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧 -->
+      <div class="main-content">
+
+        <!-- 积分余额 banner -->
+        <div class="balance-banner">
+          <div class="balance-label"><i data-lucide="coins" class="w-4 h-4"></i>我的积分</div>
+          <div class="flex items-baseline gap-2">
+            <div class="balance-num">{{ balance }}</div>
+            <span class="balance-unit">积分</span>
+          </div>
+          <div v-if="discountRate < 1">
+            <div class="discount-badge">
+              <i data-lucide="tag" class="w-3 h-3"></i>
+              {{ mockLv.name }}专享 {{ discountLabel }} 兑换
+            </div>
+          </div>
+        </div>
+
+        <!-- 提示条 -->
+        <div class="redeem-note">
+          <i data-lucide="info" class="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5"></i>
+          <div class="text-xs text-violet-700 leading-relaxed">
+            兑换后即时生效,权益卡可在
+            <a href="member.html" style="color:#7c3aed;text-decoration:underline">会员中心</a>
+            查看;优惠券不可叠加使用,过期自动作废。
+          </div>
+        </div>
+
+        <!-- 商品列表 -->
+        <div class="rewards-wrap">
+          <div class="section-head">
+            <h3>可兑换权益</h3>
+            <span class="text-xs text-slate-400">共 {{ rewards.length }} 项</span>
+          </div>
+
+          <div v-for="r in rewards" :key="r.id" class="reward-row">
+            <div class="reward-icon">
+              <i :data-lucide="r.icon" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="reward-name">{{ r.name }}</div>
+              <div class="reward-desc">{{ r.desc }}</div>
+              <div class="reward-meta">
+                <span class="validity-chip">
+                  <i data-lucide="clock" class="w-3 h-3"></i>有效期 {{ r.validityDays }} 天
+                </span>
+                <span class="scope-chip">{{ r.scope }}</span>
+              </div>
+            </div>
+            <div class="reward-price-col">
+              <div v-if="discountRate < 1" class="price-original">{{ r.coin }} 积分</div>
+              <div>
+                <span class="price-now">{{ actualCost(r.coin) }}</span>
+                <span class="price-unit">积分</span>
+              </div>
+              <button class="redeem-btn" :disabled="balance < actualCost(r.coin)" @click="openRedeem(r)">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                {{ balance >= actualCost(r.coin) ? '立即兑换' : '积分不足' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明 -->
+        <div class="tips-card">
+          <div class="tips-title"><i data-lucide="info" class="w-4 h-4 text-violet-500"></i>兑换说明</div>
+          <ul class="tips-list">
+            <li>兑换后即时生效,可在「会员中心 → 我的资产 → 权益卡」查看</li>
+            <li>有效期自兑换之日起计算,过期自动作废</li>
+            <li>优惠券一经兑换不可退换,不可转让或折现</li>
+            <li>同类优惠券不可叠加使用,每次消费限用 1 张</li>
+            <li v-if="discountRate < 1">{{ mockLv.name }} 专享折扣仅限兑换权益,积分有效期不变</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+
+  <!-- 兑换确认弹窗 -->
+  <div v-if="redeemItem" class="modal-mask" @click.self="redeemItem = null">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-icon"><i data-lucide="gift" class="w-6 h-6"></i></div>
+        <div class="text-base font-semibold">确认兑换</div>
+      </div>
+      <div class="modal-body">
+        <div class="text-sm text-slate-500 mb-1">即将兑换</div>
+        <div class="text-lg font-bold text-slate-800">{{ redeemItem.name }}</div>
+        <div class="text-3xl font-black text-violet-600 mt-4">{{ actualCost(redeemItem.coin) }}<span class="text-base font-normal text-slate-400 ml-1">积分</span></div>
+        <div v-if="discountRate < 1" class="text-xs text-emerald-600 mt-1 flex items-center justify-center gap-1">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>已享 {{ discountLabel }},节省 {{ redeemItem.coin - actualCost(redeemItem.coin) }} 积分
+        </div>
+        <div class="text-xs text-slate-400 mt-2">兑换后余额 <strong>{{ balance - actualCost(redeemItem.coin) }}</strong> 积分</div>
+        <div class="mt-5 bg-violet-50 rounded-lg p-3 text-xs text-violet-700 text-left">
+          有效期 {{ redeemItem.validityDays }} 天,可在「会员中心 → 我的资产 → 权益卡」查看。兑换后不可退换。
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" @click="redeemItem = null">取消</button>
+        <button class="btn-confirm" @click="confirmRedeem">确认兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div v-if="toastText" class="toast-wrap">
+    <div class="toast-inner">
+      <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>{{ toastText }}
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/member-config.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+
+    // 模拟 V2 白金会员
+    const mockLv = CFG.getLevelByCode('LV2');
+
+    // 积分折扣: V2 → 95折, V3 → 8折, 其余 1
+    const discountMap = { LV2: 0.95, LV3: 0.80 };
+    const discountRate = discountMap[mockLv.code] || 1;
+    const discountLabel = discountRate === 0.95 ? '95 折' : discountRate === 0.80 ? '8 折' : '无折扣';
+
+    function actualCost(originalCoin) {
+      return Math.ceil(Number(originalCoin) * discountRate);
+    }
+
+    const balance = ref(356);
+    const rewards = CFG.redeemableRewards;
+    const redeemItem = ref(null);
+    const toastText = ref('');
+
+    function openRedeem(r) { redeemItem.value = r; }
+    function confirmRedeem() {
+      if (!redeemItem.value) return;
+      balance.value -= actualCost(redeemItem.value.coin);
+      redeemItem.value = null;
+      showToast('兑换成功，已存入权益卡');
+    }
+    function showToast(msg) {
+      toastText.value = msg;
+      setTimeout(() => { toastText.value = ''; }, 2500);
+    }
+
+    const header = (function () {
+      const c = window.PC_COMMON;
+      const links = c.topbarLeftLinks.map(l => '[<a href="' + l.href + '">' + l.text + '</a>]').join('');
+      const right = c.topbarRight.map(r =>
+        '<a href="' + r.href + '" class="' + (r.danger ? 'danger' : '') + '">' +
+        (r.icon ? '<i data-lucide="' + r.icon + '" class="w-3.5 h-3.5 inline mr-0.5"></i>' : '') +
+        r.text + '</a>'
+      ).join('<span class="sep">|</span>');
+      return '<div class="pc-topbar"><div class="topbar-inner"><div>' + c.topbarLeft + ' ' + links + '</div><div>' + right + '</div></div></div>' +
+        '<div class="pc-nav"><div class="pc-nav-inner">' +
+        '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
+        '<div class="nav-list">' +
+        '<a href="#" class="nav-item">我的首页</a>' +
+        '<a href="#" class="nav-item">我的交易</a>' +
+        '<a href="#" class="nav-item">专用账号</a>' +
+        '<a href="member.html" class="nav-item">会员中心</a>' +
+        '<a href="#" class="nav-item">我的信息</a>' +
+        '</div></div></div>';
+    })();
+    const footer = window.PC_COMMON.renderFooter();
+
+    watch([redeemItem, toastText], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return {
+      CFG, mockLv, discountRate, discountLabel, actualCost,
+      balance, rewards, redeemItem, toastText,
+      openRedeem, confirmRedeem, header, footer
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

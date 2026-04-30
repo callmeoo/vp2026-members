@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>积分明细 · 个人中心 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+<style>
+[v-cloak] { display: none; }
+
+.profile-layout { display: grid; grid-template-columns: 212px 1fr; gap: 20px; align-items: start; }
+
+/* 左侧 */
+.side-panel { display: flex; flex-direction: column; gap: 12px; }
+.side-card { background: #fff; border: 1px solid var(--pc-border); }
+.user-profile { padding: 22px 16px 18px; text-align: center; }
+.avatar-wrap { width: 72px; height: 72px; border-radius: 50%; background: #f1f5f9; border: 3px solid #e2e8f0; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+.user-name { font-size: 15px; font-weight: 700; color: #1f2937; }
+.lv-badge-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 12px; border-radius: 100px; font-size: 12px; font-weight: 700; color: #fff; margin-top: 8px; }
+.validity-text { font-size: 11px; color: #94a3b8; margin-top: 8px; }
+.account-summary { padding: 12px 16px 14px; }
+.acct-row { padding: 7px 0; border-bottom: 1px solid #f8fafc; }
+.acct-row:last-child { border-bottom: none; }
+.acct-label { font-size: 11.5px; color: #94a3b8; }
+.acct-value { font-size: 12px; font-weight: 600; color: #1f2937; margin-top: 2px; }
+.acct-actions { display: flex; gap: 8px; margin-top: 2px; }
+.acct-link { color: #d12c1f; font-size: 11px; cursor: pointer; }
+.acct-link:hover { text-decoration: underline; }
+
+/* 右侧 */
+.main-content { display: flex; flex-direction: column; gap: 0; }
+
+/* 余额 banner */
+.balance-banner { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 8px 8px 0 0; padding: 24px 28px 20px; color: #fff; margin-bottom: 0; }
+.balance-label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.balance-num { font-size: 52px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+.balance-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+.stat-box { background: rgba(255,255,255,.08); border-radius: 6px; padding: 10px 14px; }
+.stat-num { font-size: 20px; font-weight: 700; }
+.stat-label { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.stat-box.warn .stat-num { color: #fbbf24; }
+
+/* 过期提醒 */
+.expiry-warn { display: flex; align-items: center; gap: 12px; background: #fffbeb; border: 1px solid #fcd34d; border-top: none; padding: 12px 20px; }
+
+/* Tabs */
+.tab-bar { display: flex; background: #fff; border: 1px solid var(--pc-border); border-top: none; }
+.tab-item { padding: 13px 24px; font-size: 14px; color: #64748b; cursor: pointer; position: relative; user-select: none; }
+.tab-item:hover { color: var(--pc-red); }
+.tab-item.active { color: var(--pc-red); font-weight: 600; }
+.tab-item.active::after { content: ''; position: absolute; left: 24px; right: 24px; bottom: 0; height: 2px; background: var(--pc-red); border-radius: 2px; }
+
+/* 明细列表 */
+.tx-list { background: #fff; border: 1px solid var(--pc-border); border-top: none; }
+.filter-strip { display: flex; gap: 0; padding: 10px 20px; border-bottom: 1px solid #f1f5f9; }
+.filter-chip { padding: 4px 14px; font-size: 13px; color: #64748b; cursor: pointer; border-radius: 100px; border: 1px solid transparent; }
+.filter-chip:hover { color: var(--pc-red); }
+.filter-chip.active { background: #fef2f2; color: var(--pc-red); border-color: #fecaca; font-weight: 600; }
+.tx-group-date { font-size: 12px; color: #94a3b8; font-weight: 500; padding: 8px 20px 6px; background: #f8fafc; border-bottom: 1px solid #f1f5f9; border-top: 1px solid #f1f5f9; }
+.tx-row { display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-bottom: 1px solid #f8fafc; transition: background .1s; }
+.tx-row:last-child { border-bottom: none; }
+.tx-row:hover { background: #fafafa; }
+.tx-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+.tx-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+.tx-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.tx-amount { font-size: 16px; font-weight: 700; line-height: 1; }
+.tx-note { font-size: 11px; color: #94a3b8; margin-top: 3px; text-align: right; }
+.load-more { text-align: center; padding: 16px; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9; cursor: pointer; }
+.load-more:hover { color: var(--pc-red); }
+
+/* 获取规则 */
+.earn-rules-wrap { background: #fff; border: 1px solid var(--pc-border); border-top: none; }
+.earn-group { border-bottom: 1px solid #f1f5f9; }
+.earn-group:last-child { border-bottom: none; }
+.earn-group-head { display: flex; align-items: center; gap: 8px; padding: 12px 20px 10px; background: #f8fafc; font-size: 13px; font-weight: 600; color: #475569; }
+.earn-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.earn-table th { padding: 9px 20px; text-align: left; background: #fff; color: #94a3b8; font-weight: 500; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+.earn-table td { padding: 12px 20px; border-bottom: 1px solid #f8fafc; color: #1f2937; vertical-align: top; }
+.earn-table tr:last-child td { border-bottom: none; }
+.earn-table .coin-val { font-weight: 700; font-size: 15px; color: #7c3aed; }
+.earn-table .coin-unit { font-size: 12px; color: #94a3b8; font-weight: 400; margin-left: 2px; }
+.earn-table .earn-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+.validity-note { background: #fff; border: 1px solid var(--pc-border); border-top: none; padding: 16px 20px; font-size: 12.5px; color: #64748b; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <div class="profile-layout">
+
+      <!-- 左侧 -->
+      <div class="side-panel">
+        <div class="side-card">
+          <div class="user-profile">
+            <div class="avatar-wrap"><i data-lucide="user" class="w-9 h-9"></i></div>
+            <div class="user-name">cptest01</div>
+            <div class="flex justify-center">
+              <span class="lv-badge-pill" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6)">
+                <i data-lucide="crown" class="w-3 h-3"></i>V2 · 白金会员
+              </span>
+            </div>
+            <div class="validity-text">会员有效期至 2026-06-30</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="account-summary">
+            <div class="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
+              <i data-lucide="wallet" class="w-3.5 h-3.5"></i>专用账号
+            </div>
+            <div class="acct-row">
+              <div class="acct-label">可用余额</div>
+              <div class="acct-value">139,648,697.94 元</div>
+              <div class="acct-actions"><span class="acct-link">充值</span><span class="acct-link">提现</span></div>
+            </div>
+            <div class="acct-row">
+              <div class="acct-label">可用保证金</div>
+              <div class="acct-value">75,500.00 元</div>
+              <div class="acct-actions"><span class="acct-link">充值</span><span class="acct-link">提取</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧 -->
+      <div class="main-content">
+
+        <!-- 余额概览 -->
+        <div class="balance-banner">
+          <div class="balance-label"><i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>积分余额</div>
+          <div class="balance-num">356</div>
+          <div class="balance-stats">
+            <div class="stat-box">
+              <div class="stat-num">1,280</div>
+              <div class="stat-label">历史累计</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">924</div>
+              <div class="stat-label">已使用</div>
+            </div>
+            <div class="stat-box warn">
+              <div class="stat-num">50</div>
+              <div class="stat-label">30 天内过期</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 过期提醒 -->
+        <div class="expiry-warn">
+          <i data-lucide="alarm-clock" class="w-5 h-5 text-amber-600 flex-shrink-0"></i>
+          <div class="flex-1 text-sm text-amber-800"><strong>50 积分</strong>将在 15 天内过期，赶紧去兑换吧</div>
+          <a href="mall.html" class="flex-shrink-0 px-4 py-1.5 bg-amber-500 text-white text-xs font-semibold rounded hover:bg-amber-600">去兑换</a>
+        </div>
+
+        <!-- Tab 切换 -->
+        <div class="tab-bar">
+          <div :class="['tab-item', activeTab === 'log' ? 'active' : '']" @click="activeTab = 'log'">积分明细</div>
+          <div :class="['tab-item', activeTab === 'earn' ? 'active' : '']" @click="activeTab = 'earn'">如何获取积分</div>
+        </div>
+
+        <!-- 积分明细 -->
+        <div class="tx-list" v-show="activeTab === 'log'">
+          <div class="filter-strip">
+            <div v-for="f in filterTabs" :key="f.key"
+              :class="['filter-chip', activeFilter === f.key ? 'active' : '']"
+              @click="activeFilter = f.key">{{ f.label }}</div>
+          </div>
+          <template v-for="group in visibleGroups" :key="group.date">
+            <div class="tx-group-date">{{ group.date }}</div>
+            <div v-for="(tx, i) in group.items" :key="i" class="tx-row">
+              <div class="tx-icon" :class="tx.iconBg"><i :data-lucide="tx.icon" class="w-5 h-5"></i></div>
+              <div class="flex-1">
+                <div class="tx-title">{{ tx.title }}</div>
+                <div class="tx-meta">{{ tx.meta }}</div>
+              </div>
+              <div>
+                <div class="tx-amount" :class="tx.amountColor">{{ tx.amount }}</div>
+                <div class="tx-note">{{ tx.note }}</div>
+              </div>
+            </div>
+          </template>
+          <div class="load-more">查看更多 ›</div>
+        </div>
+
+        <!-- 如何获取积分 -->
+        <div class="earn-rules-wrap" v-show="activeTab === 'earn'">
+          <div v-for="group in CFG.coinEarning" :key="group.category" class="earn-group">
+            <div class="earn-group-head">
+              <i :data-lucide="group.icon" class="w-4 h-4"></i>
+              {{ group.category }}
+            </div>
+            <table class="earn-table">
+              <thead>
+                <tr>
+                  <th style="width:42%">获取方式</th>
+                  <th style="width:20%">积分</th>
+                  <th>说明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="it in group.items" :key="it.id">
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <i :data-lucide="it.icon" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                      <span>{{ it.action }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="coin-val">+{{ it.coin }}</span>
+                    <span class="coin-unit">{{ it.unit }}</span>
+                  </td>
+                  <td><div class="earn-desc">{{ it.desc }}</div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="validity-note" v-show="activeTab === 'earn'">
+          <strong class="text-slate-700">积分有效期：</strong>{{ CFG.coin.validityDesc }}，到期自动清零，建议尽早使用。
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/member-config.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+
+    // 从 URL 参数决定初始 tab
+    const initTab = new URLSearchParams(location.search).get('tab') === 'earn' ? 'earn' : 'log';
+    const activeTab = ref(initTab);
+    const activeFilter = ref('all');
+
+    const filterTabs = [
+      { key: 'all',    label: '全部' },
+      { key: 'earn',   label: '获取' },
+      { key: 'spend',  label: '消耗' },
+      { key: 'expire', label: '过期' }
+    ];
+
+    const colorBg = {
+      emerald: 'bg-gradient-to-br from-emerald-400 to-teal-500',
+      sky:     'bg-gradient-to-br from-sky-400 to-blue-500',
+      violet:  'bg-gradient-to-br from-violet-400 to-purple-500',
+      rose:    'bg-gradient-to-br from-rose-400 to-pink-500',
+      amber:   'bg-gradient-to-br from-amber-400 to-orange-500'
+    };
+    const colorText = {
+      emerald: 'text-emerald-600', sky: 'text-sky-600',
+      violet: 'text-violet-600', rose: 'text-rose-600', amber: 'text-amber-600'
+    };
+
+    const earningById = {};
+    CFG.coinEarning.forEach(g => g.items.forEach(it => {
+      earningById[it.id] = Object.assign({}, it, { color: g.color });
+    }));
+    const rewardById = {};
+    CFG.redeemableRewards.forEach(r => { rewardById[r.id] = r; });
+
+    function earn(id, meta, opts) {
+      const it = earningById[id], o = opts || {};
+      const coin = o.coin != null ? o.coin : it.coin;
+      return { kind: 'earn', title: o.title || it.action, meta, amount: '+' + coin,
+        amountColor: colorText[it.color] || 'text-slate-700',
+        note: o.expire ? '有效期至 ' + o.expire : (o.note || ''),
+        icon: it.icon, iconBg: colorBg[it.color] };
+    }
+    function spend(rewardId, meta, opts) {
+      const r = rewardById[rewardId], o = opts || {};
+      return { kind: 'spend', title: '兑换权益卡',
+        meta: r.name + (meta ? ' · ' + meta : ''),
+        amount: '-' + r.coin, amountColor: 'text-rose-600',
+        note: o.note || '', icon: r.icon || 'gift', iconBg: colorBg.rose };
+    }
+    function expire(meta, amount, note) {
+      return { kind: 'expire', title: '积分过期清零', meta, amount: '-' + amount,
+        amountColor: 'text-slate-400', note, icon: 'hourglass',
+        iconBg: 'bg-gradient-to-br from-slate-400 to-slate-500' };
+    }
+
+    const groups = [
+      { date: '今天 · 2026-04-30', items: [
+        earn('deal',  '粤A78546 · 11:23', { expire: '2027-04-30' }),
+        earn('bid',   '闽A12345 · 10:45 · 双倍', { title: '周末双倍出价', coin: 20, expire: '2027-04-30' }),
+        earn('share', '闽A12345 · 09:45', { expire: '2027-04-30' }),
+        earn('bid',   '粤B88888 · 09:40', { expire: '2027-04-30' })
+      ]},
+      { date: '昨天 · 2026-04-29', items: [
+        spend('r_dataquery_10', '15:10', { note: '余额 306' }),
+        earn('deal',  '粤HSB009 · 14:30', { expire: '2027-04-29' }),
+        earn('bid',   '3 辆不同车源 · 10 积分/台', { title: '有效出价 × 3', coin: 30, note: '已合并展示' }),
+        earn('share', '粤A78546 · 分享朋友圈 · 11:05', { expire: '2027-04-29' })
+      ]},
+      { date: '2026-04-18', items: [
+        earn('biz_verify', '上传营业执照 · 一次性奖励 · 11:30', { coin: 5, expire: '2027-04-18' }),
+        earn('vote', '4月品牌偏好调研 · 08:50', { coin: 3, expire: '2027-04-18' })
+      ]},
+      { date: '2026-04-15', items: [
+        spend('r_servicecenter_100', '14:30', { note: '余额 286' }),
+        earn('festival', '春节集福活动 · 09:00', { coin: 3, expire: '2027-04-15' })
+      ]},
+      { date: '2026-04-10', items: [
+        expire('2025-04-10 获得 · 满 12 月', 12, '余额 369'),
+        earn('deal', '闽AB6688 · 10:22', { expire: '2027-04-10' }),
+        earn('bank_verify', '完善银行卡信息 · 一次性奖励', { coin: 3, expire: '2027-04-10' })
+      ]}
+    ];
+
+    const visibleGroups = computed(() => {
+      if (activeFilter.value === 'all') return groups;
+      return groups
+        .map(g => ({ date: g.date, items: g.items.filter(tx => tx.kind === activeFilter.value) }))
+        .filter(g => g.items.length > 0);
+    });
+
+    const header = (function () {
+      const c = window.PC_COMMON;
+      const links = c.topbarLeftLinks.map(l => '[<a href="' + l.href + '">' + l.text + '</a>]').join('');
+      const right = c.topbarRight.map(r =>
+        '<a href="' + r.href + '" class="' + (r.danger ? 'danger' : '') + '">' +
+        (r.icon ? '<i data-lucide="' + r.icon + '" class="w-3.5 h-3.5 inline mr-0.5"></i>' : '') +
+        r.text + '</a>'
+      ).join('<span class="sep">|</span>');
+      return '<div class="pc-topbar"><div class="topbar-inner"><div>' + c.topbarLeft + ' ' + links + '</div><div>' + right + '</div></div></div>' +
+        '<div class="pc-nav"><div class="pc-nav-inner">' +
+        '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
+        '<div class="nav-list">' +
+        '<a href="#" class="nav-item">我的首页</a>' +
+        '<a href="#" class="nav-item">我的交易</a>' +
+        '<a href="#" class="nav-item">专用账号</a>' +
+        '<a href="member.html" class="nav-item">会员中心</a>' +
+        '<a href="#" class="nav-item">我的信息</a>' +
+        '</div></div></div>';
+    })();
+    const footer = window.PC_COMMON.renderFooter();
+
+    watch([activeTab, activeFilter], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return { CFG, activeTab, activeFilter, filterTabs, visibleGroups, header, footer };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
