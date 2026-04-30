@@ -271,10 +271,10 @@ createApp({
     }
     function spend(rewardId, meta, opts) {
       const r = rewardById[rewardId], o = opts || {};
-      return { kind: 'spend', title: '兑换权益卡',
-        meta: r.name + (meta ? ' · ' + meta : ''),
+      return { kind: 'spend', title: r.name,
+        meta: meta || '',
         amount: '-' + r.coin, amountColor: 'text-rose-600',
-        note: o.note || '', icon: r.icon || 'gift', iconBg: colorBg.rose };
+        note: '', icon: r.icon || 'gift', iconBg: colorBg.rose };
     }
     function expire(meta, amount, note) {
       return { kind: 'expire', title: '积分过期清零', meta, amount: '-' + amount,
