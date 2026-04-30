@@ -41,15 +41,6 @@
 .acct-link { color: #d12c1f; font-size: 11px; cursor: pointer; }
 .acct-link:hover { text-decoration: underline; }
 
-.side-menu { padding: 6px 0; }
-.side-menu-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px; font-size: 13.5px; color: #64748b; cursor: pointer;
-  text-decoration: none; transition: background .1s, color .1s;
-}
-.side-menu-item:hover { background: #fef2f2; color: #d12c1f; }
-.side-menu-item.active { background: #fef2f2; color: #d12c1f; font-weight: 600; border-left: 3px solid #d12c1f; padding-left: 13px; }
-
 /* ── 右侧主内容 ── */
 .main-content { display: flex; flex-direction: column; gap: 16px; }
 
@@ -195,18 +186,6 @@
                 <span class="acct-link">提取</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- 侧边菜单 -->
-        <div class="side-card">
-          <div class="side-menu">
-            <a href="#" class="side-menu-item"><i data-lucide="layout-dashboard" class="w-4 h-4"></i>我的首页</a>
-            <a href="#" class="side-menu-item"><i data-lucide="shopping-cart" class="w-4 h-4"></i>我的交易</a>
-            <a href="#" class="side-menu-item"><i data-lucide="credit-card" class="w-4 h-4"></i>我的权益卡</a>
-            <a href="member.html" class="side-menu-item active"><i data-lucide="crown" class="w-4 h-4"></i>会员中心</a>
-            <a href="#" class="side-menu-item"><i data-lucide="heart" class="w-4 h-4"></i>我的关注</a>
-            <a href="#" class="side-menu-item"><i data-lucide="user" class="w-4 h-4"></i>我的信息</a>
           </div>
         </div>
 
@@ -450,7 +429,26 @@ createApp({
 
     const watchedCars = window.PC_COMMON.cars.filter((_, i) => [2, 5, 7].includes(i));
 
-    const header = window.PC_COMMON.renderHeader('');
+    // 个人中心专属 header：保留顶栏 + logo，nav 换成个人中心导航
+    const header = (function () {
+      const c = window.PC_COMMON;
+      const links = c.topbarLeftLinks.map(l => '[<a href="' + l.href + '">' + l.text + '</a>]').join('');
+      const right = c.topbarRight.map(r =>
+        '<a href="' + r.href + '" class="' + (r.danger ? 'danger' : '') + '">' +
+        (r.icon ? '<i data-lucide="' + r.icon + '" class="w-3.5 h-3.5 inline mr-0.5"></i>' : '') +
+        r.text + '</a>'
+      ).join('<span class="sep">|</span>');
+      return '<div class="pc-topbar"><div class="topbar-inner"><div>' + c.topbarLeft + ' ' + links + '</div><div>' + right + '</div></div></div>' +
+        '<div class="pc-nav"><div class="pc-nav-inner">' +
+        '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
+        '<div class="nav-list">' +
+        '<a href="#" class="nav-item">我的首页</a>' +
+        '<a href="#" class="nav-item">我的交易</a>' +
+        '<a href="#" class="nav-item">专用账号</a>' +
+        '<a href="member.html" class="nav-item active">会员中心</a>' +
+        '<a href="#" class="nav-item">我的信息</a>' +
+        '</div></div></div>';
+    })();
     const footer = window.PC_COMMON.renderFooter();
 
     watch([currentDeals], () => nextTick(() => lucide.createIcons()));
