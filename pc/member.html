@@ -427,7 +427,7 @@
                   <span v-if="t.desc">{{ t.desc }}</span>
                 </div>
               </div>
-              <a v-if="taskAction(t).href" :href="taskAction(t).href"
+              <a v-if="taskAction(t).href" :href="taskAction(t).href" target="_blank" rel="noopener"
                 class="flex-none px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-full whitespace-nowrap">
                 {{ taskAction(t).label }}
               </a>

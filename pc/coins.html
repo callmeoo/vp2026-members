@@ -226,7 +226,7 @@
                 <span v-if="t.desc">{{ t.desc }}</span>
               </div>
             </div>
-            <a v-if="earnTaskAction(t).href" :href="earnTaskAction(t).href" class="earn-task-btn go">{{ earnTaskAction(t).label }}</a>
+            <a v-if="earnTaskAction(t).href" :href="earnTaskAction(t).href" target="_blank" rel="noopener" class="earn-task-btn go">{{ earnTaskAction(t).label }}</a>
             <button v-else disabled class="earn-task-btn pending">{{ earnTaskAction(t).label }}</button>
           </div>
         </div>
