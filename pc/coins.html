@@ -70,18 +70,21 @@
 .load-more { text-align: center; padding: 16px; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9; cursor: pointer; }
 .load-more:hover { color: var(--pc-red); }
 
-/* 获取规则 */
+/* 推荐任务列表 */
 .earn-rules-wrap { background: #fff; border: 1px solid var(--pc-border); border-top: none; }
-.earn-group { border-bottom: 1px solid #f1f5f9; }
-.earn-group:last-child { border-bottom: none; }
-.earn-group-head { display: flex; align-items: center; gap: 8px; padding: 12px 20px 10px; background: #f8fafc; font-size: 13px; font-weight: 600; color: #475569; }
-.earn-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.earn-table th { padding: 9px 20px; text-align: left; background: #fff; color: #94a3b8; font-weight: 500; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
-.earn-table td { padding: 12px 20px; border-bottom: 1px solid #f8fafc; color: #1f2937; vertical-align: top; }
-.earn-table tr:last-child td { border-bottom: none; }
-.earn-table .coin-val { font-weight: 700; font-size: 15px; color: #7c3aed; }
-.earn-table .coin-unit { font-size: 12px; color: #94a3b8; font-weight: 400; margin-left: 2px; }
-.earn-table .earn-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.earn-task-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid #f1f5f9; }
+.earn-task-header-title { font-size: 15px; font-weight: 700; color: #1f2937; }
+.earn-task-header-sub { font-size: 12px; color: #94a3b8; }
+.earn-task-row { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid #f8fafc; transition: background .1s; }
+.earn-task-row:last-child { border-bottom: none; }
+.earn-task-row:hover { background: #fafafa; }
+.earn-task-name { font-size: 14px; font-weight: 600; color: #1f2937; }
+.earn-task-meta { display: flex; align-items: center; gap: 12px; margin-top: 4px; font-size: 12px; color: #94a3b8; }
+.earn-task-pts { font-weight: 700; }
+.earn-task-btn { flex-shrink: 0; padding: 6px 18px; border-radius: 100px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; white-space: nowrap; text-decoration: none; display: inline-block; }
+.earn-task-btn.go { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; }
+.earn-task-btn.go:hover { opacity: .88; }
+.earn-task-btn.pending { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
 
 .validity-note { background: #fff; border: 1px solid var(--pc-border); border-top: none; padding: 16px 20px; font-size: 12.5px; color: #64748b; line-height: 1.7; }
 </style>
@@ -191,35 +194,21 @@
 
         <!-- 如何赚积分 -->
         <div class="earn-rules-wrap" v-show="activeTab === 'earn'">
-          <table class="earn-table">
-            <thead>
-              <tr>
-                <th style="width:42%">获取方式</th>
-                <th style="width:20%">积分</th>
-                <th>说明</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="group in CFG.coinEarning" :key="group.category">
-                <tr v-for="it in group.items" :key="it.id">
-                  <td>
-                    <div class="flex items-center gap-2">
-                      <i :data-lucide="it.icon" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
-                      <span>{{ it.action }}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <template v-if="isNumeric(it.coin)">
-                      <span class="coin-val">+{{ it.coin }}</span>
-                      <span class="coin-unit">{{ it.unit }}</span>
-                    </template>
-                    <span v-else class="coin-val" style="font-size:13px">{{ it.coin }}</span>
-                  </td>
-                  <td><div class="earn-desc">{{ it.desc }}</div></td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
+          <div class="earn-task-header">
+            <span class="earn-task-header-title">推荐任务</span>
+            <span class="earn-task-header-sub">完成任务获积分</span>
+          </div>
+          <div v-for="t in earnTasks" :key="t.id" class="earn-task-row">
+            <div class="flex-1 min-w-0">
+              <div class="earn-task-name">{{ t.action }}</div>
+              <div class="earn-task-meta">
+                <span>积分 <span class="earn-task-pts" :class="t.highlight ? 'text-rose-500' : 'text-violet-600'">+{{ t.points }}{{ t.unit }}</span></span>
+                <span v-if="t.desc">{{ t.desc }}</span>
+              </div>
+            </div>
+            <a v-if="earnTaskAction(t).href" :href="earnTaskAction(t).href" class="earn-task-btn go">{{ earnTaskAction(t).label }}</a>
+            <button v-else disabled class="earn-task-btn pending">{{ earnTaskAction(t).label }}</button>
+          </div>
         </div>
         <div class="validity-note" v-show="activeTab === 'earn'">
           <strong class="text-slate-700">积分有效期：</strong>{{ CFG.coin.validityDesc }}，到期自动清零，建议尽早使用。
@@ -352,9 +341,15 @@ createApp({
     watch([activeTab, activeFilter], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    function isNumeric(v) { return !isNaN(Number(v)); }
+    const V0_ONLY_EARN = new Set(['t_verify', 't_deposit']);
+    const PENDING_EARN = new Set(['t_vote', 't_festival']);
+    const earnTasks = CFG.recommendedTasks.filter(t => !V0_ONLY_EARN.has(t.id));
+    function earnTaskAction(t) {
+      if (PENDING_EARN.has(t.id)) return { href: null, label: '敬请期待' };
+      return { href: '../pc/sources.html', label: '去完成' };
+    }
 
-    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, isNumeric, header, footer };
+    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, earnTasks, earnTaskAction, header, footer };
   }
 }).mount('#app');
 </script>
