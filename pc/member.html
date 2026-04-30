@@ -41,6 +41,14 @@
 .acct-link { color: #d12c1f; font-size: 11px; cursor: pointer; }
 .acct-link:hover { text-decoration: underline; }
 
+/* 积分快捷入口 */
+.coin-nav-card { padding: 14px 16px; }
+.coin-nav-title { font-size: 11.5px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+.coin-nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 7px; text-decoration: none; color: #374151; font-size: 13px; transition: background .12s; }
+.coin-nav-item:hover { background: #f8fafc; color: #7c3aed; }
+.coin-nav-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.coin-nav-arrow { margin-left: auto; color: #cbd5e1; }
+
 /* ── 右侧主内容 ── */
 .main-content { display: flex; flex-direction: column; gap: 16px; }
 
@@ -96,6 +104,7 @@
 .c-body { padding: 20px 24px; }
 
 .asset-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.asset-row-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .asset-box {
   display: flex; align-items: center; gap: 14px;
   padding: 18px 16px; border: 1px solid #f1f5f9;
@@ -164,28 +173,25 @@
           </div>
         </div>
 
-        <!-- 专用账号摘要 -->
+        <!-- 积分快捷入口 -->
         <div class="side-card">
-          <div class="account-summary">
-            <div class="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
-              <i data-lucide="wallet" class="w-3.5 h-3.5"></i>专用账号
-            </div>
-            <div class="acct-row">
-              <div class="acct-label">可用余额</div>
-              <div class="acct-value">139,648,697.94 元</div>
-              <div class="acct-actions">
-                <span class="acct-link">充值</span>
-                <span class="acct-link">提现</span>
-              </div>
-            </div>
-            <div class="acct-row">
-              <div class="acct-label">可用保证金</div>
-              <div class="acct-value">75,500.00 元</div>
-              <div class="acct-actions">
-                <span class="acct-link">充值</span>
-                <span class="acct-link">提取</span>
-              </div>
-            </div>
+          <div class="coin-nav-card">
+            <div class="coin-nav-title"><i data-lucide="coins" class="w-3.5 h-3.5"></i>我的积分</div>
+            <a href="mall.html" class="coin-nav-item">
+              <div class="coin-nav-icon bg-violet-50"><i data-lucide="shopping-bag" class="w-4 h-4 text-violet-500"></i></div>
+              <span>积分商城</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 coin-nav-arrow"></i>
+            </a>
+            <a href="coins.html" class="coin-nav-item">
+              <div class="coin-nav-icon bg-sky-50"><i data-lucide="scroll-text" class="w-4 h-4 text-sky-500"></i></div>
+              <span>积分明细</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 coin-nav-arrow"></i>
+            </a>
+            <a href="#tasks" class="coin-nav-item">
+              <div class="coin-nav-icon bg-emerald-50"><i data-lucide="star" class="w-4 h-4 text-emerald-500"></i></div>
+              <span>赚积分</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 coin-nav-arrow"></i>
+            </a>
           </div>
         </div>
 
@@ -259,10 +265,37 @@
               </div>
               <div class="flex items-center gap-4">
                 <a href="coins.html" class="coin-row-link">积分明细 ›</a>
-                <a href="coins.html?tab=earn" class="coin-row-link">如何获取积分 ›</a>
+                <a href="coins.html?tab=earn" class="coin-row-link">如何赚积分 ›</a>
                 <a href="mall.html" class="coin-row-btn">
                   <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>去兑换权益
                 </a>
+              </div>
+            </div>
+            <!-- 专用账号资产 -->
+            <div class="asset-row-4">
+              <div class="asset-box">
+                <div class="asset-icon-wrap bg-blue-50">
+                  <i data-lucide="wallet" class="w-7 h-7 text-blue-500"></i>
+                </div>
+                <div>
+                  <div class="asset-num" style="font-size:18px">139,648,697.94</div>
+                  <div class="asset-sub" style="display:flex;gap:10px;margin-top:4px">
+                    <span>可用余额(元)</span>
+                    <span class="acct-link">充值</span><span class="acct-link">提现</span>
+                  </div>
+                </div>
+              </div>
+              <div class="asset-box">
+                <div class="asset-icon-wrap bg-sky-50">
+                  <i data-lucide="shield-check" class="w-7 h-7 text-sky-500"></i>
+                </div>
+                <div>
+                  <div class="asset-num" style="font-size:22px">75,500.00</div>
+                  <div class="asset-sub" style="display:flex;gap:10px;margin-top:4px">
+                    <span>可用保证金(元)</span>
+                    <span class="acct-link">充值</span><span class="acct-link">提取</span>
+                  </div>
+                </div>
               </div>
             </div>
             <!-- 优惠券 + 权益卡 -->
@@ -348,6 +381,42 @@
           </div>
         </div>
 
+        <!-- 推荐任务 -->
+        <div class="content-card" id="tasks">
+          <div class="c-head">
+            <h3>推荐任务</h3>
+            <span class="text-xs text-slate-400">完成任务赚积分</span>
+          </div>
+          <div class="c-body" style="padding:0">
+            <div v-for="t in visibleTasks" :key="t.id"
+              class="flex items-center gap-4 px-6 py-4 border-b border-slate-50 last:border-b-0 hover:bg-slate-50 transition-colors">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-semibold text-slate-800 text-sm">{{ t.action }}</span>
+                  <span v-if="t.highlight"
+                    class="text-[11px] font-bold bg-rose-50 text-rose-500 border border-rose-200 px-1.5 py-0.5 rounded">核心任务</span>
+                </div>
+                <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
+                  <span>积分
+                    <span :class="['font-bold', t.highlight ? 'text-rose-500' : 'text-violet-600']">
+                      +{{ t.points }}{{ t.unit }}
+                    </span>
+                  </span>
+                  <span v-if="t.desc">{{ t.desc }}</span>
+                </div>
+              </div>
+              <a v-if="taskAction(t).href" :href="taskAction(t).href"
+                class="flex-none px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-full whitespace-nowrap">
+                {{ taskAction(t).label }}
+              </a>
+              <button v-else disabled
+                class="flex-none px-4 py-1.5 bg-slate-100 text-slate-400 text-xs font-bold rounded-full whitespace-nowrap cursor-not-allowed">
+                {{ taskAction(t).label }}
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div><!-- /main-content -->
     </div><!-- /profile-layout -->
   </div><!-- /pc-main -->
@@ -427,6 +496,18 @@ createApp({
       currentDeals.value = DEALS_PRESET[short] ?? 0;
     }
 
+    // 推荐任务
+    const V0_ONLY_TASKS = new Set(['t_verify', 't_deposit']);
+    const visibleTasks = computed(() =>
+      CFG.recommendedTasks.filter(t => V0_ONLY_TASKS.has(t.id) ? currentLv.value.short === 'V0' : true)
+    );
+    const ALLCARS_TASKS = new Set(['t_deal', 't_bid', 't_share', 't_festival']);
+    function taskAction(t) {
+      if (ALLCARS_TASKS.has(t.id)) return { href: '../pc/sources.html', label: '去完成' };
+      if (t.id === 't_vote')       return { href: null, label: '敬请期待' };
+      return { href: null, label: '去完成' };
+    }
+
     const watchedCars = window.PC_COMMON.cars.filter((_, i) => [2, 5, 7].includes(i));
 
     // 个人中心专属 header：保留顶栏 + logo，nav 换成个人中心导航
@@ -442,10 +523,10 @@ createApp({
         '<div class="pc-nav"><div class="pc-nav-inner">' +
         '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
         '<div class="nav-list">' +
-        '<a href="#" class="nav-item">我的首页</a>' +
+        '<a href="member.html" class="nav-item active">我的首页</a>' +
         '<a href="#" class="nav-item">我的交易</a>' +
         '<a href="#" class="nav-item">专用账号</a>' +
-        '<a href="member.html" class="nav-item active">会员中心</a>' +
+        '<a href="#" class="nav-item">会员中心</a>' +
         '<a href="#" class="nav-item">我的信息</a>' +
         '</div></div></div>';
     })();
@@ -458,6 +539,7 @@ createApp({
       CFG, currentLv, currentDeals,
       nextLv, needDeals, progress, progressText,
       allBenefits, simulateLevel, watchedCars,
+      visibleTasks, taskAction,
       header, footer
     };
   }

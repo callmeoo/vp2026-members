@@ -160,7 +160,7 @@
         <!-- Tab 切换 -->
         <div class="tab-bar">
           <div :class="['tab-item', activeTab === 'log' ? 'active' : '']" @click="activeTab = 'log'">积分明细</div>
-          <div :class="['tab-item', activeTab === 'earn' ? 'active' : '']" @click="activeTab = 'earn'">如何获取积分</div>
+          <div :class="['tab-item', activeTab === 'earn' ? 'active' : '']" @click="activeTab = 'earn'">如何赚积分</div>
         </div>
 
         <!-- 积分明细 -->
@@ -187,7 +187,7 @@
           <div class="load-more">查看更多 ›</div>
         </div>
 
-        <!-- 如何获取积分 -->
+        <!-- 如何赚积分 -->
         <div class="earn-rules-wrap" v-show="activeTab === 'earn'">
           <div v-for="group in CFG.coinEarning" :key="group.category" class="earn-group">
             <div class="earn-group-head">
