@@ -97,24 +97,51 @@
   display: flex; align-items: center; justify-content: center;
 }
 
-/* 资产 & 待确认 */
+/* 通用卡片 */
 .content-card { background: #fff; border: 1px solid var(--pc-border); }
 .c-head { padding: 14px 20px 14px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
 .c-head h3 { font-size: 15px; font-weight: 700; color: #1f2937; }
 .c-body { padding: 20px 24px; }
 
-.asset-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.asset-row-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.asset-box {
-  display: flex; align-items: center; gap: 14px;
-  padding: 18px 16px; border: 1px solid #f1f5f9;
-  cursor: pointer; transition: border-color .15s, box-shadow .15s;
+/* ── 我的资产：左右分栏 ── */
+.asset-split { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #f1f5f9; }
+/* 左：专用账号 */
+.acct-panel { padding: 20px 24px; background: #f8fafc; border-right: 1px solid #f1f5f9; }
+.acct-panel-title { font-size: 11.5px; font-weight: 600; color: #94a3b8; margin-bottom: 16px; display: flex; align-items: center; gap: 5px; }
+.acct-item { padding-bottom: 16px; }
+.acct-item + .acct-item { padding-top: 16px; border-top: 1px solid #e2e8f0; padding-bottom: 0; }
+.acct-label-sm { font-size: 11.5px; color: #94a3b8; }
+.acct-amount { font-size: 20px; font-weight: 800; color: #1f2937; line-height: 1.2; margin: 4px 0 6px; }
+.acct-amount-unit { font-size: 13px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
+.acct-actions { display: flex; gap: 12px; }
+.acct-link { color: #d12c1f; font-size: 11.5px; cursor: pointer; }
+.acct-link:hover { text-decoration: underline; }
+/* 右：积分 + 券卡 */
+.asset-right { display: flex; flex-direction: column; }
+.coin-panel { padding: 18px 24px 16px; border-bottom: 1px solid #f1f5f9; }
+.coin-panel-label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+.coin-panel-num { font-size: 38px; font-weight: 900; color: #7c3aed; line-height: 1; letter-spacing: -1px; }
+.coin-panel-actions { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.coin-panel-link { font-size: 12.5px; color: #64748b; text-decoration: none; }
+.coin-panel-link:hover { color: var(--pc-red); }
+.coin-panel-btn {
+  display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+  padding: 6px 16px; background: #f59e0b; color: #fff;
+  font-size: 12.5px; font-weight: 700; border-radius: 5px;
+  text-decoration: none; transition: background .15s;
 }
-.asset-box:hover { border-color: #d12c1f; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
-.asset-icon-wrap { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.asset-num { font-size: 28px; font-weight: 700; color: #d12c1f; line-height: 1; }
-.asset-sub { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+.coin-panel-btn:hover { background: #d97706; }
+/* 优惠券 + 权益卡并排 */
+.coupon-row { display: grid; grid-template-columns: 1fr 1fr; flex: 1; }
+.coupon-box { padding: 16px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background .1s; }
+.coupon-box:first-child { border-right: 1px solid #f1f5f9; }
+.coupon-box:hover { background: #fafafa; }
+.coupon-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.coupon-num { font-size: 24px; font-weight: 800; color: #d12c1f; line-height: 1; }
+.coupon-unit { font-size: 13px; font-weight: 400; color: #94a3b8; margin-left: 1px; }
+.coupon-sub { font-size: 11.5px; color: #94a3b8; margin-top: 3px; }
 
+/* 待确认的车 */
 .pending-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .pending-box {
   text-align: center; padding: 22px 16px;
@@ -125,23 +152,6 @@
 .pending-num { font-size: 32px; font-weight: 700; color: #d12c1f; }
 .pending-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
 .pending-label { font-size: 12px; color: #64748b; margin-top: 4px; }
-
-/* 积分行 (在我的资产内,置顶) */
-.coin-row {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9;
-}
-.asset-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 1px; }
-.coin-row-num { font-size: 28px; font-weight: 700; color: #7c3aed; line-height: 1; }
-.coin-row-link { font-size: 13px; color: #64748b; text-decoration: none; }
-.coin-row-link:hover { color: #d12c1f; }
-.coin-row-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 7px 18px; background: #f59e0b; color: #fff;
-  font-size: 13px; font-weight: 700; border-radius: 5px;
-  text-decoration: none; transition: background .15s;
-}
-.coin-row-btn:hover { background: #d97706; }
 
 /* 关注的车 */
 .watch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
@@ -248,77 +258,69 @@
 
         <!-- 我的资产 -->
         <div class="content-card">
-          <div class="c-head">
-            <h3>我的资产</h3>
-          </div>
-          <div class="c-body">
-            <!-- 积分(置顶) -->
-            <div class="coin-row">
-              <div class="flex items-center gap-3">
-                <div class="asset-icon-wrap bg-violet-50 flex-shrink-0" style="width:44px;height:44px;">
-                  <i data-lucide="coins" class="w-6 h-6 text-violet-500"></i>
-                </div>
-                <div>
-                  <div class="text-xs text-slate-400 mb-0.5">我的积分</div>
-                  <div class="coin-row-num">356</div>
+          <div class="c-head"><h3>我的资产</h3></div>
+          <div class="asset-split">
+
+            <!-- 左：专用账号 -->
+            <div class="acct-panel">
+              <div class="acct-panel-title">
+                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>专用账号
+              </div>
+              <div class="acct-item">
+                <div class="acct-label-sm">可用余额</div>
+                <div class="acct-amount">139,648,697.94<span class="acct-amount-unit">元</span></div>
+                <div class="acct-actions">
+                  <span class="acct-link">充值</span>
+                  <span class="acct-link">提现</span>
                 </div>
               </div>
-              <div class="flex items-center gap-4">
-                <a href="coins.html" class="coin-row-link">积分明细 ›</a>
-                <a href="coins.html?tab=earn" class="coin-row-link">如何赚积分 ›</a>
-                <a href="mall.html" class="coin-row-btn">
-                  <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>去兑换权益
-                </a>
+              <div class="acct-item">
+                <div class="acct-label-sm">可用保证金</div>
+                <div class="acct-amount">75,500.00<span class="acct-amount-unit">元</span></div>
+                <div class="acct-actions">
+                  <span class="acct-link">充值</span>
+                  <span class="acct-link">提取</span>
+                </div>
               </div>
             </div>
-            <!-- 专用账号资产 -->
-            <div class="asset-row-4">
-              <div class="asset-box">
-                <div class="asset-icon-wrap bg-blue-50">
-                  <i data-lucide="wallet" class="w-7 h-7 text-blue-500"></i>
+
+            <!-- 右：积分 + 优惠券/权益卡 -->
+            <div class="asset-right">
+              <div class="coin-panel">
+                <div class="coin-panel-label">
+                  <i data-lucide="coins" class="w-3.5 h-3.5 text-violet-400"></i>我的积分
                 </div>
-                <div>
-                  <div class="asset-num" style="font-size:18px">139,648,697.94</div>
-                  <div class="asset-sub" style="display:flex;gap:10px;margin-top:4px">
-                    <span>可用余额(元)</span>
-                    <span class="acct-link">充值</span><span class="acct-link">提现</span>
+                <div class="coin-panel-num">356</div>
+                <div class="coin-panel-actions">
+                  <a href="coins.html" class="coin-panel-link">积分明细 ›</a>
+                  <a href="coins.html?tab=earn" class="coin-panel-link">如何赚积分 ›</a>
+                  <a href="mall.html" class="coin-panel-btn">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>去兑换权益
+                  </a>
+                </div>
+              </div>
+              <div class="coupon-row">
+                <div class="coupon-box">
+                  <div class="coupon-icon bg-amber-50">
+                    <i data-lucide="ticket" class="w-5 h-5 text-amber-500"></i>
+                  </div>
+                  <div>
+                    <div class="coupon-num">0<span class="coupon-unit">张</span></div>
+                    <div class="coupon-sub">优惠券未使用</div>
+                  </div>
+                </div>
+                <div class="coupon-box">
+                  <div class="coupon-icon bg-red-50">
+                    <i data-lucide="credit-card" class="w-5 h-5 text-red-500"></i>
+                  </div>
+                  <div>
+                    <div class="coupon-num">5<span class="coupon-unit">张</span></div>
+                    <div class="coupon-sub">权益卡未使用</div>
                   </div>
                 </div>
               </div>
-              <div class="asset-box">
-                <div class="asset-icon-wrap bg-sky-50">
-                  <i data-lucide="shield-check" class="w-7 h-7 text-sky-500"></i>
-                </div>
-                <div>
-                  <div class="asset-num" style="font-size:22px">75,500.00</div>
-                  <div class="asset-sub" style="display:flex;gap:10px;margin-top:4px">
-                    <span>可用保证金(元)</span>
-                    <span class="acct-link">充值</span><span class="acct-link">提取</span>
-                  </div>
-                </div>
-              </div>
             </div>
-            <!-- 优惠券 + 权益卡 -->
-            <div class="asset-row">
-              <div class="asset-box">
-                <div class="asset-icon-wrap bg-amber-50">
-                  <i data-lucide="ticket" class="w-7 h-7 text-amber-500"></i>
-                </div>
-                <div>
-                  <div class="asset-num">0<span class="asset-unit">张</span></div>
-                  <div class="asset-sub">优惠券未使用</div>
-                </div>
-              </div>
-              <div class="asset-box">
-                <div class="asset-icon-wrap bg-red-50">
-                  <i data-lucide="credit-card" class="w-7 h-7 text-red-500"></i>
-                </div>
-                <div>
-                  <div class="asset-num">5<span class="asset-unit">张</span></div>
-                  <div class="asset-sub">权益卡未使用</div>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
 
