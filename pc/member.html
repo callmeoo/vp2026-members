@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员中心 · 个人中心 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+<style>
+[v-cloak] { display: none; }
+
+/* ── 个人中心二级导航 ── */
+.profile-subnav { background: #fff; border-bottom: 2px solid #e2e8f0; }
+.profile-subnav-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; }
+.subnav-item {
+  padding: 14px 22px; font-size: 14px; color: #64748b; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  position: relative; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  text-decoration: none;
+}
+.subnav-item:hover { color: #d12c1f; }
+.subnav-item.active { color: #d12c1f; font-weight: 600; border-bottom-color: #d12c1f; }
+
+/* ── 两栏布局 ── */
+.profile-layout { display: grid; grid-template-columns: 212px 1fr; gap: 20px; align-items: start; }
+
+/* ── 左侧面板 ── */
+.side-panel { display: flex; flex-direction: column; gap: 12px; }
+.side-card { background: #fff; border: 1px solid var(--pc-border); }
+
+.user-profile { padding: 22px 16px 18px; text-align: center; }
+.avatar-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: #f1f5f9; border: 3px solid #e2e8f0;
+  margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8;
+}
+.user-name { font-size: 15px; font-weight: 700; color: #1f2937; }
+.lv-badge-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 12px; border-radius: 100px;
+  font-size: 12px; font-weight: 700; color: #fff; margin-top: 8px;
+}
+.validity-text { font-size: 11px; color: #94a3b8; margin-top: 8px; }
+
+.account-summary { padding: 12px 16px 14px; }
+.acct-row { padding: 7px 0; border-bottom: 1px solid #f8fafc; }
+.acct-row:last-child { border-bottom: none; }
+.acct-label { font-size: 11.5px; color: #94a3b8; }
+.acct-value { font-size: 12px; font-weight: 600; color: #1f2937; margin-top: 2px; }
+.acct-actions { display: flex; gap: 8px; margin-top: 2px; }
+.acct-link { color: #d12c1f; font-size: 11px; cursor: pointer; }
+.acct-link:hover { text-decoration: underline; }
+
+.side-menu { padding: 6px 0; }
+.side-menu-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; font-size: 13.5px; color: #64748b; cursor: pointer;
+  text-decoration: none; transition: background .1s, color .1s;
+}
+.side-menu-item:hover { background: #fef2f2; color: #d12c1f; }
+.side-menu-item.active { background: #fef2f2; color: #d12c1f; font-weight: 600; border-left: 3px solid #d12c1f; padding-left: 13px; }
+
+/* ── 右侧主内容 ── */
+.main-content { display: flex; flex-direction: column; gap: 16px; }
+
+/* 会员等级卡 */
+.member-level-card {
+  border-radius: 10px; padding: 24px 28px;
+  color: #fff; position: relative; overflow: hidden;
+}
+.member-level-card::before {
+  content: ''; position: absolute; right: -60px; top: -60px;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: rgba(255,255,255,.07); pointer-events: none;
+}
+.member-level-card::after {
+  content: ''; position: absolute; right: 100px; bottom: -80px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,.05); pointer-events: none;
+}
+.member-lv-big {
+  font-size: 80px; font-weight: 900; line-height: 1;
+  letter-spacing: -3px; text-shadow: 0 2px 24px rgba(0,0,0,.15);
+}
+.member-lv-name { font-size: 16px; font-weight: 700; opacity: .9; margin-top: 4px; letter-spacing: .5px; }
+.level-progress-bar { height: 6px; background: rgba(255,255,255,.22); border-radius: 100px; overflow: hidden; max-width: 300px; margin-top: 10px; }
+.level-progress-fill { height: 100%; background: rgba(255,255,255,.85); border-radius: 100px; transition: width .5s ease; }
+
+/* 积分面板 */
+.coin-panel {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-radius: 10px; padding: 20px 28px;
+  color: #fff; display: flex; align-items: center; gap: 32px;
+}
+.coin-amount { font-size: 44px; font-weight: 900; line-height: 1; }
+.coin-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 22px; background: #f59e0b; color: #fff;
+  font-size: 14px; font-weight: 700; border-radius: 6px;
+  cursor: pointer; text-decoration: none; transition: background .15s;
+}
+.coin-btn:hover { background: #d97706; }
+.coin-link { color: #94a3b8; font-size: 13px; text-decoration: none; }
+.coin-link:hover { color: #fff; }
+
+/* 可享权益 */
+.benefit-section { background: #fff; border: 1px solid var(--pc-border); }
+.benefit-head { padding: 15px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+.benefit-head h3 { font-size: 15px; font-weight: 700; color: #1f2937; }
+.benefit-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding: 16px 20px 20px; }
+.ben-cell { text-align: center; padding: 14px 8px; border-radius: 6px; transition: background .1s; position: relative; }
+.ben-cell:hover { background: #f8fafc; }
+.ben-ic {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto; background: rgba(209,44,31,.08); color: #d12c1f;
+}
+.ben-cell.locked .ben-ic { background: #f1f5f9; color: #cbd5e1; }
+.ben-label { font-size: 11.5px; font-weight: 500; margin-top: 8px; color: #334155; line-height: 1.4; }
+.ben-cell.locked .ben-label { color: #94a3b8; }
+.ben-lock {
+  position: absolute; top: 12px; right: 50%; transform: translateX(28px);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(15,23,42,.38); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* 资产 & 待确认 */
+.content-card { background: #fff; border: 1px solid var(--pc-border); }
+.c-head { padding: 14px 20px 14px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+.c-head h3 { font-size: 15px; font-weight: 700; color: #1f2937; }
+.c-body { padding: 20px 24px; }
+
+.asset-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.asset-box {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 16px; border: 1px solid #f1f5f9;
+  cursor: pointer; transition: border-color .15s, box-shadow .15s;
+}
+.asset-box:hover { border-color: #d12c1f; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+.asset-icon-wrap { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.asset-num { font-size: 28px; font-weight: 700; color: #d12c1f; line-height: 1; }
+.asset-sub { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+
+.pending-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pending-box {
+  text-align: center; padding: 22px 16px;
+  border: 1px solid #f1f5f9;
+  cursor: pointer; transition: border-color .15s, box-shadow .15s;
+}
+.pending-box:hover { border-color: #d12c1f; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+.pending-num { font-size: 32px; font-weight: 700; color: #d12c1f; }
+.pending-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
+.pending-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <!-- 个人中心二级导航 -->
+  <div class="profile-subnav">
+    <div class="profile-subnav-inner">
+      <a href="#" class="subnav-item">我的首页</a>
+      <a href="#" class="subnav-item">我的交易 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></a>
+      <a href="#" class="subnav-item">专用账号</a>
+      <a href="member.html" class="subnav-item active"><i data-lucide="crown" class="w-4 h-4"></i>会员中心</a>
+      <a href="#" class="subnav-item">我的信息 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></a>
+    </div>
+  </div>
+
+  <div class="pc-main">
+    <div class="profile-layout">
+
+      <!-- 左侧面板 -->
+      <div class="side-panel">
+
+        <!-- 用户资料卡 -->
+        <div class="side-card">
+          <div class="user-profile">
+            <div class="avatar-wrap"><i data-lucide="user" class="w-9 h-9"></i></div>
+            <div class="user-name">cptest01</div>
+            <div class="flex justify-center">
+              <span class="lv-badge-pill"
+                :style="{ background: 'linear-gradient(135deg,' + currentLv.gradient[0] + ',' + currentLv.gradient[1] + ')' }">
+                <i data-lucide="crown" class="w-3 h-3"></i>
+                {{ currentLv.short }} · {{ currentLv.name }}
+              </span>
+            </div>
+            <div class="validity-text">会员有效期至 2026-06-30</div>
+          </div>
+        </div>
+
+        <!-- 专用账号摘要 -->
+        <div class="side-card">
+          <div class="account-summary">
+            <div class="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
+              <i data-lucide="wallet" class="w-3.5 h-3.5"></i>专用账号
+            </div>
+            <div class="acct-row">
+              <div class="acct-label">可用余额</div>
+              <div class="acct-value">139,648,697.94 元</div>
+              <div class="acct-actions">
+                <span class="acct-link">充值</span>
+                <span class="acct-link">提现</span>
+              </div>
+            </div>
+            <div class="acct-row">
+              <div class="acct-label">可用保证金</div>
+              <div class="acct-value">75,500.00 元</div>
+              <div class="acct-actions">
+                <span class="acct-link">充值</span>
+                <span class="acct-link">提取</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 侧边菜单 -->
+        <div class="side-card">
+          <div class="side-menu">
+            <a href="#" class="side-menu-item"><i data-lucide="layout-dashboard" class="w-4 h-4"></i>我的首页</a>
+            <a href="#" class="side-menu-item"><i data-lucide="shopping-cart" class="w-4 h-4"></i>我的交易</a>
+            <a href="#" class="side-menu-item"><i data-lucide="credit-card" class="w-4 h-4"></i>我的权益卡</a>
+            <a href="member.html" class="side-menu-item active"><i data-lucide="crown" class="w-4 h-4"></i>会员中心</a>
+            <a href="#" class="side-menu-item"><i data-lucide="heart" class="w-4 h-4"></i>我的关注</a>
+            <a href="#" class="side-menu-item"><i data-lucide="user" class="w-4 h-4"></i>我的信息</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 右侧主内容 -->
+      <div class="main-content">
+
+        <!-- 会员等级卡 -->
+        <div class="member-level-card"
+          :style="{ background: 'linear-gradient(135deg,' + currentLv.gradient[0] + ' 0%,' + currentLv.gradient[1] + ' 100%)' }">
+          <div class="flex items-start gap-10 relative z-10">
+            <!-- 等级大字 -->
+            <div class="flex-shrink-0">
+              <div class="member-lv-big">{{ currentLv.short }}</div>
+              <div class="member-lv-name">{{ currentLv.name }}</div>
+            </div>
+            <!-- 成长进度 -->
+            <div class="flex-1 pt-1">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-white/80 text-sm" v-html="progressText"></span>
+                <span class="text-white/55 text-xs">会员有效期至 2026-06-30</span>
+              </div>
+              <div class="level-progress-bar">
+                <div class="level-progress-fill" :style="{ width: progress + '%' }"></div>
+              </div>
+              <div class="text-white/70 text-xs mt-2" v-if="nextLv">
+                还需成交 <span class="text-white font-bold">{{ needDeals }}</span> 台升至
+                <span class="text-white font-bold">{{ nextLv.name }}</span>({{ nextLv.short }})
+              </div>
+              <div class="text-white/80 text-sm font-semibold mt-2" v-else>
+                <i data-lucide="award" class="w-4 h-4 inline -mt-0.5"></i> 已达最高会员等级
+              </div>
+              <div class="mt-4 pt-4 border-t border-white/15 text-white/60 text-xs leading-relaxed">
+                <span class="font-semibold text-white/80 mr-1">等级门槛:</span>{{ currentLv.thresholdText }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 积分面板 -->
+        <div class="coin-panel">
+          <div class="flex-shrink-0">
+            <div class="flex items-center gap-2 text-slate-400 text-sm mb-1.5">
+              <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
+              <span>我的积分</span>
+            </div>
+            <div class="coin-amount">356</div>
+            <div class="text-slate-500 text-xs mt-1.5">
+              30 天内 <span class="text-amber-400 font-semibold">50 积分</span> 即将过期
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="text-slate-500 text-xs mb-3">1 积分 = 0.1 元 · 有效期 12 个自然月</div>
+            <div class="flex items-center gap-4">
+              <a href="#" class="coin-btn">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>去兑换权益
+              </a>
+              <a href="#" class="coin-link">积分明细 ›</a>
+              <a href="#" class="coin-link">如何获取积分 ›</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 可享权益 -->
+        <div class="benefit-section">
+          <div class="benefit-head">
+            <h3>可享权益</h3>
+            <span class="text-xs text-slate-400">
+              <span class="font-semibold" :style="{ color: currentLv.color }">{{ currentLv.name }}</span>
+              已解锁 {{ allBenefits.filter(b => b.unlocked).length }} / {{ allBenefits.length }} 项
+            </span>
+          </div>
+          <div class="benefit-grid">
+            <div v-for="b in allBenefits" :key="b.id" :class="['ben-cell', b.unlocked ? '' : 'locked']">
+              <div class="ben-ic"><i :data-lucide="b.icon" class="w-5 h-5"></i></div>
+              <div class="ben-label">{{ b.label }}</div>
+              <span v-if="!b.unlocked" class="ben-lock"><i data-lucide="lock" class="w-2.5 h-2.5"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 我的资产 -->
+        <div class="content-card">
+          <div class="c-head">
+            <h3>我的资产</h3>
+          </div>
+          <div class="c-body">
+            <div class="asset-row">
+              <div class="asset-box">
+                <div class="asset-icon-wrap bg-red-50">
+                  <i data-lucide="credit-card" class="w-7 h-7 text-red-500"></i>
+                </div>
+                <div>
+                  <div class="asset-num">5</div>
+                  <div class="asset-sub">张权益卡未使用</div>
+                </div>
+              </div>
+              <div class="asset-box">
+                <div class="asset-icon-wrap bg-amber-50">
+                  <i data-lucide="ticket" class="w-7 h-7 text-amber-500"></i>
+                </div>
+                <div>
+                  <div class="asset-num">0</div>
+                  <div class="asset-sub">张优惠券未使用</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 待确认的车 -->
+        <div class="content-card">
+          <div class="c-head">
+            <h3>待确认的车</h3>
+            <a href="#" class="text-sm" style="color:#d12c1f">全部 ›</a>
+          </div>
+          <div class="c-body">
+            <div class="pending-row">
+              <div class="pending-box">
+                <div class="flex justify-center mb-3">
+                  <i data-lucide="home" class="w-12 h-12 text-amber-400"></i>
+                </div>
+                <div class="pending-num">33 <span class="pending-unit">台</span></div>
+                <div class="pending-label">竞价大厅</div>
+              </div>
+              <div class="pending-box">
+                <div class="flex justify-center mb-3">
+                  <i data-lucide="gavel" class="w-12 h-12 text-amber-400"></i>
+                </div>
+                <div class="pending-num">1 <span class="pending-unit">台</span></div>
+                <div class="pending-label">专场拍</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /main-content -->
+    </div><!-- /profile-layout -->
+  </div><!-- /pc-main -->
+
+  <div v-html="footer"></div>
+</div><!-- /#app -->
+
+<!-- 模拟等级切换 · Demo -->
+<div class="fixed top-[88px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
+  <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+    <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+  </div>
+  <div class="flex flex-col gap-1.5">
+    <button v-for="lv in CFG.levels" :key="lv.code"
+      @click="simulateLevel(lv.short)"
+      :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-[120px] text-left',
+        currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-slate-300 scale-[1.04]' : 'opacity-70 hover:opacity-100']"
+      :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
+      {{ lv.short }} · {{ lv.name }}
+    </button>
+  </div>
+  <div class="text-[10px] text-slate-400 mt-2">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/member-config.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const CFG = window.MEMBER_CONFIG;
+    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 20 };
+    const currentDeals = ref(6);
+    const currentLv = computed(() => CFG.getLevelByDeals(currentDeals.value));
+
+    const nextLv = computed(() => {
+      const idx = CFG.levels.indexOf(currentLv.value);
+      return CFG.levels[idx + 1] || null;
+    });
+    const needDeals = computed(() => {
+      if (!nextLv.value) return 0;
+      return Math.max(0, nextLv.value.threshold.dealsMin - currentDeals.value);
+    });
+    const progress = computed(() => {
+      if (!nextLv.value) return 100;
+      return Math.min(100, Math.round(currentDeals.value / nextLv.value.threshold.dealsMin * 100));
+    });
+    const progressText = computed(() => {
+      return '近 3 月成交 <strong>' + currentDeals.value + '</strong> 台';
+    });
+
+    // 所有等级权益并集,去重;积分兑换类只保留当前等级对应的那一项
+    const allBenefits = computed(() => {
+      const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
+      const currBenefits = currentLv.value.benefits || [];
+      const currExchange = currBenefits.find(b => exchangeIds.includes(b.id));
+      const fallbackExchange = CFG.levels[0].benefits.find(b => exchangeIds.includes(b.id));
+      const exchange = currExchange || fallbackExchange;
+      const seen = new Set();
+      const list = [];
+      if (exchange) {
+        list.push({ id: exchange.id, icon: exchange.icon, label: exchange.label, unlocked: !!currExchange });
+        exchangeIds.forEach(id => seen.add(id));
+      }
+      CFG.levels.forEach(lv => {
+        (lv.benefits || []).forEach(b => {
+          if (seen.has(b.id)) return;
+          seen.add(b.id);
+          list.push({ id: b.id, icon: b.icon, label: b.label, unlocked: currBenefits.some(cb => cb.id === b.id) });
+        });
+      });
+      return list;
+    });
+
+    function simulateLevel(short) {
+      currentDeals.value = DEALS_PRESET[short] ?? 0;
+    }
+
+    const header = window.PC_COMMON.renderHeader('');
+    const footer = window.PC_COMMON.renderFooter();
+
+    watch([currentDeals], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return {
+      CFG, currentLv, currentDeals,
+      nextLv, needDeals, progress, progressText,
+      allBenefits, simulateLevel,
+      header, footer
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
