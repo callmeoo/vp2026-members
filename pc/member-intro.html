@@ -223,15 +223,13 @@
             <table class="mi-table">
               <thead>
                 <tr>
-                  <th style="width:22%;text-align:left">类别</th>
                   <th style="text-align:left">具体行为</th>
                   <th style="width:24%">积分</th>
                 </tr>
               </thead>
               <tbody>
                 <template v-for="g in earningTable" :key="g.category">
-                  <tr v-for="(it, i) in g.items" :key="it.action">
-                    <td v-if="i === 0" :rowspan="g.items.length" style="vertical-align:middle;background:#f9fafb;font-weight:600;color:#374151">{{ g.category }}</td>
+                  <tr v-for="it in g.items" :key="it.action">
                     <td style="text-align:left;color:#374151">{{ it.action }}</td>
                     <td style="font-weight:700;color:#d97706">{{ it.coin }}</td>
                   </tr>
