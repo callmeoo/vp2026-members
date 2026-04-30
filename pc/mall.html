@@ -227,10 +227,9 @@
       </div>
       <div class="modal-body">
         <div class="text-lg font-bold text-slate-800">{{ redeemItem.name }}</div>
-        <div class="mt-5">
+        <div class="mt-5 flex items-baseline justify-center gap-3">
+          <div class="text-3xl font-black text-violet-600">{{ actualCost(redeemItem.coin) }}<span class="text-base font-normal text-slate-400 ml-1">积分</span></div>
           <div v-if="discountRate < 1" class="text-sm text-slate-400 line-through">{{ redeemItem.coin }} 积分</div>
-          <div class="text-3xl font-black text-violet-600 mt-1">{{ actualCost(redeemItem.coin) }}<span class="text-base font-normal text-slate-400 ml-1">积分</span></div>
-          <div class="text-xs text-slate-400 mt-1">支付积分</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -281,7 +280,7 @@ createApp({
       if (!redeemItem.value) return;
       balance.value -= actualCost(redeemItem.value.coin);
       redeemItem.value = null;
-      showToast('兑换成功，已存入权益卡');
+      showToast('兑换成功');
     }
     function showToast(msg) {
       toastText.value = msg;
