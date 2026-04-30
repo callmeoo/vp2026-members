@@ -11,18 +11,6 @@
 <style>
 [v-cloak] { display: none; }
 
-/* ── 个人中心二级导航 ── */
-.profile-subnav { background: #fff; border-bottom: 2px solid #e2e8f0; }
-.profile-subnav-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; }
-.subnav-item {
-  padding: 14px 22px; font-size: 14px; color: #64748b; cursor: pointer;
-  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-  position: relative; border-bottom: 2px solid transparent; margin-bottom: -2px;
-  text-decoration: none;
-}
-.subnav-item:hover { color: #d12c1f; }
-.subnav-item.active { color: #d12c1f; font-weight: 600; border-bottom-color: #d12c1f; }
-
 /* ── 两栏布局 ── */
 .profile-layout { display: grid; grid-template-columns: 212px 1fr; gap: 20px; align-items: start; }
 
@@ -154,22 +142,14 @@
 .pending-num { font-size: 32px; font-weight: 700; color: #d12c1f; }
 .pending-unit { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 2px; }
 .pending-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+/* 关注的车 */
+.watch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 </style>
 </head>
 <body>
 <div id="app" v-cloak>
   <div v-html="header"></div>
-
-  <!-- 个人中心二级导航 -->
-  <div class="profile-subnav">
-    <div class="profile-subnav-inner">
-      <a href="#" class="subnav-item">我的首页</a>
-      <a href="#" class="subnav-item">我的交易 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></a>
-      <a href="#" class="subnav-item">专用账号</a>
-      <a href="member.html" class="subnav-item active"><i data-lucide="crown" class="w-4 h-4"></i>会员中心</a>
-      <a href="#" class="subnav-item">我的信息 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></a>
-    </div>
-  </div>
 
   <div class="pc-main">
     <div class="profile-layout">
@@ -364,6 +344,39 @@
           </div>
         </div>
 
+        <!-- 关注的车 -->
+        <div class="content-card">
+          <div class="c-head">
+            <h3>关注的车</h3>
+            <a href="#" class="text-sm" style="color:#d12c1f">全部 ›</a>
+          </div>
+          <div class="c-body">
+            <div class="watch-grid">
+              <a v-for="c in watchedCars" :key="c.id" class="car-card" href="#">
+                <div class="car-img">
+                  <span v-if="c.pro" class="badge-pro">专业<br>检测</span>
+                  <img :src="c.img" :alt="c.title" loading="lazy" class="w-full h-full object-cover">
+                </div>
+                <div class="status-bar">
+                  <span>{{ c.status }}</span><span>{{ c.score }}</span>
+                </div>
+                <div class="car-body">
+                  <div class="car-title"><i data-lucide="map-pin" class="pin w-3.5 h-3.5 inline -mt-0.5"></i>{{ c.title }}</div>
+                  <div class="car-meta">{{ c.plate }} | {{ c.date }} | {{ c.km }}</div>
+                  <div class="car-tags">
+                    <span v-for="t in c.tags" :key="t" class="car-tag"
+                      :class="{ energy: t==='新能源', reserved: t==='有保留价', new: t==='上新', scrap: t==='报废车专场', discount: t==='降价' }">{{ t }}</span>
+                  </div>
+                  <div class="car-price">
+                    <div class="price-num">¥<strong>{{ c.price }}</strong> 万起</div>
+                    <div class="car-time">{{ c.endIn }}</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div><!-- /main-content -->
     </div><!-- /profile-layout -->
   </div><!-- /pc-main -->
@@ -372,7 +385,7 @@
 </div><!-- /#app -->
 
 <!-- 模拟等级切换 · Demo -->
-<div class="fixed top-[88px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
+<div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
   <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
     <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
   </div>
@@ -443,6 +456,8 @@ createApp({
       currentDeals.value = DEALS_PRESET[short] ?? 0;
     }
 
+    const watchedCars = window.PC_COMMON.cars.filter((_, i) => [2, 5, 7].includes(i));
+
     const header = window.PC_COMMON.renderHeader('');
     const footer = window.PC_COMMON.renderFooter();
 
@@ -452,7 +467,7 @@ createApp({
     return {
       CFG, currentLv, currentDeals,
       nextLv, needDeals, progress, progressText,
-      allBenefits, simulateLevel,
+      allBenefits, simulateLevel, watchedCars,
       header, footer
     };
   }
