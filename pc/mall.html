@@ -226,15 +226,11 @@
         <div class="text-base font-semibold">确认兑换</div>
       </div>
       <div class="modal-body">
-        <div class="text-sm text-slate-500 mb-1">即将兑换</div>
         <div class="text-lg font-bold text-slate-800">{{ redeemItem.name }}</div>
-        <div class="text-3xl font-black text-violet-600 mt-4">{{ actualCost(redeemItem.coin) }}<span class="text-base font-normal text-slate-400 ml-1">积分</span></div>
-        <div v-if="discountRate < 1" class="text-xs text-emerald-600 mt-1 flex items-center justify-center gap-1">
-          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>已享 {{ discountLabel }},节省 {{ redeemItem.coin - actualCost(redeemItem.coin) }} 积分
-        </div>
-        <div class="text-xs text-slate-400 mt-2">兑换后余额 <strong>{{ balance - actualCost(redeemItem.coin) }}</strong> 积分</div>
-        <div class="mt-5 bg-violet-50 rounded-lg p-3 text-xs text-violet-700 text-left">
-          有效期 {{ redeemItem.validityDays }} 天,可在「会员中心 → 我的资产 → 权益卡」查看。兑换后不可退换。
+        <div class="mt-5">
+          <div v-if="discountRate < 1" class="text-sm text-slate-400 line-through">{{ redeemItem.coin }} 积分</div>
+          <div class="text-3xl font-black text-violet-600 mt-1">{{ actualCost(redeemItem.coin) }}<span class="text-base font-normal text-slate-400 ml-1">积分</span></div>
+          <div class="text-xs text-slate-400 mt-1">支付积分</div>
         </div>
       </div>
       <div class="modal-footer">
