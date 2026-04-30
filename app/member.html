@@ -252,7 +252,7 @@ const app = createApp({
           list.push({ id: b.id, icon: b.icon, label: b.label, unlocked: currBenefits.some(cb => cb.id === b.id) });
         });
       });
-      return list;
+      return CFG.sortBenefits(list);
     });
 
     // 推荐任务:首次实名 / 首次充值 仅 V0 展示;其他全部展示

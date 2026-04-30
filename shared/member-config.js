@@ -184,6 +184,20 @@
   MEMBER_CONFIG.yuanFromCoin = function (coin) {
     return (Number(coin) * MEMBER_CONFIG.coin.unitYuan).toFixed(2);
   };
+  // 权益展示顺序(全站统一):调整此数组即可全局生效
+  MEMBER_CONFIG.benefitOrder = [
+    'coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80',
+    'history_data', 'reserve_price',
+    'sales_advisor', 'service_1v1',
+    'refund_1'
+  ];
+  MEMBER_CONFIG.sortBenefits = function (list) {
+    return list.slice().sort(function (a, b) {
+      var ai = MEMBER_CONFIG.benefitOrder.indexOf(a.id);
+      var bi = MEMBER_CONFIG.benefitOrder.indexOf(b.id);
+      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+    });
+  };
 
   global.MEMBER_CONFIG = MEMBER_CONFIG;
 })(typeof window !== 'undefined' ? window : this);

@@ -440,7 +440,7 @@ createApp({
           list.push({ id: b.id, icon: b.icon, label: b.label, unlocked: currBenefits.some(cb => cb.id === b.id) });
         });
       });
-      return list;
+      return CFG.sortBenefits(list);
     });
 
     function simulateLevel(short) {

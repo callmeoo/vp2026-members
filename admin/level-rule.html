@@ -313,7 +313,7 @@ createApp({
         benefitMap[b.id].enabled[lv.short] = true;
       });
     });
-    const allBenefits = reactive(Object.values(benefitMap));
+    const allBenefits = reactive(CFG.sortBenefits(Object.values(benefitMap)));
 
     const period = reactive({ windowMonths: 3 });
     const history = [
