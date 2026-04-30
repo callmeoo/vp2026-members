@@ -191,20 +191,16 @@
 
         <!-- 如何赚积分 -->
         <div class="earn-rules-wrap" v-show="activeTab === 'earn'">
-          <div v-for="group in CFG.coinEarning" :key="group.category" class="earn-group">
-            <div class="earn-group-head">
-              <i :data-lucide="group.icon" class="w-4 h-4"></i>
-              {{ group.category }}
-            </div>
-            <table class="earn-table">
-              <thead>
-                <tr>
-                  <th style="width:42%">获取方式</th>
-                  <th style="width:20%">积分</th>
-                  <th>说明</th>
-                </tr>
-              </thead>
-              <tbody>
+          <table class="earn-table">
+            <thead>
+              <tr>
+                <th style="width:42%">获取方式</th>
+                <th style="width:20%">积分</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="group in CFG.coinEarning" :key="group.category">
                 <tr v-for="it in group.items" :key="it.id">
                   <td>
                     <div class="flex items-center gap-2">
@@ -213,14 +209,17 @@
                     </div>
                   </td>
                   <td>
-                    <span class="coin-val">+{{ it.coin }}</span>
-                    <span class="coin-unit">{{ it.unit }}</span>
+                    <template v-if="isNumeric(it.coin)">
+                      <span class="coin-val">+{{ it.coin }}</span>
+                      <span class="coin-unit">{{ it.unit }}</span>
+                    </template>
+                    <span v-else class="coin-val" style="font-size:13px">{{ it.coin }}</span>
                   </td>
                   <td><div class="earn-desc">{{ it.desc }}</div></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
+              </template>
+            </tbody>
+          </table>
         </div>
         <div class="validity-note" v-show="activeTab === 'earn'">
           <strong class="text-slate-700">积分有效期：</strong>{{ CFG.coin.validityDesc }}，到期自动清零，建议尽早使用。
@@ -341,7 +340,7 @@ createApp({
         '<div class="pc-nav"><div class="pc-nav-inner">' +
         '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
         '<div class="nav-list">' +
-        '<a href="#" class="nav-item">我的首页</a>' +
+        '<a href="member.html" class="nav-item">我的首页</a>' +
         '<a href="#" class="nav-item">我的交易</a>' +
         '<a href="#" class="nav-item">专用账号</a>' +
         '<a href="member.html" class="nav-item">会员中心</a>' +
@@ -353,7 +352,9 @@ createApp({
     watch([activeTab, activeFilter], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, header, footer };
+    function isNumeric(v) { return !isNaN(Number(v)); }
+
+    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, isNumeric, header, footer };
   }
 }).mount('#app');
 </script>
