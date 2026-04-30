@@ -150,19 +150,23 @@
   .demo-toggle button.on { background: #e60012; }
   .demo-toggle .lvl { font-weight: 700; padding: 4px 8px; }
 
-  /* ---------- 保留价权益卡 ---------- */
-  .reserve-card { border: 1px dashed #ffccc7; background: linear-gradient(180deg,#fff5f5,#fff); border-radius: 4px; padding: 14px 16px; }
-  .reserve-card.locked { border-color: #e5e7eb; background: linear-gradient(180deg,#fafafa,#fff); }
+  /* ---------- 保留价相关 ---------- */
   .lvl-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; padding: 2px 8px; border-radius: 999px; color:#fff; }
   .lvl-v0 { background:#94a3b8; }
   .lvl-v1 { background:#0ea5e9; }
   .lvl-v2 { background:#8b5cf6; }
   .lvl-v3 { background:#f59e0b; }
-  .reserve-num { color:#e60012; font-weight:700; font-size:20px; font-variant-numeric:tabular-nums; }
-  .btn-upgrade { background:linear-gradient(90deg,#f59e0b,#f97316); color:#fff; height:30px; padding:0 14px; font-size:12px; font-weight:600; border-radius:999px; border:none; cursor:pointer; }
-  .btn-upgrade:hover { filter: brightness(1.05); }
-  .btn-view-reserve { background:#fff; color:#e60012; border:1px solid #e60012; height:30px; padding:0 14px; font-size:12px; font-weight:600; border-radius:999px; cursor:pointer; }
-  .btn-view-reserve:hover { background:#fff1f0; }
+  .reserve-num { color:#e60012; font-weight:700; font-variant-numeric:tabular-nums; }
+
+  /* 锁定弹窗:橙色锁圆形 */
+  .lock-circle { width: 56px; height: 56px; border-radius: 50%; background: #fff7e6; color: #fa8c16; display:flex; align-items:center; justify-content:center; }
+  /* 保留价弹窗:红色钥匙圆形 */
+  .reserve-circle { width: 56px; height: 56px; border-radius: 50%; background: #fff1f0; color: #e60012; display:flex; align-items:center; justify-content:center; }
+
+  .btn-modal-ghost { height: 38px; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; border-radius: 999px; font-size: 13px; cursor: pointer; }
+  .btn-modal-ghost:hover { border-color: #d1d5db; background: #f9fafb; }
+  .btn-modal-primary { height: 38px; border: none; background: linear-gradient(90deg,#fa8c16,#f97316); color: #fff; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-modal-primary:hover { filter: brightness(1.05); }
 
   /* ---------- 占位图(SVG 渐变) ---------- */
   .ph { width:100%; height:100%; display:block; }
@@ -310,57 +314,6 @@
             </span>
           </div>
 
-          <!-- 保留价权益卡:V0 锁定 / V1+ 可查看 -->
-          <div v-if="loggedIn" class="reserve-card mb-3" :class="{ locked: !canViewReserve }">
-            <!-- V0:不能查看 -->
-            <template v-if="!canViewReserve">
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                  <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
-                  <div>
-                    <div class="flex items-center gap-2 text-[13.5px] text-slate-700 font-medium">
-                      保留价
-                      <span class="lvl-badge lvl-v0">V0 普通</span>
-                      <span class="text-[12px] text-slate-400 font-normal">当前等级不可查看</span>
-                    </div>
-                    <div class="text-[12px] text-slate-500 mt-0.5">升级<span class="vp-red">金卡及以上</span>会员即可查看车辆保留底价,精准锁价不踏空</div>
-                  </div>
-                </div>
-                <button class="btn-upgrade" @click="goLevelUpgrade">立即升级</button>
-              </div>
-            </template>
-
-            <!-- V1+:可以查看 -->
-            <template v-else>
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                  <i data-lucide="target" class="w-4 h-4 vp-red"></i>
-                  <div>
-                    <div class="flex items-center gap-2 text-[13.5px] text-slate-700 font-medium">
-                      保留价
-                      <span class="lvl-badge" :class="'lvl-' + levelCode.toLowerCase()">{{ levelCode }} {{ levelName }}</span>
-                      <span class="text-[12px] text-emerald-600 font-normal flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i>等级权益已解锁</span>
-                    </div>
-                    <div class="text-[12px] text-slate-500 mt-0.5" v-if="!reserveRevealed">点击查看本车保留价,作为出价决策参考</div>
-                    <div v-else class="mt-1 flex items-baseline gap-2">
-                      <span class="reserve-num">¥{{ formatNum(car.reservePrice) }}</span>
-                      <span class="text-[12px] text-slate-400">({{ (car.reservePrice/10000).toFixed(2) }}万)</span>
-                      <span class="pill-tag" :class="car.currentPrice >= car.reservePrice ? 'pill-info' : 'pill-mute'" style="margin-left:4px">
-                        {{ car.currentPrice >= car.reservePrice ? '当前已过保留价' : '当前未过保留价 · 还差 ¥' + formatNum(car.reservePrice - car.currentPrice) }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button v-if="!reserveRevealed" class="btn-view-reserve" @click="reserveRevealed = true">
-                  <i data-lucide="eye" class="w-3 h-3 inline -mt-0.5 mr-1"></i>查看保留价
-                </button>
-                <button v-else class="btn-view-reserve" @click="reserveRevealed = false" style="border-color:#d1d5db;color:#6b7280">
-                  <i data-lucide="eye-off" class="w-3 h-3 inline -mt-0.5 mr-1"></i>收起
-                </button>
-              </div>
-            </template>
-          </div>
-
           <!-- 提示条 -->
           <div v-if="loggedIn && !car.passReserve" class="pill-warn mb-3 w-full justify-between" style="display:flex">
             <span>当前竞价&lt;保留价,您的出价可自我超越,立即加价锁定爱车</span>
@@ -380,7 +333,10 @@
             </div>
             <div class="flex items-center gap-2 mb-2">
               <button v-for="step in [2000,1000,500,200]" :key="step" class="quick-add" @click="addBid(step)">+{{ step }}</button>
-              <a href="javascript:;" class="ml-auto flex items-center gap-1 text-slate-500 hover:text-red-500 text-[13px]" @click="showHistory = true">
+              <a href="javascript:;" class="ml-auto flex items-center gap-1 text-slate-500 hover:text-red-500 text-[13px]" @click="onClickReserve">
+                <i data-lucide="key-round" class="w-3.5 h-3.5 vp-red"></i>查看保留价
+              </a>
+              <a href="javascript:;" class="flex items-center gap-1 text-slate-500 hover:text-red-500 text-[13px]" @click="showHistory = true">
                 <i data-lucide="line-chart" class="w-3.5 h-3.5 vp-red"></i>历史成交价
               </a>
             </div>
@@ -689,6 +645,50 @@
     </div>
   </div>
 
+  <!-- ============== 保留价 · 锁定提示弹窗(V0/V1) ============== -->
+  <div v-if="reserveModal === 'lock'" class="modal-mask" @click.self="reserveModal = null">
+    <div class="modal-box" style="width: 360px; padding: 32px 28px 24px;">
+      <div class="modal-close" @click="reserveModal = null"><i data-lucide="x" class="w-5 h-5"></i></div>
+      <div class="flex flex-col items-center text-center">
+        <div class="lock-circle">
+          <i data-lucide="lock" class="w-7 h-7"></i>
+        </div>
+        <div class="text-[15px] text-slate-700 my-5">V2 及以上可查看车辆保留价</div>
+        <div class="flex items-center gap-3 w-full">
+          <button class="btn-modal-ghost flex-1" @click="reserveModal = null">我知道了</button>
+          <button class="btn-modal-primary flex-1" @click="reserveModal = null">积分兑换</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== 保留价 · 展示弹窗(V2/V3) ============== -->
+  <div v-if="reserveModal === 'show'" class="modal-mask" @click.self="reserveModal = null">
+    <div class="modal-box" style="width: 380px; padding: 32px 28px 24px;">
+      <div class="modal-close" @click="reserveModal = null"><i data-lucide="x" class="w-5 h-5"></i></div>
+      <div class="flex flex-col items-center text-center">
+        <div class="reserve-circle">
+          <i data-lucide="key-round" class="w-7 h-7"></i>
+        </div>
+        <div class="text-[14px] text-slate-500 mt-5 mb-1 flex items-center gap-2">
+          本车保留价
+          <span class="lvl-badge" :class="'lvl-' + levelCode.toLowerCase()">{{ levelCode }} {{ levelName }}</span>
+        </div>
+        <div class="reserve-num text-[34px] my-2">¥{{ formatNum(car.reservePrice) }}</div>
+        <div class="text-[12px] text-slate-400 mb-5">({{ (car.reservePrice/10000).toFixed(2) }}万)</div>
+        <div class="w-full px-2 py-3 rounded text-[12.5px]" :class="car.currentPrice >= car.reservePrice ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">
+          <template v-if="car.currentPrice >= car.reservePrice">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5 inline -mt-0.5"></i> 当前竞价已过保留价
+          </template>
+          <template v-else>
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5 inline -mt-0.5"></i> 当前竞价未过保留价 · 还差 <span class="font-semibold">¥{{ formatNum(car.reservePrice - car.currentPrice) }}</span>
+          </template>
+        </div>
+        <button class="btn-modal-primary w-full mt-5" @click="reserveModal = null">我知道了</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ============== 演示态切换 ============== -->
   <div class="demo-toggle">
     <div class="row">
@@ -702,7 +702,7 @@
       <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
               class="lvl"
               :class="{ on: levelCode === lv }"
-              @click="levelCode = lv; reserveRevealed = false">{{ lv }}</button>
+              @click="levelCode = lv; reserveModal = null">{{ lv }}</button>
     </div>
   </div>
 
@@ -718,14 +718,14 @@ createApp({
     const loggedIn = ref(true);
     const showHistory = ref(false);
     const levelCode = ref('V2'); // 默认 V2 演示「可查看保留价」
-    const reserveRevealed = ref(false);
+    const reserveModal = ref(null); // null | 'lock' | 'show'
 
-    // V1+ 才有保留价查询权益(对齐 shared/member-config.js)
+    // V2+ 才有保留价查询权益
     const LEVEL_NAMES = { V0: '普通', V1: '金卡', V2: '白金', V3: '钻石' };
-    const canViewReserve = computed(() => levelCode.value !== 'V0');
+    const canViewReserve = computed(() => ['V2','V3'].includes(levelCode.value));
     const levelName = computed(() => LEVEL_NAMES[levelCode.value] || '');
-    const goLevelUpgrade = () => {
-      window.alert('跳转「会员中心 · 升级路径」(演示态)');
+    const onClickReserve = () => {
+      reserveModal.value = canViewReserve.value ? 'show' : 'lock';
     };
 
     const user = { name: 'cptest01' };
@@ -916,7 +916,7 @@ createApp({
     const formatNum = (n) => Number(n).toLocaleString('en-US');
 
     const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
-    watch([loggedIn, showHistory, detailActive, levelCode, reserveRevealed, activeImageIndex], refresh);
+    watch([loggedIn, showHistory, detailActive, levelCode, reserveModal, activeImageIndex], refresh);
     onMounted(refresh);
 
     // 滚动联动 active tab
@@ -936,7 +936,7 @@ createApp({
 
     return {
       loggedIn, user, showHistory,
-      levelCode, levelName, canViewReserve, reserveRevealed, goLevelUpgrade,
+      levelCode, levelName, canViewReserve, reserveModal, onClickReserve,
       car, countdownText,
       ratings, basic, transfer, configRows,
       detailTabs, detailActive, scrollTo,
