@@ -65,6 +65,10 @@
   .mb-tag { display: inline-flex; padding: 1px 7px; font-size: 11px; border-radius: 3px; margin-left: 6px; }
   .mb-tag-amber { background: #fdf6ec; color: #e6a23c; border: 1px solid #faecd8; }
   .mb-tag-violet { background: #f3e8ff; color: #8b5cf6; border: 1px solid #e9d5ff; }
+  /* 演示切换按钮 */
+  .demo-toggle { padding: 3px 10px; font-size: 12px; border: 1px solid #e9d5ff; background: #faf5ff; color: #7c3aed; border-radius: 100px; cursor: pointer; }
+  .demo-toggle:hover { background: #f3e8ff; }
+  .demo-toggle.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
   .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: flex; align-items: center; justify-content: center; }
   .modal { background: #fff; border-radius: 4px; width: 720px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -363,45 +367,23 @@
     <div class="mb-block mt-3">
       <div class="mb-head">
         <i data-lucide="crown" class="w-5 h-5 text-violet-500"></i>
-        <span class="mb-title">会员权益使用</span>
-      </div>
-      <div class="grid grid-cols-2 gap-8">
-        <div>
-          <div class="mb-col-title">本单使用的权益</div>
-          <template v-if="usedBenefits.length">
-            <div v-for="(u, i) in usedBenefits" :key="i" class="mb-item">
-              <span class="mb-check used"><i data-lucide="check" class="w-3 h-3"></i></span>
-              <div class="flex-1">
-                <div class="mb-label">{{ u.label }}<span v-if="u.tag" :class="['mb-tag', u.tag.cls]">{{ u.tag.text }}</span></div>
-                <div class="mb-desc">{{ u.desc }}</div>
-              </div>
-            </div>
-          </template>
-          <div v-else class="mb-desc" style="padding:8px 0">本单未使用等级权益</div>
-        </div>
-        <div>
-          <div class="mb-col-title">本单可获得的积分</div>
-          <div class="mb-item">
-            <span :class="['mb-check', isCompleted ? 'used' : 'unused']">
-              <i :data-lucide="isCompleted ? 'check' : 'clock'" class="w-3 h-3"></i>
-            </span>
-            <div class="flex-1">
-              <div class="mb-label">成交车辆奖励<span class="mb-tag mb-tag-amber">+50 积分</span></div>
-              <div class="mb-desc">
-                <template v-if="isCompleted">已发放 · 有效期至 {{ coinExpireAt }}</template>
-                <template v-else>待订单完成并清算后发放</template>
-              </div>
-            </div>
-          </div>
-          <div class="mb-item">
-            <span class="mb-check used"><i data-lucide="check" class="w-3 h-3"></i></span>
-            <div class="flex-1">
-              <div class="mb-label">有效出价奖励<span class="mb-tag mb-tag-amber">+10 积分</span></div>
-              <div class="mb-desc">出价 1 台 1 次 · 有效期至 {{ coinExpireAt }}</div>
-            </div>
-          </div>
+        <span class="mb-title">本单使用的权益</span>
+        <div class="ml-auto flex items-center gap-2">
+          <span class="text-xs text-slate-400">演示状态:</span>
+          <button :class="['demo-toggle', mockUsageMode === 'used' ? 'active' : '']" @click="mockUsageMode = 'used'">使用了权益</button>
+          <button :class="['demo-toggle', mockUsageMode === 'none' ? 'active' : '']" @click="mockUsageMode = 'none'">未使用权益</button>
         </div>
       </div>
+      <template v-if="usedBenefits.length">
+        <div v-for="(u, i) in usedBenefits" :key="i" class="mb-item">
+          <span class="mb-check used"><i data-lucide="check" class="w-3 h-3"></i></span>
+          <div class="flex-1">
+            <div class="mb-label">{{ u.label }}<span v-if="u.tag" :class="['mb-tag', u.tag.cls]">{{ u.tag.text }}</span></div>
+            <div class="mb-desc">{{ u.desc }}</div>
+          </div>
+        </div>
+      </template>
+      <div v-else class="mb-desc" style="padding:8px 0">本单未使用等级权益</div>
     </div>
 
   </main>
@@ -610,15 +592,16 @@ createApp({
     const activeTab = ref('款项信息');
     const tabs = ['款项信息','基本信息','拍卖信息','车辆照片','收车信息','查看记录','出价记录'];
 
+    // 演示用:'used' 显示一组使用了的权益样例,'none' 显示空状态,便于评审对比
+    const mockUsageMode = ref('used');
     const usedBenefits = computed(() => {
-      const arr = [];
-      if (['V1','V2','V3'].includes(buyerLevel)) {
-        arr.push({ label:'保留价查询', desc:'本单出价前已使用保留价查询 1 次' });
-      }
-      if (afsList.some(r => r.useNoReason)) {
-        arr.push({ label:'无理由退车', desc:'本单已使用买家无理由退车权益', tag:{ cls:'mb-tag-violet', text:'权益' } });
-      }
-      return arr;
+      if (mockUsageMode.value === 'none') return [];
+      return [
+        { label:'保留价查询',   desc:'本单出价前已使用保留价查询 1 次' },
+        { label:'历史数据查询', desc:'查询本车源历史成交数据 2 次' },
+        { label:'积分折扣兑换', desc:'已使用积分抵扣综合服务费 50 元', tag:{ cls:'mb-tag-amber', text:'已抵扣' } },
+        { label:'无理由退车',   desc:'本单已使用买家无理由退车权益',     tag:{ cls:'mb-tag-violet', text:'权益' } }
+      ];
     });
 
     function fmt(n) { return '¥ ' + Number(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
@@ -716,11 +699,11 @@ createApp({
       lucide.createIcons();
       document.addEventListener('click', () => { showMore.value = false; });
     });
-    watch([showApplyAfs, viewAfs, activeTab], () => nextTick(() => lucide.createIcons()));
+    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode], () => nextTick(() => lucide.createIcons()));
 
     return {
       plate, model, deal, total, price, fee, seller, buyer, buyerCoins, lv, coinYuan,
-      statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits,
+      statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits, mockUsageMode,
       showMore, showCompTip, activeTab, tabs,
       noReasonRemain, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
       openApplyAfs, onToggleNoReason, submitAfs, openViewAfs, openApprovalList, stepCls, fmt
