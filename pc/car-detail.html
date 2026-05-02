@@ -167,6 +167,13 @@
   .btn-modal-ghost:hover { border-color: #d1d5db; background: #f9fafb; }
   .btn-modal-primary { height: 38px; border: none; background: linear-gradient(90deg,#fa8c16,#f97316); color: #fff; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; }
   .btn-modal-primary:hover { filter: brightness(1.05); }
+  .btn-modal-primary:disabled { background: #cbd5e1; color: #fff; cursor: not-allowed; filter: none; }
+  .coin-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border-radius: 8px; font-size: 14px; }
+  .coin-row + .coin-row { margin-top: 8px; }
+  .coin-row .label { color: #64748b; }
+  .coin-row .val { font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
+  .coin-row .val.warn { color: #dc2626; }
+  .toast-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,23,42,.92); color: #fff; padding: 14px 28px; border-radius: 10px; font-size: 14px; z-index: 200; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.25); }
 
   /* ---------- 占位图(SVG 渐变) ---------- */
   .ph { width:100%; height:100%; display:block; }
@@ -656,10 +663,45 @@
         <div class="text-[15px] text-slate-700 my-5">V2 及以上可查看车辆保留价</div>
         <div class="flex items-center gap-3 w-full">
           <button class="btn-modal-ghost flex-1" @click="reserveModal = null">我知道了</button>
-          <button class="btn-modal-primary flex-1" @click="goPointsMall">积分兑换</button>
+          <button class="btn-modal-primary flex-1" @click="onClickExchange">积分兑换</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ============== 保留价 · 兑换确认弹窗 ============== -->
+  <div v-if="reserveModal === 'confirm'" class="modal-mask" @click.self="reserveModal = null">
+    <div class="modal-box" style="width: 380px; padding: 32px 28px 24px;">
+      <div class="modal-close" @click="reserveModal = null"><i data-lucide="x" class="w-5 h-5"></i></div>
+      <div class="flex flex-col items-center text-center mb-5">
+        <div class="lock-circle" style="background:#fff7e6;color:#fa8c16">
+          <i data-lucide="key-round" class="w-7 h-7"></i>
+        </div>
+        <div class="text-[16px] font-semibold text-slate-900 mt-4">兑换保留价查询</div>
+        <div class="text-[12px] text-slate-500 mt-1">兑换后可永久查看本车保留价</div>
+      </div>
+      <div class="coin-row">
+        <span class="label">兑换所需</span>
+        <span class="val"><span class="vp-red">{{ RESERVE_UNLOCK_COST }}</span> 积分</span>
+      </div>
+      <div class="coin-row">
+        <span class="label">当前积分</span>
+        <span class="val" :class="{ warn: userCoins < RESERVE_UNLOCK_COST }">{{ userCoins }} 积分</span>
+      </div>
+      <div v-if="userCoins < RESERVE_UNLOCK_COST" class="text-[12px] text-red-500 mt-3 text-center">
+        积分不足,
+        <a href="mall.html" class="underline">前往积分商城</a>
+      </div>
+      <div class="flex items-center gap-3 w-full mt-5">
+        <button class="btn-modal-ghost flex-1" @click="reserveModal = null">取消</button>
+        <button class="btn-modal-primary flex-1" :disabled="userCoins < RESERVE_UNLOCK_COST" @click="confirmExchange">确认兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 兑换成功 toast -->
+  <div v-if="toastMsg" class="toast-popup">
+    <i data-lucide="check-circle" class="w-4 h-4"></i>{{ toastMsg }}
   </div>
 
   <!-- ============== 保留价 · 展示弹窗(V2/V3) ============== -->
@@ -700,23 +742,67 @@ const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
 
 createApp({
   setup() {
+    // ── 保留价兑换 · localStorage 持久化 ──
+    const RESERVE_UNLOCK_COST = 50;
+    const SK = {
+      coins:    'chevip_user_coins',
+      unlocked: 'chevip_unlocked_reserve_ids',
+      records:  'chevip_redeemed_records',
+    };
+    const readStore = (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } };
+    const writeStore = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+    // 当前车辆 id(URLSearchParams 透传,默认值用于直接打开)
+    const carId = new URLSearchParams(window.location.search).get('id') || 'demo';
+
     // 演示状态
     const loggedIn = ref(true);
     const showHistory = ref(false);
     const levelCode = ref('V2'); // 默认 V2 演示「可查看保留价」
-    const reserveModal = ref(null); // null | 'lock' | 'show'
+    const reserveModal = ref(null); // null | 'lock' | 'confirm' | 'show'
+    const userCoins = ref(readStore(SK.coins, 356));
+    const unlockedIds = ref(readStore(SK.unlocked, []));
+    const toastMsg = ref('');
 
-    // V2+ 才有保留价查询权益
+    // V2+ 或已为本车积分兑换过保留价 → 可查看
     const LEVEL_NAMES = { V0: '普通', V1: '金卡', V2: '白金', V3: '钻石' };
-    const canViewReserve = computed(() => ['V2','V3'].includes(levelCode.value));
+    const canViewReserve = computed(() =>
+      ['V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
+    );
     const levelName = computed(() => LEVEL_NAMES[levelCode.value] || '');
     const onClickReserve = () => {
       reserveModal.value = canViewReserve.value ? 'show' : 'lock';
     };
-    // PC 积分商城上线后,把这里替换为 window.location.href = 'mall.html?xxx'
-    const goPointsMall = () => {
+    // 锁定弹窗·点积分兑换 → 自动登录 + 进入兑换确认
+    const onClickExchange = () => {
+      if (!loggedIn.value) loggedIn.value = true;
+      reserveModal.value = 'confirm';
+      nextTick(() => window.lucide && lucide.createIcons());
+    };
+    // 确认兑换:扣积分 + 写兑换记录 + 加入解锁列表 + 刷新页面
+    const confirmExchange = () => {
+      if (userCoins.value < RESERVE_UNLOCK_COST) return;
+      userCoins.value -= RESERVE_UNLOCK_COST;
+      writeStore(SK.coins, userCoins.value);
+      if (!unlockedIds.value.includes(carId)) {
+        unlockedIds.value.push(carId);
+        writeStore(SK.unlocked, unlockedIds.value);
+      }
+      const records = readStore(SK.records, []);
+      records.unshift({
+        id: 'rd_' + Date.now(),
+        type: 'reserve_price',
+        typeName: '保留价查询',
+        carId: carId,
+        carTitle: car.value && car.value.title || '',
+        coin: RESERVE_UNLOCK_COST,
+        at: new Date().toISOString(),
+      });
+      writeStore(SK.records, records);
       reserveModal.value = null;
-      window.alert('PC 积分商城建设中,敬请期待');
+      toastMsg.value = '兑换成功';
+      nextTick(() => window.lucide && lucide.createIcons());
+      setTimeout(() => { window.location.reload(); }, 900);
     };
 
     const user = { name: 'cptest01' };
@@ -927,7 +1013,8 @@ createApp({
 
     return {
       loggedIn, user, showHistory,
-      levelCode, levelName, canViewReserve, reserveModal, onClickReserve, goPointsMall,
+      levelCode, levelName, canViewReserve, reserveModal, onClickReserve,
+      RESERVE_UNLOCK_COST, userCoins, onClickExchange, confirmExchange, toastMsg,
       car, countdownText,
       ratings, basic, transfer, configRows,
       detailTabs, detailActive, scrollTo,
