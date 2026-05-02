@@ -390,13 +390,31 @@ new Chart(document.getElementById('chartDist'), {
     applyRange(rows, `${from} ~ ${to}`);
   });
 
-  // 导出 CSV:日期 / 积分发放类型 / 积分发放 / 积分消耗
+  // 导出 CSV:每日按发放类型拆行,与「积分获取方式」对齐
+  // 比例参考实际业务节奏:成交占大头,出价次之,其余一次性/活动类小份额
+  const ISSUE_CATEGORIES = [
+    { name: '成交',         ratio: 0.50 },
+    { name: '出价',         ratio: 0.25 },
+    { name: '转发车源',     ratio: 0.06 },
+    { name: '参与问卷调研', ratio: 0.06 },
+    { name: '首充保证金',   ratio: 0.05 },
+    { name: '首次实名认证', ratio: 0.04 },
+    { name: '活动专属任务', ratio: 0.04 }
+  ];
   document.getElementById('trendExportCsv').addEventListener('click', () => {
     const rows = currentSubset.length ? currentSubset : lastN(30);
-    const header = ['日期','积分发放类型','积分发放','积分消耗'];
+    const header = ['日期','发放类型','积分发放','积分消耗'];
     const lines = [header.join(',')];
     rows.forEach(r => {
-      lines.push([r.date, '日常', r.issued, r.consumed].join(','));
+      let allocated = 0;
+      ISSUE_CATEGORIES.forEach((c, i) => {
+        const v = i === ISSUE_CATEGORIES.length - 1
+          ? r.issued - allocated // 末项分配剩余,避免四舍五入误差
+          : Math.round(r.issued * c.ratio);
+        allocated += v;
+        lines.push([r.date, c.name, v, ''].join(','));
+      });
+      lines.push([r.date, '兑换权益', '', r.consumed].join(','));
     });
     const csv = '\ufeff' + lines.join('\n'); // BOM 兼容 Excel 中文
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
