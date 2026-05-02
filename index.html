@@ -433,7 +433,7 @@
             <h3>3.1 业务触发点</h3>
             <ul>
               <li><strong>下单抵扣</strong>:BMS 订单确认页选择一张未使用的优惠券抵扣费用,一单限一张。</li>
-              <li><strong>售后退车回滚</strong></li>
+              <li><strong>售后退车回滚</strong>:售后退车执行完毕时,退回原有的<strong>成交积分</strong>;<strong>出价积分</strong>不退回。</li>
               <li><strong>并发控制</strong>:核销接口加<strong>行锁 / 版本号</strong>,防止同一张卡被多订单重复使用。</li>
             </ul>
           </div>
@@ -455,13 +455,10 @@
           <!-- 5. 待确认清单 -->
           <div v-if="prdActive === 'c5'" class="prd-body">
             <table>
-              <thead><tr><th>#</th><th>议题</th><th>状态</th></tr></thead>
+              <thead><tr><th style="width:60px">#</th><th>议题</th><th style="width:120px">责任方</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>商品×积分映射规则</td><td><span class="tag tag-todo">待确认</span></td></tr>
-                <tr><td>2</td><td>车信盟出险是否可使用平台权益</td><td><span class="tag tag-risk">风险</span></td></tr>
-                <tr><td>3</td><td>历史订单权益迁移策略(只展示 vs 迁移)</td><td><span class="tag tag-todo">待确认</span></td></tr>
-                <tr><td>4</td><td>售后退车,已使用优惠券回滚、已发放积分回滚;若已发放积分已使用?需明确积分发放时机</td><td><span class="tag tag-todo">待确认</span></td></tr>
-                <tr><td>5</td><td>等级评估周期由「滚动 3 月」调为「月度归档」?</td><td><span class="tag tag-todo">待评估</span></td></tr>
+                <tr><td>1</td><td>调研问卷表单</td><td><span class="tag tag-todo">需求方</span></td></tr>
+                <tr><td>2</td><td>转发朋友圈公开分享是否可实现</td><td><span class="tag tag-risk">技术</span></td></tr>
               </tbody>
             </table>
           </div>
