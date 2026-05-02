@@ -87,7 +87,7 @@
 
     <!-- 列表 -->
     <div class="car-grid">
-      <a v-for="c in cars" :key="c.id" class="car-card" href="#">
+      <a v-for="c in cars" :key="c.id" class="car-card" :href="`car-detail.html?id=${c.id}`">
         <div class="car-img">
           <span v-if="c.pro" class="badge-pro">专业<br>检测</span>
           <img :src="c.img" :alt="c.title" loading="lazy" class="w-full h-full object-cover">
