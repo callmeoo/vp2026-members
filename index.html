@@ -440,20 +440,16 @@
 
           <!-- 4. 历史数据处理 -->
           <div v-if="prdActive === 'c4'" class="prd-body">
-            <p>现网已有金币/权益/优惠券等数据,需与创新部/业务方对齐处理口径。本版本重点:</p>
-            <ul>
-              <li><strong>积分配置项</strong>:现网金币按 1:1 迁移到新积分(文案全量改为「积分」,变量名保留 coin 不动)。</li>
-              <li><strong>商城配置项</strong>:现有商城商品按新 <code>rewards[]</code> 结构重新录入,旧数据归档不删除。</li>
-            </ul>
-            <div class="callout">
-              <strong>A. 需和创新部确认:</strong> 商品和积分的映射关系如何收敛(同一权益是否可能既卖钱又卖积分)?<br>
-              <span class="tag tag-risk">待确认</span> <strong>车信盟出险的能否使用?</strong>(与保险/理赔流程的联动)
-            </div>
-            <div class="callout info">
-              <strong>B. 历史数据如何处理?</strong><br>
-              已购权益照常使用和展示 —— 旧订单中已发放/已使用的优惠券不重写,「我的优惠券」按旧状态原样展示至过期。<br>
-              新规则仅对<strong>新发放</strong>生效,不追溯修改历史 ledger。
-            </div>
+            <ol style="padding-left:22px;margin:6px 0;list-style:decimal">
+              <li>
+                <strong>等级重新定级</strong>:系统将原有数据(包括用户的历史成交记录和目前的账户余额)进行试跑,跑完后给各个用户进行重新定级。
+                <ul>
+                  <li>比如功能上线时间是 <strong>7 月 1 日</strong>,那就 7 月 1 日重新跑数据。</li>
+                  <li>7 月 1 日当天确定各个用户的等级和对应的权益。</li>
+                </ul>
+              </li>
+              <li><strong>积分不追溯</strong>:积分从功能上线开始正式计算,历史成交不补发积分。</li>
+            </ol>
           </div>
 
           <!-- 5. 待确认清单 -->
