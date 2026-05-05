@@ -79,7 +79,7 @@
         feature: '高贡献商户,平台营收中坚,高频使用核心增值产品',
         benefits: [
           { id: 'coin_exchange_80',  icon: 'tag',         label: '积分 8 折兑换',   desc: '兑换优惠券时享 8 折' },
-          { id: 'refund_1',          icon: 'undo-2',      label: '无理由退车 1 台', desc: '每定级周期可享 1 台无理由退车' },
+          { id: 'refund_1',          icon: 'undo-2',      label: '无理由退车 1 台', desc: '车辆中标后 24 小时内可申请,每定级周期 1 台' },
           { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',   desc: '查询车源历史成交数据' },
           { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
           { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',   desc: '1 对 1 销售顾问服务' },

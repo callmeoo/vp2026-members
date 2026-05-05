@@ -472,13 +472,27 @@
         <div class="fm-ctrl"><textarea class="fm-textarea" v-model="applyForm.plan" maxlength="500"></textarea></div>
       </div>
 
-      <div :class="['benefit-bar', { disabled: noReasonRemain <= 0 }]">
+      <div :class="['benefit-bar', { disabled: !noReasonUsable }]">
         <i data-lucide="shield-check" class="w-5 h-5 b-icon"></i>
         <div class="flex-1">
-          <div class="b-title">买家「无理由退车权益」<span class="b-remain">剩余 {{ noReasonRemain }} 次</span></div>
-          <div class="b-validity">有效期: <strong>{{ noReasonValidity.start }}</strong> 至 <strong>{{ noReasonValidity.end }}</strong> · 起算自竞价结束后 24h</div>
+          <div class="b-title">
+            买家「无理由退车权益」
+            <span v-if="noReasonRemain > 0 && !noReasonValidity.expired" class="b-remain">剩余 {{ noReasonRemain }} 次</span>
+            <span v-else-if="noReasonValidity.expired" class="b-remain" style="background:#fef2f2;color:#dc2626;border-color:#fecaca">已超期 · 不可使用</span>
+            <span v-else class="b-remain" style="background:#f4f4f5;color:#909399;border-color:#e9e9eb">已用完</span>
+          </div>
+          <div class="b-validity">
+            有效期: <strong>{{ noReasonValidity.start }}</strong> 至 <strong>{{ noReasonValidity.end }}</strong> · 中标后 24h 内可申请,超时即使有权益也无法使用
+          </div>
         </div>
-        <label class="fm-checkbox"><input type="checkbox" v-model="applyForm.useNoReason" @change="onToggleNoReason" :disabled="noReasonRemain <= 0" /> 使用</label>
+        <div class="flex flex-col items-end gap-1.5">
+          <label class="fm-checkbox" :style="!noReasonUsable ? 'cursor:not-allowed;opacity:.5' : ''">
+            <input type="checkbox" v-model="applyForm.useNoReason" @change="onToggleNoReason" :disabled="!noReasonUsable" /> 使用
+          </label>
+          <button class="demo-toggle" style="font-size:11px;padding:1px 8px" @click="noReasonExpiredDemo = !noReasonExpiredDemo">
+            演示: {{ noReasonExpiredDemo ? '切回有效' : '切到超期' }}
+          </button>
+        </div>
       </div>
 
       <div class="fm-row">
@@ -613,14 +627,16 @@ createApp({
 
     // 售后
     const noReasonRemain = ref(1);
-    // 无理由退车权益有效期:竞价结束后 24h 起算,7 天内可申请
+    // 无理由退车权益:中标(竞价结束)后 24 小时内可申请,超时不可使用(即使有权益)
+    // 演示用 expiredDemo 切换两种状态,因 demo 数据 deal 是过去日期,实际肯定已过期
+    const noReasonExpiredDemo = ref(false);
     const noReasonValidity = computed(() => {
       const dt = new Date(deal.replace(' ', 'T') + ':00');
-      const start = new Date(dt.getTime() + 24 * 3600 * 1000);
-      const end = new Date(start.getTime() + 7 * 24 * 3600 * 1000);
+      const end = new Date(dt.getTime() + 24 * 3600 * 1000);
       const f = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      return { start: f(start), end: f(end) };
+      return { start: f(dt), end: f(end), expired: noReasonExpiredDemo.value };
     });
+    const noReasonUsable = computed(() => noReasonRemain.value > 0 && !noReasonValidity.value.expired);
     const showApplyAfs = ref(false);
     const viewAfs = ref(null);
     const baseInfo = computed(() => `车牌:${plate};成交日期:${deal.split(' ')[0]};门店:${store};业务员:${seller};买受人:${buyer}。`);
@@ -712,13 +728,13 @@ createApp({
       lucide.createIcons();
       document.addEventListener('click', () => { showMore.value = false; });
     });
-    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode], () => nextTick(() => lucide.createIcons()));
+    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode, noReasonExpiredDemo], () => nextTick(() => lucide.createIcons()));
 
     return {
       plate, model, deal, total, price, fee, seller, buyer, buyerCoins, lv, coinYuan,
       statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits, mockUsageMode,
       showMore, showCompTip, activeTab, tabs,
-      noReasonRemain, noReasonValidity, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
+      noReasonRemain, noReasonValidity, noReasonUsable, noReasonExpiredDemo, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
       openApplyAfs, onToggleNoReason, submitAfs, openViewAfs, openApprovalList, stepCls, fmt
     };
   }

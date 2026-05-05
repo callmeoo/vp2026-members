@@ -90,23 +90,37 @@
       </span>
     </div>
 
-    <div class="benefit-row" @click="openSheet">
+    <div class="benefit-row" @click="!noReasonExpired && openSheet()" :style="noReasonExpired ? 'opacity:.85' : ''">
       <div class="flex-1">
         <div class="text-[15px] text-slate-900 flex items-center gap-2">
           权益抵扣
-          <span v-if="selectedCard" class="benefit-tag">
+          <span v-if="selectedCard && !noReasonExpired" class="benefit-tag">
             <i data-lucide="sparkles" class="w-3 h-3"></i>
             <span>已选 1 张</span>
           </span>
+          <span v-if="noReasonExpired" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600">已超期 · 不可使用</span>
         </div>
         <div class="text-[12px] text-slate-500 mt-0.5">
-          {{ selectedCard ? (selectedCard.name + ' · ' + selectedCard.expire + ' 到期(' + selectedCard.source + ')') : '可使用「无理由退车」抵扣违约金,点击选择' }}
+          <template v-if="noReasonExpired">中标后已超 24 小时,「无理由退车」权益本单无法使用</template>
+          <template v-else-if="selectedCard">{{ selectedCard.name + ' · 中标后 24h 内可申请(' + selectedCard.source + ')' }}</template>
+          <template v-else>可使用「无理由退车」抵扣违约金,中标后 24h 内有效</template>
         </div>
       </div>
-      <span :class="['text-[13px] mr-1', selectedCard ? 'text-rose-500' : 'text-slate-400']">
-        {{ selectedCard ? '-¥' + PENALTY : '未使用' }}
+      <span :class="['text-[13px] mr-1', selectedCard && !noReasonExpired ? 'text-rose-500' : 'text-slate-400']">
+        {{ noReasonExpired ? '不可用' : (selectedCard ? '-¥' + PENALTY : '未使用') }}
       </span>
-      <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+      <i v-if="!noReasonExpired" data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+    </div>
+
+    <!-- 演示切换:有效 / 已超期 -->
+    <div class="mt-2 px-3 flex items-center gap-2 text-[11px] text-slate-400">
+      <span>演示状态:</span>
+      <button @click="noReasonExpired = false"
+        :style="!noReasonExpired ? 'background:#7c3aed;color:#fff;border-color:#7c3aed' : ''"
+        style="padding:2px 8px;border:1px solid #e9d5ff;background:#faf5ff;color:#7c3aed;border-radius:100px;font-size:11px">未超期</button>
+      <button @click="noReasonExpired = true"
+        :style="noReasonExpired ? 'background:#7c3aed;color:#fff;border-color:#7c3aed' : ''"
+        style="padding:2px 8px;border:1px solid #e9d5ff;background:#faf5ff;color:#7c3aed;border-radius:100px;font-size:11px">超 24h</button>
     </div>
   </div>
 
@@ -165,7 +179,7 @@
       <button @click="closeSheet" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
 
-    <div class="px-4 pt-3 text-[12px] text-slate-500">可用「无理由退车」权益,使用后违约金 ¥{{ PENALTY }} 全额抵扣。</div>
+    <div class="px-4 pt-3 text-[12px] text-slate-500">中标后 24 小时内可使用「无理由退车」权益,违约金 ¥{{ PENALTY }} 全额抵扣;超时即使有权益也无法使用。</div>
 
     <div>
       <div v-for="c in refundCards" :key="c.id" :class="['reward-card', { selected: selectedCard && selectedCard.id === c.id }]" @click="selectedCard = c">
@@ -232,6 +246,8 @@ createApp({
     const reason = ref('test');
     const showSheet = ref(false);
     const showConfirm = ref(false);
+    // 演示用:中标后超 24h 后无理由退车权益不可用
+    const noReasonExpired = ref(false);
 
     const refundCards = [
       { id:'rf001', name:'无理由退车', expire:'2026-06-30', source:'V3 等级权益' },
@@ -239,6 +255,7 @@ createApp({
     ].sort((a, b) => a.expire.localeCompare(b.expire));
 
     const selectedCard = ref(refundCards[0]);
+    watch(noReasonExpired, (v) => { if (v) selectedCard.value = null; });
 
     const clauses = [
       '(1) 乙方在成交前已经清楚了解该车辆状况,对该车辆有关情况及质量没有异议并自愿接受该标的的一切现状及瑕疵。',
@@ -270,10 +287,10 @@ createApp({
 
     function back() { smartBack('won-order-detail.html'); }
 
-    watch([showSheet, showConfirm, selectedCard], () => nextTick(() => window.lucide && lucide.createIcons()));
+    watch([showSheet, showConfirm, selectedCard, noReasonExpired], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { PENALTY, reason, showSheet, showConfirm, refundCards, selectedCard, clauses, openSheet, closeSheet, onConfirm, back };
+    return { PENALTY, reason, showSheet, showConfirm, noReasonExpired, refundCards, selectedCard, clauses, openSheet, closeSheet, onConfirm, back };
   }
 }).mount('#app');
 </script>
