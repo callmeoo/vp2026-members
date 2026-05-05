@@ -216,12 +216,39 @@
         <div class="earn-rules-wrap" v-show="activeTab === 'earn'">
           <div class="earn-task-header">
             <span class="earn-task-header-title">推荐任务</span>
-            <span class="earn-task-header-sub">完成任务获积分</span>
+            <div class="flex items-center gap-3">
+              <span class="text-[11px] text-slate-400">演示状态:</span>
+              <button @click="hasActivity = true"
+                :class="['px-2.5 py-0.5 rounded-full border text-[11px] font-medium transition',
+                  hasActivity ? 'bg-violet-600 border-violet-600 text-white' : 'bg-violet-50 border-violet-200 text-violet-600']">
+                有活动
+              </button>
+              <button @click="hasActivity = false"
+                :class="['px-2.5 py-0.5 rounded-full border text-[11px] font-medium transition',
+                  !hasActivity ? 'bg-violet-600 border-violet-600 text-white' : 'bg-violet-50 border-violet-200 text-violet-600']">
+                无活动
+              </button>
+              <span class="earn-task-header-sub ml-1">完成任务获积分</span>
+            </div>
           </div>
           <div v-for="t in earnTasks" :key="t.id" class="earn-task-row">
             <div class="flex-1 min-w-0">
               <div class="earn-task-name">{{ t.action }}</div>
-              <div class="earn-task-meta">
+              <!-- 活动专属任务:走自定义渲染 -->
+              <template v-if="t.id === 't_festival'">
+                <div v-if="hasActivity" class="earn-task-meta">
+                  <span class="inline-flex items-center gap-1 text-rose-500 font-semibold">
+                    <i data-lucide="calendar-heart" class="w-3.5 h-3.5"></i>2026.10.1 - 10.7
+                  </span>
+                  <span>出价 <span class="earn-task-pts text-rose-500">2 倍</span>积分</span>
+                  <span>成交 <span class="earn-task-pts text-rose-500">3 倍</span>积分</span>
+                </div>
+                <div v-else class="earn-task-meta">
+                  <span>暂无活动,敬请期待</span>
+                </div>
+              </template>
+              <!-- 其他任务:常规渲染 -->
+              <div v-else class="earn-task-meta">
                 <span>积分 <span class="earn-task-pts" :class="t.highlight ? 'text-rose-500' : 'text-violet-600'">+{{ t.points }}{{ t.unit }}</span></span>
                 <span v-if="t.desc">{{ t.desc }}</span>
               </div>
@@ -374,18 +401,19 @@ createApp({
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch([activeTab, activeFilter, currentPage], () => nextTick(() => lucide.createIcons()));
-    onMounted(() => lucide.createIcons());
-
     const V0_ONLY_EARN = new Set(['t_verify', 't_deposit']);
     const PENDING_EARN = new Set(['t_vote', 't_festival']);
     const earnTasks = CFG.recommendedTasks.filter(t => !V0_ONLY_EARN.has(t.id));
+    const hasActivity = ref(true);
     function earnTaskAction(t) {
       if (PENDING_EARN.has(t.id)) return { href: null, label: '敬请期待' };
       return { href: 'sources.html', label: '去完成' };
     }
 
-    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, earnTasks, earnTaskAction, header, footer };
+    watch([activeTab, activeFilter, currentPage, hasActivity], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, earnTasks, earnTaskAction, hasActivity, header, footer };
   }
 }).mount('#app');
 </script>
