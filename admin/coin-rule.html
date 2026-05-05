@@ -206,7 +206,7 @@
                 <tr>
                   <th style="width:30%">具体行为</th>
                   <th style="width:160px">积分值</th>
-                  <th style="width:130px">日最高发放</th>
+                  <th style="width:160px">日最高发放</th>
                   <th>规则说明</th>
                   <th style="width:80px;text-align:center">状态</th>
                 </tr>
@@ -215,9 +215,12 @@
                 <tr v-for="it in currentType.items" :key="currentType.key + '-' + it.id">
                   <td>{{ it.action }}</td>
                   <td><input class="ant-input" v-model="it.coin" style="max-width:140px"></td>
-                  <td>
+                  <td style="white-space:nowrap">
                     <template v-if="it.dailyMax !== undefined">
-                      <input class="ant-input" v-model.number="it.dailyMax" type="number" min="0" style="max-width:90px"> <span style="color:#909399;font-size:12px">积分/日</span>
+                      <span style="display:inline-flex;align-items:center;gap:6px">
+                        <input class="ant-input" v-model.number="it.dailyMax" type="number" min="0" style="width:72px">
+                        <span style="color:#909399;font-size:12px">积分/日</span>
+                      </span>
                     </template>
                     <span v-else style="color:#c0c4cc">—</span>
                   </td>
