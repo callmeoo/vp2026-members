@@ -449,6 +449,19 @@
                 <div class="m-lbl">30 天内将过期</div>
                 <div class="m-val warn">{{ expiringSoon.toLocaleString() }}<small>积分</small></div>
               </div>
+              <div v-if="expiringSoon > 0" class="expire-alert" style="grid-column: span 2">
+                <i data-lucide="alert-triangle" class="w-4 h-4" style="margin-top:3px;flex-shrink:0"></i>
+                <div style="flex:1">
+                  <div class="alert-title">该用户有 {{ expiringSoon }} 积分将于 30 天内过期(约 ¥ {{ (expiringSoon * CFG.coin.unitYuan).toFixed(2) }})</div>
+                  <div class="alert-desc">
+                    系统自动推送,无需人工操作 —— 过期前 <strong>T-30 / T-7 / T-1</strong> 天分别通过
+                    <span class="alert-channel"><i data-lucide="smartphone" class="w-3 h-3"></i>唯车拍 App 小程序站内消息</span>
+                    和
+                    <span class="alert-channel"><i data-lucide="message-square" class="w-3 h-3"></i>短信</span>
+                    推送给买家。
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -463,22 +476,6 @@
               </div>
             </div>
 
-          </div>
-
-          <div v-if="expiringSoon > 0" class="panel-section" style="padding-top:0">
-            <div class="expire-alert">
-              <i data-lucide="alert-triangle" class="w-4 h-4" style="margin-top:3px;flex-shrink:0"></i>
-              <div style="flex:1">
-                <div class="alert-title">该用户有 {{ expiringSoon }} 积分将于 30 天内过期(约 ¥ {{ (expiringSoon * CFG.coin.unitYuan).toFixed(2) }})</div>
-                <div class="alert-desc">
-                  系统自动推送,无需人工操作 —— 过期前 <strong>T-30 / T-7 / T-1</strong> 天分别通过
-                  <span class="alert-channel"><i data-lucide="smartphone" class="w-3 h-3"></i>唯车拍 App 小程序站内消息</span>
-                  和
-                  <span class="alert-channel"><i data-lucide="message-square" class="w-3 h-3"></i>短信</span>
-                  推送给买家。
-                </div>
-              </div>
-            </div>
           </div>
 
           <div class="panel-section">
