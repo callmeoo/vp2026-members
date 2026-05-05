@@ -445,22 +445,18 @@
               <div class="metric-card">
                 <div class="m-lbl">当前余额</div>
                 <div class="m-val accent">{{ balance.toLocaleString() }}<small>积分</small></div>
-                <div class="m-sub">约 ¥ {{ (balance * CFG.coin.unitYuan).toFixed(2) }}</div>
               </div>
               <div class="metric-card">
                 <div class="m-lbl">累计获得</div>
                 <div class="m-val">{{ earned.toLocaleString() }}<small>积分</small></div>
-                <div class="m-sub">含成交 / 出价 / 活动 / 手动新增</div>
               </div>
               <div class="metric-card">
                 <div class="m-lbl">累计消耗</div>
                 <div class="m-val">{{ consumed.toLocaleString() }}<small>积分</small></div>
-                <div class="m-sub">含兑换 / 扣减 / 过期</div>
               </div>
               <div class="metric-card">
                 <div class="m-lbl">30 天内将过期</div>
                 <div class="m-val warn">{{ expiringSoon.toLocaleString() }}<small>积分</small></div>
-                <div class="m-sub">{{ expiringSoon > 0 ? '系统已安排自动提醒' : '无即将过期积分' }}</div>
               </div>
             </div>
           </div>
