@@ -92,7 +92,7 @@
   .lv-banner .lv-right { text-align: right; font-size: 12px; line-height: 1.8; opacity: .95; }
   .lv-banner .lv-right .k { opacity: .7; margin-right: 6px; }
 
-  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .metric-card { background: #f8fafc; border: 1px solid #ebeef5; border-radius: 4px; padding: 14px 16px; }
   .metric-card .m-lbl { color: #909399; font-size: 12px; }
   .metric-card .m-val { color: #303133; font-size: 22px; font-weight: 600; margin-top: 6px; }
@@ -364,15 +364,15 @@
           <template v-else>
             <div class="panel-section">
               <div class="lv-banner" :style="{ background: 'linear-gradient(135deg, ' + lv.gradient[0] + ', ' + lv.gradient[1] + ')' }">
-                <div>
+                <div class="flex items-center gap-5">
                   <div class="lv-short">{{ lv.short }}</div>
-                  <div class="lv-name">{{ lv.name }}</div>
-                  <div class="lv-sub">{{ lv.thresholdText }}</div>
+                  <div>
+                    <div class="lv-name">{{ lv.name }}</div>
+                    <div class="lv-sub">{{ lv.thresholdText }}</div>
+                  </div>
                 </div>
                 <div class="lv-right">
-                  <div><span class="k">用户角色</span>{{ role }}</div>
-                  <div><span class="k">当前定级周期</span>2026-02 ~ 2026-04</div>
-                  <div><span class="k">下次评级</span>2026-05-01</div>
+                  <i data-lucide="crown" class="w-12 h-12" style="opacity:.35"></i>
                 </div>
               </div>
             </div>
@@ -396,29 +396,11 @@
                   <div class="m-val">≥ {{ lv.threshold.accountMin || 0 }}<small>元</small></div>
                   <div class="m-sub"><span style="color:#67c23a" class="inline-flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i>已满足</span>(总金额 {{ fmtMoney(total) }} 元)</div>
                 </div>
-                <div class="metric-card">
-                  <div class="m-lbl">等级稳定性</div>
-                  <div class="m-val">连续 2 周期</div>
-                  <div class="m-sub">维持在 {{ lv.short }} 及以上</div>
-                </div>
               </div>
               <div v-if="nextLv" style="margin-top:16px">
                 <div class="prog-meta"><span>{{ lv.short }} · {{ lv.name }}</span><span>{{ nextLv.short }} · {{ nextLv.name }}</span></div>
                 <div class="prog-bar"><div class="prog-fill" :style="{ width: progressTo + '%' }"></div></div>
                 <div class="prog-meta"><span>已成交 {{ deals }} 台</span><span>门槛 {{ nextLv.threshold.dealsMin }} 台</span></div>
-              </div>
-            </div>
-
-            <div class="panel-section">
-              <div class="section-title">
-                <i data-lucide="shield-check" class="w-4 h-4 text-blue-500"></i>
-                当前等级权益<span class="mini-label">· 共 {{ lv.benefits.length }} 项</span>
-              </div>
-              <div class="benefit-list">
-                <div v-for="b in lv.benefits" :key="b.id" class="benefit-row">
-                  <span class="benefit-k"><i :data-lucide="b.icon" class="w-3.5 h-3.5 inline mr-1 text-violet-500"></i>{{ b.label }}</span>
-                  <span class="benefit-v">{{ b.desc }}</span>
-                </div>
               </div>
             </div>
 
@@ -563,7 +545,7 @@
     <div class="modal-body">
       <div class="rule-intro">
         <div><b>定级周期</b>:每月 1 日按"近 3 个月成交台数 + 账户金额"重新评级,生效后维持本月。</div>
-        <div><b>积分规则</b>:1 积分 = ¥ {{ CFG.coin.unitYuan }} · 自获得当月起 {{ CFG.coin.validityMonths }} 个自然月内有效。</div>
+        <div><b>积分规则</b>:自获得当月起 {{ CFG.coin.validityMonths }} 个自然月内有效。</div>
         <div><b>当前用户等级</b>:<span :style="{ color: lv.color, fontWeight: 600 }">{{ lv.short }} {{ lv.name }}</span> · 浅蓝色列表示当前等级所在列</div>
       </div>
       <div class="rule-table-wrap">
@@ -581,10 +563,6 @@
             <tr>
               <td class="dim">定级门槛<small>账户金额或近 3 月成交</small></td>
               <td v-for="l in CFG.levels" :key="l.code" :class="['text-l', l.code === lv.code ? 'col-cur' : '']">{{ l.thresholdText }}</td>
-            </tr>
-            <tr>
-              <td class="dim">商户特征</td>
-              <td v-for="l in CFG.levels" :key="l.code" :class="['text-l', l.code === lv.code ? 'col-cur' : '']">{{ l.feature }}</td>
             </tr>
             <tr v-for="d in benefitDims" :key="d.key">
               <td class="dim">{{ d.name }}</td>
