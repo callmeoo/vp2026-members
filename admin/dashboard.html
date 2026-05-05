@@ -173,28 +173,59 @@
 
         <!-- 积分获取占比 -->
         <div class="ant-card p-5">
-          <div class="text-base font-semibold text-slate-800 mb-4">积分获取(本月)</div>
-          <div class="space-y-3">
+          <div class="flex items-center justify-between mb-1">
+            <div class="text-base font-semibold text-slate-800">积分获取(本月)</div>
+          </div>
+          <div class="text-xs text-slate-400 mb-4">统计了本月积分可以获取的用户行为</div>
+          <div class="space-y-2.5">
             <div>
               <div class="flex items-center justify-between text-xs mb-1">
-                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-500"></i>成交奖励</span>
-                <span class="font-medium">680,450 · 53%</span>
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-500"></i>完成车辆交易</span>
+                <span class="font-medium">580,000 · 45%</span>
               </div>
-              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:53%"></div></div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:45%"></div></div>
             </div>
             <div>
               <div class="flex items-center justify-between text-xs mb-1">
-                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="megaphone" class="w-3.5 h-3.5 text-violet-500"></i>转发朋友圈</span>
-                <span class="font-medium">385,200 · 30%</span>
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="megaphone" class="w-3.5 h-3.5 text-violet-500"></i>转发车源至朋友圈</span>
+                <span class="font-medium">320,000 · 25%</span>
               </div>
-              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-violet-500" style="width:30%"></div></div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-violet-500" style="width:25%"></div></div>
             </div>
             <div>
               <div class="flex items-center justify-between text-xs mb-1">
-                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="gavel" class="w-3.5 h-3.5 text-sky-500"></i>出价</span>
-                <span class="font-medium">214,350 · 17%</span>
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="gavel" class="w-3.5 h-3.5 text-sky-500"></i>出价竞拍</span>
+                <span class="font-medium">180,000 · 14%</span>
               </div>
-              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-sky-500" style="width:17%"></div></div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-sky-500" style="width:14%"></div></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-cyan-500"></i>平台投票 / 问卷 / 调研</span>
+                <span class="font-medium">80,000 · 6%</span>
+              </div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-cyan-500" style="width:6%"></div></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="gift" class="w-3.5 h-3.5 text-rose-500"></i>限时活动(节日任务等)</span>
+                <span class="font-medium">40,000 · 4%</span>
+              </div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-rose-500" style="width:4%"></div></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="credit-card" class="w-3.5 h-3.5 text-amber-500"></i>首次充值保证金</span>
+                <span class="font-medium">40,000 · 3%</span>
+              </div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:3%"></div></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-slate-600 inline-flex items-center gap-1"><i data-lucide="badge-check" class="w-3.5 h-3.5 text-fuchsia-500"></i>首次实名认证</span>
+                <span class="font-medium">40,000 · 3%</span>
+              </div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-fuchsia-500" style="width:3%"></div></div>
             </div>
           </div>
           <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
@@ -217,7 +248,6 @@
                 <th class="text-left px-3 py-2.5 font-medium">类别</th>
                 <th class="text-right px-3 py-2.5 font-medium">兑换次数</th>
                 <th class="text-right px-3 py-2.5 font-medium">消耗积分</th>
-                <th class="text-center px-3 py-2.5 font-medium">库存</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -227,7 +257,6 @@
                 <td class="px-3 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
                 <td class="px-3 py-3 text-right font-medium">823</td>
                 <td class="px-3 py-3 text-right text-slate-600">164,600</td>
-                <td class="px-3 py-3 text-center"><span class="ant-tag ant-tag-green">充足</span></td>
               </tr>
               <tr>
                 <td class="px-3 py-3"><span class="w-6 h-6 bg-slate-400 text-white rounded-full inline-flex items-center justify-center text-xs font-bold">2</span></td>
@@ -235,7 +264,6 @@
                 <td class="px-3 py-3"><span class="ant-tag ant-tag-purple">交易折扣</span></td>
                 <td class="px-3 py-3 text-right font-medium">612</td>
                 <td class="px-3 py-3 text-right text-slate-600">122,400</td>
-                <td class="px-3 py-3 text-center"><span class="ant-tag ant-tag-orange">偏低</span></td>
               </tr>
               <tr>
                 <td class="px-3 py-3"><span class="w-6 h-6 bg-orange-400 text-white rounded-full inline-flex items-center justify-center text-xs font-bold">3</span></td>
@@ -243,7 +271,6 @@
                 <td class="px-3 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
                 <td class="px-3 py-3 text-right font-medium">498</td>
                 <td class="px-3 py-3 text-right text-slate-600">99,600</td>
-                <td class="px-3 py-3 text-center"><span class="ant-tag ant-tag-green">充足</span></td>
               </tr>
               <tr>
                 <td class="px-3 py-3 text-slate-500">4</td>
@@ -251,7 +278,6 @@
                 <td class="px-3 py-3"><span class="ant-tag ant-tag-blue">数据查询</span></td>
                 <td class="px-3 py-3 text-right font-medium">312</td>
                 <td class="px-3 py-3 text-right text-slate-600">62,400</td>
-                <td class="px-3 py-3 text-center"><span class="ant-tag ant-tag-green">充足</span></td>
               </tr>
               <tr>
                 <td class="px-3 py-3 text-slate-500">5</td>
@@ -259,7 +285,6 @@
                 <td class="px-3 py-3"><span class="ant-tag ant-tag-red">额度免审</span></td>
                 <td class="px-3 py-3 text-right font-medium">178</td>
                 <td class="px-3 py-3 text-right text-slate-600">89,000</td>
-                <td class="px-3 py-3 text-center"><span class="ant-tag ant-tag-orange">偏低</span></td>
               </tr>
             </tbody>
           </table>
