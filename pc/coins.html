@@ -250,6 +250,7 @@
               <!-- 其他任务:常规渲染 -->
               <div v-else class="earn-task-meta">
                 <span>积分 <span class="earn-task-pts" :class="t.highlight ? 'text-rose-500' : 'text-violet-600'">+{{ t.points }}{{ t.unit }}</span></span>
+                <span v-if="t.dailyMax">日上限 <span class="earn-task-pts text-violet-600">{{ t.dailyMax }} 积分</span></span>
                 <span v-if="t.desc">{{ t.desc }}</span>
               </div>
             </div>

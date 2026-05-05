@@ -147,7 +147,7 @@
       { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
       { id: 't_deposit',  action: '首次充值保证金',                 points: 5,  unit: '/次', desc: '' },
       { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '' },
-      { id: 't_share',    action: '转发车源并成功分享朋友圈',       points: 1,  unit: '',    desc: '' },
+      { id: 't_share',    action: '转发车源并成功分享朋友圈',       points: 1,  unit: '',    desc: '', dailyMax: 20 },
       { id: 't_festival', action: '活动专属任务',                   points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true }
     ],
 
