@@ -204,8 +204,9 @@
             <table class="rule-table">
               <thead>
                 <tr>
-                  <th style="width:36%">具体行为</th>
+                  <th style="width:30%">具体行为</th>
                   <th style="width:160px">积分值</th>
+                  <th style="width:130px">日最高发放</th>
                   <th>规则说明</th>
                   <th style="width:80px;text-align:center">状态</th>
                 </tr>
@@ -214,13 +215,19 @@
                 <tr v-for="it in currentType.items" :key="currentType.key + '-' + it.id">
                   <td>{{ it.action }}</td>
                   <td><input class="ant-input" v-model="it.coin" style="max-width:140px"></td>
+                  <td>
+                    <template v-if="it.dailyMax !== undefined">
+                      <input class="ant-input" v-model.number="it.dailyMax" type="number" min="0" style="max-width:90px"> <span style="color:#909399;font-size:12px">积分/日</span>
+                    </template>
+                    <span v-else style="color:#c0c4cc">—</span>
+                  </td>
                   <td style="color:#606266">{{ it.desc || '—' }}</td>
                   <td style="text-align:center">
                     <label class="switch"><input type="checkbox" v-model="it.enabled"><span class="slider"></span></label>
                   </td>
                 </tr>
                 <tr v-if="currentType.items.length === 0">
-                  <td colspan="4" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
+                  <td colspan="5" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
                 </tr>
               </tbody>
             </table>
@@ -457,18 +464,16 @@ createApp({
     const activeTab = ref('earn');
     const activeType = ref('deal');
 
-    // 4 个 type 定义,顺序固定
+    // 3 个 type 定义,顺序固定
     const typeDefs = [
       { key:'deal',     label:'交易类',    icon:'wallet' },
       { key:'behavior', label:'行为活动类', icon:'message-circle' },
-      { key:'limited',  label:'限时活动类', icon:'calendar-heart' },
-      { key:'value',    label:'增值服务类', icon:'wrench' }
+      { key:'limited',  label:'限时活动类', icon:'calendar-heart' }
     ];
 
     // 按 item.id 直接归类(稳定,不依赖 category 字符串)
     //  交易类:完成车辆交易 + 有效出价参与竞拍
-    //  限时活动类:节日 + 周末双倍出价
-    //  增值服务类:唯车转 + 物流代驾复检 + 代办服务
+    //  限时活动类:统一覆写为「出价倍率 / 成交倍率」两项
     //  行为活动类:其余(互动 / 社交裂变 等)
     const idToType = {
       deal: 'deal',
@@ -476,33 +481,29 @@ createApp({
       festival: 'limited',
       weekend_bid: 'limited'
     };
-    const bucket = { deal: [], behavior: [], limited: [], value: [] };
+    const bucket = { deal: [], behavior: [], limited: [] };
     CFG.coinEarning.forEach(g => {
       g.items.forEach(it => {
         const tk = idToType[it.id] || 'behavior';
+        if (!bucket[tk]) return; // 增值服务类已移除
         bucket[tk].push({
           id: it.id, action: it.action, coin: it.coin, desc: it.desc || '', enabled: true
         });
       });
     });
-    // 限时活动类:统一口径为"基于出价行为的积分 × 2"
-    (bucket['limited'] || []).forEach(it => {
-      if (it.id === 'festival') {
-        it.action = '节日专属活动(如中秋 / 春节)';
-        it.coin = '出价积分 × 2';
-        it.desc = '以具体活动通知为准';
-      }
-      if (it.id === 'weekend_bid') {
-        it.action = '周六日出价双倍积分';
-        it.coin = '出价积分 × 2';
-        it.desc = '以具体活动通知为准';
-      }
+    // 行为活动类「转发车源并成功分享朋友圈」加日最高发放积分上限
+    (bucket['behavior'] || []).forEach(it => {
+      if (it.id === 'share') it.dailyMax = 10;
     });
+    // 限时活动类:统一为出价倍率 / 成交倍率两项,X / Y 可配置
+    bucket['limited'] = [
+      { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数,由具体活动方案决定', enabled:true },
+      { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数,由具体活动方案决定', enabled:true }
+    ];
     const defaultUpdatedAt = {
       deal:     '2026-04-10 14:22',
       behavior: '2026-03-28 09:05',
-      limited:  '2026-04-18 16:40',
-      value:    '2026-04-02 11:12'
+      limited:  '2026-04-18 16:40'
     };
     const earning = reactive(typeDefs.map(t => ({
       key: t.key, label: t.label, icon: t.icon,
@@ -602,7 +603,7 @@ createApp({
       { at:'2026-04-22 16:40', user:'运营-小王', type:'交易类',    action:'将「完成车辆交易」从 30 积分调整为 50 积分' },
       { at:'2026-04-18 16:05', user:'运营-小王', type:'限时活动类', action:'启用「周六日出价双倍积分」(出价积分 × 2)' },
       { at:'2026-04-10 14:22', user:'产品-小李', type:'交易类',    action:'新增「有效出价参与竞拍」10 积分规则' },
-      { at:'2026-04-02 11:12', user:'运营-小王', type:'增值服务类', action:'将「物流 / 代驾 / 复检」由 3 积分/次 调整为 5 积分/次' },
+      { at:'2026-04-02 11:12', user:'运营-小王', type:'行为活动类', action:'设置「转发车源并成功分享朋友圈」日最高发放 10 积分' },
       { at:'2026-03-28 09:05', user:'运营-小王', type:'行为活动类', action:'关闭「投票 / 问卷 / 调研」临时期间发放' },
       { at:'2026-03-20 15:42', user:'风控-Alex', type:'反作弊',    action:'启用「IP 频次限制」策略,阈值调整为 10 次/分钟' }
     ];
