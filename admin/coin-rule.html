@@ -516,7 +516,6 @@ createApp({
     const currentType = computed(() => earning.find(g => g.key === activeType.value) || earning[0]);
 
     const risk = reactive([
-      { id:'ip', title:'IP 频次限制', desc:'同一 IP 超过阈值将被暂停计分', type:'switch-input', enabled:true, limit:10, unit:'次 / 分钟' },
       { id:'blacklist', title:'异常账号黑名单', desc:'黑名单账号停止发放积分,支持手动维护', type:'blacklist', enabled:true, accounts:[
           { username:'zhang_yuan',  name:'郑园',   phone:'189****2868', reason:'兑换后短时间内频繁申请退回' },
           { username:'user_abc88',  name:'李明',   phone:'130****8721', reason:'IP 异常,疑似批量薅羊毛' },
@@ -608,7 +607,7 @@ createApp({
       { at:'2026-04-10 14:22', user:'产品-小李', type:'交易类',    action:'新增「有效出价参与竞拍」10 积分规则' },
       { at:'2026-04-02 11:12', user:'运营-小王', type:'行为活动类', action:'设置「转发车源并成功分享朋友圈」日最高发放 10 积分' },
       { at:'2026-03-28 09:05', user:'运营-小王', type:'行为活动类', action:'关闭「投票 / 问卷 / 调研」临时期间发放' },
-      { at:'2026-03-20 15:42', user:'风控-Alex', type:'反作弊',    action:'启用「IP 频次限制」策略,阈值调整为 10 次/分钟' }
+      { at:'2026-03-20 15:42', user:'风控-Alex', type:'反作弊',    action:'更新「异常账号黑名单」,新增 2 个高风险账号' }
     ];
 
     const opsOpen = ref(false);
