@@ -522,6 +522,27 @@ createApp({
       behavior: '2026-03-28 09:05',
       limited:  '2026-04-18 16:40'
     };
+    let limitedSeq = 100;
+    function addLimitedActivity() {
+      const g = earning.find(g => g.key === 'limited');
+      if (!g) return;
+      g.items.push({
+        id: 'lim_' + (++limitedSeq),
+        action: '活动出价多倍积分',
+        coin: '出价积分 × 2',
+        startDate: '',
+        endDate: '',
+        desc: '',
+        enabled: true
+      });
+    }
+    function removeLimitedItem(id) {
+      const g = earning.find(g => g.key === 'limited');
+      if (!g) return;
+      const idx = g.items.findIndex(i => i.id === id);
+      if (idx >= 0) g.items.splice(idx, 1);
+    }
+
     const earning = reactive(typeDefs.map(t => ({
       key: t.key, label: t.label, icon: t.icon,
       items: bucket[t.key] || [],
@@ -631,6 +652,7 @@ createApp({
     watch([activeTab, activeType, blacklistModalOpen, confirmRemoveOpen], async () => { await nextTick(); lucide.createIcons(); });
 
     return { tabs, activeTab, activeType, earning, currentType, risk, logs,
+             addLimitedActivity, removeLimitedItem,
              blacklistModalOpen, blacklistForm, userSuggestions, showSuggest, pickUser, onKeywordInput,
              openAddBlacklist, closeBlacklistModal, submitBlacklist,
              confirmRemoveOpen, pendingRemove, askRemoveBlacklist, cancelRemove, confirmRemove,
