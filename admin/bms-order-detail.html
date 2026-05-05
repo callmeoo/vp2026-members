@@ -104,6 +104,10 @@
   .benefit-bar .b-title { font-size: 13px; color: #d46b08; font-weight: 500; }
   .benefit-bar.disabled .b-title { color: #909399; }
   .benefit-bar .b-remain { background: #fff; color: #e6a23c; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid #ffe7ba; margin-left: 4px; }
+  .benefit-bar .b-validity { font-size: 11.5px; color: #ad6800; margin-top: 4px; line-height: 1.5; }
+  .benefit-bar .b-validity strong { color: #d46b08; font-weight: 600; }
+  .benefit-bar.disabled .b-validity { color: #909399; }
+  .benefit-bar.disabled .b-validity strong { color: #909399; }
 
   .view-grid { display: grid; grid-template-columns: 1fr 300px; gap: 0; min-height: 460px; }
   .view-left { padding: 18px 22px; border-right: 1px solid #ebeef5; overflow-y: auto; }
@@ -472,6 +476,7 @@
         <i data-lucide="shield-check" class="w-5 h-5 b-icon"></i>
         <div class="flex-1">
           <div class="b-title">买家「无理由退车权益」<span class="b-remain">剩余 {{ noReasonRemain }} 次</span></div>
+          <div class="b-validity">有效期: <strong>{{ noReasonValidity.start }}</strong> 至 <strong>{{ noReasonValidity.end }}</strong> · 起算自竞价结束后 24h</div>
         </div>
         <label class="fm-checkbox"><input type="checkbox" v-model="applyForm.useNoReason" @change="onToggleNoReason" :disabled="noReasonRemain <= 0" /> 使用</label>
       </div>
@@ -608,6 +613,14 @@ createApp({
 
     // 售后
     const noReasonRemain = ref(1);
+    // 无理由退车权益有效期:竞价结束后 24h 起算,7 天内可申请
+    const noReasonValidity = computed(() => {
+      const dt = new Date(deal.replace(' ', 'T') + ':00');
+      const start = new Date(dt.getTime() + 24 * 3600 * 1000);
+      const end = new Date(start.getTime() + 7 * 24 * 3600 * 1000);
+      const f = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      return { start: f(start), end: f(end) };
+    });
     const showApplyAfs = ref(false);
     const viewAfs = ref(null);
     const baseInfo = computed(() => `车牌:${plate};成交日期:${deal.split(' ')[0]};门店:${store};业务员:${seller};买受人:${buyer}。`);
@@ -705,7 +718,7 @@ createApp({
       plate, model, deal, total, price, fee, seller, buyer, buyerCoins, lv, coinYuan,
       statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits, mockUsageMode,
       showMore, showCompTip, activeTab, tabs,
-      noReasonRemain, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
+      noReasonRemain, noReasonValidity, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
       openApplyAfs, onToggleNoReason, submitAfs, openViewAfs, openApprovalList, stepCls, fmt
     };
   }
