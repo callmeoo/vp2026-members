@@ -155,14 +155,6 @@
             <input class="ant-input" v-model="filters.keyword" placeholder="商品名称,支持模糊 / 精准搜索">
           </div>
           <div>
-            <label class="text-xs text-slate-500 block mb-1">类别</label>
-            <select class="ant-input" v-model="filters.category">
-              <option value="">全部</option>
-              <option>数据查询</option>
-              <option>交易折扣</option>
-            </select>
-          </div>
-          <div>
             <label class="text-xs text-slate-500 block mb-1">状态</label>
             <select class="ant-input" v-model="filters.status">
               <option value="">全部</option>
@@ -183,7 +175,6 @@
             <tr>
               <th class="text-left px-4 py-3 font-medium"><input type="checkbox"></th>
               <th class="text-left px-4 py-3 font-medium">商品名称</th>
-              <th class="text-left px-4 py-3 font-medium">类别</th>
               <th class="text-right px-4 py-3 font-medium">积分价</th>
               <th class="text-center px-4 py-3 font-medium">有效期(天)</th>
               <th class="text-right px-4 py-3 font-medium">库存</th>
@@ -199,7 +190,6 @@
                 <div class="font-medium text-slate-800">{{ p.name }}</div>
                 <div class="text-xs text-slate-400">{{ p.code }}</div>
               </td>
-              <td class="px-4 py-3"><span class="ant-tag" :class="categoryTagCls(p.category)">{{ p.category }}</span></td>
               <td class="px-4 py-3 text-right font-semibold">{{ p.coin }}</td>
               <td class="px-4 py-3 text-center">{{ p.validityDays }}</td>
               <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stock < 100 }">{{ p.stock.toLocaleString() }}</td>
@@ -211,7 +201,7 @@
               </td>
             </tr>
             <tr v-if="filteredProducts.length === 0">
-              <td colspan="9" class="px-4 py-12 text-center text-slate-400">暂无匹配商品</td>
+              <td colspan="8" class="px-4 py-12 text-center text-slate-400">暂无匹配商品</td>
             </tr>
           </tbody>
         </table>
