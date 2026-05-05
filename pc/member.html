@@ -207,7 +207,7 @@
               <span>积分明细</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 coin-nav-arrow"></i>
             </a>
-            <a href="#tasks" class="coin-nav-item">
+            <a href="member-intro.html" class="coin-nav-item">
               <div class="coin-nav-icon bg-emerald-50"><i data-lucide="star" class="w-4 h-4 text-emerald-500"></i></div>
               <span>赚积分</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 coin-nav-arrow"></i>
@@ -403,38 +403,6 @@
           </div>
         </div>
 
-        <!-- 推荐任务 -->
-        <div class="content-card" id="tasks">
-          <div class="c-head">
-            <h3>推荐任务</h3>
-            <span class="text-xs text-slate-400">完成任务赚积分</span>
-          </div>
-          <div class="c-body" style="padding:0">
-            <div v-for="t in visibleTasks" :key="t.id"
-              class="flex items-center gap-4 px-6 py-4 border-b border-slate-50 last:border-b-0 hover:bg-slate-50 transition-colors">
-              <div class="flex-1 min-w-0">
-                <div class="font-semibold text-slate-800 text-sm">{{ t.action }}</div>
-                <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
-                  <span>积分
-                    <span :class="['font-bold', t.highlight ? 'text-rose-500' : 'text-violet-600']">
-                      +{{ t.points }}{{ t.unit }}
-                    </span>
-                  </span>
-                  <span v-if="t.desc">{{ t.desc }}</span>
-                </div>
-              </div>
-              <a v-if="taskAction(t).href" :href="taskAction(t).href" target="_blank" rel="noopener"
-                class="flex-none px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-full whitespace-nowrap">
-                {{ taskAction(t).label }}
-              </a>
-              <button v-else disabled
-                class="flex-none px-4 py-1.5 bg-slate-100 text-slate-400 text-xs font-bold rounded-full whitespace-nowrap cursor-not-allowed">
-                {{ taskAction(t).label }}
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div><!-- /main-content -->
     </div><!-- /profile-layout -->
   </div><!-- /pc-main -->
@@ -514,18 +482,6 @@ createApp({
       currentDeals.value = DEALS_PRESET[short] ?? 0;
     }
 
-    // 推荐任务
-    const V0_ONLY_TASKS = new Set(['t_verify', 't_deposit']);
-    const visibleTasks = computed(() =>
-      CFG.recommendedTasks.filter(t => V0_ONLY_TASKS.has(t.id) ? currentLv.value.short === 'V0' : true)
-    );
-    const ALLCARS_TASKS = new Set(['t_deal', 't_bid', 't_share', 't_festival']);
-    function taskAction(t) {
-      if (ALLCARS_TASKS.has(t.id)) return { href: 'sources.html', label: '去完成' };
-      if (t.id === 't_vote')       return { href: null, label: '敬请期待' };
-      return { href: null, label: '去完成' };
-    }
-
     const watchedCars = window.PC_COMMON.cars.filter((_, i) => [2, 5, 7].includes(i));
 
     // 个人中心专属 header：保留顶栏 + logo，nav 换成个人中心导航
@@ -557,7 +513,6 @@ createApp({
       CFG, currentLv, currentDeals,
       nextLv, needDeals, progress, progressText,
       allBenefits, simulateLevel, watchedCars,
-      visibleTasks, taskAction,
       header, footer
     };
   }
