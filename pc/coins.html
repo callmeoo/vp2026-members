@@ -244,7 +244,7 @@
                   <span>成交 <span class="earn-task-pts text-rose-500">3 倍</span>积分</span>
                 </div>
                 <div v-else class="earn-task-meta">
-                  <span>暂无活动,敬请期待</span>
+                  <span>以具体活动为准,敬请期待</span>
                 </div>
               </template>
               <!-- 其他任务:常规渲染 -->
@@ -402,10 +402,15 @@ createApp({
     const footer = window.PC_COMMON.renderFooter();
 
     const V0_ONLY_EARN = new Set(['t_verify', 't_deposit']);
-    const PENDING_EARN = new Set(['t_vote', 't_festival']);
+    const PENDING_EARN = new Set(['t_vote']);
     const earnTasks = CFG.recommendedTasks.filter(t => !V0_ONLY_EARN.has(t.id));
     const hasActivity = ref(true);
     function earnTaskAction(t) {
+      if (t.id === 't_festival') {
+        return hasActivity.value
+          ? { href: 'sources.html', label: '去完成' }
+          : { href: null, label: '敬请期待' };
+      }
       if (PENDING_EARN.has(t.id)) return { href: null, label: '敬请期待' };
       return { href: 'sources.html', label: '去完成' };
     }
