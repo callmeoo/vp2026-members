@@ -452,7 +452,7 @@
               <div v-if="expiringSoon > 0" class="expire-alert" style="grid-column: span 2">
                 <i data-lucide="alert-triangle" class="w-4 h-4" style="margin-top:3px;flex-shrink:0"></i>
                 <div style="flex:1">
-                  <div class="alert-title">该用户有 {{ expiringSoon }} 积分将于 30 天内过期(约 ¥ {{ (expiringSoon * CFG.coin.unitYuan).toFixed(2) }})</div>
+                  <div class="alert-title">该用户有 {{ expiringSoon }} 积分将于 30 天内过期</div>
                   <div class="alert-desc">
                     系统自动推送,无需人工操作 —— 过期前 <strong>T-30 / T-7 / T-1</strong> 天分别通过
                     <span class="alert-channel"><i data-lucide="smartphone" class="w-3 h-3"></i>唯车拍 App 小程序站内消息</span>
