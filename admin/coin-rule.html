@@ -204,9 +204,11 @@
             <table class="rule-table">
               <thead>
                 <tr>
-                  <th style="width:30%">具体行为</th>
-                  <th style="width:160px">积分值</th>
-                  <th style="width:160px">日最高发放</th>
+                  <th style="width:24%">具体行为</th>
+                  <th style="width:150px">积分值</th>
+                  <th v-if="currentType.key !== 'limited'" style="width:160px">日最高发放</th>
+                  <th v-if="currentType.key === 'limited'" style="width:150px">活动开始时间</th>
+                  <th v-if="currentType.key === 'limited'" style="width:150px">活动结束时间</th>
                   <th>规则说明</th>
                   <th style="width:80px;text-align:center">状态</th>
                 </tr>
@@ -215,7 +217,7 @@
                 <tr v-for="it in currentType.items" :key="currentType.key + '-' + it.id">
                   <td>{{ it.action }}</td>
                   <td><input class="ant-input" v-model="it.coin" style="max-width:140px"></td>
-                  <td style="white-space:nowrap">
+                  <td v-if="currentType.key !== 'limited'" style="white-space:nowrap">
                     <template v-if="it.dailyMax !== undefined">
                       <span style="display:inline-flex;align-items:center;gap:6px">
                         <input class="ant-input" v-model.number="it.dailyMax" type="number" min="0" style="width:72px">
@@ -224,13 +226,19 @@
                     </template>
                     <span v-else style="color:#c0c4cc">—</span>
                   </td>
+                  <td v-if="currentType.key === 'limited'">
+                    <input class="ant-input" type="date" v-model="it.startDate" style="max-width:150px">
+                  </td>
+                  <td v-if="currentType.key === 'limited'">
+                    <input class="ant-input" type="date" v-model="it.endDate" style="max-width:150px">
+                  </td>
                   <td style="color:#606266">{{ it.desc || '—' }}</td>
                   <td style="text-align:center">
                     <label class="switch"><input type="checkbox" v-model="it.enabled"><span class="slider"></span></label>
                   </td>
                 </tr>
                 <tr v-if="currentType.items.length === 0">
-                  <td colspan="5" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
+                  <td :colspan="currentType.key === 'limited' ? 6 : 5" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
                 </tr>
               </tbody>
             </table>
@@ -500,8 +508,8 @@ createApp({
     });
     // 限时活动类:统一为出价倍率 / 成交倍率两项,X / Y 可配置
     bucket['limited'] = [
-      { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数,由具体活动方案决定', enabled:true },
-      { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数,由具体活动方案决定', enabled:true }
+      { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' },
+      { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' }
     ];
     const defaultUpdatedAt = {
       deal:     '2026-04-10 14:22',
