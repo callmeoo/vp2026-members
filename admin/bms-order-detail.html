@@ -524,11 +524,16 @@
       <div class="view-grid">
         <div class="view-left">
           <div class="flex justify-end mb-2"><span class="view-status"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i><span>{{ viewAfs.status }}</span></span></div>
-          <div class="view-row"><div class="vl">类型:</div><div class="vv">{{ viewAfs.type }}</div></div>
+          <div class="view-row">
+            <div class="vl">类型:</div>
+            <div class="vv flex items-center gap-2 flex-wrap">
+              <span>{{ viewAfs.type }}</span>
+              <span v-if="viewAfs.useNoReason" class="as-benefit"><i data-lucide="shield-check" class="w-3 h-3"></i>已使用无理由退车权益</span>
+            </div>
+          </div>
           <div class="view-row"><div class="vl">原因:</div><div class="vv">{{ viewAfs.reason }}</div></div>
           <div class="view-row"><div class="vl">结果:</div><div class="vv">{{ viewAfs.result }}</div></div>
           <div class="view-row"><div class="vl">责任方:</div><div class="vv">{{ viewAfs.duty }}</div></div>
-          <div v-if="viewAfs.useNoReason" class="view-row"><div class="vl">权益:</div><div class="vv"><span class="as-benefit"><i data-lucide="shield-check" class="w-3 h-3"></i>已使用「无理由退车权益」</span></div></div>
           <div class="view-row"><div class="vl">附件:</div><div class="vv"><div class="afs-photos"><div class="afs-photo">车辆照片</div><div class="afs-photo">车辆照片</div><div class="afs-photo">车辆照片</div></div></div></div>
           <div class="view-row"><div class="vl">基础信息:</div><div class="vv">{{ baseInfo }}</div></div>
           <div class="view-row"><div class="vl">情况说明:</div><div class="vv">{{ viewAfs.desc }}</div></div>
@@ -647,7 +652,7 @@ createApp({
       { id:'demo', tagDate:'04-15', tagText:'04-15 售后', type:'售后类', reason:'车况申诉类-泡水展示争议', result:'直接退车', duty:'买家',
         desc:'买受人提出车子有水泡,不是天窗漏水导致的,发动机拆修过,网页未告知,提出退车的诉求。经核查,该车发动机没大修,只是气门室盖螺丝动了,属于非承诺相;车内没看到泡水迹,情况不实。已驳回买家诉求。经协商,最终买家接受扣罚退车。',
         plan:'现申请扣除买家2000元办理退车,1200元归门店,800元归唯普,请领导审批!。',
-        useNoReason:false, status:'审核中', initiator:'唯普-小珂(ykk)', startAt:'2026-04-21 13:02:11',
+        useNoReason:true, status:'审核中', initiator:'唯普-小珂(ykk)', startAt:'2026-04-21 13:02:11',
         steps:[
           { type:'pass', title:'通过', at:'2026-04-21 14:16:29', meta:'售后专员:吕兆文(hpozw)' },
           { type:'pass', title:'通过', at:'2026-04-21 15:10:41', meta:'区域经理:林家杰(xinljj)' },
