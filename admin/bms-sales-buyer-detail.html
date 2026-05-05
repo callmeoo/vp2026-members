@@ -284,7 +284,7 @@
             <div class="mv-section">
               <h4><i data-lucide="coins" class="w-4 h-4"></i>积分概览</h4>
               <div class="mv-coin-row">
-                <div class="mv-coin-cell"><div class="num">{{ coinBalance }}</div><div class="lb">当前余额 ≈ ¥{{ CFG.yuanFromCoin(coinBalance) }}</div></div>
+                <div class="mv-coin-cell"><div class="num">{{ coinBalance }}</div><div class="lb">当前余额</div></div>
                 <div class="mv-coin-cell"><div class="num" style="color:#67c23a">{{ coinEarnedYear }}</div><div class="lb">今年累计获得</div></div>
                 <div class="mv-coin-cell"><div class="num" style="color:#909399">{{ coinUsed }}</div><div class="lb">已使用</div></div>
                 <div class="mv-coin-cell"><div class="num" style="color:#f56c6c">{{ coinExpiringSoon }}</div><div class="lb">30 天内到期</div></div>
@@ -292,11 +292,8 @@
             </div>
             <div class="mv-section">
               <h4><i data-lucide="info" class="w-4 h-4"></i>积分规则</h4>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:12px;color:#606266">
-                <div><span style="color:#909399">积分单价:</span>1 积分 = ¥ {{ CFG.coin.unitYuan }}</div>
-                <div><span style="color:#909399">有效期:</span>{{ CFG.coin.validityDesc }}</div>
-                <div><span style="color:#909399">等级折扣:</span>{{ discountText }}</div>
-                <div><span style="color:#909399">风控状态:</span><span style="color:#67c23a" class="inline-flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i>正常</span></div>
+              <div style="font-size:12px;color:#606266">
+                <span style="color:#909399">有效期:</span>{{ CFG.coin.validityDesc }}
               </div>
             </div>
             <div class="mv-section">
@@ -466,15 +463,15 @@ createApp({
     const discountText = levelCode === 'V2' ? '95 折(银卡专享)' : (levelCode === 'V3' ? '8 折(金卡专享)' : '1:1 等值兑换');
 
     const coinLedger = [
-      { at:"2026-04-18 14:23", type:"add",    amt:+50,  src:"完成车辆交易",   ref:"奥迪 S4(进口)",    note:"成交奖励" },
-      { at:"2026-04-02 10:21", type:"deduct", amt:-100, src:"兑换权益卡",     ref:"平台行驶证查询卡", note:"" },
-      { at:"2026-03-20 15:12", type:"add",    amt:+50,  src:"完成车辆交易",   ref:"福特 蒙迪欧",      note:"成交奖励" },
-      { at:"2026-03-19 16:45", type:"deduct", amt:-300, src:"兑换权益卡",     ref:"出险维保数据",     note:"" },
-      { at:"2026-03-15 09:12", type:"add",    amt:+10,  src:"有效出价参与竞拍", ref:"福特 蒙迪欧",    note:"出价 +10" },
-      { at:"2026-02-27 15:14", type:"add",    amt:+50,  src:"完成车辆交易",   ref:"福特 锐际",        note:"成交奖励" },
-      { at:"2026-02-08 11:12", type:"deduct", amt:-200, src:"兑换权益卡",     ref:"碰撞报告查询卡",   note:"" },
-      { at:"2026-01-22 09:03", type:"deduct", amt:-500, src:"兑换权益卡",     ref:"过户费减免 100 元", note:"" },
-      { at:"2026-01-10 10:40", type:"expire", amt:-40,  src:"积分过期",       ref:"2025-01 批次",     note:"系统自动清理" }
+      { at:"2026-04-18 14:23", type:"add",    amt:+50,  src:"完成车辆交易",     ref:"车牌:粤AT1014",         note:"成交奖励" },
+      { at:"2026-04-02 10:21", type:"deduct", amt:-100, src:"兑换商品",         ref:"数据查询优惠券 10 元",  note:"" },
+      { at:"2026-03-20 15:12", type:"add",    amt:+50,  src:"完成车辆交易",     ref:"车牌:粤B12345",         note:"成交奖励" },
+      { at:"2026-03-19 16:45", type:"deduct", amt:-50,  src:"兑换商品",         ref:"数据查询优惠券 5 元",   note:"" },
+      { at:"2026-03-15 09:12", type:"add",    amt:+10,  src:"有效出价参与竞拍", ref:"车牌:粤B12345",         note:"出价 +10" },
+      { at:"2026-02-27 15:14", type:"add",    amt:+50,  src:"完成车辆交易",     ref:"车牌:湘A77K9Z",         note:"成交奖励" },
+      { at:"2026-02-08 11:12", type:"deduct", amt:-500, src:"兑换商品",         ref:"综合服务费 50 元券",    note:"" },
+      { at:"2026-01-22 09:03", type:"deduct", amt:-500, src:"兑换商品",         ref:"过户费减免 100 元券",   note:"" },
+      { at:"2026-01-10 10:40", type:"expire", amt:-40,  src:"积分过期",         ref:"2025-01 批次",          note:"系统自动清理" }
     ];
     const coinTypeMap = {
       add:    { label:'新增', cls:'green',  style:'color:#67c23a', sign:'+' },
@@ -487,10 +484,10 @@ createApp({
     })();
 
     const rewardRecords = [
-      { name:"平台行驶证查询卡", coin:100, time:"2026-04-02 10:21", status:"已使用", statusCls:"gray" },
-      { name:"出险维保数据", coin:300, time:"2026-03-19 16:45", status:"使用中", statusCls:"green" },
-      { name:"碰撞报告查询卡", coin:200, time:"2026-02-08 11:12", status:"已过期", statusCls:"gray" },
-      { name:"过户费减免 100 元", coin:500, time:"2026-01-22 09:03", status:"已使用", statusCls:"gray" }
+      { name:"数据查询优惠券 10 元", coin:100, time:"2026-04-02 10:21", status:"已使用", statusCls:"gray" },
+      { name:"数据查询优惠券 5 元",  coin:50,  time:"2026-03-19 16:45", status:"使用中", statusCls:"green" },
+      { name:"综合服务费 50 元券",   coin:500, time:"2026-02-08 11:12", status:"已过期", statusCls:"gray" },
+      { name:"过户费减免 100 元券",  coin:500, time:"2026-01-22 09:03", status:"已使用", statusCls:"gray" }
     ];
 
     watch([activeTab, afsPageNo], () => nextTick(() => lucide.createIcons()));
