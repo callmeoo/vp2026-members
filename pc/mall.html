@@ -197,6 +197,24 @@
 
   <div v-html="footer"></div>
 
+  <!-- 模拟等级切换 · Demo -->
+  <div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <button v-for="lv in CFG.levels" :key="lv.code"
+        @click="mockLvCode = lv.code"
+        :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-[120px] text-left',
+          mockLv.code === lv.code ? 'ring-2 ring-offset-1 ring-slate-300 scale-[1.04]' : 'opacity-70 hover:opacity-100']"
+        :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
+        {{ lv.short }} · {{ lv.name }}
+      </button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2" v-if="discountRate < 1">兑换折扣 <b class="text-violet-600">{{ discountLabel }}</b></div>
+    <div class="text-[10px] text-slate-400 mt-2" v-else>无兑换折扣</div>
+  </div>
+
   <!-- 兑换说明弹窗 -->
   <div v-if="showRules" class="modal-mask" @click.self="showRules = false">
     <div class="modal-box">
@@ -257,16 +275,20 @@ createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
 
-    // 模拟 V2 白金会员
-    const mockLv = CFG.getLevelByCode('LV2');
+    // 模拟会员等级,默认 V2 白金
+    const mockLvCode = ref('LV2');
+    const mockLv = computed(() => CFG.getLevelByCode(mockLvCode.value));
 
     // 积分折扣: V2 → 95折, V3 → 8折, 其余 1
     const discountMap = { LV2: 0.95, LV3: 0.80 };
-    const discountRate = discountMap[mockLv.code] || 1;
-    const discountLabel = discountRate === 0.95 ? '95 折' : discountRate === 0.80 ? '8 折' : '无折扣';
+    const discountRate = computed(() => discountMap[mockLv.value.code] || 1);
+    const discountLabel = computed(() =>
+      discountRate.value === 0.95 ? '95 折' :
+      discountRate.value === 0.80 ? '8 折' : ''
+    );
 
     function actualCost(originalCoin) {
-      return Math.ceil(Number(originalCoin) * discountRate);
+      return Math.ceil(Number(originalCoin) * discountRate.value);
     }
 
     const balance = ref(356);
@@ -308,11 +330,11 @@ createApp({
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch([redeemItem, toastText, showRules], () => nextTick(() => lucide.createIcons()));
+    watch([redeemItem, toastText, showRules, mockLvCode], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      CFG, mockLv, discountRate, discountLabel, actualCost,
+      CFG, mockLv, mockLvCode, discountRate, discountLabel, actualCost,
       balance, rewards, redeemItem, toastText, showRules,
       openRedeem, confirmRedeem, header, footer
     };
