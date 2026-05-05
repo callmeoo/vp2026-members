@@ -64,7 +64,7 @@
   .fee-link { color: #409eff; cursor: pointer; }
   .fee-link:hover { text-decoration: underline; }
 
-  .buyer-cell { display: inline-flex; align-items: center; gap: 4px; justify-content: center; }
+  .buyer-cell { display: inline-flex; align-items: center; gap: 4px; justify-content: flex-start; }
   .lv-pill { display: inline-flex; align-items: center; justify-content: center; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #fff; line-height: 16px; cursor: pointer; }
   .lv-pill:hover { opacity: .85; }
   .lv-popover-mask { position: fixed; inset: 0; z-index: 998; }
@@ -203,7 +203,7 @@
             <thead>
               <tr>
                 <th>车牌</th><th>车型</th><th>成交时间</th><th>收款状态</th><th>订单状态</th>
-                <th>是否报废车</th><th>卖家</th><th>门店</th><th>买家</th><th>总价</th><th>成交价</th><th>服务费</th>
+                <th>是否报废车</th><th>卖家</th><th>门店</th><th style="text-align:left">买家</th><th>总价</th><th>成交价</th><th>服务费</th>
               </tr>
             </thead>
             <tbody>
@@ -230,7 +230,7 @@
                 <td>{{ o.scrap }}</td>
                 <td>{{ o.seller }}</td>
                 <td>{{ o.store }}</td>
-                <td>
+                <td style="text-align:left">
                   <span class="buyer-cell">
                     <span v-if="o.buyerLevel" class="lv-pill" :style="{ background: levelColor(o.buyerLevel) }" @click.stop="openPopover($event, o)">{{ o.buyerLevel }}</span>
                     {{ o.buyer }}
