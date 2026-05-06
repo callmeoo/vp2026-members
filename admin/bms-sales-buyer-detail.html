@@ -177,8 +177,13 @@
       <!-- 下方 Tab 区 -->
       <div class="grid grid-cols-12 gap-3">
         <div class="ant-card col-span-8">
-          <div class="tabs">
-            <div v-for="t in tabs" :key="t.key" :class="['tab', { active: activeTab === t.key }]" @click="activeTab = t.key">{{ t.label }}</div>
+          <div class="tabs" style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center">
+              <div v-for="t in tabs" :key="t.key" :class="['tab', { active: activeTab === t.key }]" @click="activeTab = t.key">{{ t.label }}</div>
+            </div>
+            <button @click="showSpec = true" style="margin-right:12px;display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border:1px solid #a78bfa;border-radius:4px;background:#faf5ff;color:#7c3aed;font-size:12px;cursor:pointer">
+              <i data-lucide="info" class="w-3 h-3"></i>需求点说明
+            </button>
           </div>
 
           <!-- 出价记录 -->
@@ -355,6 +360,51 @@
 <div class="fixed top-2 right-4 z-50">
   <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50"><i data-lucide="arrow-left" class="w-3 h-3 inline -mt-0.5"></i> Demo 导航</a>
 </div>
+
+<!-- 需求点说明弹框 -->
+<div v-if="showSpec" class="fixed inset-0 z-[1000] flex items-center justify-center p-6"
+     style="background:rgba(15,23,42,.55);backdrop-filter:blur(3px)" @click.self="showSpec = false">
+  <div class="bg-white rounded-lg w-full max-w-xl shadow-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="info" class="w-5 h-5 text-violet-500"></i>
+        <span class="text-base font-semibold text-slate-800">买家详情 · 需求点说明</span>
+      </div>
+      <span style="cursor:pointer;color:#909399" @click="showSpec = false"><i data-lucide="x" class="w-5 h-5"></i></span>
+    </div>
+    <div class="p-6 text-sm text-slate-600 leading-relaxed space-y-4">
+      <div>
+        <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>
+          <span class="text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 px-1.5 py-0.5 rounded">新增</span>
+          <span>会员权益 Tab</span>
+        </div>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>展示该买家的会员等级 / 当前等级权益清单</li>
+          <li>等级变化历史(系统自动评级 + 管理员人工调整)</li>
+          <li>支持点击「查看等级规则」查看完整规则对比表</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>
+          <span class="text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 px-1.5 py-0.5 rounded">新增</span>
+          <span>积分 Tab</span>
+        </div>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>展示该买家的积分概览:当前余额 / 累计获得 / 累计消耗 / 30 天将过期</li>
+          <li>积分流水明细(获取 / 消耗 / 过期 / 手动调整)</li>
+          <li>已兑换权益卡记录</li>
+          <li>支持手动调整积分(发放 / 扣减),用于运营特殊场景</li>
+        </ul>
+      </div>
+    </div>
+    <div class="px-6 py-3 border-t border-slate-100 flex justify-end">
+      <button class="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600" @click="showSpec = false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /#app -->
 
 <script src="../shared/member-config.js"></script>
@@ -377,6 +427,7 @@ createApp({
     const lv = CFG.getLevelByCode(levelCode);
 
     const activeTab = ref('bid');
+    const showSpec = ref(false);
     const tabs = [
       { key:'bid',       label:'出价记录' },
       { key:'afs',       label:'售后记录' },
@@ -482,11 +533,11 @@ createApp({
       { name:"过户费减免 100 元券",  coin:500, time:"2026-01-22 09:03", status:"已使用", statusCls:"gray" }
     ];
 
-    watch([activeTab, afsPageNo], () => nextTick(() => lucide.createIcons()));
+    watch([activeTab, afsPageNo, showSpec], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      CFG, name, phone, reg, src, city, lv, activeTab, tabs,
+      CFG, name, phone, reg, src, city, lv, activeTab, showSpec, tabs,
       bids, afs, afsPageNo, afsTotalPages, afsPage, deposits, models, onlyWon, relocs,
       coinBalance, coinEarnedYear, coinUsed, coinExpiringSoon, discountText, coinTypeMap, coinRows, rewardRecords
     };
