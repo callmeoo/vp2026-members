@@ -19,7 +19,8 @@
   .reason-input { border: none; outline: none; background: transparent; text-align: right; color: #111827; font-size: 14px; width: 60%; }
   .reason-input::placeholder { color: #c0c4cc; }
 
-  .benefit-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #fff; cursor: pointer; border-top: 1px solid #f3f4f6; }
+  .benefit-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #fff; cursor: pointer; border-top: 1px solid #f3f4f6; user-select: none; }
+  .benefit-row > * { pointer-events: none; }
   .benefit-tag { display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(120deg,#fde68a 0%,#fbbf24 100%); color: #7c2d12; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
 
   .contract { background: #fff; padding: 14px 14px 18px; font-size: 9px; color: #475569; line-height: 1.5; margin: 12px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
