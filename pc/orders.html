@@ -154,7 +154,7 @@
     <div class="pay-box">
       <div class="pay-head">
         <h3>支付订单</h3>
-        <i data-lucide="x" class="w-5 h-5 text-slate-400 cursor-pointer" @click="payOrder = null"></i>
+        <span class="cursor-pointer text-slate-400 hover:text-slate-600" @click="payOrder = null"><i data-lucide="x" class="w-5 h-5"></i></span>
       </div>
       <div class="pay-body">
         <div class="text-sm text-slate-500 mb-2">订单号: {{ payOrder.no }}</div>

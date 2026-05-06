@@ -532,7 +532,7 @@
   <div class="modal modal-lg">
     <div class="modal-head">
       <div class="m-title"><i data-lucide="book-open" class="w-4 h-4"></i><span>会员等级规则</span></div>
-      <i data-lucide="x" class="w-4 h-4 m-close" @click="showRuleModal = false"></i>
+      <span class="m-close" @click="showRuleModal = false"><i data-lucide="x" class="w-4 h-4"></i></span>
     </div>
     <div class="modal-body">
       <div class="rule-intro">
@@ -581,7 +581,7 @@
   <div class="modal">
     <div class="modal-head">
       <div class="m-title"><i :data-lucide="coinModal.icon" class="w-4 h-4"></i><span>{{ coinModal.title }}</span></div>
-      <i data-lucide="x" class="w-4 h-4 m-close" @click="closeCoinModal"></i>
+      <span class="m-close" @click="closeCoinModal"><i data-lucide="x" class="w-4 h-4"></i></span>
     </div>
     <div class="modal-body">
       <div class="form-row">
