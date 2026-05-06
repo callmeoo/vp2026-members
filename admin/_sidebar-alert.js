@@ -1,6 +1,12 @@
 // Sidebar 通用居中弹框,替代 window.alert()
-window.showRuleAlert = function (msg) {
+// msg     : 弹框正文
+// navHref : 可选,确定后跳转的目标 URL;不传则仅关闭
+window.showRuleAlert = function (msg, navHref) {
+  // 已有同款弹框时不重复创建
+  if (document.getElementById('__sb_alert_mask')) return;
+
   var mask = document.createElement('div');
+  mask.id = '__sb_alert_mask';
   mask.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
   var box = document.createElement('div');
   box.style.cssText = 'background:#fff;border-radius:8px;min-width:340px;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden';
@@ -15,7 +21,17 @@ window.showRuleAlert = function (msg) {
     '</div>';
   mask.appendChild(box);
   document.body.appendChild(mask);
-  function close() { if (mask.parentNode) mask.parentNode.removeChild(mask); }
-  box.querySelector('[data-act="ok"]').onclick = close;
-  mask.addEventListener('click', function (e) { if (e.target === mask) close(); });
+
+  function close() {
+    if (mask.parentNode) mask.parentNode.removeChild(mask);
+  }
+  // 仅「确定」按钮可关闭(点击遮罩 / 按 ESC 不关闭,避免误触)
+  box.querySelector('[data-act="ok"]').onclick = function () {
+    close();
+    if (navHref) {
+      // 锚链接 # 不跳转
+      if (navHref.charAt(0) === '#') return;
+      location.href = navHref;
+    }
+  };
 };
