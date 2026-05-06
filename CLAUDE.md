@@ -38,6 +38,13 @@
 <span class="cursor-pointer" @click="close"><i data-lucide="x"></i></span>
 ```
 
+**多层嵌套时仍点不到 → 兜底**:外层 row 上绑 `@click`,但 row 内部嵌套了多个 svg / span / 文本,点击有时穿透不到 row 自身。给 row 加 `pointer-events: none` 到所有直接子元素,强制点击命中 row:
+```css
+.row { cursor: pointer; }
+.row > * { pointer-events: none; }   /* 子元素不接收事件,直接冒泡到 row */
+```
+参考案例:`app/aftersale-apply.html` 的 `.benefit-row`。
+
 ---
 
 ## 二、项目简介 · members2026
