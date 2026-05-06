@@ -148,7 +148,8 @@
     <nav class="flex-1 overflow-y-auto">
       <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
       <div class="submenu">
-        <a href="bms-orders.html" class="sub-item active">订单列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-orders.html" class="sub-item">订单列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-order-detail.html" class="sub-item active">订单详情<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
         <a href="bms-users.html"  class="sub-item">用户列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
         <a href="bms-user-detail.html" class="sub-item">用户详情<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
       </div>
@@ -194,6 +195,9 @@
       </div>
     </div>
     <div class="flex items-center gap-4">
+      <button @click="showSpec = true" style="display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border:1px solid #a78bfa;border-radius:4px;background:#faf5ff;color:#7c3aed;font-size:12px;cursor:pointer">
+        <i data-lucide="info" class="w-3.5 h-3.5"></i>需求点说明
+      </button>
       <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
       <div class="flex items-center gap-2 cursor-pointer">
         <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
@@ -552,6 +556,62 @@
 <div class="fixed top-2 right-4 z-50">
   <a href="../index.html" class="px-3 py-1 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50"><i data-lucide="arrow-left" class="w-3 h-3 inline -mt-0.5"></i> Demo 导航</a>
 </div>
+
+<!-- 需求点说明弹框 -->
+<div v-if="showSpec" class="fixed inset-0 z-[1000] flex items-center justify-center p-6"
+     style="background:rgba(15,23,42,.55);backdrop-filter:blur(3px)" @click.self="showSpec = false">
+  <div class="bg-white rounded-lg w-full max-w-xl shadow-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="info" class="w-5 h-5 text-violet-500"></i>
+        <span class="text-base font-semibold text-slate-800">订单详情 · 需求点说明</span>
+      </div>
+      <span style="cursor:pointer;color:#909399" @click="showSpec = false"><i data-lucide="x" class="w-5 h-5"></i></span>
+    </div>
+    <div class="p-6 text-sm text-slate-600 leading-relaxed space-y-4 max-h-[70vh] overflow-y-auto">
+      <div>
+        <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>1. 买家等级展示
+        </div>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>详情页买家信息区展示买家会员等级 pill (V0 灰 / V1 蓝 / V2 紫 / V3 金)</li>
+          <li><strong>非买家角色不展示</strong>(如卖家、平台用户等)</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>2. 积分余额
+        </div>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>展示该买家的当前积分余额,便于客服快速判断兑换能力</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>3. 本单使用权益
+        </div>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>新增「本单使用的权益」区域,展示该订单已使用的权益清单(保留价查询、历史数据查询、积分折扣兑换、无理由退车 等)</li>
+          <li>未使用时显示「本单未使用等级权益」</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>4. 售后增加「使用无理由退车权益入口」
+        </div>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>申请售后弹窗加「买家无理由退车权益」勾选项</li>
+          <li>展示剩余次数 + 有效期(中标后 24h 内可用),超时不可勾选</li>
+          <li>勾选后由系统自动提示发起人调整退车款项,并在审批流和订单详情中标记「已使用无理由退车权益」</li>
+        </ul>
+      </div>
+    </div>
+    <div class="px-6 py-3 border-t border-slate-100 flex justify-end">
+      <button class="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600" @click="showSpec = false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /#app -->
 
 <script src="../shared/member-config.js"></script>
@@ -720,14 +780,15 @@ createApp({
       lucide.createIcons();
       document.addEventListener('click', () => { showMore.value = false; });
     });
-    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode, noReasonExpiredDemo], () => nextTick(() => lucide.createIcons()));
+    const showSpec = ref(false);
+    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode, noReasonExpiredDemo, showSpec], () => nextTick(() => lucide.createIcons()));
 
     return {
       plate, model, deal, total, price, fee, seller, buyer, buyerCoins, lv, coinYuan,
       statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits, mockUsageMode,
       showMore, showCompTip, activeTab, tabs,
       noReasonRemain, noReasonValidity, noReasonUsable, noReasonExpiredDemo, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
-      openApplyAfs, onToggleNoReason, submitAfs, openViewAfs, openApprovalList, stepCls, fmt
+      openApplyAfs, onToggleNoReason, submitAfs, openViewAfs, openApprovalList, stepCls, fmt, showSpec
     };
   }
 }).mount('#app');
