@@ -25,6 +25,7 @@
 - **前端框架统一使用 Vue.js**:页面以 `createApp({ setup(){...} }).mount('#app')` 的组合式 API 组织;用 `ref / computed / v-for / v-if / @click / {{ }}` 代替 `document.getElementById` 与 `innerHTML` 直接操作 DOM。
 - **全局统一使用 Lucide icons,禁止使用 emoji**(🔒 ✓ ✗ 🎯 等)。所有图标需求一律改为 `<i data-lucide="xxx"></i>`,Vue 页面在 `onMounted` 和相关状态变化后调用 `lucide.createIcons()` 重绘。
 - **文案统一使用「积分」**:禁止出现"金币 / 唯金币"等历史写法(包括注释、提示、页面文案、表头、按钮、提示弹框)。如需提到"1 积分 ≈ X 元"口径时也统一用"积分"。文件名 / JS 变量 / CSS 类名中的 `coin` 保留不动,只规范中文显示。
+- **「商品」替代「权益卡」(UI 用词)**:用户面向的列名 / 弹窗标题 / 兑换按钮统一用「商品 / 商品兑换记录 / 商品名称」(因商城品类已扩展到优惠券、服务费券等,不只是权益卡)。`docs/PRD.md` 与 `redeemableRewards` 数据结构里的「权益卡」术语保留(产品定义未变),只规范前端中文显示。
 
 
 ---
@@ -69,6 +70,7 @@
 - **积分**: 1 积分 = 0.1 元;有效期 12 个自然月,按 `获得月 + 12 月` 滚动到期。
 - **等级门槛**: V0 帐户<2000 且近 3 月无成交 / V1 ≥2000 且 1-3 台 / V2 ≥2000 且 4-14 台 / V3 ≥2000 且 ≥15 台(详情见 level-rule.html)。
 - **列表→详情 跳转**: 参照 `bms-orders.html` 模式——整行可点击,行内 `<a>` 保留原生行为,详情参数用 URLSearchParams 透传。
+- **跨页 demo state · localStorage 三键**: `pc/car-detail.html` 保留价积分兑换闭环用以下键持久化(刷新后保留):`chevip_user_coins`(余额) / `chevip_unlocked_reserve_ids`(已解锁车辆 id 列表) / `chevip_redeemed_records`(兑换流水)。后续 `pc/mall.html`、`admin/bms-redeem-log.html`、`admin/bms-coin-log.html` 接入相同状态请读这三个键,确保跨页一致。
 
 ### admin/ 下所有 BMS 模块(bms-* 及 level-rule / coin-rule / rewards)的 Sidebar 必须完全一致
 
