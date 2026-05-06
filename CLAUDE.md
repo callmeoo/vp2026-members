@@ -7,8 +7,8 @@
 ## 一、用户协作偏好
 
 ### 决策与自治
-- **默认放手执行,不要反复确认**。包括:创建/切换分支、合并main。
-- 任务流程默认为:**开发 → 合并main,一气呵成,中间无需询问。
+- **默认放手执行,不要反复确认**。包括:创建/切换分支、合并 main、推送到 GitHub。
+- 任务流程默认为:**开发 → commit → 合并 main → push,一气呵成,中间无需询问。
 - 遇到破坏性操作(强推 main、删除分支、删除文件)仍然先问一句,但其余全部可以直接做。
 - 不要在每一步都列 plan 等审核;简短汇报结果即可。
 
@@ -27,54 +27,104 @@
 - **文案统一使用「积分」**:禁止出现"金币 / 唯金币"等历史写法(包括注释、提示、页面文案、表头、按钮、提示弹框)。如需提到"1 积分 ≈ X 元"口径时也统一用"积分"。文件名 / JS 变量 / CSS 类名中的 `coin` 保留不动,只规范中文显示。
 - **「商品」替代「权益卡」(UI 用词)**:用户面向的列名 / 弹窗标题 / 兑换按钮统一用「商品 / 商品兑换记录 / 商品名称」(因商城品类已扩展到优惠券、服务费券等,不只是权益卡)。`docs/PRD.md` 与 `redeemableRewards` 数据结构里的「权益卡」术语保留(产品定义未变),只规范前端中文显示。
 
+### Lucide 图标 + Vue @click 陷阱(踩过多次,务必遵守)
+**`@click` 不要直接绑在 `<i data-lucide="xxx">` 上**——`lucide.createIcons()` 会用 `<svg>` 替换 `<i>` 元素,绑在原 `<i>` 上的 Vue 事件随之销毁,表现就是按钮"点了没反应"。
+
+正确写法:把事件绑到外层 `<span>` / `<button>` 等不会被替换的元素:
+```html
+<!-- 错误 -->
+<i data-lucide="x" @click="close"></i>
+<!-- 正确 -->
+<span class="cursor-pointer" @click="close"><i data-lucide="x"></i></span>
+```
 
 ---
 
 ## 二、项目简介 · members2026
 
 ### 定位
-唯普汽车「商户会员体系」演示站点 —— 静态 HTML 原型,用于评审会员等级、积分、权益卡三大体系的规则与交互。
+唯普汽车「商户会员体系」演示站点 —— 静态 HTML 原型,用于评审会员等级、积分、商品(权益卡/优惠券)三大体系的规则与交互。当前演示包含 **商户端(APP/小程序 + PC)**、**BMS 后台**、**FNC 后台** 三套界面。
+
+远程仓库: `git@github.com:callmeoo/vp2026-members.git` (main 直推)。
 
 ### 目录结构
 ```
 /
-├─ index.html                  # Demo 导航首页
-├─ app/                        # 商户端(手机)原型 
+├─ index.html                  # Demo 导航首页 + 需求说明 + Word 内联展示
+├─ app/                        # 商户端(手机) 原型
 │   ├─ home.html              # APP 首页
+│   ├─ landing.html           # 会员体系落地页(对外宣讲版,含 Q&A)
 │   ├─ member.html            # 会员中心
 │   ├─ coins.html             # 积分明细
 │   ├─ level.html             # 等级成长
 │   ├─ mall.html              # 权益商城
 │   ├─ my-rewards.html        # 我的权益卡
 │   ├─ profile.html / profile-loggedin.html / login.html / settings.html
-│   └─ orders.html / order-detail.html
-├─ admin/                      # 运营后台(PC) —— Ant Design 风格
+│   ├─ orders.html / order-detail.html / won-order(s)*
+│   ├─ aftersale-apply.html   # 售后申请(含「无理由退车」勾选 + 24h 演示切换)
+│   └─ aftersale-approval-detail.html
+├─ pc/                         # 商户端(PC)原型
+│   ├─ home.html / sources.html / reserved.html
+│   ├─ car-detail.html        # 含保留价积分兑换闭环
+│   ├─ member.html            # 会员中心(我的首页定位)
+│   ├─ member-intro.html      # 会员权益说明(对外版,含 Q&A)
+│   ├─ coins.html             # 积分明细 + 如何赚积分
+│   ├─ mall.html              # 积分商城(等级折扣演示切换 V0~V3)
+│   ├─ orders.html            # 我的交易-买到的车(含支付占位弹窗)
+│   ├─ common.css / _partials.js
+├─ admin/                      # BMS / FNC 后台 — Ant Design 风格
+│   ├─ _sidebar-alert.js      # 通用居中弹框 showRuleAlert(替代浏览器 alert)
 │   ├─ dashboard.html         # 运营仪表盘
-│   ├─ level-rule.html        # 等级设置(等级设定 / 等级权益 / 变更日志)
-│   ├─ coin-rule.html         # 积分规则
-│   ├─ rewards.html           # 权益卡管理
+│   ├─ level-rule.html        # 等级设置(已从 sidebar 隐藏,文件保留)
+│   ├─ coin-rule.html         # 积分规则(交易/行为/限时活动 三类)
+│   ├─ rewards.html           # 商城商品配置
 │   ├─ members.html           # 商户档案
-│ 
-│   ├─ bms-orders.html / bms-order-detail.html   #  BMS 订单
-│   ├─ bms-users.html / bms-user-detail.html     #  BMS 用户
+│   ├─ bms-orders.html / bms-order-detail.html / order-detail.html  # 订单
+│   ├─ bms-users.html / bms-user-detail.html                        # 用户
+│   ├─ bms-sales-buyers.html / bms-sales-buyer-detail.html          # 买家
+│   ├─ bms-sales-orders.html / sales-orders.html                    # 销售订单
+│   ├─ bms-level-mgmt.html    # 客户等级管理(占位空页,新规则定级跑数后填充)
+│   ├─ bms-coin-log.html / bms-redeem-log.html                      # 积分流水/兑换记录
+│   ├─ bms-aftersales*.html / bms-aftersale-approval-list.html      # 售后/审批
+│   └─ fnc-home.html / fnc-wallet-log.html                          # FNC 后台
 ├─ shared/
-│   └─ member-config.js       # 会员等级/积分/权益卡 · 全站统一数据源
+│   └─ member-config.js       # 会员/积分/权益卡/Q&A/推荐任务 · 全站统一数据源
 └─ docs/                       # PRD / DB Schema / API 文档
 ```
 
 ### 关键约定
-- **唯一数据源**: `shared/member-config.js` 导出 `window.MEMBER_CONFIG`,含 4 级会员
-  (V0 普通/V1 金卡/V2 白金/V3 钻石)及配色、门槛、权益、积分规则。
-  修改任何会员/积分规则都只改这一处。
-- **配色**(按 V 编号位置固定,与等级名解耦): V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`。
-- **积分**: 1 积分 = 0.1 元;有效期 12 个自然月,按 `获得月 + 12 月` 滚动到期。
-- **等级门槛**: V0 帐户<2000 且近 3 月无成交 / V1 ≥2000 且 1-3 台 / V2 ≥2000 且 4-14 台 / V3 ≥2000 且 ≥15 台(详情见 level-rule.html)。
+
+#### 数据层
+- **唯一数据源**: `shared/member-config.js` 导出 `window.MEMBER_CONFIG`,字段:
+  - `levels` — 4 级会员(V0 普通/V1 金卡/V2 白金/V3 钻石),含配色/门槛/权益清单
+  - `coin` — 积分单价、有效期
+  - `coinEarning` — 积分获取规则(用于规则展示)
+  - `recommendedTasks` — 推荐任务(含 `dailyMax` 字段表示日上限,如 `t_share.dailyMax = 20`)
+  - `redeemableRewards` — 商城商品/权益卡
+  - `qaList` — Q&A 常见问题(app/landing.html 与 pc/member-intro.html 共用,改这里两端同步)
+- **配色**(按 V 编号位置固定,与等级名解耦): V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`
+- **积分**: 1 积分 = 0.1 元;有效期 12 个自然月,按 `获得月 + 12 月` 滚动到期
+- **等级门槛**: V0 帐户 < 2000 且近 3 月无成交 / V1 ≥ 2000 且 1-3 台 / V2 ≥ 2000 且 4-14 台 / V3 ≥ 2000 且 ≥ 15 台
+
+#### 业务规则
+- **「无理由退车」权益**: V3 钻石专享,**车辆中标后 24 小时内可申请**,超时即使有权益也无法使用。所有相关页面(BMS 申请售后、APP/PC 售后申请)都需要在 UI 显示这个有效期,且支持「未超期 / 超 24h」演示切换。
+- **售后使用无理由退车的钱包账单**: FNC 钱包账单流水摘要追加 `(无理由退车)` 后缀,**整行标红**(`color:#f56c6c`),格式 `订单售后款项(无理由退车):{车牌号}` / `扣减订单售后款项(无理由退车):{车牌号}`。
+- **历史数据处理(7/1 上线日)**: 等级跑数 + 积分不追溯。系统对前 3 个月历史成交记录(抛成交退车) + 当前账户余额跑数,7/1 当天确定每个用户的等级与权益;积分从功能上线起正式计算,不补发。
+- **跨页 demo state · localStorage 三键**: `pc/car-detail.html` 保留价积分兑换闭环用以下键持久化(刷新后保留):`chevip_user_coins`(余额) / `chevip_unlocked_reserve_ids`(已解锁车辆 id 列表) / `chevip_redeemed_records`(兑换流水)。后续 `pc/mall.html`、`admin/bms-redeem-log.html`、`admin/bms-coin-log.html` 接入相同状态请读这三个键。
+
+#### UI 模式
 - **列表→详情 跳转**: 参照 `bms-orders.html` 模式——整行可点击,行内 `<a>` 保留原生行为,详情参数用 URLSearchParams 透传。
-- **跨页 demo state · localStorage 三键**: `pc/car-detail.html` 保留价积分兑换闭环用以下键持久化(刷新后保留):`chevip_user_coins`(余额) / `chevip_unlocked_reserve_ids`(已解锁车辆 id 列表) / `chevip_redeemed_records`(兑换流水)。后续 `pc/mall.html`、`admin/bms-redeem-log.html`、`admin/bms-coin-log.html` 接入相同状态请读这三个键,确保跨页一致。
+- **PC 个人中心专属 nav header**: `pc/member.html` / `pc/coins.html` / `pc/mall.html` / `pc/orders.html` 不使用 `PC_COMMON.renderHeader()`(那是车源浏览 nav),而是各自内联拼一个含「我的首页 / 我的交易 / 专用账号 / 会员中心 / 我的信息」5 项的 nav,active 项随当前页变化。
+- **演示切换面板**: 涉及多状态展示的演示页(如 `pc/mall.html` 等级折扣切换、`bms-order-detail.html` 权益使用 / 24h 过期切换),右上角浮窗或 Tab 行右侧加 demo toggle 按钮,**只为评审用**,不进生产。
+- **「需求点说明」按钮**(评审专用): BMS 后台多个详情/列表页(bms-orders / bms-order-detail / bms-users / bms-user-detail / bms-sales-buyer-detail / fnc-wallet-log)在 tab 行右侧或表格上方加紫色「需求点说明」按钮,点击弹出 modal 列出当前页本期改造点。统一样式:`border:#a78bfa; bg:#faf5ff; color:#7c3aed`。
 
-### admin/ 下所有 BMS 模块(bms-* 及 level-rule / coin-rule / rewards)的 Sidebar 必须完全一致
+---
 
-唯一标准结构,新增或修改任何 bms 相关页面都必须使用这份 sidebar 模板(只改动 `active` 位置)。顺序不可增删,菜单层级不可变动。
+## 三、admin/ 下所有 BMS 模块的 Sidebar 必须完全一致
+
+唯一标准结构,新增或修改任何 admin 相关页面都必须使用这份 sidebar 模板(只改动 `active` 位置)。**菜单层级与项不可随意增删**,本期改造已加入若干「新增 / 调整」标签和点击弹框逻辑。
+
+### 模板
 
 ```html
 <aside class="ant-sider flex flex-col">
@@ -83,30 +133,31 @@
     <div class="brand-sub">www.chevip.com</div>
   </div>
   <nav class="flex-1 overflow-y-auto">
-    <!-- 业务数据可折叠,当前页在其下时默认展开(menu-item 加 open + submenu 去 display:none) -->
+    <!-- 业务数据 4 项 -->
     <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu" style="display:none">
-      <a href="bms-orders.html" class="sub-item">订单列表</a>
-      <a href="bms-users.html"  class="sub-item">用户列表</a>
+      <a href="bms-orders.html"      class="sub-item">订单列表<span class="adj-tag">调整</span></a>
+      <a href="bms-order-detail.html" class="sub-item">订单详情<span class="adj-tag">调整</span></a>
+      <a href="bms-users.html"        class="sub-item">用户列表<span class="adj-tag">调整</span></a>
+      <a href="bms-user-detail.html" class="sub-item">用户详情<span class="adj-tag">调整</span></a>
     </div>
-    <!-- 当前页是 bms-orders / bms-order-detail / order-detail 时:订单列表 加 active,业务数据 menu-item 加 open,submenu 去掉 style="display:none" -->
-    <!-- 当前页是 bms-users / bms-user-detail 时:用户列表 加 active,同上 -->
 
-
+    <!-- 销售管理 9 项(等级设置 display:none 隐藏) -->
     <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu">
-      <a href="dashboard.html"          class="sub-item">运营仪表盘</a>
-      <div class="sub-item">客户等级管理</div>
-      <a href="bms-sales-buyers.html"   class="sub-item">买家管理</a>
-      <a href="bms-sales-orders.html"   class="sub-item">销售订单</a>
-      <a href="level-rule.html"         class="sub-item">等级设置</a>
-      <a href="coin-rule.html"          class="sub-item">积分规则</a>
-      <a href="rewards.html"            class="sub-item">商城商品配置</a>
-      <a href="bms-coin-log.html"       class="sub-item">积分流水</a>
-      <a href="bms-redeem-log.html"     class="sub-item">兑换记录</a>
+      <a href="dashboard.html"           class="sub-item">运营仪表盘<span class="new-tag">新增</span></a>
+      <a href="bms-level-mgmt.html"      class="sub-item" onclick="event.preventDefault();showRuleAlert('按新规则调整用户等级', this.href)">客户等级管理<span class="adj-tag">调整</span></a>
+      <a href="bms-sales-buyers.html"    class="sub-item">买家管理<span class="adj-tag">调整</span></a>
+      <a href="bms-sales-buyer-detail.html" class="sub-item">买家详情<span class="adj-tag">调整</span></a>
+      <a href="bms-sales-orders.html"    class="sub-item" onclick="event.preventDefault();showRuleAlert('按新规则调整用户等级', this.href)">销售订单<span class="adj-tag">调整</span></a>
+      <a style="display:none" href="level-rule.html" class="sub-item">等级设置</a>
+      <a href="coin-rule.html"           class="sub-item">积分规则<span class="new-tag">新增</span></a>
+      <a href="rewards.html"             class="sub-item">商城商品配置<span class="new-tag">新增</span></a>
+      <a href="bms-coin-log.html"        class="sub-item">积分流水<span class="new-tag">新增</span></a>
+      <a href="bms-redeem-log.html"      class="sub-item">兑换记录<span class="new-tag">新增</span></a>
     </div>
 
-    <!-- 服务中心可折叠,当前页在其下时默认展开(menu-item 加 open + submenu 去 display:none) -->
+    <!-- 服务中心 3 项 -->
     <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu" style="display:none">
       <a href="bms-aftersales.html"              class="sub-item">售后服务</a>
@@ -115,24 +166,43 @@
     </div>
   </nav>
 </aside>
+
+<!-- 引入弹框工具(任何 onclick 调 showRuleAlert 的页面都要引) -->
+<script src="_sidebar-alert.js"></script>
 ```
 
-规则:
-1. **一级项固定 3 个,按此顺序**:业务数据(可折叠)/ 销售管理(展开) / 服务中心(可折叠)。**严禁出现**:运营部(已废弃)、检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
-2. **业务数据 submenu 固定 2 项**:订单列表 / 用户列表。对应 `bms-orders.html` / `bms-users.html`。详情页(bms-order-detail / bms-user-detail / order-detail)归属对应列表 sub-item active。
-3. **销售管理 submenu 固定 9 项,按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 销售订单 / 等级设置 / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。不要再出现"销售首页 / B2C零售 / 门店奖励"。
-4. **服务中心 submenu 固定 3 项**:售后服务 / 售后列表 / 企微审批。对应 `bms-aftersales.html` / `bms-aftersales-list.html` / `bms-aftersale-approval-list.html`。
-5. **当前页 active**:仅在对应 `sub-item` 上加 `active` 类。`客户等级管理` 默认没有专属页,不加 href。
-6. **业务数据 / 服务中心默认折叠**,点击展开;当前页在某 submenu 下时,`menu-item` 加 `open` 且对应 `submenu` 去掉 `display:none`(`onclick` 始终保留,允许手动收起)。脚手架统一使用 `onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"`。
+> 上方 `adj-tag` / `new-tag` 实际写法是内联 style:
+> - 调整(橙): `<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span>`
+> - 新增(绿): `<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span>`
 
+### 规则
+
+1. **一级项 3 个,顺序固定**:业务数据(可折叠) / 销售管理(展开) / 服务中心(可折叠)。**严禁出现**:运营部、检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
+2. **业务数据 submenu 4 项**(本期由 2 项扩为 4 项):订单列表 / 订单详情 / 用户列表 / 用户详情。**全部带「调整」橙色标签**,因为本期均加入了买家等级展示和「需求点说明」入口。
+3. **销售管理 submenu 9 项,按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 买家详情 / 销售订单 / 等级设置(隐藏) / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。
+   - 「客户等级管理」和「销售订单」点击触发 `showRuleAlert('按新规则调整用户等级', this.href)`,先弹框确认再跳转(确定后才跳)
+   - 客户等级管理跳 `bms-level-mgmt.html`(占位空页,本期实际功能由「跑数 + 重新定级」承担,详细界面待补)
+   - 「等级设置」`<a style="display:none">` 隐藏,文件 `admin/level-rule.html` 保留以备复查
+4. **服务中心 submenu 3 项**:售后服务 / 售后列表 / 企微审批。无标签,无 onclick。
+5. **当前页 active**:仅在对应 `sub-item` 上加 `active` 类。详情页归属对应列表的 active(如 `bms-order-detail.html` 上是「订单详情」active,不是「订单列表」)。
+6. **业务数据 / 服务中心默认折叠**,点击展开;当前页在某 submenu 下时,`menu-item` 加 `open` 且对应 `submenu` 去掉 `display:none`(`onclick` 始终保留,允许手动收起)。
+7. **新增「调整 / 新增」标签**:全部使用上方内联 style 模板,不引外部 CSS class,避免与各页自有样式冲突。
+8. **`_sidebar-alert.js`** 提供 `window.showRuleAlert(msg, navHref?)`:页面正中央居中弹框,有遮罩,**只能点「确定」关闭**(点遮罩或 ESC 不关),关闭后若传了 navHref 则跳转。所有用 `showRuleAlert` 的页面必须在 `</body>` 之前引入此脚本。
+
+### FNC 后台 sidebar(独立模板)
+
+`admin/fnc-*.html` 用一套不同的 sidebar(顶部 `FNC` 标识 + 业务数据(占位)+ 财务管理),不与 BMS 共享。当前 FNC 仅 1 个可见入口「钱包账单」(带「调整」标签,因售后无理由退车摘要标红是本期改造点)。
 
 ---
 
-## 三、快速索引
+## 四、快速索引
 
 | 任务 | 入口 |
 |---|---|
-| 改会员等级 / 权益 / 积分规则 | `shared/member-config.js` |
-| 新增运营后台页 | `admin/` + `index.html` 导航卡 |
-| 新增商户端页 | `app/` + `index.html` 导航卡 |
+| 改会员等级 / 权益 / 积分规则 / Q&A | `shared/member-config.js` |
+| 新增 BMS 后台页 | `admin/bms-*.html` + sidebar 模板复用 + `index.html` 导航卡 |
+| 新增 FNC 后台页 | `admin/fnc-*.html` + 同 fnc 风格 sidebar + `index.html` 导航卡 |
+| 新增 PC 个人中心页 | `pc/*.html` 用「个人中心专属 nav」(参考 member/coins/mall/orders) |
+| 新增商户端 APP 页 | `app/` + `index.html` 导航卡 |
 | 修改 PRD / 数据库 / API 文档 | `docs/` |
+| 加居中弹框 | 引入 `admin/_sidebar-alert.js`,调用 `showRuleAlert('文案', 跳转URL?)` |
