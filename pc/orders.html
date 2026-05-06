@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>买到的车 · 我的交易 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+<style>
+[v-cloak] { display: none; }
+
+.trade-layout { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; }
+
+/* 左侧 */
+.trade-side { background: #fff; border: 1px solid var(--pc-border); padding: 18px 0; }
+.trade-side h3 { font-size: 15px; font-weight: 700; color: #1f2937; padding: 0 22px 14px; }
+.trade-side .item { padding: 9px 22px; font-size: 14px; color: #4b5563; cursor: pointer; }
+.trade-side .item:hover { color: var(--pc-red); }
+.trade-side .item.active { color: var(--pc-red); font-weight: 600; }
+
+/* 主区 */
+.trade-main { background: transparent; }
+.trade-title { background: #fff; border: 1px solid var(--pc-border); padding: 16px 24px; margin-bottom: 12px; font-size: 16px; font-weight: 600; color: #1f2937; }
+
+.trade-toolbar { background: #fff; border: 1px solid var(--pc-border); border-bottom: none; padding: 18px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+.trade-tabs { display: flex; gap: 24px; }
+.trade-tab { font-size: 15px; color: #4b5563; padding-bottom: 12px; cursor: pointer; position: relative; }
+.trade-tab:hover { color: var(--pc-red); }
+.trade-tab.active { color: var(--pc-red); font-weight: 600; }
+.trade-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--pc-red); border-radius: 2px; }
+.search-box { display: flex; align-items: center; border: 1px solid #e5e7eb; border-radius: 4px; overflow: hidden; }
+.search-box input { width: 240px; height: 36px; padding: 0 12px; border: none; outline: none; font-size: 13px; }
+.search-box button { width: 44px; height: 36px; background: var(--pc-red); color: #fff; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+
+/* 列表表头 */
+.list-wrap { background: #fff; border: 1px solid var(--pc-border); border-top: 1px solid #f1f5f9; }
+.list-head { display: grid; grid-template-columns: 200px 1fr 140px 140px 160px; padding: 14px 24px; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+.list-head .sortable { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+
+/* 订单组 */
+.order-group { border-bottom: 8px solid #f5f6f8; }
+.order-group:last-child { border-bottom: none; }
+.order-meta { display: flex; align-items: center; gap: 30px; background: #fef3f2; padding: 10px 24px; font-size: 13px; color: #475569; }
+.order-row { display: grid; grid-template-columns: 200px 1fr 140px 140px 160px; padding: 18px 24px; align-items: center; }
+.car-img { width: 110px; height: 80px; border-radius: 4px; overflow: hidden; background: #f1f5f9; position: relative; }
+.car-img img { width: 100%; height: 100%; object-fit: cover; }
+.scrap-stamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-12deg); border: 2px solid #ef4444; color: #ef4444; font-size: 11px; padding: 2px 8px; border-radius: 3px; opacity: .7; font-weight: 700; letter-spacing: 1px; pointer-events: none; }
+.car-info .car-title { font-size: 15px; color: #1f2937; line-height: 1.5; }
+.car-info .car-plate { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+.amt { font-size: 16px; color: #1f2937; font-weight: 500; }
+.status { font-size: 14px; color: #4b5563; }
+.status.unpaid { color: #ef4444; font-weight: 600; }
+.status.afs { color: #f59e0b; font-weight: 600; }
+
+.actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.act-btn { padding: 6px 14px; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; font-size: 13px; border-radius: 3px; cursor: pointer; text-align: center; min-width: 110px; }
+.act-btn:hover { color: var(--pc-red); border-color: var(--pc-red); }
+.act-btn.primary { background: var(--pc-red); color: #fff; border-color: var(--pc-red); }
+.act-btn.primary:hover { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+.cs-link { display: inline-flex; align-items: center; gap: 4px; color: var(--pc-red); font-size: 12px; cursor: pointer; }
+.cs-link:hover { text-decoration: underline; }
+
+/* 支付弹窗占位 */
+.pay-mask { position: fixed; inset: 0; z-index: 100; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.pay-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.pay-head { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+.pay-head h3 { font-size: 16px; font-weight: 700; color: #1f2937; }
+.pay-body { padding: 28px 24px; }
+.pay-foot { padding: 14px 24px; border-top: 1px solid #f1f5f9; display: flex; gap: 12px; justify-content: flex-end; background: #fafafa; }
+.pay-btn { padding: 8px 22px; border-radius: 6px; font-size: 14px; cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; }
+.pay-btn.primary { background: var(--pc-red); color: #fff; border-color: var(--pc-red); }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <div class="trade-layout">
+
+      <!-- 左侧菜单 -->
+      <aside class="trade-side">
+        <h3>我的交易</h3>
+        <div class="item active">买到的车</div>
+        <div class="item">出价的车</div>
+        <div class="item">关注的车</div>
+        <div class="item">唯普好车</div>
+        <div class="item">我的卡包</div>
+      </aside>
+
+      <!-- 主内容 -->
+      <div class="trade-main">
+        <div class="trade-title">买到的车</div>
+
+        <div class="trade-toolbar">
+          <div class="trade-tabs">
+            <div :class="['trade-tab', tab === 'all' ? 'active' : '']" @click="tab = 'all'">全部车辆</div>
+            <div :class="['trade-tab', tab === 'good' ? 'active' : '']" @click="tab = 'good'">好车直卖</div>
+            <div :class="['trade-tab', tab === 'special' ? 'active' : '']" @click="tab = 'special'">专场拍</div>
+          </div>
+          <div class="search-box">
+            <input v-model="kw" placeholder="车牌号码">
+            <button><i data-lucide="search" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <div class="list-wrap">
+          <div class="list-head">
+            <span><span class="sortable">全部订单 <i data-lucide="chevron-down" class="w-3 h-3"></i></span></span>
+            <span>车辆信息</span>
+            <span>订单金额</span>
+            <span><span class="sortable">订单状态 <i data-lucide="chevron-down" class="w-3 h-3"></i></span></span>
+            <span>操作</span>
+          </div>
+
+          <div v-for="o in orders" :key="o.id" class="order-group">
+            <div class="order-meta">
+              <span>{{ o.time }}</span>
+              <span>订单号:{{ o.no }}</span>
+            </div>
+            <div class="order-row">
+              <div>
+                <div class="car-img">
+                  <img :src="o.img" :alt="o.title" loading="lazy">
+                  <span v-if="o.scrap" class="scrap-stamp">报废车</span>
+                </div>
+              </div>
+              <div class="car-info">
+                <div class="car-title">{{ o.title }}</div>
+                <div class="car-plate">{{ o.plate }}</div>
+              </div>
+              <div class="amt">¥ {{ o.amount }}</div>
+              <div :class="['status', o.status === '待支付' ? 'unpaid' : (o.status === '售后中' ? 'afs' : '')]">{{ o.status }}</div>
+              <div class="actions">
+                <template v-for="a in o.actions" :key="a.label">
+                  <button v-if="a.type === 'pay'" class="act-btn primary" @click="openPay(o)">{{ a.label }}</button>
+                  <button v-else-if="a.type === 'btn'" class="act-btn">{{ a.label }}</button>
+                  <span v-else-if="a.type === 'cs'" class="cs-link"><i data-lucide="headphones" class="w-3.5 h-3.5"></i>{{ a.label }}</span>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+
+  <!-- 支付弹窗(占位 — 待用户提供详细设计稿后扩展) -->
+  <div v-if="payOrder" class="pay-mask" @click.self="payOrder = null">
+    <div class="pay-box">
+      <div class="pay-head">
+        <h3>支付订单</h3>
+        <i data-lucide="x" class="w-5 h-5 text-slate-400 cursor-pointer" @click="payOrder = null"></i>
+      </div>
+      <div class="pay-body">
+        <div class="text-sm text-slate-500 mb-2">订单号: {{ payOrder.no }}</div>
+        <div class="text-base font-semibold text-slate-800">{{ payOrder.title }}</div>
+        <div class="text-sm text-slate-500 mt-1">{{ payOrder.plate }}</div>
+        <div class="mt-5 flex items-baseline gap-2">
+          <span class="text-sm text-slate-500">应付金额</span>
+          <span class="text-3xl font-black text-rose-500">¥ {{ payOrder.amount }}</span>
+        </div>
+        <div class="mt-6 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800 leading-relaxed">
+          <strong>待补充：</strong>优惠券选择 / 无理由退车权益勾选(中标后 24h 内可用) 等模块设计稿确认后接入,逻辑可参考移动端
+          <a href="../app/aftersale-apply.html" target="_blank" class="text-amber-700 underline">aftersale-apply.html</a>。
+        </div>
+      </div>
+      <div class="pay-foot">
+        <button class="pay-btn" @click="payOrder = null">取消</button>
+        <button class="pay-btn primary" @click="payOrder = null">立即支付</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, watch, nextTick, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const tab = ref('all');
+    const kw = ref('');
+    const payOrder = ref(null);
+    function openPay(o) { payOrder.value = o; }
+
+    const u = (id) => `https://images.unsplash.com/photo-${id}?w=600&h=400&fit=crop&auto=format&q=80`;
+
+    // 订单 mock — 待支付 2 条置顶
+    const orders = [
+      // —— 待支付 1 ——
+      { id: 'o0a', time: '2026-04-30 15:18:42', no: '90260430187456001294833',
+        img: u('1494976388531-d1058494cdd8'),
+        title: '丰田 卡罗拉 2021款 1.2T S-CVT 先锋版',
+        plate: '粤B23456',
+        amount: '8 800', status: '待支付',
+        actions: [{ type:'pay', label:'支付订单' }, { type:'btn', label:'确认过户对象' }] },
+      // —— 待支付 2 (原最后一行) ——
+      { id: 'o0b', time: '2026-03-06 16:37:32', no: '902603067278625227946446',
+        img: u('1542362567-b07e54358753'),
+        title: '保时捷 Panamera(进口) 2014款 保时捷 Panamera 3.0T',
+        plate: '闽A12345',
+        amount: '7 366', status: '待支付',
+        actions: [{ type:'pay', label:'支付订单' }, { type:'btn', label:'确认过户对象' }] },
+
+      // —— 已完成(报废车) ——
+      { id: 'o1', time: '2026-04-28 14:00:01', no: '90260428773560010268319',
+        img: u('1550355291-bbee04a92027'),
+        title: '别克 E4 2023款 臻享版',
+        plate: '粤CS4501',
+        amount: '14 500', status: '已完成', scrap: true,
+        actions: [{ type:'btn', label:'提车与授权' }, { type:'cs', label:'专属客服' }] },
+
+      // —— 已完成 ——
+      { id: 'o2', time: '2026-04-09 15:44:19', no: '90260409757206590276212',
+        img: u('1617788138017-80ad40651399'),
+        title: '比亚迪 宋PLUS 2020款 1.5T 自动豪华型',
+        plate: '津A12345',
+        amount: '11 300', status: '已完成',
+        actions: [{ type:'btn', label:'提车与授权' }] },
+
+      // —— 已完成(需提交过户资料) ——
+      { id: 'o3', time: '2026-03-17 10:22:01', no: '90260317737141210208205',
+        img: u('1552519507-da3b142c6e3d'),
+        title: '奔驰 B级(进口) 2022款 改款二 B 200 时尚型',
+        plate: '闽AA5779',
+        amount: '6 300', status: '已完成',
+        actions: [{ type:'btn', label:'提交过户资料' }, { type:'btn', label:'提车与授权' }, { type:'cs', label:'在线客服' }] },
+
+      // —— 已完成 ——
+      { id: 'o4', time: '2026-03-13 17:06:31', no: '90260313733927910172032',
+        img: u('1553440569-bcc63803a83d'),
+        title: '宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型',
+        plate: '粤A78546',
+        amount: '31 300', status: '已完成',
+        actions: [{ type:'btn', label:'提交过户资料' }, { type:'btn', label:'提车与授权' }, { type:'cs', label:'在线客服' }] },
+
+      // —— 售后中 ——
+      { id: 'o5', time: '2026-03-06 17:35:59', no: '90260306727897586328180',
+        img: u('1542362567-b07e54358753'),
+        title: '保时捷 Panamera(进口) 2014款 保时捷 Panamera 3.0T',
+        plate: '粤HSB009',
+        amount: '3 000', status: '售后中',
+        actions: [{ type:'btn', label:'确认过户对象' }] }
+    ];
+
+    // 个人中心专属 header(与 coins / mall / member 一致)
+    const header = (function () {
+      const c = window.PC_COMMON;
+      const links = c.topbarLeftLinks.map(l => '[<a href="' + l.href + '">' + l.text + '</a>]').join('');
+      const right = c.topbarRight.map(r =>
+        '<a href="' + r.href + '" class="' + (r.danger ? 'danger' : '') + '">' +
+        (r.icon ? '<i data-lucide="' + r.icon + '" class="w-3.5 h-3.5 inline mr-0.5"></i>' : '') +
+        r.text + '</a>'
+      ).join('<span class="sep">|</span>');
+      return '<div class="pc-topbar"><div class="topbar-inner"><div>' + c.topbarLeft + ' ' + links + '</div><div>' + right + '</div></div></div>' +
+        '<div class="pc-nav"><div class="pc-nav-inner">' +
+        '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
+        '<div class="nav-list">' +
+        '<a href="member.html" class="nav-item">我的首页</a>' +
+        '<a href="orders.html" class="nav-item active">我的交易</a>' +
+        '<a href="#" class="nav-item">专用账号</a>' +
+        '<a href="#" class="nav-item">我的信息</a>' +
+        '</div></div></div>';
+    })();
+    const footer = window.PC_COMMON.renderFooter();
+
+    watch(payOrder, () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return { tab, kw, orders, payOrder, openPay, header, footer };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

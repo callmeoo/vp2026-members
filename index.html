@@ -422,6 +422,7 @@
               <li>兑换价格按等级折扣动态计算:<code>需积分 = 定价 × 等级折扣率</code>(V0/V1 100%、V2 95%、V3 80%)。</li>
               <li>流程:扣积分 → 生成 <code>reward_card</code>(状态 <code>unused</code>)→ 推送到「我的优惠券」。</li>
               <li>审计:所有兑换写 <code>redeem_log</code>,后台「兑换记录」可查。</li>
+              <li><strong style="color:#dc2626">积分允许为负数</strong>(售后退车回滚成交积分时,若用户已消耗导致余额不足,允许扣为负值)。</li>
             </ul>
 
             <h3>2.4 优惠券生命周期</h3>
@@ -546,6 +547,7 @@
                 { title: '会员中心',     file: 'pc/member.html' },
                 { title: '积分明细',     file: 'pc/coins.html' },
                 { title: '积分兑换',     file: 'pc/mall.html' },
+                { title: '我的交易-买到的车', file: 'pc/orders.html' },
               ],
             },
             {
