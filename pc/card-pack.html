@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的卡包 · 我的交易 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<script src="_partials.js"></script>
+<style>
+[v-cloak] { display: none; }
+
+.trade-layout { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; }
+
+/* 左侧 */
+.trade-side { background: #fff; border: 1px solid var(--pc-border); padding: 18px 0; }
+.trade-side h3 { font-size: 15px; font-weight: 700; color: #1f2937; padding: 0 22px 14px; }
+.trade-side .item { padding: 9px 22px; font-size: 14px; color: #4b5563; cursor: pointer; }
+.trade-side .item:hover { color: var(--pc-red); }
+.trade-side .item.active { color: var(--pc-red); font-weight: 600; }
+
+/* 主区 */
+.trade-main { background: transparent; }
+.trade-title { background: #fff; border: 1px solid var(--pc-border); padding: 16px 24px; margin-bottom: 12px; font-size: 16px; font-weight: 600; color: #1f2937; }
+
+/* 卡包 tabs + 搜索 */
+.card-toolbar { background: #fff; border: 1px solid var(--pc-border); border-bottom: none; padding: 18px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+.card-tabs { display: flex; gap: 24px; }
+.card-tab { font-size: 15px; color: #4b5563; padding-bottom: 12px; cursor: pointer; position: relative; }
+.card-tab:hover { color: var(--pc-red); }
+.card-tab.active { color: var(--pc-red); font-weight: 600; }
+.card-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--pc-red); border-radius: 2px; }
+
+.redeem-box { display: flex; align-items: center; gap: 8px; }
+.redeem-box input { width: 200px; height: 36px; padding: 0 12px; border: 1px solid #e5e7eb; border-radius: 4px; outline: none; font-size: 13px; }
+.redeem-box input:focus { border-color: var(--pc-red); }
+.redeem-btn { height: 36px; padding: 0 16px; background: var(--pc-red); color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.redeem-btn:hover { background: #b91c1c; }
+
+/* 优惠券列表 */
+.coupon-list { background: #fff; border: 1px solid var(--pc-border); border-top: 1px solid #f1f5f9; }
+.coupon-head { display: grid; grid-template-columns: 180px 200px 120px 180px 200px 100px; padding: 14px 24px; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+.coupon-row { display: grid; grid-template-columns: 180px 200px 120px 180px 200px 100px; padding: 20px 24px; align-items: center; border-bottom: 1px solid #f1f5f9; }
+.coupon-row:last-child { border-bottom: none; }
+
+.coupon-name { font-size: 14px; color: #1f2937; font-weight: 500; }
+.coupon-scope { font-size: 12px; color: var(--pc-red); margin-top: 4px; }
+.coupon-time { font-size: 13px; color: #4b5563; }
+.coupon-type { font-size: 13px; color: #4b5563; }
+.coupon-code { font-size: 13px; color: #1f2937; font-family: monospace; }
+.coupon-expire { font-size: 13px; color: #4b5563; }
+
+/* 待使用印章 */
+.stamp-unused {
+  width: 56px;
+  height: 56px;
+  border: 3px solid #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 700;
+  transform: rotate(-12deg);
+  line-height: 1.2;
+  text-align: center;
+}
+.stamp-used {
+  width: 56px;
+  height: 56px;
+  border: 3px solid #94a3b8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  transform: rotate(-12deg);
+  line-height: 1.2;
+  text-align: center;
+}
+.stamp-expired {
+  width: 56px;
+  height: 56px;
+  border: 3px solid #94a3b8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  transform: rotate(-12deg);
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* 空状态 */
+.empty-state { padding: 60px 24px; text-align: center; color: #94a3b8; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div v-html="header"></div>
+
+  <div class="pc-main">
+    <div class="trade-layout">
+
+      <!-- 左侧菜单 -->
+      <aside class="trade-side">
+        <h3>我的交易</h3>
+        <a href="orders.html" class="item">买到的车</a>
+        <div class="item">出价的车</div>
+        <div class="item">关注的车</div>
+        <div class="item">唯普好车</div>
+        <div class="item active">我的卡包</div>
+      </aside>
+
+      <!-- 主内容 -->
+      <div class="trade-main">
+        <div class="trade-title">我的卡包</div>
+
+        <div class="card-toolbar">
+          <div class="card-tabs">
+            <div :class="['card-tab', tab === 'rights' ? 'active' : '']" @click="tab = 'rights'">权益卡</div>
+            <div :class="['card-tab', tab === 'coupon' ? 'active' : '']" @click="tab = 'coupon'">优惠券</div>
+            <div :class="['card-tab', tab === 'boost' ? 'active' : '']" @click="tab = 'boost'">加量包</div>
+          </div>
+          <div class="redeem-box">
+            <input v-model="redeemCode" placeholder="输入优惠券兑换码">
+            <button class="redeem-btn" @click="handleRedeem">优惠券兑换</button>
+          </div>
+        </div>
+
+        <!-- 优惠券列表 -->
+        <div v-if="tab === 'coupon'" class="coupon-list">
+          <div class="coupon-head">
+            <span>优惠券类型</span>
+            <span>获得时间</span>
+            <span>活动类型</span>
+            <span>券码</span>
+            <span>有效期</span>
+            <span>状态</span>
+          </div>
+          <div v-for="c in coupons" :key="c.id" class="coupon-row">
+            <div>
+              <div class="coupon-name">{{ c.name }}</div>
+              <div class="coupon-scope">适用范围：{{ c.scope }}</div>
+            </div>
+            <div class="coupon-time">{{ c.getTime }}</div>
+            <div class="coupon-type">{{ c.actType }}</div>
+            <div class="coupon-code">{{ c.code }}</div>
+            <div class="coupon-expire">{{ c.expire }}</div>
+            <div>
+              <div v-if="c.status === '待使用'" class="stamp-unused">待<br>使用</div>
+              <div v-else-if="c.status === '已使用'" class="stamp-used">已<br>使用</div>
+              <div v-else class="stamp-expired">已<br>过期</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 权益卡 -->
+        <div v-if="tab === 'rights'" class="coupon-list">
+          <div class="empty-state">暂无权益卡</div>
+        </div>
+
+        <!-- 加量包 -->
+        <div v-if="tab === 'boost'" class="coupon-list">
+          <div class="empty-state">暂无加量包</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-html="footer"></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, ref, onMounted, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const tab = ref('coupon');
+    const redeemCode = ref('270841563227');
+
+    function handleRedeem() {
+      if (!redeemCode.value.trim()) return;
+      alert('兑换码: ' + redeemCode.value + ' 兑换成功！');
+      redeemCode.value = '';
+    }
+
+    const coupons = [
+      { id: 1, name: '服务费直减券', scope: '1234566', getTime: '2026-05-06 16:01:35', actType: '补偿', code: '820971566527', expire: '2026-07-06 16:01:35', status: '待使用' },
+      { id: 2, name: '服务费直减券', scope: '1234566', getTime: '2026-05-06 16:01:48', actType: '补偿', code: '270841563227', expire: '2026-07-06 16:01:48', status: '待使用' },
+      { id: 3, name: '维保测试cpylj', scope: 'cptest', getTime: '2026-05-06 15:26:06', actType: '补偿', code: '840931469827', expire: '2026-05-20 15:26:06', status: '待使用' },
+      { id: 4, name: '10 元直减券', scope: '柠檬查出险查询', getTime: '2026-05-06 11:42:09', actType: '产品测试', code: '000972362027', expire: '2026-05-20 11:42:09', status: '待使用' },
+      { id: 5, name: '服务费直减券', scope: '1234566', getTime: '2026-04-28 09:15:22', actType: '补偿', code: '651023847291', expire: '2026-06-28 09:15:22', status: '已使用' },
+      { id: 6, name: '20 元直减券', scope: '全平台', getTime: '2026-03-15 14:30:00', actType: '活动', code: '392847561023', expire: '2026-04-15 14:30:00', status: '已过期' },
+    ];
+
+    // 个人中心专属 header
+    const header = (function () {
+      const c = window.PC_COMMON;
+      const topbarHtml = '<div class="pc-topbar"><div class="topbar-inner">' +
+        '<div><span style="margin-right:6px">cptest01</span><a href="#" style="margin-right:12px">退出</a></div>' +
+        '<div><a href="home.html">唯普首页</a><span class="sep">|</span><a href="#">个人中心</a><span class="sep">|</span><a href="#">移动唯普</a><span class="sep">|</span><a href="#">商家合作</a><span class="sep">|</span><a href="#">网站公告</a><span class="sep">|</span><a href="#" class="danger"><i data-lucide="headphones" class="w-3.5 h-3.5 inline mr-0.5"></i>联系客服</a></div>' +
+        '</div></div>';
+      const navHtml = '<div class="pc-nav"><div class="pc-nav-inner">' +
+        '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
+        '<div class="nav-list">' +
+        '<a href="member.html" class="nav-item">我的首页</a>' +
+        '<a href="orders.html" class="nav-item active">我的交易 ▾</a>' +
+        '<a href="#" class="nav-item">专用账号</a>' +
+        '<a href="#" class="nav-item">我的信息 ▾</a>' +
+        '</div></div></div>';
+      return topbarHtml + navHtml;
+    })();
+    const footer = window.PC_COMMON.renderFooter();
+
+    onMounted(() => nextTick(() => lucide && lucide.createIcons()));
+
+    return { tab, redeemCode, handleRedeem, coupons, header, footer };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

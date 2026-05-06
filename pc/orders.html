@@ -16,7 +16,7 @@
 /* 左侧 */
 .trade-side { background: #fff; border: 1px solid var(--pc-border); padding: 18px 0; }
 .trade-side h3 { font-size: 15px; font-weight: 700; color: #1f2937; padding: 0 22px 14px; }
-.trade-side .item { padding: 9px 22px; font-size: 14px; color: #4b5563; cursor: pointer; }
+.trade-side .item { padding: 9px 22px; font-size: 14px; color: #4b5563; cursor: pointer; display: block; }
 .trade-side .item:hover { color: var(--pc-red); }
 .trade-side .item.active { color: var(--pc-red); font-weight: 600; }
 
@@ -62,15 +62,41 @@
 .cs-link { display: inline-flex; align-items: center; gap: 4px; color: var(--pc-red); font-size: 12px; cursor: pointer; }
 .cs-link:hover { text-decoration: underline; }
 
-/* 支付弹窗占位 */
-.pay-mask { position: fixed; inset: 0; z-index: 100; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.pay-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
-.pay-head { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-.pay-head h3 { font-size: 16px; font-weight: 700; color: #1f2937; }
-.pay-body { padding: 28px 24px; }
-.pay-foot { padding: 14px 24px; border-top: 1px solid #f1f5f9; display: flex; gap: 12px; justify-content: flex-end; background: #fafafa; }
-.pay-btn { padding: 8px 22px; border-radius: 6px; font-size: 14px; cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; }
-.pay-btn.primary { background: var(--pc-red); color: #fff; border-color: var(--pc-red); }
+/* 售后中权益标签 */
+.benefit-used-tag { display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(120deg,#fde68a 0%,#fbbf24 100%); color: #7c2d12; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+
+/* 弹窗 */
+.modal-mask { position: fixed; inset: 0; z-index: 100; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 580px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.25); max-height: 90vh; display: flex; flex-direction: column; }
+.modal-head { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.modal-head h3 { font-size: 16px; font-weight: 700; color: #1f2937; }
+.modal-body { padding: 0; overflow-y: auto; flex: 1; }
+.modal-foot { padding: 14px 24px; border-top: 1px solid #f1f5f9; display: flex; gap: 12px; background: #fafafa; flex-shrink: 0; }
+.modal-btn { padding: 10px 28px; border-radius: 4px; font-size: 14px; cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; }
+.modal-btn:hover { border-color: #94a3b8; }
+.modal-btn.primary { background: var(--pc-red); color: #fff; border-color: var(--pc-red); }
+.modal-btn.primary:hover { background: #b91c1c; }
+
+/* 权益选择行 */
+.benefit-row { display: flex; align-items: center; gap: 12px; padding: 14px 24px; background: #fff; cursor: pointer; border: 1px solid #f1f5f9; border-radius: 6px; margin-top: 12px; user-select: none; transition: border-color .15s; }
+.benefit-row:hover { border-color: #fbbf24; }
+.benefit-row.selected { border-color: #f59e0b; background: linear-gradient(135deg,#fffbeb 0%,#fff 100%); }
+.benefit-row.disabled { opacity: .6; cursor: not-allowed; border-color: #e5e7eb; }
+.benefit-row.disabled:hover { border-color: #e5e7eb; }
+.benefit-icon { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg,#fde68a 0%,#f59e0b 100%); display: flex; align-items: center; justify-content: center; color: #7c2d12; flex-shrink: 0; font-size: 16px; }
+.benefit-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.benefit-row.selected .benefit-radio { background: #f59e0b; border-color: #f59e0b; }
+
+/* 温馨提示弹窗 */
+.tip-mask { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.tip-box { background: #fff; border-radius: 12px; width: 100%; max-width: 400px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.25); padding: 28px 24px 20px; text-align: center; }
+.tip-box h4 { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 14px; }
+.tip-box p { font-size: 14px; color: #4b5563; line-height: 1.7; margin-bottom: 20px; }
+.tip-box .tip-btn { padding: 8px 32px; border-radius: 6px; font-size: 14px; cursor: pointer; border: none; background: var(--pc-red); color: #fff; }
+.tip-box .tip-btn:hover { background: #b91c1c; }
+.demo-switch { display: flex; align-items: center; gap: 8px; padding: 10px 24px; font-size: 11px; color: #94a3b8; background: #fafbfc; border-top: 1px solid #f1f5f9; }
+.demo-btn { padding: 2px 10px; border: 1px solid #e9d5ff; background: #faf5ff; color: #7c3aed; border-radius: 100px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.demo-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 </style>
 </head>
 <body>
@@ -87,7 +113,7 @@
         <div class="item">出价的车</div>
         <div class="item">关注的车</div>
         <div class="item">唯普好车</div>
-        <div class="item">我的卡包</div>
+        <a href="card-pack.html" class="item">我的卡包</a>
       </aside>
 
       <!-- 主内容 -->
@@ -111,7 +137,7 @@
             <span><span class="sortable">全部订单 <i data-lucide="chevron-down" class="w-3 h-3"></i></span></span>
             <span>车辆信息</span>
             <span>订单金额</span>
-            <span><span class="sortable">订单状态 <i data-lucide="chevron-down" class="w-3 h-3"></i></span></span>
+            <span><span class="sortable">待支付 <i data-lucide="chevron-down" class="w-3 h-3"></i></span></span>
             <span>操作</span>
           </div>
 
@@ -132,7 +158,12 @@
                 <div class="car-plate">{{ o.plate }}</div>
               </div>
               <div class="amt">¥ {{ o.amount }}</div>
-              <div :class="['status', o.status === '待支付' ? 'unpaid' : (o.status === '售后中' ? 'afs' : '')]">{{ o.status }}</div>
+              <div>
+                <div :class="['status', o.status === '待支付' ? 'unpaid' : (o.status === '售后中' ? 'afs' : '')]">{{ o.status }}</div>
+                <div v-if="o.usedBenefit" class="benefit-used-tag">
+                  <span>✦</span> 已使用无理由退车权益
+                </div>
+              </div>
               <div class="actions">
                 <template v-for="a in o.actions" :key="a.label">
                   <button v-if="a.type === 'pay'" class="act-btn primary" @click="openPay(o)">{{ a.label }}</button>
@@ -149,130 +180,316 @@
 
   <div v-html="footer"></div>
 
-  <!-- 支付弹窗(占位 — 待用户提供详细设计稿后扩展) -->
-  <div v-if="payOrder" class="pay-mask" @click.self="payOrder = null">
-    <div class="pay-box">
-      <div class="pay-head">
+  <!-- ========== 支付订单弹窗 ========== -->
+  <div v-if="payOrder" class="modal-mask" @click.self="payOrder = null">
+    <div class="modal-box">
+      <div class="modal-head">
         <h3>支付订单</h3>
         <span class="cursor-pointer text-slate-400 hover:text-slate-600" @click="payOrder = null"><i data-lucide="x" class="w-5 h-5"></i></span>
       </div>
-      <div class="pay-body">
-        <div class="text-sm text-slate-500 mb-2">订单号: {{ payOrder.no }}</div>
-        <div class="text-base font-semibold text-slate-800">{{ payOrder.title }}</div>
-        <div class="text-sm text-slate-500 mt-1">{{ payOrder.plate }}</div>
-        <div class="mt-5 flex items-baseline gap-2">
-          <span class="text-sm text-slate-500">应付金额</span>
-          <span class="text-3xl font-black text-rose-500">¥ {{ payOrder.amount }}</span>
-        </div>
-        <div class="mt-6 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800 leading-relaxed">
-          <strong>待补充：</strong>优惠券选择 / 无理由退车权益勾选(中标后 24h 内可用) 等模块设计稿确认后接入,逻辑可参考移动端
-          <a href="../app/aftersale-apply.html" target="_blank" class="text-amber-700 underline">aftersale-apply.html</a>。
+      <div class="modal-body">
+        <div style="padding: 24px;">
+          <!-- 支付金额 -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">支付金额</div>
+            <div style="font-size: 40px; font-weight: 700; color: #ef4444;">¥{{ payOrder.amount }}</div>
+          </div>
+
+          <!-- 车辆信息 -->
+          <div style="background: #f9fafb; padding: 14px 16px; border-radius: 6px; margin-bottom: 24px; font-size: 14px; color: #4b5563; line-height: 2.2;">
+            <div>购买车辆：{{ payOrder.title }}</div>
+            <div>订单编号：{{ payOrder.no }}</div>
+            <div>订单金额：<span style="color: #ef4444;">¥{{ payOrder.amount }}</span></div>
+            <div>优惠券: 不使用优惠券</div>
+          </div>
+
+          <!-- 支付方式 -->
+          <div style="margin-bottom: 24px;">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 12px;">支付方式</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+              <span style="font-size: 14px; color: #1f2937;">余额支付</span>
+              <span style="font-size: 14px;">剩余 <span style="color: #ef4444; font-weight: 600;">¥139648697.94</span></span>
+            </div>
+          </div>
+
+          <!-- 成交确认书 -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 12px;">成交确认书</div>
+            <div style="display: flex; align-items: flex-end; gap: 16px;">
+              <div style="width: 180px; height: 120px; background: #f1f5f9; border: 1px solid #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=300&h=200&fit=crop&auto=format&q=60" alt="成交确认书" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
+              </div>
+              <div style="font-size: 12px; color: #d12c1f; cursor: pointer;">点击可查大图</div>
+            </div>
+          </div>
+
+          <!-- 协议勾选 -->
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 16px;">
+            <input type="checkbox" v-model="payAgreed" id="pay-agree" style="width: 16px; height: 16px; accent-color: #d12c1f;">
+            <label for="pay-agree" style="font-size: 13px; color: #4b5563;">我已阅读知晓并同意 <a href="#" style="color: #d12c1f;">《竞价车辆竞买成交确认书》</a></label>
+          </div>
         </div>
       </div>
-      <div class="pay-foot">
-        <button class="pay-btn" @click="payOrder = null">取消</button>
-        <button class="pay-btn primary" @click="payOrder = null">立即支付</button>
+      <div class="modal-foot">
+        <button class="modal-btn" @click="openAfsFromPay">申请售后</button>
+        <button class="modal-btn primary" @click="confirmPay">确认支付</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ========== 申请售后弹窗 ========== -->
+  <div v-if="afsOrder" class="modal-mask" @click.self="afsOrder = null">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>申请售后</h3>
+        <span class="cursor-pointer text-slate-400 hover:text-slate-600" @click="afsOrder = null"><i data-lucide="x" class="w-5 h-5"></i></span>
+      </div>
+      <div class="modal-body">
+        <!-- 警告提示 -->
+        <div style="background: #fef2f2; padding: 12px 24px; display: flex; align-items: center; gap: 8px;">
+          <span style="color: #ef4444; font-size: 18px;">⚠</span>
+          <span style="font-size: 14px; color: #4b5563;">您现在申请后，将产生违约金<strong style="color: #ef4444;">{{ afsSelectedCard ? 0 : afsOrder.penalty }}</strong>元，请您谨慎考虑后再做决定</span>
+        </div>
+
+        <div style="padding: 24px;">
+          <!-- 违约金额 -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">违约金额</div>
+            <div style="display: flex; align-items: baseline; gap: 10px;">
+              <span v-if="afsSelectedCard" style="font-size: 20px; color: #94a3b8; text-decoration: line-through;">¥{{ afsOrder.penalty }}</span>
+              <span :style="{ fontSize: '40px', fontWeight: 700, color: afsSelectedCard ? '#10b981' : '#ef4444' }">¥{{ afsSelectedCard ? 0 : afsOrder.penalty }}</span>
+            </div>
+          </div>
+
+          <!-- 车辆信息 -->
+          <div style="background: #f9fafb; padding: 14px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; color: #4b5563; line-height: 2;">
+            <div>购买车辆：{{ afsOrder.title }}</div>
+            <div>订单编号：{{ afsOrder.no }}</div>
+            <div>优惠券: 不使用优惠券</div>
+          </div>
+
+          <!-- 权益抵扣（仅有权益时展示） -->
+          <div v-if="afsHasBenefit" style="margin-bottom: 20px;">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+              权益抵扣
+              <span v-if="afsSelectedCard && !afsExpired" class="benefit-used-tag" style="font-size: 11px;">✦ 已选 1 张</span>
+              <span v-if="afsExpired" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">已超期 · 不可使用</span>
+              <!-- 演示切换 -->
+              <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8;">
+                演示状态:
+                <button :class="['demo-btn', { active: afsHasBenefit && !afsExpired }]" @click.stop="afsHasBenefit = true; afsExpired = false; afsSelectedCard = refundCards[0]">有权益(未超期)</button>
+                <button :class="['demo-btn', { active: afsExpired }]" @click.stop="afsExpired = true; afsSelectedCard = null">已超24h</button>
+                <button :class="['demo-btn', { active: !afsHasBenefit }]" @click.stop="afsHasBenefit = false; afsExpired = false; afsSelectedCard = null">无权益</button>
+              </span>
+            </div>
+            <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">
+              <template v-if="afsExpired">中标后已超 24 小时，「无理由退车」权益本单无法使用</template>
+              <template v-else-if="afsSelectedCard">{{ afsSelectedCard.name }} · 中标后 24h 内可申请（{{ afsSelectedCard.source }}）</template>
+              <template v-else>可使用「无理由退车」抵扣违约金，中标后 24h 内有效</template>
+            </div>
+
+            <!-- 权益卡选择 -->
+            <div v-if="!afsExpired">
+              <div v-for="c in refundCards" :key="c.id"
+                :class="['benefit-row', { selected: afsSelectedCard && afsSelectedCard.id === c.id }]"
+                @click="afsSelectedCard = c">
+                <div class="benefit-icon">↩</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ c.name }}</div>
+                  <div style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ c.source }} · {{ c.expire }} 到期</div>
+                </div>
+                <div class="benefit-radio">
+                  <span v-if="afsSelectedCard && afsSelectedCard.id === c.id" style="color: #fff; font-size: 12px;">✓</span>
+                </div>
+              </div>
+              <div :class="['benefit-row', { selected: !afsSelectedCard }]" @click="afsSelectedCard = null">
+                <div class="benefit-icon" style="background: #f1f5f9; color: #64748b;">✕</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 14px; font-weight: 500; color: #1f2937;">不使用权益</div>
+                </div>
+                <div class="benefit-radio">
+                  <span v-if="!afsSelectedCard" style="color: #fff; font-size: 12px;">✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 取消交易原因 -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">取消交易原因</div>
+            <input v-model="afsReason" placeholder="请输入取消交易原因" style="width: 100%; height: 40px; padding: 0 14px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 14px; outline: none; box-sizing: border-box;">
+          </div>
+
+          <!-- 成交确认书 -->
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">成交确认书</div>
+            <div style="display: flex; align-items: flex-end; gap: 16px;">
+              <div style="width: 180px; height: 120px; background: #f1f5f9; border: 1px solid #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=300&h=200&fit=crop&auto=format&q=60" alt="成交确认书" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
+              </div>
+              <div style="font-size: 12px; color: #d12c1f; cursor: pointer;">点击可查大图</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 无权益时的演示切换入口 -->
+        <div v-if="!afsHasBenefit" class="demo-switch">
+          <span>演示状态:</span>
+          <button :class="['demo-btn', { active: afsHasBenefit && !afsExpired }]" @click="afsHasBenefit = true; afsExpired = false; afsSelectedCard = refundCards[0]">有权益(未超期)</button>
+          <button :class="['demo-btn', { active: afsExpired }]" @click="afsExpired = true; afsSelectedCard = null">已超24h</button>
+          <button :class="['demo-btn', { active: !afsHasBenefit }]" @click="afsHasBenefit = false; afsExpired = false; afsSelectedCard = null">无权益</button>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="modal-btn" @click="afsOrder = null">取消</button>
+        <button class="modal-btn primary" @click="submitAfs">确认提交</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 温馨提示弹窗 ========== -->
+  <div v-if="tipMsg" class="tip-mask" @click.self="tipMsg = ''">
+    <div class="tip-box">
+      <h4>温馨提示</h4>
+      <p>{{ tipMsg }}</p>
+      <button class="tip-btn" @click="tipMsg = ''">确定</button>
     </div>
   </div>
 </div>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-const { createApp, ref, watch, nextTick, onMounted } = Vue;
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
 createApp({
   setup() {
     const tab = ref('all');
     const kw = ref('');
     const payOrder = ref(null);
-    function openPay(o) { payOrder.value = o; }
+    const payAgreed = ref(false);
+    const tipMsg = ref('');
+
+    // 申请售后
+    const afsOrder = ref(null);
+    const afsReason = ref('');
+    const afsHasBenefit = ref(true);
+    const afsExpired = ref(false);
+    const afsSelectedCard = ref(null);
+
+    // 无理由退车权益卡
+    const refundCards = [
+      { id: 'rf001', name: '无理由退车', expire: '2026-06-30', source: 'V3 等级权益' },
+      { id: 'rf002', name: '无理由退车', expire: '2026-12-31', source: '活动赠送' }
+    ];
+
+    function openPay(o) {
+      payOrder.value = o;
+      payAgreed.value = false;
+    }
+
+    function confirmPay() {
+      if (!payAgreed.value) {
+        tipMsg.value = '请先阅读并同意《竞价车辆竞买成交确认书》';
+        return;
+      }
+      // 更新订单状态
+      const order = orders.value.find(x => x.id === payOrder.value.id);
+      if (order) {
+        order.status = '已完成';
+        order.actions = [{ type: 'btn', label: '确认过户对象' }];
+      }
+      tipMsg.value = '支付成功！订单 ' + payOrder.value.no;
+      payOrder.value = null;
+    }
+
+    // 从支付弹窗打开申请售后
+    function openAfsFromPay() {
+      const o = payOrder.value;
+      payOrder.value = null;
+      openAfs(o);
+    }
+
+    function openAfs(o) {
+      afsOrder.value = { ...o, penalty: o.penalty || '2000' };
+      afsReason.value = '';
+      afsExpired.value = false;
+      afsHasBenefit.value = true;
+      afsSelectedCard.value = refundCards[0];
+    }
+
+    function submitAfs() {
+      const usedBenefit = !!afsSelectedCard.value && !afsExpired.value;
+      if (usedBenefit) {
+        tipMsg.value = '已使用「无理由退车」权益（' + afsSelectedCard.value.source + '），违约金已全额抵扣为 ¥0。售后申请已提交。';
+      } else {
+        tipMsg.value = '已扣除违约金 ¥' + afsOrder.value.penalty + '，售后申请已提交。';
+      }
+      // 更新订单状态为售后中
+      const order = orders.value.find(x => x.id === afsOrder.value.id);
+      if (order) {
+        order.status = '售后中';
+        order.usedBenefit = usedBenefit;
+        order.actions = [{ type: 'btn', label: '确认过户对象' }];
+      }
+      afsOrder.value = null;
+      afsReason.value = '';
+    }
 
     const u = (id) => `https://images.unsplash.com/photo-${id}?w=600&h=400&fit=crop&auto=format&q=80`;
 
-    // 订单 mock — 待支付 2 条置顶
-    const orders = [
-      // —— 待支付 1 ——
-      { id: 'o0a', time: '2026-04-30 15:18:42', no: '90260430187456001294833',
-        img: u('1494976388531-d1058494cdd8'),
-        title: '丰田 卡罗拉 2021款 1.2T S-CVT 先锋版',
-        plate: '粤B23456',
-        amount: '8 800', status: '待支付',
-        actions: [{ type:'pay', label:'支付订单' }, { type:'btn', label:'确认过户对象' }] },
-      // —— 待支付 2 (原最后一行) ——
-      { id: 'o0b', time: '2026-03-06 16:37:32', no: '902603067278625227946446',
-        img: u('1542362567-b07e54358753'),
-        title: '保时捷 Panamera(进口) 2014款 保时捷 Panamera 3.0T',
-        plate: '闽A12345',
-        amount: '7 366', status: '待支付',
-        actions: [{ type:'pay', label:'支付订单' }, { type:'btn', label:'确认过户对象' }] },
-
-      // —— 已完成(报废车) ——
-      { id: 'o1', time: '2026-04-28 14:00:01', no: '90260428773560010268319',
-        img: u('1550355291-bbee04a92027'),
-        title: '别克 E4 2023款 臻享版',
-        plate: '粤CS4501',
-        amount: '14 500', status: '已完成', scrap: true,
-        actions: [{ type:'btn', label:'提车与授权' }, { type:'cs', label:'专属客服' }] },
-
-      // —— 已完成 ——
-      { id: 'o2', time: '2026-04-09 15:44:19', no: '90260409757206590276212',
-        img: u('1617788138017-80ad40651399'),
-        title: '比亚迪 宋PLUS 2020款 1.5T 自动豪华型',
-        plate: '津A12345',
-        amount: '11 300', status: '已完成',
-        actions: [{ type:'btn', label:'提车与授权' }] },
-
-      // —— 已完成(需提交过户资料) ——
-      { id: 'o3', time: '2026-03-17 10:22:01', no: '90260317737141210208205',
-        img: u('1552519507-da3b142c6e3d'),
-        title: '奔驰 B级(进口) 2022款 改款二 B 200 时尚型',
-        plate: '闽AA5779',
-        amount: '6 300', status: '已完成',
-        actions: [{ type:'btn', label:'提交过户资料' }, { type:'btn', label:'提车与授权' }, { type:'cs', label:'在线客服' }] },
-
-      // —— 已完成 ——
-      { id: 'o4', time: '2026-03-13 17:06:31', no: '90260313733927910172032',
-        img: u('1553440569-bcc63803a83d'),
-        title: '宝马 5 Series [5系] 535i 2011款 3.0T 手自一体 领先运动型',
-        plate: '粤A78546',
-        amount: '31 300', status: '已完成',
-        actions: [{ type:'btn', label:'提交过户资料' }, { type:'btn', label:'提车与授权' }, { type:'cs', label:'在线客服' }] },
-
-      // —— 售后中 ——
-      { id: 'o5', time: '2026-03-06 17:35:59', no: '90260306727897586328180',
+    const orders = ref([
+      // —— 售后中(已使用无理由退车) ——
+      { id: 'o5', time: '2026-03-06 17:35:59', no: '90260306727897586328181807',
         img: u('1542362567-b07e54358753'),
         title: '保时捷 Panamera(进口) 2014款 保时捷 Panamera 3.0T',
         plate: '粤HSB009',
-        amount: '3 000', status: '售后中',
-        actions: [{ type:'btn', label:'确认过户对象' }] }
-    ];
+        amount: '3 000', status: '售后中', penalty: '2000', usedBenefit: true,
+        actions: [{ type:'btn', label:'确认过户对象' }] },
 
-    // 个人中心专属 header(与 coins / mall / member 一致)
+      // —— 售后中(未使用权益) ——
+      { id: 'o6', time: '2026-03-06 16:37:32', no: '902603067278625227946446',
+        img: u('1550355291-bbee04a92027'),
+        title: '保时捷 Panamera(进口) 2014款 保时捷 Panamera 3.0T',
+        plate: '闽A12345',
+        amount: '7 366', status: '售后中', penalty: '2000', usedBenefit: false,
+        actions: [{ type:'btn', label:'确认过户对象' }] },
+
+      // —— 待支付 ——
+      { id: 'o7', time: '2026-03-06 16:13:01', no: '9026030672784781030215630',
+        img: u('1494976388531-d1058494cdd8'),
+        title: '别克 E4 2023款 智享版',
+        plate: '闽AB6688',
+        amount: '1 700', status: '待支付', penalty: '2000', scrap: true,
+        actions: [{ type:'pay', label:'支付订单' }, { type:'btn', label:'确认过户对象' }] },
+    ]);
+
+    // 个人中心专属 header
     const header = (function () {
-      const c = window.PC_COMMON;
-      const links = c.topbarLeftLinks.map(l => '[<a href="' + l.href + '">' + l.text + '</a>]').join('');
-      const right = c.topbarRight.map(r =>
-        '<a href="' + r.href + '" class="' + (r.danger ? 'danger' : '') + '">' +
-        (r.icon ? '<i data-lucide="' + r.icon + '" class="w-3.5 h-3.5 inline mr-0.5"></i>' : '') +
-        r.text + '</a>'
-      ).join('<span class="sep">|</span>');
-      return '<div class="pc-topbar"><div class="topbar-inner"><div>' + c.topbarLeft + ' ' + links + '</div><div>' + right + '</div></div></div>' +
+      return '<div class="pc-topbar"><div class="topbar-inner">' +
+        '<div><span style="margin-right:6px">cptest01</span><a href="#" style="margin-right:12px">退出</a></div>' +
+        '<div><a href="home.html">唯普首页</a><span class="sep">|</span><a href="#">个人中心</a><span class="sep">|</span><a href="#">移动唯普</a><span class="sep">|</span><a href="#">商家合作</a><span class="sep">|</span><a href="#">网站公告</a><span class="sep">|</span><a href="#" class="danger"><i data-lucide="headphones" class="w-3.5 h-3.5 inline mr-0.5"></i>联系客服</a></div>' +
+        '</div></div>' +
         '<div class="pc-nav"><div class="pc-nav-inner">' +
         '<a href="home.html" class="brand"><div class="brand-zh">唯普汽车</div><div class="brand-en">www.chevip.com</div></a>' +
         '<div class="nav-list">' +
         '<a href="member.html" class="nav-item">我的首页</a>' +
-        '<a href="orders.html" class="nav-item active">我的交易</a>' +
+        '<a href="orders.html" class="nav-item active">我的交易 ▾</a>' +
         '<a href="#" class="nav-item">专用账号</a>' +
-        '<a href="#" class="nav-item">我的信息</a>' +
+        '<a href="#" class="nav-item">我的信息 ▾</a>' +
         '</div></div></div>';
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch(payOrder, () => nextTick(() => lucide.createIcons()));
+    watch([payOrder, afsOrder, afsSelectedCard, afsExpired, afsHasBenefit], () => nextTick(() => lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { tab, kw, orders, payOrder, openPay, header, footer };
+    return {
+      tab, kw, orders, tipMsg,
+      payOrder, payAgreed, openPay, confirmPay,
+      afsOrder, afsReason, afsHasBenefit, afsExpired, afsSelectedCard,
+      refundCards, openAfs, openAfsFromPay, submitAfs,
+      header, footer
+    };
   }
 }).mount('#app');
 </script>

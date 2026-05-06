@@ -29,7 +29,7 @@
     <div class="flex items-center justify-between px-5 pb-3">
       <button type="button" @click="back" class="text-white cursor-pointer"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
       <span class="text-white text-base font-semibold">积分明细</span>
-      <button @click="showRuleModal = true" class="text-white text-xs">规则说明</button>
+      <span class="w-6"></span>
     </div>
 
     <!-- 余额概览 -->
@@ -99,25 +99,6 @@
 
 </div>
 
-<!-- 规则说明弹窗 -->
-<div v-if="showRuleModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.55);backdrop-filter:blur(3px)" @click.self="showRuleModal = false">
-  <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
-    <div class="bg-gradient-to-r from-violet-600 to-indigo-600 p-4 text-white flex items-center justify-between">
-      <div class="flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-base font-bold">积分获取规则</span></div>
-      <button @click="showRuleModal = false" class="text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <div class="p-4 max-h-[72vh] overflow-y-auto">
-      <coin-earning-rules></coin-earning-rules>
-      <div class="mt-3 text-xs text-slate-600 leading-relaxed">
-        <span class="font-semibold text-slate-800 mr-1">积分有效期:</span>{{ CFG.coin.validityDesc }},到期自动清零
-      </div>
-    </div>
-    <div class="p-3 border-t border-slate-100">
-      <button @click="showRuleModal = false" class="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-full text-sm font-bold">我知道了</button>
-    </div>
-  </div>
-</div>
-
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
@@ -126,7 +107,6 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script src="../shared/member-config.js"></script>
-<script src="../shared/coin-earning-rules.js"></script>
 <script>
 const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
@@ -134,7 +114,6 @@ const app = createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
     const activeFilter = ref('all');
-    const showRuleModal = ref(false);
 
     const filterTabs = [
       { key:'all',    label:'全部' },
@@ -244,13 +223,12 @@ const app = createApp({
 
     function back() { smartBack('member.html'); }
 
-    watch([activeFilter, showRuleModal], () => nextTick(() => window.lucide && lucide.createIcons()));
+    watch(activeFilter, () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { CFG, activeFilter, filterTabs, visibleGroups, showRuleModal, back };
+    return { CFG, activeFilter, filterTabs, visibleGroups, back };
   }
 });
-app.component('coin-earning-rules', window.CoinEarningRulesComponent);
 app.mount('#app');
 </script>
 </body>

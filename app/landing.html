@@ -172,16 +172,8 @@
     </div>
 
     <!-- 2) 等级表格 -->
-    <h2 class="sec-title">
-      <i data-lucide="layers" class="w-[18px] h-[18px] text-violet-600"></i>等级
-    </h2>
-
     <!-- 定级门槛 -->
     <div class="px-4">
-      <div class="flex items-center gap-2 mb-2">
-        <div class="h-4 w-1 bg-violet-500 rounded-full"></div>
-        <span class="sub-title">定级门槛</span>
-      </div>
       <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm matrix bg-white">
         <div class="grid grid-cols-[1fr_2.4fr] hd">
           <div class="cell">等级</div>
@@ -189,7 +181,7 @@
         </div>
         <div v-for="lv in levelRows" :key="lv.code" class="grid grid-cols-[1fr_2.4fr] row">
           <div class="cell">
-            <div :class="['inline-block px-2.5 py-1 rounded font-black', lv.css]" style="font-size:14px">{{ lv.short }}</div>
+            <div :class="['inline-block px-2.5 py-1 rounded font-black', lv.css]" style="font-size:13px">{{ lv.short }} {{ lv.name }}</div>
           </div>
           <div class="cell text-left px-3" style="color:#475569;font-size:14px;line-height:1.55" v-html="lv.threshold"></div>
         </div>
@@ -201,19 +193,7 @@
       <i data-lucide="shield-check" class="w-[18px] h-[18px] text-violet-600"></i>会员权益
     </h2>
     <div class="px-4">
-      <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm matrix bg-white">
-        <div class="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr] hd">
-          <div class="cell">权益类目</div>
-          <div class="cell">V0</div>
-          <div class="cell">V1</div>
-          <div class="cell">V2</div>
-          <div class="cell">V3</div>
-        </div>
-        <div v-for="(row, i) in benefitMatrix" :key="i" class="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr] row">
-          <div class="cell text-left px-3" style="color:#334155;font-weight:500">{{ row.label }}</div>
-          <div v-for="(v, j) in row.values" :key="j" class="cell" v-html="v"></div>
-        </div>
-      </div>
+      <benefit-matrix></benefit-matrix>
       <div class="cap-text text-center mt-2">以实际页面展示为准,平台保留调整权</div>
     </div>
   </section>
@@ -231,31 +211,14 @@
       </div>
     </div>
 
-    <!-- 获取方式表 · 三列:类别 / 具体行为 / 积分 -->
+    <!-- 获取方式 · 推荐任务组件 -->
     <div class="px-4 mt-5">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-4 w-1 bg-amber-500 rounded-full"></div>
         <span class="sub-title">获取方式</span>
       </div>
-      <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-        <table class="w-full earn-table border-collapse">
-          <thead>
-            <tr class="bg-gradient-to-r from-amber-500 to-amber-600 text-white">
-              <th class="text-left border-r border-white/20" style="width:28%">类别</th>
-              <th class="text-left border-r border-white/20">具体行为</th>
-              <th class="text-center" style="width:28%">积分</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-for="g in earningTable" :key="g.category">
-              <tr v-for="(it, i) in g.items" :key="it.action" class="border-b border-slate-100 last:border-0">
-                <td v-if="i === 0" :rowspan="g.items.length" class="align-middle text-center border-r border-slate-200 font-semibold bg-slate-50" style="color:#334155">{{ g.category }}</td>
-                <td class="border-r border-slate-100" style="color:#334155">{{ it.action }}</td>
-                <td class="text-center font-bold whitespace-nowrap" style="color:#d97706">{{ it.coin }}</td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <recommended-tasks level="V2" platform="app" :has-activity="hasActivity" :show-activity-toggle="false"></recommended-tasks>
       </div>
     </div>
 
@@ -356,16 +319,19 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="_smart-back.js"></script>
 <script src="../shared/member-config.js"></script>
+<script src="../shared/recommended-tasks.js"></script>
+<script src="../shared/benefit-matrix.js"></script>
 <script>
 const { createApp, ref, onMounted, nextTick } = Vue;
 
-createApp({
+const app = createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
 
     const activeTab = ref('levels');
     const showShareModal = ref(false);
     const openQa = ref(0);
+    const hasActivity = ref(true);
 
     const tabs = [
       { key: 'levels', label: '等级权益', icon: 'shield-check' },
@@ -375,64 +341,12 @@ createApp({
 
     // 从 CFG.levels 派生定级门槛行
     const levelRows = CFG.levels.map(lv => ({
-      code: lv.code, short: lv.short,
+      code: lv.code, short: lv.short, name: lv.name,
       css: 'lv-' + lv.short.toLowerCase(),
       threshold: lv.thresholdText
     }));
 
-    const dash  = '<span class="locked"><i data-lucide="minus"></i></span>';
-    const check = '<i data-lucide="check" class="w-4 h-4 inline"></i>';
-
-    // 折扣显示:根据 benefit id 换算
-    function discountOf(lv) {
-      const b = lv.benefits.find(x => x.id && x.id.indexOf('coin_exchange_') === 0);
-      if (!b) return '1:1';
-      if (b.id === 'coin_exchange_80') return '8 折';
-      if (b.id === 'coin_exchange_95') return '95 折';
-      return '1:1';
-    }
-    function tickClass(lvShort) {
-      if (lvShort === 'V3') return 'tick-amber';
-      if (lvShort === 'V2') return 'tick-violet';
-      return 'tick-slate';
-    }
-    function cellFor(lv, benefitId, text) {
-      if (!lv.benefits.find(b => b.id === benefitId)) return dash;
-      return '<span class="' + tickClass(lv.short) + '">' + (text || check) + '</span>';
-    }
-
-    // 权益矩阵 · 按 member-config 真实权益 id 聚合
-    // V0: 1:1 + 销售顾问
-    // V1: 1:1 + 历史数据 + 保留价 + 销售顾问 + 1V1 客服
-    // V2: 95 折 + 历史数据 + 保留价 + 销售顾问 + 1V1 客服
-    // V3: 8 折 + 历史数据 + 保留价 + 销售顾问 + 1V1 客服 + 无理由退车 1 台
-    const matrixRows = [
-      { label:'积分兑换折扣', render: lv => '<span class="' + tickClass(lv.short) + '">' + discountOf(lv) + '</span>' },
-      { label:'历史数据查询', render: lv => cellFor(lv, 'history_data') },
-      { label:'保留价查询',   render: lv => cellFor(lv, 'reserve_price') },
-      { label:'专属销售顾问', render: lv => cellFor(lv, 'sales_advisor') },
-      { label:'1V1 专属客服', render: lv => cellFor(lv, 'service_1v1') },
-      { label:'无理由退车',   render: lv => cellFor(lv, 'refund_1', '1 台') }
-    ];
-    const benefitMatrix = matrixRows.map(r => ({
-      label: r.label,
-      values: CFG.levels.map(lv => r.render(lv))
-    }));
-
     const qaList = CFG.qaList;
-
-    // 积分获取表 · 从 CFG.coinEarning 派生(已删「说明」列)
-    const earningTable = CFG.coinEarning.map(g => ({
-      category: g.category,
-      items: g.items.map(it => ({
-        action: it.action,
-        coin: String(it.coin) + (it.unit ? ' ' + it.unit : '')
-      }))
-    }));
-
-    // 折扣显示 · 按等级派生
-    const discountMap = {};
-    CFG.levels.forEach(lv => { discountMap[lv.code] = discountOf(lv); });
 
     const TAB_BAR_OFFSET = 56;
     const tabSentinel = ref(null);
@@ -491,12 +405,15 @@ createApp({
     });
 
     return {
-      CFG, activeTab, showShareModal, openQa, tabs, levelRows, benefitMatrix, qaList, earningTable, discountMap,
+      CFG, activeTab, showShareModal, openQa, tabs, levelRows, qaList, hasActivity,
       tabSentinel, isStuck,
       switchTab, toggleQa, back, shareToWechat, copyLink
     };
   }
-}).mount('#app');
+});
+app.component('recommended-tasks', window.RecommendedTasksComponent);
+app.component('benefit-matrix', window.BenefitMatrixComponent);
+app.mount('#app');
 </script>
 </body>
 </html>

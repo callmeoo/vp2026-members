@@ -20,7 +20,6 @@
   .reason-input::placeholder { color: #c0c4cc; }
 
   .benefit-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #fff; cursor: pointer; border-top: 1px solid #f3f4f6; user-select: none; }
-  .benefit-row > * { pointer-events: none; }
   .benefit-tag { display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(120deg,#fde68a 0%,#fbbf24 100%); color: #7c2d12; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
 
   .contract { background: #fff; padding: 14px 14px 18px; font-size: 9px; color: #475569; line-height: 1.5; margin: 12px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
@@ -91,7 +90,7 @@
       </span>
     </div>
 
-    <div class="benefit-row" @click="onBenefitClick" :style="noReasonExpired ? 'opacity:.85;cursor:not-allowed' : ''">
+    <div class="benefit-row" @click="onBenefitClick" :style="{ opacity: noReasonExpired ? 0.85 : 1, cursor: noReasonExpired ? 'not-allowed' : 'pointer' }">
       <div class="flex-1">
         <div class="text-[15px] text-slate-900 flex items-center gap-2">
           权益抵扣
@@ -255,7 +254,10 @@ createApp({
     ].sort((a, b) => a.expire.localeCompare(b.expire));
 
     const selectedCard = ref(refundCards[0]);
-    watch(noReasonExpired, (v) => { if (v) selectedCard.value = null; });
+    watch(noReasonExpired, (v) => {
+      if (v) selectedCard.value = null;
+      else selectedCard.value = refundCards[0]; // 切回未超期时恢复默认选中
+    });
 
     const clauses = [
       '(1) 乙方在成交前已经清楚了解该车辆状况,对该车辆有关情况及质量没有异议并自愿接受该标的的一切现状及瑕疵。',

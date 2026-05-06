@@ -453,6 +453,23 @@
             </ol>
           </div>
 
+          <!-- 6. 创新部数据查询 -->
+          <div v-if="prdActive === 'c6'" class="prd-body">
+            <h3>创新部数据查询对接说明</h3>
+            <p style="color:#dc2626;font-weight:500">数据查询界面由创新部提供，可查询服务项内容待业务方与创新部沟通确认。</p>
+            <p>平台发放数据查询券需对应创建创新部的数据查询券。</p>
+
+            <div style="margin:12px 0;padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:13px;color:#1d4ed8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">创新部优惠券接口：https://doc.weixin.qq.com/doc/w3_AP4AYAY7AHsCNRxTujywQT0aIoEu2?scode=AG4AJAc6AAgR96SGTIAUEAhwa7AKc</span>
+              <button onclick="navigator.clipboard.writeText('https://doc.weixin.qq.com/doc/w3_AP4AYAY7AHsCNRxTujywQT0aIoEu2?scode=AG4AJAc6AAgR96SGTIAUEAhwa7AKc');this.textContent='已复制';setTimeout(()=>this.textContent='复制',1500)"
+                      style="flex-shrink:0;padding:4px 12px;background:#3b82f6;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer">复制</button>
+            </div>
+
+            <div class="callout" style="margin-top:14px">
+              <p style="margin:0"><strong>创新部数据查询券创建时机：</strong>积分商城兑换成功后，同步创建创新部的优惠券。</p>
+            </div>
+          </div>
+
           <!-- 5. 待确认清单 -->
           <div v-if="prdActive === 'c5'" class="prd-body">
             <table>
@@ -460,6 +477,8 @@
               <tbody>
                 <tr><td>1</td><td>调研问卷表单</td><td><span class="tag tag-todo">需求方</span></td></tr>
                 <tr><td>2</td><td>转发朋友圈公开分享是否可实现</td><td><span class="tag tag-risk">技术</span></td></tr>
+                <tr><td>3</td><td>积分商城商品列表</td><td><span class="tag tag-todo">业务方</span></td></tr>
+                <tr><td>4</td><td>数据服务可查询清单</td><td><span class="tag tag-todo">业务方</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -525,9 +544,8 @@
               label: '全部车源', icon: 'car',
               items: [
                 { title: '全部车源(A 版)',   file: 'app/allcars.html' },
-                { title: '全部车源(B 版)',   file: 'app/all-cars.html' },
                 { title: '车辆详情',           file: 'app/car-detail.html' },
-                { title: '车辆详情(预约)',   file: 'app/car-detail-reserve.html' },
+                { title: '车辆详情(有保留价)',   file: 'app/car-detail-reserve.html' },
                 { title: '出价 / 竞拍',        file: 'app/car-bid.html' },
                 { title: '维保查询',           file: 'app/maintenance-query.html' },
               ],
@@ -617,6 +635,7 @@
         { key: 'c2', title: '积分商城' },
         { key: 'c3', title: '客户端消耗逻辑' },
         { key: 'c4', title: '历史数据处理' },
+        { key: 'c6', title: '创新部数据查询' },
         { key: 'c5', title: '待确认清单' },
       ];
       const prdActive = ref('c1');

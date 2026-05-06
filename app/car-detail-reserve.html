@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="../shared/reserve-cars.js"></script>
+<script src="../shared/reserve-price-logic.js"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f0f0; }
   .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 152px; }
@@ -62,6 +63,24 @@
     border-bottom: 1px solid #fde68a;
     padding: 8px 12px;
   }
+
+  /* 弹窗 */
+  .modal-mask { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(15,23,42,.6); }
+  .modal-card { background: #fff; border-radius: 16px; width: 100%; max-width: 300px; overflow: hidden; }
+
+  /* 积分行 */
+  .coin-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8fafc; border-radius: 8px; font-size: 13px; margin-top: 8px; }
+  .coin-row .label { color: #64748b; }
+  .coin-row .val { font-weight: 700; color: #0f172a; }
+  .coin-row .val.warn { color: #dc2626; }
+
+  /* toast */
+  .toast-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,23,42,.92); color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; z-index: 200; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.25); }
+
+  /* 演示切换 */
+  .demo-bar { position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%); z-index: 60; background: #111827; color: #fff; padding: 6px 12px; border-radius: 12px; font-size: 11px; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(0,0,0,.3); max-width: 380px; }
+  .demo-bar button { background: #1f2937; color: #fff; padding: 3px 8px; border-radius: 999px; cursor: pointer; font-size: 11px; border: none; }
+  .demo-bar button.on { background: #e60012; }
 </style>
 </head>
 <body>
@@ -127,7 +146,7 @@
       </div>
     </div>
 
-    <!-- 价格 / 记价 / 总价 · 同卡 -->
+    <!-- 价格 / 记价 / 总价 -->
     <div class="bg-white mt-1.5">
       <!-- 当前价 -->
       <div class="px-4 py-3 flex items-center justify-between">
@@ -145,7 +164,7 @@
           <i data-lucide="crown" class="w-4 h-4 text-amber-600 flex-none"></i>
           <span class="text-[12px] text-amber-800 font-medium">查看车辆保留价</span>
         </div>
-        <button v-if="!revealed" class="vip-reveal" @click="onRevealClick">
+        <button v-if="!canViewReserve" class="vip-reveal" @click="onRevealClick">
           <i data-lucide="eye" class="w-3.5 h-3.5"></i>
           <span>查看保留价</span>
         </button>
@@ -168,7 +187,7 @@
       </div>
     </div>
 
-    <!-- 占位段:配置 / 检测 / 报告 等(简化) -->
+    <!-- 基本信息 -->
     <div class="bg-white mt-1.5 px-4 py-4">
       <div class="text-[15px] font-semibold text-slate-800 mb-2">基本信息</div>
       <div class="grid grid-cols-2 gap-y-3 text-[13px]">
@@ -217,20 +236,79 @@
     </div>
   </div>
 
-  <!-- 不符合资格弹框 -->
-  <div v-if="showAlert" class="fixed inset-0 z-50 flex items-center justify-center p-6" style="background:rgba(15,23,42,.6)">
-    <div class="bg-white rounded-2xl w-full max-w-[300px] overflow-hidden">
+  <!-- ========== 锁定提示弹窗(V0/V1) ========== -->
+  <div v-if="reserveModal === 'lock'" class="modal-mask" @click.self="reserveModal = null">
+    <div class="modal-card">
       <div class="px-5 pt-5 pb-2 text-center">
         <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
           <i data-lucide="lock" class="w-6 h-6"></i>
         </div>
-        <div class="text-[14px] text-slate-700 leading-relaxed">V2 及以上可查看车辆保留价</div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">V2 及以上可查看车辆保留价</div>
+        <div class="text-[12px] text-slate-500">当前等级不支持直接查看，可使用积分兑换</div>
       </div>
       <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
-        <button @click="showAlert = false" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">我知道了</button>
-        <a href="mall.html" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">积分兑换</a>
+        <button @click="reserveModal = null" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">我知道了</button>
+        <button @click="reserveModal = 'confirm'" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">积分兑换</button>
       </div>
     </div>
+  </div>
+
+  <!-- ========== 积分兑换确认弹窗 ========== -->
+  <div v-if="reserveModal === 'confirm'" class="modal-mask" @click.self="reserveModal = null">
+    <div class="modal-card">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="key-round" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">兑换保留价查询</div>
+        <div class="text-[12px] text-slate-500">兑换后可永久查看本车保留价</div>
+      </div>
+      <div class="px-4">
+        <div class="coin-row">
+          <span class="label">兑换所需</span>
+          <span class="val"><span style="color:#e60012">{{ RESERVE_UNLOCK_COST }}</span> 积分</span>
+        </div>
+        <div class="coin-row">
+          <span class="label">当前积分</span>
+          <span class="val" :class="{ warn: userCoins < RESERVE_UNLOCK_COST }">{{ userCoins }} 积分</span>
+        </div>
+        <div v-if="userCoins < RESERVE_UNLOCK_COST" class="text-[12px] text-red-500 mt-2 text-center">
+          积分不足，<a href="coins.html" class="underline">前往赚取积分</a>
+        </div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="reserveModal = null" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">取消</button>
+        <button @click="confirmExchange" :disabled="userCoins < RESERVE_UNLOCK_COST"
+          :class="userCoins < RESERVE_UNLOCK_COST ? 'bg-slate-200 text-slate-400' : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'"
+          class="py-2.5 rounded-full text-[14px] font-semibold text-center">确认兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 保留价展示弹窗(V2/V3 或已兑换) ========== -->
+  <div v-if="reserveModal === 'show'" class="modal-mask" @click.self="reserveModal = null">
+    <div class="modal-card">
+      <div class="px-5 pt-6 pb-5 text-center">
+        <div class="text-[13px] text-slate-500 mb-2">本车保留价</div>
+        <div class="text-[32px] font-black text-red-500 leading-none my-2">¥{{ car ? formatYuan(car.reservePrice) : '' }}</div>
+        <div class="text-[12px] text-slate-400 mb-4">({{ car ? (car.reservePrice/10000).toFixed(2) : '' }}万)</div>
+        <button @click="reserveModal = null" class="w-full py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div v-if="toastMsg" class="toast-popup">
+    <i data-lucide="check-circle" class="w-4 h-4"></i>{{ toastMsg }}
+  </div>
+
+  <!-- 演示切换条 -->
+  <div class="demo-bar">
+    <span style="opacity:.7">等级:</span>
+    <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
+            :class="{ on: levelCode === lv }"
+            @click="levelCode = lv">{{ lv }}</button>
+    <button @click="resetUnlock" style="background:#374151;margin-left:4px">重置</button>
   </div>
 
 </div>
@@ -247,31 +325,72 @@ const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
 
 createApp({
   setup() {
+    // 使用共享保留价逻辑
+    const RPL = window.ReservePriceLogic;
+
     const params = new URLSearchParams(location.search);
-    const id = params.get('id') || 'r1';
-    const car = ref((window.RESERVE_CARS || []).find(c => c.id === id) || (window.RESERVE_CARS || [])[0]);
-    const revealed = ref(false);
-    const showAlert = ref(false);
+    const carId = params.get('id') || 'r1';
+    const car = ref((window.RESERVE_CARS || []).find(c => c.id === carId) || (window.RESERVE_CARS || [])[0]);
+
+    // 演示等级切换
+    const levelCode = ref('V2');
+    const reserveModal = ref(null); // null | 'lock' | 'confirm' | 'show'
+    const userCoins = ref(RPL.getCoins());
+    const unlockedIds = ref(RPL.getUnlockedIds());
+    const toastMsg = ref('');
+    const RESERVE_UNLOCK_COST = RPL.COST;
+
+    // V2+ 或已为本车积分兑换过 → 可查看
+    const canViewReserve = computed(() =>
+      ['V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
+    );
+
+    function onRevealClick() {
+      if (canViewReserve.value) {
+        reserveModal.value = 'show';
+      } else {
+        reserveModal.value = 'lock';
+      }
+    }
+
+    function confirmExchange() {
+      if (userCoins.value < RESERVE_UNLOCK_COST) return;
+      const carTitle = car.value ? car.value.brand + ' ' + car.value.model : '';
+      const result = RPL.exchange(carId, carTitle);
+      if (result.success) {
+        userCoins.value = result.newCoins;
+        unlockedIds.value = RPL.getUnlockedIds();
+        reserveModal.value = null;
+        toastMsg.value = result.message;
+        setTimeout(() => { toastMsg.value = ''; }, 1500);
+      }
+    }
+
+    // 重置解锁状态（演示用）
+    function resetUnlock() {
+      const ids = RPL.getUnlockedIds().filter(id => id !== carId);
+      RPL.writeStore(RPL.SK.unlocked, ids);
+      unlockedIds.value = ids;
+      // 恢复积分
+      const coins = RPL.getCoins() + RPL.COST;
+      RPL.writeStore(RPL.SK.coins, coins);
+      userCoins.value = coins;
+      toastMsg.value = '已重置';
+      setTimeout(() => { toastMsg.value = ''; }, 1000);
+    }
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
-    function onRevealClick() {
-      const user = window.VPUser && window.VPUser.get();
-      if (!user) {
-        location.href = 'login.html?from=' + encodeURIComponent(location.pathname + location.search);
-        return;
-      }
-      if (!window.VPUser.canSeeReserve()) {
-        showAlert.value = true;
-        return;
-      }
-      revealed.value = true;
-    }
-
     onMounted(() => lucide.createIcons());
-    watch([revealed, showAlert], () => nextTick(() => lucide.createIcons()));
+    watch([reserveModal, levelCode, toastMsg], () => nextTick(() => lucide && lucide.createIcons()));
 
-    return { car, revealed, showAlert, pad, onRevealClick, formatYuan: window.formatYuan };
+    return {
+      car, carId, levelCode, canViewReserve,
+      reserveModal, userCoins, unlockedIds, toastMsg,
+      RESERVE_UNLOCK_COST,
+      onRevealClick, confirmExchange, resetUnlock, pad,
+      formatYuan: window.formatYuan
+    };
   }
 }).mount('#app');
 </script>

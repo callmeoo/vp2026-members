@@ -199,9 +199,9 @@
   };
   // 权益展示顺序(全站统一):调整此数组即可全局生效
   MEMBER_CONFIG.benefitOrder = [
-    'coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80',
     'history_data', 'reserve_price',
     'sales_advisor', 'service_1v1',
+    'coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80',
     'refund_1'
   ];
   MEMBER_CONFIG.sortBenefits = function (list) {
