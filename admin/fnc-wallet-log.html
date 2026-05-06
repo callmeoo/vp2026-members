@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>钱包账单 · 财务管理 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #303133; font-size: 13px; }
+  [v-cloak] { display:none; }
+
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .sys-label { padding: 10px 20px 6px; font-size: 11px; color: #8492a6; letter-spacing: 1px; font-weight: 600; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; text-decoration: none; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+
+  .ant-header { height: 50px; background: #fff; border-bottom: 1px solid #e4e7ed; }
+  .breadcrumb-current { color: #303133; font-weight: 500; }
+
+  .ant-card { background: #fff; border-radius: 2px; }
+  .el-input, .el-select { position: relative; display: inline-flex; align-items: center; }
+  .el-input input, .el-select select { width: 100%; height: 32px; padding: 0 12px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; color: #606266; font-size: 13px; line-height: 32px; outline: none; transition: border-color .15s; box-sizing: border-box; }
+  .el-input input:focus, .el-select select:focus { border-color: #409eff; }
+  .el-input input::placeholder { color: #c0c4cc; }
+  .el-label { color: #606266; font-size: 13px; line-height: 32px; text-align: right; padding-right: 8px; white-space: nowrap; }
+  .date-sep, .num-sep { color: #c0c4cc; padding: 0 6px; font-size: 12px; }
+
+  .el-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; color: #606266; box-sizing: border-box; }
+  .el-btn:hover { color: #409eff; border-color: #c6e2ff; background: #ecf5ff; }
+  .el-btn-primary { background: #409eff; color: #fff; border-color: #409eff; }
+  .el-btn-primary:hover { background: #66b1ff; color: #fff; border-color: #66b1ff; }
+
+  .el-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #606266; }
+  .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 12px 12px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
+  .el-table tbody td { padding: 14px 12px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; }
+  .el-table tbody tr:hover { background: #fafafa; }
+  .user-cell { text-align: center; }
+  .user-cell .uname { color: #409eff; cursor: pointer; font-weight: 500; }
+  .user-cell .uname:hover { text-decoration: underline; }
+  .user-cell .uid { color: #909399; font-size: 12px; margin-top: 4px; }
+  .sub-cell { text-align: center; line-height: 1.7; }
+  .sub-cell .sname { color: #303133; }
+  .sub-cell .scode { color: #909399; font-size: 12px; }
+  .amt-pos { color: #67c23a; font-weight: 600; }
+  .amt-neg { color: #f56c6c; font-weight: 600; }
+  .status-clear { color: #67c23a; }
+
+  .el-pagination { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; color: #606266; font-size: 13px; background: #fff; }
+  .pager-arrow { width: 28px; height: 28px; border: 1px solid #dcdfe6; background: #fff; color: #606266; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; }
+  .pager-arrow:hover { color: #409eff; border-color: #409eff; }
+  .pager-btn { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px; background: #fff; color: #606266; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #dcdfe6; font-size: 13px; }
+  .pager-btn.active { background: #409eff; color: #fff; border-color: #409eff; }
+  .page-size-select { height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 8px; background: #fff; color: #606266; font-size: 13px; outline: none; }
+  .page-jump-input { width: 40px; height: 28px; border: 1px solid #dcdfe6; border-radius: 4px; padding: 0 6px; text-align: center; font-size: 13px; color: #606266; outline: none; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="flex min-h-screen">
+
+  <!-- 左侧导航 -->
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <div class="sys-label">FNC</div>
+    <nav class="flex-1 overflow-y-auto">
+      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu" style="display:none">
+        <div class="sub-item">订单流水</div>
+        <div class="sub-item">用户余额</div>
+      </div>
+
+      <div class="menu-item open"><i data-lucide="wallet" class="w-4 h-4"></i><span>财务管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <a href="fnc-home.html"        class="sub-item">首页</a>
+        <a href="fnc-wallet-log.html"  class="sub-item active">钱包账单</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- 主区域 -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- 顶栏 -->
+    <header class="ant-header px-4 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-4 h-4"></i>
+        <span>首页</span><span class="text-slate-300">/</span>
+        <span class="inline-flex items-center gap-1"><i data-lucide="wallet" class="w-3.5 h-3.5"></i>财务管理</span>
+        <span class="text-slate-300">/</span>
+        <span class="breadcrumb-current">钱包账单</span>
+      </div>
+      <div class="flex items-center gap-4 text-sm text-slate-600">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+          </div>
+          <span>ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 overflow-auto">
+
+      <!-- 查询条件 -->
+      <div class="ant-card p-4 mb-3">
+        <div class="grid grid-cols-3 gap-x-6 gap-y-3 items-center">
+          <div class="flex items-center"><span class="el-label" style="width:50px">用户:</span><div class="el-input flex-1"><input v-model="search.user" placeholder="姓名/子账号/登录账号/手机号码..." /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:50px">时间:</span><div class="el-input flex-1"><input type="date" v-model="search.startDate" placeholder="开始日期" /></div><span class="date-sep">--</span><div class="el-input flex-1"><input type="date" v-model="search.endDate" placeholder="结束日期" /></div></div>
+          <div class="flex items-center justify-end">
+            <button class="el-btn el-btn-primary" style="padding:0 24px"><i data-lucide="search" class="w-3.5 h-3.5"></i>搜索</button>
+          </div>
+
+          <div class="flex items-center"><span class="el-label" style="width:50px">摘要:</span><div class="el-input flex-1"><input v-model="search.memo" /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:50px">金额:</span><div class="el-input flex-1"><input v-model="search.amtMin" placeholder="" /></div><span class="num-sep"></span><div class="el-input flex-1"><input v-model="search.amtMax" placeholder="" /></div></div>
+          <div class="flex items-center gap-3">
+            <span class="el-label" style="width:50px">类型:</span>
+            <div class="el-select flex-1"><select v-model="search.type"><option>全部</option><option>提现</option><option>充值</option><option>保证金提取</option><option>订单售后款项</option><option>扣减订单售后款项</option></select></div>
+            <span class="el-label" style="width:50px">状态:</span>
+            <div class="el-select flex-1"><select v-model="search.status"><option>全部</option><option>已清算</option><option>处理中</option><option>失败</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 列表 -->
+      <div class="ant-card">
+        <div class="overflow-x-auto">
+          <table class="el-table">
+            <thead>
+              <tr>
+                <th>用户</th><th>子账号</th><th>金额</th><th>时间</th>
+                <th style="text-align:left">摘要</th>
+                <th>流水号</th><th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(r, i) in rows" :key="i">
+                <td>
+                  <div class="user-cell">
+                    <div class="uname">{{ r.userName }}</div>
+                    <div class="uid">{{ r.userId }}</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="sub-cell">
+                    <div class="scode">{{ r.subId }}</div>
+                    <div class="sname">{{ r.subName }}</div>
+                    <div class="scode">{{ r.subBank }}</div>
+                  </div>
+                </td>
+                <td><span :class="r.amount.startsWith('+') ? 'amt-pos' : 'amt-neg'">{{ r.amount }}</span></td>
+                <td>{{ r.time }}</td>
+                <td style="text-align:left">{{ r.memo }}</td>
+                <td>{{ r.serial }}</td>
+                <td><span class="status-clear">{{ r.status }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="el-pagination">
+          <span>共 {{ rows.length }} 条</span>
+          <select class="page-size-select"><option>10条/页</option><option>20条/页</option><option>50条/页</option></select>
+          <button class="pager-arrow"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+          <button class="pager-btn active">1</button>
+          <button class="pager-arrow"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          <span>前往</span>
+          <input class="page-jump-input" value="1" />
+          <span>页</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const { createApp, reactive, onMounted } = Vue;
+createApp({
+  setup() {
+    const search = reactive({ user:'', startDate:'', endDate:'', memo:'粤EG3B98', amtMin:'', amtMax:'', type:'全部', status:'全部' });
+
+    const rows = [
+      { userName:'广州市长和汽车销售服务...', userId:'gzch',
+        subId:'2306307114', subName:'广州市长和汽车销售服务有限公司', subBank:'3602****3955',
+        amount:'-1,200.00', time:'2026-05-04 14:15:06', memo:'提现:粤EG3B98',
+        serial:'6260504778752571393324', status:'已清算' },
+      { userName:'陈秋菊', userId:'m_1397784961350885',
+        subId:'2102249825', subName:'陈秋菊', subBank:'6230****3453',
+        amount:'+2,000.00', time:'2026-05-03 23:25:13', memo:'保证金-提取-用户m_1397784961350885:粤EG3B98',
+        serial:'6260503778219130145470', status:'已清算' },
+      { userName:'保证金托管', userId:'wpbzj',
+        subId:'2508010002', subName:'广东唯普汽车科技股份有限公司', subBank:'1095****5570',
+        amount:'-2,000.00', time:'2026-05-03 23:25:13', memo:'保证金-提取-用户m_1397784961350885:粤EG3B98',
+        serial:'6260503778219130145470', status:'已清算' },
+      { userName:'唯普新收益', userId:'wpsy_231213',
+        subId:'2310170784', subName:'广东唯普汽车科技股份有限公司', subBank:'8110****9857',
+        amount:'+800.00', time:'2026-05-03 23:25:13', memo:'订单售后款项:粤EG3B98',
+        serial:'6260503778219130745531', status:'已清算' },
+      { userName:'广州市长和汽车销售服务...', userId:'gzch',
+        subId:'2306307114', subName:'广州市长和汽车销售服务有限公司', subBank:'3602****3955',
+        amount:'+1,200.00', time:'2026-05-03 23:25:13', memo:'订单售后款项:粤EG3B98',
+        serial:'6260503778219130745531', status:'已清算' },
+      { userName:'陈秋菊', userId:'m_1397784961350885',
+        subId:'2102249825', subName:'陈秋菊', subBank:'6230****3453',
+        amount:'-2,000.00', time:'2026-05-03 23:25:13', memo:'扣减订单售后款项:粤EG3B98',
+        serial:'6260503778219130745531', status:'已清算' }
+    ];
+
+    onMounted(() => lucide.createIcons());
+    return { search, rows };
+  }
+}).mount('#app');
+</script>
+
+<div class="hidden md:block fixed bottom-4 left-4 z-50">
+  <a href="../index.html" class="px-3 py-1.5 bg-white rounded-full shadow text-xs text-slate-600 hover:bg-slate-50 border border-slate-200">← 返回 Demo 导航</a>
+</div>
+</body>
+</html>

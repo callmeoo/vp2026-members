@@ -593,7 +593,18 @@
             },
           ],
         },
-        { key: 'fnc', label: 'FNC 后台', icon: 'landmark', items: [] },
+        {
+          key: 'fnc', label: 'FNC 后台', icon: 'landmark',
+          groups: [
+            {
+              label: '财务管理', icon: 'wallet',
+              items: [
+                { title: '首页',     file: 'admin/fnc-home.html' },
+                { title: '钱包账单', file: 'admin/fnc-wallet-log.html' },
+              ],
+            },
+          ],
+        },
       ];
 
       const active = ref('spec');
