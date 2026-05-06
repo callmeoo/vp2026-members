@@ -90,7 +90,7 @@
       </span>
     </div>
 
-    <div class="benefit-row" @click="!noReasonExpired && openSheet()" :style="noReasonExpired ? 'opacity:.85' : ''">
+    <div class="benefit-row" @click="onBenefitClick" :style="noReasonExpired ? 'opacity:.85;cursor:not-allowed' : ''">
       <div class="flex-1">
         <div class="text-[15px] text-slate-900 flex items-center gap-2">
           权益抵扣
@@ -273,6 +273,10 @@ createApp({
 
     function openSheet() { showSheet.value = true; }
     function closeSheet() { showSheet.value = false; }
+    function onBenefitClick() {
+      if (noReasonExpired.value) return;
+      openSheet();
+    }
 
     function onConfirm() {
       showConfirm.value = false;
@@ -289,7 +293,7 @@ createApp({
     watch([showSheet, showConfirm, selectedCard, noReasonExpired], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { PENALTY, reason, showSheet, showConfirm, noReasonExpired, refundCards, selectedCard, clauses, openSheet, closeSheet, onConfirm, back };
+    return { PENALTY, reason, showSheet, showConfirm, noReasonExpired, refundCards, selectedCard, clauses, openSheet, closeSheet, onBenefitClick, onConfirm, back };
   }
 }).mount('#app');
 </script>
