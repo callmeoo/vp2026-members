@@ -139,7 +139,8 @@
       { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '一次性奖励,仅首次认证有效', once: true },
       { id: 't_deposit',  action: '首充保证金',                     points: 5,  unit: '/次', desc: '一次性奖励,仅首次充值有效', once: true },
       { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
-{ id: 't_festival', action: '活动专属任务',                   points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true }
+      { id: 't_festival', action: '活动专属任务',                   points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true,
+        activityName: '国庆节双倍积分活动', activityPeriod: '2026.10.1 - 10.7', activityDesc: '活动期间出价积分翻 2 倍，成交积分翻 3 倍，每日上限 50 积分' }
     ],
 
     // ─────────────────────────────────────────────
