@@ -175,7 +175,7 @@ const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 const app = createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
-    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 12 };
+    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 15 };
     const currentDeals = ref(12);
     const currentLv = computed(() => CFG.getLevelByDeals(currentDeals.value));
     const currentIdx = computed(() => CFG.levels.indexOf(currentLv.value));
