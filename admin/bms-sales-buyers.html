@@ -32,6 +32,7 @@
   .el-table { width: 100%; border-collapse: collapse; font-size: 12px; color: #606266; }
   .el-table thead th { background: #f5f7fa; color: #909399; font-weight: 500; padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; white-space: nowrap; }
   .el-table tbody td { padding: 10px 8px; border-bottom: 1px solid #ebeef5; text-align: center; vertical-align: middle; white-space: nowrap; }
+  .el-table tbody tr { cursor: pointer; }
   .el-table tbody tr:hover { background: #f5f7fa; }
   .el-table tbody tr.row-selected { background: #ecf5ff; }
   .name-cell { display: inline-flex; align-items: center; gap: 4px; }
@@ -141,6 +142,10 @@
         <div class="flex items-center gap-2">
           <span class="text-slate-500">排序:</span>
           <span v-for="s in sorts" :key="s" :class="['sort-pill', { active: sortBy === s }]" @click="sortBy = s">{{ s }}</span>
+          <button onclick="showRuleAlert('会员等级重新跑数')" style="position:relative;display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border:1px solid #a78bfa;border-radius:4px;background:#faf5ff;color:#7c3aed;font-size:12px;cursor:pointer">
+            <i data-lucide="info" class="w-3.5 h-3.5"></i>需求点说明
+            <span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff;"></span>
+          </button>
         </div>
         <div class="flex items-center gap-2 text-slate-500">
           <span>过滤统计:</span>
@@ -162,7 +167,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="b in buyers" :key="b.acct" :class="{ 'row-selected': b.selected }">
+              <tr v-for="b in buyers" :key="b.acct" :class="{ 'row-selected': b.selected }" @click="location.href=detailUrl(b)">
                 <td>
                   <span class="name-cell">
                     <span class="lv-badge" :style="{ background: levelColor(b.level) }" :title="'客户等级 ' + b.level">{{ b.level }}</span>
