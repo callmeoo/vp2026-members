@@ -231,5 +231,26 @@ const app = createApp({
 });
 app.mount('#app');
 </script>
+
+<!-- 需求点说明浮动按钮 -->
+<button style="position:fixed;right:0;top:50%;transform:translateY(-50%);background:#7c3aed;color:#fff;border:none;padding:10px 5px;border-radius:8px 0 0 8px;font-size:11px;cursor:pointer;z-index:200;box-shadow:-2px 0 8px rgba(124,58,237,.3);display:flex;flex-direction:column;align-items:center;gap:3px" onclick="document.getElementById('specModal').style.display='flex'"><span style="writing-mode:vertical-lr;letter-spacing:2px">需求说明</span><span style="width:6px;height:6px;background:#ef4444;border-radius:50%;display:block;margin-top:3px"></span></button>
+<div id="specModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:360px;max-height:82vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <span style="font-size:15px;font-weight:600;color:#1e293b">积分明细 · 需求点说明</span>
+      <span style="cursor:pointer;color:#94a3b8;font-size:20px;line-height:1;padding:0 4px" onclick="document.getElementById('specModal').style.display='none'">&#215;</span>
+    </div>
+    <div style="padding:16px;font-size:13px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px">
+        <li>积分有效期：按「获得当月 + 12 个自然月」到月末到期，如 2026-04 获得的积分，到期日为 2027-04-30。</li>
+        <li>流水类型：发放（成交奖励 / 出价 / 转发 / 首次实名 / 首充保证金）、消耗（商城兑换）、到期清零三类；到期清零整条记录标红，含当期批次到期积分总量。</li>
+        <li>同日同行为记录可合并展示，备注注明「已合并 X 台」；成交奖励在过户完成后入账，非中标时即发。</li>
+      </ol>
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;flex-shrink:0">
+      <button style="padding:8px 20px;background:#7c3aed;color:#fff;border:none;border-radius:20px;font-size:13px;cursor:pointer" onclick="document.getElementById('specModal').style.display='none'">我知道了</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
