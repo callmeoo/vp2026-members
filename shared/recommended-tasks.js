@@ -47,8 +47,9 @@
     document.head.appendChild(style);
   }
 
-  var V0_ONLY_TASKS = ['t_verify', 't_deposit'];
   var PENDING_TASKS = ['t_vote'];
+  // 一次性任务:Mock 完成后不再展示(评审用 demo toggle 可切换)
+  var ONCE_TASKS = ['t_verify', 't_deposit'];
 
   // 根据平台决定跳转链接
   function getTaskHref(taskId, platform) {
@@ -57,6 +58,7 @@
     // app 端
     var ALLCARS_TASKS = ['t_deal', 't_bid', 't_share', 't_festival'];
     if (ALLCARS_TASKS.indexOf(taskId) >= 0) return 'allcars.html';
+    if (ONCE_TASKS.indexOf(taskId) >= 0) return 'allcars.html';
     return null;
   }
 
@@ -69,6 +71,13 @@
       showActivityToggle: { type: Boolean, default: false }
     },
     emits: ['update:hasActivity'],
+    data: function () {
+      // Mock:首次任务的完成状态。默认两个都未完成,都展示。
+      // 评审用 demo toggle 可一键切换为「已完成」,完成后两个任务从列表消失。
+      return {
+        onceCompleted: { t_verify: false, t_deposit: false }
+      };
+    },
     template: [
       '<div class="recommended-tasks-wrap">',
       '  <!-- 标题栏 -->',
@@ -81,6 +90,11 @@
       '          :class="[\'rt-toggle-btn\', hasActivity ? \'active\' : \'\']">有活动</button>',
       '        <button @click="$emit(\'update:hasActivity\', false)"',
       '          :class="[\'rt-toggle-btn\', !hasActivity ? \'active\' : \'\']">无活动</button>',
+      '        <span class="rt-toggle-label" style="margin-left:6px">首次任务:</span>',
+      '        <button @click="setOnce(false)"',
+      '          :class="[\'rt-toggle-btn\', !allOnceDone ? \'active\' : \'\']">未完成</button>',
+      '        <button @click="setOnce(true)"',
+      '          :class="[\'rt-toggle-btn\', allOnceDone ? \'active\' : \'\']">已完成</button>',
       '      </template>',
       '      <span class="rt-sub">完成任务获积分</span>',
       '    </div>',
@@ -123,14 +137,21 @@
       visibleTasks: function () {
         var cfg = global.MEMBER_CONFIG;
         if (!cfg || !cfg.recommendedTasks) return [];
-        var level = this.level;
+        var once = this.onceCompleted;
         return cfg.recommendedTasks.filter(function (t) {
-          if (V0_ONLY_TASKS.indexOf(t.id) >= 0) return level === 'V0';
+          // 一次性任务(首次实名/首充):完成后不再展示
+          if (t.once && once[t.id]) return false;
           return true;
         });
+      },
+      allOnceDone: function () {
+        return !!this.onceCompleted.t_verify && !!this.onceCompleted.t_deposit;
       }
     },
     methods: {
+      setOnce: function (done) {
+        this.onceCompleted = { t_verify: done, t_deposit: done };
+      },
       taskAction: function (t) {
         if (t.id === 't_festival') {
           if (this.hasActivity) {

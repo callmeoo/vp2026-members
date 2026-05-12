@@ -144,9 +144,9 @@
     recommendedTasks: [
       { id: 't_deal',     action: '车辆成交',                       points: 50, unit: '',    desc: '成交一台车可获得,退车则扣回',       highlight: true },
       { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '仅计有效出价 1 台算 1 次,上不封顶', highlight: true },
+      { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '一次性奖励,仅首次认证有效', once: true },
+      { id: 't_deposit',  action: '首充保证金',                     points: 5,  unit: '/次', desc: '一次性奖励,仅首次充值有效', once: true },
       { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
-      { id: 't_deposit',  action: '首次充值保证金',                 points: 5,  unit: '/次', desc: '' },
-      { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '' },
       { id: 't_share',    action: '转发车源并成功分享朋友圈',       points: 1,  unit: '',    desc: '', dailyMax: 20 },
       { id: 't_festival', action: '活动专属任务',                   points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true }
     ],
