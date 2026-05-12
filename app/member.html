@@ -125,7 +125,7 @@
     <!-- 推荐任务 -->
     <div class="px-4 mt-7">
       <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <recommended-tasks :level="currentLv.short" platform="app" :has-activity="hasActivity" :show-activity-toggle="false"></recommended-tasks>
+        <recommended-tasks :level="currentLv.short" platform="app" :has-activity="hasActivity" :once-done="onceDone"></recommended-tasks>
       </div>
     </div>
 
@@ -189,6 +189,7 @@ const app = createApp({
     const selectedIdx = ref(currentIdx.value);
     const selectedLv = computed(() => CFG.levels[selectedIdx.value]);
     const hasActivity = ref(true);
+    const onceDone   = ref(false);
 
     // 可享权益:聚合所有等级的 benefits,去重;当前等级未含的置灰加锁
     // 积分兑换类(coin_exchange_*)视为同一项,展示当前等级的具体文案(如 V0 → 1:1、V2 → 95 折)
@@ -259,7 +260,7 @@ const app = createApp({
       selectedLv, heroDate, heroMain, heroProgress,
       simulateLevel, back,
       allBenefits,
-      hasActivity
+      hasActivity, onceDone
     };
   }
 });
@@ -281,7 +282,7 @@ app.mount('#app');
         <li>积分到期提醒：卡片展示最近 30 天内即将到期的积分汇总量；无到期积分时隐藏该提示行。</li>
         <li>可享权益：已解锁的权益正常展示，未解锁的置灰叠加锁图标；积分折扣按当前等级显示（V0/V1 = 1:1，V2 = 95折，V3 = 8折）。</li>
         <li>推荐任务数据来自 shared/member-config.js 的 recommendedTasks，任务完成状态由接口返回，前端仅做展示与跳转。</li>
-        <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」。</li>
+        <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」，右侧「去完成」按钮同步替换为置灰不可点击的「敬请期待」；后台配置活动后自动恢复正常展示。</li>
       </ol>
     </div>
   </div>
