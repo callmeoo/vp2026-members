@@ -99,6 +99,9 @@
   .ip-input input { width: 100px; height: 32px; padding: 0 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; text-align: center; box-sizing: border-box; }
   .ip-input input:focus { border-color: #1677ff; }
   .ip-input .unit { color: #909399; font-size: 12px; }
+  /* Toast 提示 */
+  .toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:#fff; border:1px solid #b7eb8f; border-radius:6px; padding:10px 20px; font-size:13px; color:#389e0d; display:flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(0,0,0,.1); z-index:999; transition:opacity .3s; }
+  .toast.hide { opacity:0; pointer-events:none; }
   /* 研发需求说明 */
   .rnd-spec { border:1px solid #d0e4ff; background:#f5fbff; border-radius: 8px; padding: 16px 18px; }
   .rnd-spec h4 { font-size: 13px; font-weight: 600; color:#0958d9; display:flex; align-items:center; gap:6px; margin-bottom: 10px; }
@@ -481,6 +484,11 @@
   </div>
 </div>
 
+<!-- Toast -->
+<div v-if="toastVisible" class="toast">
+  <i data-lucide="check-circle" class="w-4 h-4" style="color:#52c41a;flex-shrink:0"></i>{{ toastMsg }}
+</div>
+
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50"><i data-lucide="arrow-left" class="w-3 h-3 inline -mt-0.5"></i> Demo 导航</a>
 </div>
@@ -504,6 +512,15 @@ createApp({
     const activeTab = ref('earn');
     const activeType = ref('deal');
     const editMode = ref(false);
+    const toastMsg = ref('');
+    const toastVisible = ref(false);
+    let toastTimer = null;
+    const showToast = (msg) => {
+      toastMsg.value = msg;
+      toastVisible.value = true;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toastVisible.value = false; }, 2500);
+    };
     const enterEdit = () => { editMode.value = true; };
     const cancelEdit = () => { editMode.value = false; };
     const saveEdit = async () => { editMode.value = false; await nextTick(); lucide.createIcons(); };
@@ -628,13 +645,14 @@ createApp({
       const u = blacklistForm.selected;
       // 去重:若已在黑名单中,提示
       if (r.accounts.some(a => a.username === u.username)) { alert('该用户已在黑名单中'); return; }
-      r.accounts.push({
+      r.accounts.unshift({
         username: u.username,
         name: u.name,
         phone: u.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
         reason: blacklistForm.reason.trim()
       });
       blacklistModalOpen.value = false;
+      showToast('保存成功');
     };
     // 黑名单移除确认
     const confirmRemoveOpen = ref(false);
@@ -669,9 +687,10 @@ createApp({
 
     onMounted(async () => { await nextTick(); lucide.createIcons(); });
     watch(activeType, () => { editMode.value = false; });
-    watch([activeTab, activeType, editMode, blacklistModalOpen, confirmRemoveOpen], async () => { await nextTick(); lucide.createIcons(); });
+    watch([activeTab, activeType, editMode, blacklistModalOpen, confirmRemoveOpen, toastVisible], async () => { await nextTick(); lucide.createIcons(); });
 
     return { tabs, activeTab, activeType, editMode, enterEdit, cancelEdit, saveEdit,
+             toastMsg, toastVisible,
              earning, currentType, limitedCommon, risk, logs,
              removeLimitedItem,
              blacklistModalOpen, blacklistForm, userSuggestions, showSuggest, pickUser, onKeywordInput,
