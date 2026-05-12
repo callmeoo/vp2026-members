@@ -308,22 +308,28 @@ const app = createApp({
         iconBg: 'bg-gradient-to-br from-slate-400 to-slate-500' };
     }
 
+    const manual = (meta, coin, expire) => ({
+      kind:'earn', type:'manual', title:'人工调整', meta,
+      amount: (coin > 0 ? '+' : '') + coin,
+      amountColor: coin > 0 ? colorText.violet : 'text-rose-600',
+      note: expire ? '有效期至 ' + expire : '',
+      icon:'wrench', iconBg: colorBg.violet
+    });
+
     const groups = [
       { date: '今天 · 2026-04-30', items: [
-        earn('deal',  '粤A78546 · 2026-04-30 11:23:18', { expire: '2027-04-30' }),
-        earn('bid',   '闽A12345 · 2026-04-30 10:45:02', { title: '活动出价双倍', coin: 20, expire: '2027-04-30' })
+        earn('deal',        '粤A78546 · 2026-04-30 11:23:18', { expire: '2027-04-30' }),
+        earn('bid',         '闽A12345 · 2026-04-30 11:05:44', { expire: '2027-04-30' }),
+        earn('bid',         '粤B88888 · 2026-04-30 10:45:02', { expire: '2027-04-30' }),
+        earn('bid',         '粤HSB009 · 2026-04-30 10:22:17', { expire: '2027-04-30' }),
       ]},
       { date: '昨天 · 2026-04-29', items: [
         spend('r_dataquery_10', '2026-04-29 15:10:42'),
-        earn('bid',   '粤B88888 · 2026-04-29 13:42:08', { expire: '2027-04-29' })
+        manual('客服补发 · 2026-04-29 14:30:00', 20, '2027-04-29'),
       ]},
       { date: '2026-04-18', items: [
-        earn('bank_verify', '2026-04-18 10:12:33', { coin: 5, expire: '2027-04-18' }),
-        earn('vote', '2026-04-18 08:50:21', { coin: 3, expire: '2027-04-18' })
-      ]},
-      { date: '2026-04-15', items: [
-        spend('r_servicecenter_100', '2026-04-15 14:30:18'),
-        earn('festival', '2026-04-15 09:00:00', { coin: 3, expire: '2027-04-15' })
+        earn('biz_verify',  '首次实名认证 · 一次性奖励 · 2026-04-18 09:10:05', { coin: 5, expire: '2027-04-18' }),
+        earn('bank_verify', '首充保证金 · 一次性奖励 · 2026-04-18 09:05:12',   { coin: 5, expire: '2027-04-18' }),
       ]},
       { date: '2026-04-10', items: [
         expire('2025-04-10 获得 · 满 12 月 · 2026-04-10 00:00:00', 12)
