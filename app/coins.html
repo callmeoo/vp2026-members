@@ -186,14 +186,12 @@ const app = createApp({
       { date: '今天 · 2026-04-23', items: [
         earn('deal',         '粤A78546 · 11:23',                        { expire:'2027-04-23' }),
         earn('bid',          '闽A12345 · 10:45 · 双倍',                 { title:'周末双倍出价', coin:20, expire:'2027-04-23' }),
-        earn('share',        '闽A12345 · 09:45',                        { expire:'2027-04-23' }),
         earn('bid',          '闽A12345 · 09:40',                        { expire:'2027-04-23' })
       ]},
       { date: '昨天 · 2026-04-22', items: [
         spend('r_dataquery_10','15:10',                                   { note:'余额 306' }),
         earn('deal',           '粤HSB009 · 14:30',                        { expire:'2027-04-22' }),
-        earn('bid',            '3 辆不同车源 · 10 积分/台',               { title:'有效出价 × 3', coin:30, note:'已合并展示' }),
-        earn('share',          '粤A78546 · 分享朋友圈 · 11:05',           { expire:'2027-04-22' })
+        earn('bid',            '3 辆不同车源 · 10 积分/台',               { title:'有效出价 × 3', coin:30, note:'已合并展示' })
       ]},
       { date: '2026-04-18', items: [
         earn('biz_verify',     '上传营业执照 · 一次性奖励 · 11:30',       { coin:5, expire:'2027-04-18' }),
@@ -237,10 +235,11 @@ app.mount('#app');
       <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
-      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>积分有效期：按「获得当月 + 12 个自然月」到月末到期，如 2026-04 获得的积分，到期日为 2027-04-30。</li>
-        <li>流水类型：发放（成交奖励 / 出价 / 转发 / 首次实名 / 首充保证金）、消耗（商城兑换）、到期清零三类；到期清零整条记录标红，含当期批次到期积分总量。</li>
-        <li>同日同行为记录可合并展示，备注注明「已合并 X 台」；成交奖励在过户完成后入账，非中标时即发。</li>
+        <li>流水类型：发放（成交奖励 / 出价 / 首次实名 / 首充保证金）、消耗（商城兑换）、到期清零三类；到期清零整条记录标红，含当期批次到期积分总量。</li>
+        <li>发放时机：成交奖励（+50）与出价竞拍（+10）在对应车辆过户完成后发放；首次实名认证（+1~5）、首充保证金（+1~5）在操作完成后即时发放。</li>
+        <li>撤回时机：使用无理由退车成功退车的订单，已发放的成交奖励（+50）同步扣回；过户前退车（积分未发放）不涉及扣减；出价积分及其他行为积分不撤回。</li>
       </ol>
     </div>
   </div>
