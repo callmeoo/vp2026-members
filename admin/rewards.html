@@ -312,7 +312,7 @@ createApp({
     ];
 
     const products = reactive([
-      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, status:'上架', restriction:'每笔车辆查询限用 1 张,不与其他优惠叠加。' },
+      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, status:'上架', restriction:'' },
       { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',     icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:5,   coin:50,  validityDays:30, stock:688,  issued:212, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
       { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',    icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:10,  coin:100, validityDays:30, stock:688,  issued:312, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
       { code:'COMPFEE_50',        name:'综合服务费减免券 50 元',  icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:50,  coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
