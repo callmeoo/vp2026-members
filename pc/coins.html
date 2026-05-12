@@ -197,7 +197,7 @@
                 <div class="tx-icon flex-none" :class="tx.iconBg"><i :data-lucide="tx.icon" class="w-5 h-5"></i></div>
                 <div class="flex-1 min-w-0">
                   <div class="tx-title">{{ tx.title }}</div>
-                  <div class="tx-meta">{{ tx.meta }}</div>
+                  <div class="tx-meta">{{ tx.metaL }}<template v-if="tx.metaR"> · {{ tx.metaR }}</template><span v-if="tx.activityTag" style="margin-left:5px;font-size:11px;color:#ef4444;border:1px solid #fca5a5;border-radius:3px;padding:0 4px;background:#fff1f2;vertical-align:middle">{{ tx.activityTag }}</span></div>
                 </div>
                 <div style="flex-shrink:0;text-align:right;min-width:64px">
                   <div class="tx-amount" :class="tx.amountColor">{{ tx.amount }}</div>
@@ -245,6 +245,7 @@
           <li>发放时机：成交奖励（+50）与出价竞拍（+10）在对应车辆过户完成后发放；首次实名认证（+1~5）、首充保证金（+1~5）在操作完成后即时发放。</li>
           <li>撤回时机：使用无理由退车成功退车的订单，已发放的成交奖励（+50）同步扣回；过户前退车（积分未发放）不涉及扣减；出价积分及其他行为积分不撤回。</li>
           <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」。</li>
+          <li>活动额外奖励：限时活动期间产生的出价 / 成交积分，在对应流水行末尾展示<span style="display:inline-block;margin:0 3px;padding:1px 6px;font-size:10px;font-weight:600;border-radius:3px;background:#fef3c7;color:#d97706;border:1px solid #fde68a">限时活动</span>标签，帮助用户识别该笔积分来源于活动加成。</li>
         </ol>
       </div>
       <div style="padding:12px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end">
@@ -295,10 +296,10 @@ const app = createApp({
     const rewardById = {};
     CFG.redeemableRewards.forEach(r => { rewardById[r.id] = r; });
 
-    function earn(id, meta, opts) {
+    function earn(id, metaL, opts) {
       const it = earningById[id], o = opts || {};
       const coin = o.coin != null ? o.coin : it.coin;
-      return { kind: 'earn', title: o.title || it.action, meta, amount: '+' + coin,
+      return { kind: 'earn', title: o.title || it.action, metaL, metaR: o.metaR || '', activityTag: o.activityTag || '', amount: '+' + coin,
         amountColor: colorText[it.color] || 'text-slate-700',
         note: o.expire ? '有效期至 ' + o.expire : (o.note || ''),
         icon: it.icon, iconBg: colorBg[it.color],
@@ -306,57 +307,46 @@ const app = createApp({
         activityPeriod: o.activityPeriod || '',
         activityRule:   o.activityRule   || '' };
     }
-    function spend(rewardId, meta, opts) {
+    function spend(rewardId, metaL, opts) {
       const r = rewardById[rewardId], o = opts || {};
       return { kind: 'spend', title: r.name,
-        meta: meta || '',
+        metaL, metaR: '',
         amount: '-' + r.coin, amountColor: 'text-rose-600',
         note: '', icon: r.icon || 'gift', iconBg: colorBg.rose };
     }
-    function expire(meta, amount) {
-      return { kind: 'expire', title: '积分过期清零', meta, amount: '-' + amount,
+    function expire(metaR, amount, metaL) {
+      return { kind: 'expire', title: '积分过期清零', metaL: metaL || '', metaR, amount: '-' + amount,
         amountColor: 'text-slate-400', note: '', icon: 'hourglass',
         iconBg: 'bg-gradient-to-br from-slate-400 to-slate-500' };
     }
 
-    const manual = (meta, coin, expire) => ({
-      kind:'earn', type:'manual', title:'人工调整', meta,
+    const manual = (metaL, metaR, coin, exp) => ({
+      kind:'earn', type:'manual', title:'人工调整', metaL, metaR,
       amount: (coin > 0 ? '+' : '') + coin,
       amountColor: coin > 0 ? colorText.violet : 'text-rose-600',
-      note: expire ? '有效期至 ' + expire : '',
+      note: exp ? '有效期至 ' + exp : '',
       icon:'wrench', iconBg: colorBg.violet
     });
 
     const groups = [
       { date: '今天 · 2026-04-30', items: [
-        earn('deal',        '粤A78546 · 2026-04-30 11:23:18', { expire: '2027-04-30' }),
-        earn('bid',         '闽A12345 · 2026-04-30 11:05:44', { expire: '2027-04-30' }),
-        earn('bid',         '粤B88888 · 2026-04-30 10:45:02', { expire: '2027-04-30' }),
-        earn('bid',         '粤HSB009 · 2026-04-30 10:22:17', { expire: '2027-04-30' }),
+        earn('deal', '2026-04-30 11:23:18', { metaR:'粤A78546', expire: '2027-04-30' }),
+        earn('bid',  '2026-04-30 11:05:44', { metaR:'闽A12345', expire: '2027-04-30' }),
+        earn('bid',  '2026-04-30 10:45:02', { metaR:'粤B88888', expire: '2027-04-30' }),
+        earn('bid',  '2026-04-30 10:22:17', { metaR:'粤HSB009', expire: '2027-04-30' }),
+        earn('bid',  '2026-04-30 10:00:31', { metaR:'粤G55219', coin: 20, activityTag:'限时活动', expire: '2027-04-30' }),
       ]},
       { date: '昨天 · 2026-04-29', items: [
         spend('r_dataquery_10', '2026-04-29 15:10:42'),
-        manual('客服补发 · 2026-04-29 14:30:00', 20, '2027-04-29'),
+        manual('2026-04-29 14:30:00', '客服补发', 20, '2027-04-29'),
       ]},
       { date: '2026-04-18', items: [
-        earn('biz_verify',  '首次实名认证 · 一次性奖励 · 2026-04-18 09:10:05', { coin: 5, expire: '2027-04-18' }),
-        earn('bank_verify', '首充保证金 · 一次性奖励 · 2026-04-18 09:05:12',   { coin: 5, expire: '2027-04-18' }),
+        earn('biz_verify',  '2026-04-18 09:10:05', { coin: 5, expire: '2027-04-18' }),
+        earn('bank_verify', '2026-04-18 09:05:12', { coin: 5, expire: '2027-04-18' }),
       ]},
       { date: '2026-04-10', items: [
-        expire('2025-04-10 获得 · 满 12 月 · 2026-04-10 00:00:00', 12)
+        expire('2025-04-10 获得 · 满 12 月', 12, '2026-04-10 00:00:00')
       ]},
-      { date: '2026-04-05', items: [
-        earn('festival', '2026-04-05 09:00:00', { coin: 5, expire: '2027-04-05',
-          activityName:   '五一假期双倍积分活动',
-          activityPeriod: '2026-05-01 ~ 2026-05-07',
-          activityRule:   '活动期间完成出价 / 成交任务积分翻倍，每日上限 50 积分'
-        }),
-        earn('bid', '闽A12345 · 2026-04-05 10:45:02', { title: '活动出价双倍', coin: 20, expire: '2027-04-05',
-          activityName:   '五一假期双倍积分活动',
-          activityPeriod: '2026-05-01 ~ 2026-05-07',
-          activityRule:   '活动期间完成出价 / 成交任务积分翻倍，每日上限 50 积分'
-        }),
-      ]}
     ];
 
     const PAGE_SIZE = 10;
