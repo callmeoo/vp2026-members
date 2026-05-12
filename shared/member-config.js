@@ -45,7 +45,7 @@
         feature: '入门成交商户,有基础交易行为,低频次使用增值产品',
         benefits: [
           { id: 'coin_exchange_100', icon: 'coins',       label: '积分 1:1 兑换', desc: '按 1 积分 = 0.1 元等值兑换' },
-          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询', desc: '查询车源历史成交数据' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史行情查询', desc: '查询车源历史成交数据' },
           { id: 'reserve_price',     icon: 'target',      label: '保留价查询',    desc: '查询车辆保留底价' },
           { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问', desc: '1 对 1 销售顾问服务' },
           { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',      desc: '专属客服通道' }
@@ -62,7 +62,7 @@
         feature: '稳定成交商户,有固定交易节奏,中度使用增值产品',
         benefits: [
           { id: 'coin_exchange_95',  icon: 'tag',         label: '积分 95 折兑换', desc: '兑换时享 95 折' },
-          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',   desc: '查询车源历史成交数据' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史行情查询',   desc: '查询车源历史成交数据' },
           { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
           { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',   desc: '1 对 1 销售顾问服务' },
           { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',        desc: '专属客服通道' }
@@ -80,7 +80,7 @@
         benefits: [
           { id: 'coin_exchange_80',  icon: 'tag',         label: '积分 8 折兑换',   desc: '兑换优惠券时享 8 折' },
           { id: 'refund_1',          icon: 'undo-2',      label: '无理由退车 1 台', desc: '车辆中标后 24 小时内可申请,每定级周期 1 台' },
-          { id: 'history_data',      icon: 'scroll-text', label: '历史数据查询',   desc: '查询车源历史成交数据' },
+          { id: 'history_data',      icon: 'scroll-text', label: '历史行情查询',   desc: '查询车源历史成交数据' },
           { id: 'reserve_price',     icon: 'target',      label: '保留价查询',     desc: '查询车辆保留底价' },
           { id: 'sales_advisor',     icon: 'briefcase',   label: '专属销售顾问',   desc: '1 对 1 销售顾问服务' },
           { id: 'service_1v1',       icon: 'headphones',  label: '1V1 客服',        desc: '专属客服通道' }

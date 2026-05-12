@@ -195,15 +195,29 @@
             </div>
           </div>
           <div class="p-6">
+            <!-- 限时活动公用字段 -->
+            <div v-if="currentType.key === 'limited'" style="background:#fafafa;border:1px solid #ebeef5;border-radius:6px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:13px;color:#606266;white-space:nowrap">活动开始时间</span>
+                <input class="ant-input" type="date" v-model="limitedCommon.startDate" style="width:150px">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:13px;color:#606266;white-space:nowrap">活动结束时间</span>
+                <input class="ant-input" type="date" v-model="limitedCommon.endDate" style="width:150px">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:260px">
+                <span style="font-size:13px;color:#606266;white-space:nowrap">前台任务说明</span>
+                <input class="ant-input" v-model="limitedCommon.frontDesc" maxlength="100" placeholder="前台展示,最多 100 字">
+              </div>
+            </div>
             <table class="rule-table">
               <thead>
                 <tr>
                   <th style="width:22%">具体行为</th>
                   <th style="width:150px">积分值</th>
                   <th v-if="currentType.key !== 'limited'" style="width:160px">日最高发放</th>
-                  <th v-if="currentType.key === 'limited'" style="width:150px">活动开始时间</th>
-                  <th v-if="currentType.key === 'limited'" style="width:150px">活动结束时间</th>
                   <th>规则说明</th>
+                  <th v-if="currentType.key !== 'limited'">前台任务说明</th>
                   <th style="width:80px;text-align:center">状态</th>
                   <th v-if="currentType.key === 'limited'" style="width:70px;text-align:center">操作</th>
                 </tr>
@@ -227,13 +241,10 @@
                     </template>
                     <span v-else style="color:#c0c4cc">—</span>
                   </td>
-                  <td v-if="currentType.key === 'limited'">
-                    <input class="ant-input" type="date" v-model="it.startDate" style="max-width:150px">
+                  <td style="color:#606266">{{ it.desc || '—' }}</td>
+                  <td v-if="currentType.key !== 'limited'">
+                    <input class="ant-input" v-model="it.frontDesc" maxlength="100" placeholder="前台展示,最多 100 字" style="max-width:220px">
                   </td>
-                  <td v-if="currentType.key === 'limited'">
-                    <input class="ant-input" type="date" v-model="it.endDate" style="max-width:150px">
-                  </td>
-                  <td style="color:#606266"><input v-if="currentType.key === 'limited'" class="ant-input" v-model="it.desc" placeholder="如:国庆活动 / 双 11..."><template v-else>{{ it.desc || '—' }}</template></td>
                   <td style="text-align:center">
                     <label class="switch"><input type="checkbox" v-model="it.enabled"><span class="slider"></span></label>
                   </td>
@@ -242,15 +253,10 @@
                   </td>
                 </tr>
                 <tr v-if="currentType.items.length === 0">
-                  <td :colspan="currentType.key === 'limited' ? 7 : 5" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
+                  <td :colspan="currentType.key === 'limited' ? 5 : 6" style="padding:36px 0;text-align:center;color:#909399">当前类型暂无规则</td>
                 </tr>
               </tbody>
             </table>
-            <div v-if="currentType.key === 'limited'" style="padding:14px 0 4px">
-              <button class="ant-btn" style="border-color:#1677ff;color:#1677ff" @click="addLimitedActivity">
-                <i data-lucide="plus" class="w-3.5 h-3.5 inline -mt-0.5"></i> 新增活动
-              </button>
-            </div>
           </div>
           <div class="save-bar">
             <div class="time">最后更新:{{ currentType.updatedAt }}</div>
@@ -367,16 +373,6 @@
           </table>
         </div>
 
-        <!-- Tab 4: 需求说明 -->
-        <div v-show="activeTab === 'spec'" class="p-6">
-          <div class="rnd-spec">
-            <h4><i data-lucide="clipboard-list" class="w-4 h-4"></i>研发需求说明</h4>
-            <ol>
-              <li>积分派送规则由后台系统决定。</li>
-              <li>当该功能关闭时,前台将不再显示对应的服务项,且对应的积分也会随之调整。</li>
-            </ol>
-          </div>
-        </div>
       </div>
     </main>
   </div>
@@ -479,8 +475,7 @@ createApp({
     const tabs = [
       { key:'earn', label:'积分发放规则', icon:'coins' },
       { key:'risk', label:'风控反作弊',   icon:'shield-check' },
-      { key:'log',  label:'操作日志',     icon:'history' },
-      { key:'spec', label:'需求说明',     icon:'clipboard-list' }
+      { key:'log',  label:'操作日志',     icon:'history' }
     ];
     const activeTab = ref('earn');
     const activeType = ref('deal');
@@ -502,13 +497,17 @@ createApp({
       festival: 'limited',
       weekend_bid: 'limited'
     };
+    const frontDescPreset = {
+      deal: '成交一台车可获得,退车则扣回',
+      bid: '仅计有效出价 1 台算 1 次,上不封顶'
+    };
     const bucket = { deal: [], behavior: [], limited: [] };
     CFG.coinEarning.forEach(g => {
       g.items.forEach(it => {
         const tk = idToType[it.id] || 'behavior';
         if (!bucket[tk]) return; // 增值服务类已移除
         bucket[tk].push({
-          id: it.id, action: it.action, coin: it.coin, desc: it.desc || '', enabled: true
+          id: it.id, action: it.action, coin: it.coin, desc: it.desc || '', frontDesc: frontDescPreset[it.id] || '', enabled: true
         });
       });
     });
@@ -521,25 +520,13 @@ createApp({
       { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' },
       { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' }
     ];
+    const limitedCommon = reactive({ startDate: '2026-05-01', endDate: '2026-05-07', frontDesc: '' });
+
     const defaultUpdatedAt = {
       deal:     '2026-04-10 14:22',
       behavior: '2026-03-28 09:05',
       limited:  '2026-04-18 16:40'
     };
-    let limitedSeq = 100;
-    function addLimitedActivity() {
-      const g = earning.find(g => g.key === 'limited');
-      if (!g) return;
-      g.items.push({
-        id: 'lim_' + (++limitedSeq),
-        action: '活动出价多倍积分',
-        coin: '出价积分 × 2',
-        startDate: '',
-        endDate: '',
-        desc: '',
-        enabled: true
-      });
-    }
     function removeLimitedItem(id) {
       const g = earning.find(g => g.key === 'limited');
       if (!g) return;
@@ -655,8 +642,8 @@ createApp({
     onMounted(async () => { await nextTick(); lucide.createIcons(); });
     watch([activeTab, activeType, blacklistModalOpen, confirmRemoveOpen], async () => { await nextTick(); lucide.createIcons(); });
 
-    return { tabs, activeTab, activeType, earning, currentType, risk, logs,
-             addLimitedActivity, removeLimitedItem,
+    return { tabs, activeTab, activeType, earning, currentType, limitedCommon, risk, logs,
+             removeLimitedItem,
              blacklistModalOpen, blacklistForm, userSuggestions, showSuggest, pickUser, onKeywordInput,
              openAddBlacklist, closeBlacklistModal, submitBlacklist,
              confirmRemoveOpen, pendingRemove, askRemoveBlacklist, cancelRemove, confirmRemove,

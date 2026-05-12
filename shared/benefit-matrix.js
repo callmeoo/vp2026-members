@@ -7,7 +7,7 @@
  *   2. createApp(...) 后调用 app.component('benefit-matrix', window.BenefitMatrixComponent)
  *   3. 模板中使用 <benefit-matrix></benefit-matrix>
  *
- * 权益类目顺序:历史数据查询 → 保留价查询 → 专属销售顾问 → 1V1专属客服 → 积分兑换折扣 → 无理由退车
+ * 权益类目顺序:历史行情查询 → 保留价查询 → 专属销售顾问 → 1V1专属客服 → 积分兑换折扣 → 无理由退车
  */
 (function (global) {
   'use strict';
@@ -87,7 +87,7 @@
         }
 
         var matrixDefs = [
-          { label: '历史数据查询', render: function (lv) { return cellFor(lv, 'history_data'); } },
+          { label: '历史行情查询', render: function (lv) { return cellFor(lv, 'history_data'); } },
           { label: '保留价查询',   render: function (lv) { return cellFor(lv, 'reserve_price'); } },
           { label: '专属销售顾问', render: function (lv) { return cellFor(lv, 'sales_advisor'); } },
           { label: '1V1 专属客服', render: function (lv) { return cellFor(lv, 'service_1v1'); } },

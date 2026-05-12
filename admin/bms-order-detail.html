@@ -592,7 +592,7 @@
           <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>3. 本单使用权益
         </div>
         <ul class="list-disc pl-6 space-y-1">
-          <li>新增「本单使用的权益」区域,展示该订单已使用的权益清单(保留价查询、历史数据查询、积分折扣兑换、无理由退车 等)</li>
+          <li>新增「本单使用的权益」区域,展示该订单已使用的权益清单(保留价查询、历史行情查询、积分折扣兑换、无理由退车 等)</li>
           <li>未使用时显示「本单未使用等级权益」</li>
         </ul>
       </div>
@@ -670,7 +670,7 @@ createApp({
       if (mockUsageMode.value === 'none') return [];
       return [
         { label:'保留价查询',   desc:'本单出价前已使用保留价查询 1 次' },
-        { label:'历史数据查询', desc:'查询本车源历史成交数据 2 次' },
+        { label:'历史行情查询', desc:'查询本车源历史成交数据 2 次' },
         { label:'积分折扣兑换', desc:'已使用积分抵扣综合服务费 50 元', tag:{ cls:'mb-tag-amber', text:'已抵扣' } },
         { label:'无理由退车',   desc:'本单已使用买家无理由退车权益',     tag:{ cls:'mb-tag-violet', text:'权益' } }
       ];
