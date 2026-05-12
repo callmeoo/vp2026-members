@@ -161,6 +161,13 @@
       </button>
     </div>
     <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+    <div class="mt-2 pt-2 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">活动状态</div>
+      <div class="flex gap-1.5">
+        <button @click="hasActivity = true" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">有活动</button>
+        <button @click="hasActivity = false" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', !hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">无活动</button>
+      </div>
+    </div>
   </div>
 </div>
 </div><!-- /#app -->
@@ -269,11 +276,12 @@ app.mount('#app');
       <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
-      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>等级进度：展示距下一等级还差 X 台成交；V3 为最高等级时进度区域改为「已达最高等级」，不显示进度条。</li>
         <li>积分到期提醒：卡片展示最近 30 天内即将到期的积分汇总量；无到期积分时隐藏该提示行。</li>
         <li>可享权益：已解锁的权益正常展示，未解锁的置灰叠加锁图标；积分折扣按当前等级显示（V0/V1 = 1:1，V2 = 95折，V3 = 8折）。</li>
         <li>推荐任务数据来自 shared/member-config.js 的 recommendedTasks，任务完成状态由接口返回，前端仅做展示与跳转。</li>
+        <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」。</li>
       </ol>
     </div>
   </div>
