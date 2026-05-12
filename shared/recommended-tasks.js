@@ -65,39 +65,16 @@
   global.RecommendedTasksComponent = {
     name: 'RecommendedTasks',
     props: {
-      level: { type: String, default: 'V0' },
-      platform: { type: String, default: 'app' },
+      level:       { type: String,  default: 'V0' },
+      platform:    { type: String,  default: 'app' },
       hasActivity: { type: Boolean, default: true },
-      showActivityToggle: { type: Boolean, default: false }
-    },
-    emits: ['update:hasActivity'],
-    data: function () {
-      // Mock:首次任务的完成状态。默认两个都未完成,都展示。
-      // 评审用 demo toggle 可一键切换为「已完成」,完成后两个任务从列表消失。
-      return {
-        onceCompleted: { t_verify: false, t_deposit: false }
-      };
+      onceDone:    { type: Boolean, default: false }
     },
     template: [
       '<div class="recommended-tasks-wrap">',
       '  <!-- 标题栏 -->',
       '  <div class="rt-header">',
       '    <span class="rt-title">推荐任务</span>',
-      '    <div class="rt-header-right">',
-      '      <template v-if="showActivityToggle">',
-      '        <span class="rt-toggle-label">演示状态:</span>',
-      '        <button @click="$emit(\'update:hasActivity\', true)"',
-      '          :class="[\'rt-toggle-btn\', hasActivity ? \'active\' : \'\']">有活动</button>',
-      '        <button @click="$emit(\'update:hasActivity\', false)"',
-      '          :class="[\'rt-toggle-btn\', !hasActivity ? \'active\' : \'\']">无活动</button>',
-      '        <span class="rt-toggle-label" style="margin-left:6px">首次任务:</span>',
-      '        <button @click="setOnce(false)"',
-      '          :class="[\'rt-toggle-btn\', !allOnceDone ? \'active\' : \'\']">未完成</button>',
-      '        <button @click="setOnce(true)"',
-      '          :class="[\'rt-toggle-btn\', allOnceDone ? \'active\' : \'\']">已完成</button>',
-      '      </template>',
-      '      <span class="rt-sub">完成任务获积分</span>',
-      '    </div>',
       '  </div>',
       '  <!-- 任务列表 -->',
       '  <div class="rt-list">',
@@ -106,17 +83,10 @@
       '        <div class="rt-task-name">{{ t.action }}</div>',
       '        <!-- 活动专属任务 -->',
       '        <template v-if="t.id === \'t_festival\'">',
-      '          <div v-if="hasActivity" class="rt-task-meta">',
-      '            <span class="rt-activity-badge">',
-      '              <i data-lucide="calendar-heart" class="w-3.5 h-3.5"></i>{{ t.activityPeriod }}',
-      '            </span>',
-      '            <span>出价 <span class="rt-pts rt-pts-highlight">2 倍</span>积分</span>',
-      '            <span>成交 <span class="rt-pts rt-pts-highlight">3 倍</span>积分</span>',
-      '          </div>',
-      '          <div v-if="hasActivity" style="margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.8;color:#92400e">',
-      '            <span style="color:#b45309;font-weight:600">活动名称：</span>{{ t.activityName }}<br>',
-      '            <span style="color:#b45309;font-weight:600">活动时间：</span>{{ t.activityPeriod }}<br>',
-      '            <span style="color:#b45309;font-weight:600">活动说明：</span>{{ t.activityDesc }}',
+      '          <div v-if="hasActivity" style="margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.9;color:#92400e">',
+      '            <div><span style="color:#b45309;font-weight:600">活动标题：</span>{{ t.activityName }}</div>',
+      '            <div><span style="color:#b45309;font-weight:600">活动时间：</span>{{ t.activityPeriod }}</div>',
+      '            <div><span style="color:#b45309;font-weight:600">活动内容：</span>{{ t.activityDesc }}</div>',
       '          </div>',
       '          <div v-if="!hasActivity" class="rt-task-meta">',
       '            <span>以具体活动为准,敬请期待</span>',
@@ -142,21 +112,14 @@
       visibleTasks: function () {
         var cfg = global.MEMBER_CONFIG;
         if (!cfg || !cfg.recommendedTasks) return [];
-        var once = this.onceCompleted;
+        var done = this.onceDone;
         return cfg.recommendedTasks.filter(function (t) {
-          // 一次性任务(首次实名/首充):完成后不再展示
-          if (t.once && once[t.id]) return false;
+          if (t.once && done) return false;
           return true;
         });
-      },
-      allOnceDone: function () {
-        return !!this.onceCompleted.t_verify && !!this.onceCompleted.t_deposit;
       }
     },
     methods: {
-      setOnce: function (done) {
-        this.onceCompleted = { t_verify: done, t_deposit: done };
-      },
       taskAction: function (t) {
         if (t.id === 't_festival') {
           if (this.hasActivity) {

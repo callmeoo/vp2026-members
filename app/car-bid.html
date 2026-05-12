@@ -407,10 +407,9 @@ createApp({
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li>出价积分奖励：有效出价 1 台计 1 次，+10 积分/台，上不封顶；积分在对应订单过户完成后发放，非出价时即发。</li>
+        <li>出价积分奖励：有效出价 1 台计 1 次，+10 积分/台，上不封顶；积分在车辆竞价结束后发放。</li>
         <li>保留价查看：V2+ 直接展示，V0/V1 积分兑换（50 积分）。本页已查看或兑换过的，返回车辆详情页同步展示，无需重复兑换，共用 localStorage key: chevip_unlocked_reserve_ids。</li>
-        <li>自动出价：按用户设定步长自动加价至上限，期间每次有效加价均计入出价积分奖励（上不封顶）。</li>
-        <li>出价成功后「出价竞拍 +10 积分」行为计入当次出价记录，待车辆过户完成后统一发放积分。</li>
+        <li>保留价查看演示（评审专用）：底部演示栏可切换 V0~V3 身份；V2/V3 时出价区直接展示保留价金额；V0/V1 时点击「查看保留价」可进入积分兑换流程（50 积分），兑换成功后价格内联显示，刷新仍保留（localStorage 持久化）；点「重置」可恢复初始状态。</li>
       </ol>
     </div>
   </div>

@@ -134,13 +134,13 @@
     // highlight=true 为核心任务,在会员中心以红色标记为"核心任务"
     // unit 为积分后缀(如 "/台" / "/次"),空表示纯数字
     recommendedTasks: [
-      { id: 't_deal',     action: '车辆成交',                       points: 50, unit: '',    desc: '成交一台车可获得,退车则扣回',       highlight: true },
-      { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '出价 1 台算 1 次,上不封顶',         highlight: true },
-      { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '一次性奖励,仅首次认证有效', once: true },
-      { id: 't_deposit',  action: '首充保证金',                     points: 5,  unit: '/次', desc: '一次性奖励,仅首次充值有效', once: true },
+      { id: 't_deal',     action: '车辆成交',                       points: 50, unit: '',    desc: '限非报废车，过户完成后获得，售后退车退回', highlight: true },
+      { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '按出价台次计算，上不封顶',               highlight: true },
+      { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '一次性奖励', once: true },
+      { id: 't_deposit',  action: '首充保证金',                     points: 5,  unit: '/次', desc: '一次性奖励', once: true },
       { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
       { id: 't_festival', action: '活动专属任务',                   points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true,
-        activityName: '国庆节双倍积分活动', activityPeriod: '2026.10.1 - 10.7', activityDesc: '活动期间出价积分翻 2 倍，成交积分翻 3 倍，每日上限 50 积分' }
+        activityName: '国庆节双倍积分活动', activityPeriod: '2026.10.1 - 10.7', activityDesc: '活动期间出价积分翻 2 倍，成交积分翻 3 倍' }
     ],
 
     // ─────────────────────────────────────────────

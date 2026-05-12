@@ -163,9 +163,14 @@
     <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
     <div class="mt-2 pt-2 border-t border-slate-100">
       <div class="text-[10px] text-slate-400 mb-1.5">活动状态</div>
-      <div class="flex gap-1.5">
-        <button @click="hasActivity = true" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">有活动</button>
+      <div class="flex gap-1.5 mb-2">
+        <button @click="hasActivity = true"  :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', hasActivity  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">有活动</button>
         <button @click="hasActivity = false" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', !hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">无活动</button>
+      </div>
+      <div class="text-[10px] text-slate-400 mb-1.5">首次任务</div>
+      <div class="flex gap-1.5">
+        <button @click="onceDone = false" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', !onceDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未完成</button>
+        <button @click="onceDone = true"  :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', onceDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已完成</button>
       </div>
     </div>
   </div>

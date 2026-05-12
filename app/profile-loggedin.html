@@ -345,8 +345,9 @@ createApp({
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li>等级 Banner：展示当前等级（V0~V3）、近 3 月成交台数与升级进度条；点击 Banner 上半区跳转会员中心（member.html）；权益横滑区独立于 &lt;a&gt; 之外，避免触摸滑动被链接拦截。</li>
+        <li>等级 Banner：展示当前等级（V0~V3）、近 3 月成交台数与升级进度条；Banner 顶部（等级名 + 进度条区域）整体可点击，跳转会员中心（member.html）；下方权益横滑区不在可点击范围内，手势左右滑动不会误触发页面跳转。</li>
         <li>资产入口：积分→积分明细（coins.html）、权益卡→我的权益卡（my-rewards.html）、优惠券→优惠券列表；数值由接口实时返回，页面为 Mock 演示数据。</li>
+        <li>资产入口「积分」区域（数字 + 文字）整体可点击，跳转积分明细页（coins.html）。</li>
         <li>等级模拟切换（评审专用）：右上角浮窗可切换 V0~V3 身份，等级 Banner、权益横滑、进度数据同步联动；仅桌面（md+ 宽度）显示，不进生产。</li>
       </ol>
     </div>
