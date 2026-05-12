@@ -110,10 +110,10 @@
           <div class="group-title">
             <i :data-lucide="g.icon || 'folder'" class="w-3.5 h-3.5"></i>
             {{ g.label }}
-            <span class="ml-auto text-slate-400 normal-case">{{ g.items.length }}</span>
+            <span class="ml-auto text-slate-400 normal-case">{{ visibleItems(g).length }}</span>
           </div>
-          <div v-if="g.items.length">
-            <div v-for="item in g.items" :key="item.file || item.title"
+          <div v-if="visibleItems(g).length">
+            <div v-for="item in visibleItems(g)" :key="item.file || item.title"
                  class="row" :class="{ disabled: !item.file }">
               <a v-if="item.file" :href="item.file" target="_blank" rel="noopener">{{ item.title }}</a>
               <span v-else>{{ item.title }}</span>
@@ -517,13 +517,13 @@
             {
               label: '分类首页', icon: 'layout-grid',
               items: [
-                { title: 'APP 首页',           file: 'app/home.html' },
+                { title: 'APP 首页(会员权益广告入口)', file: 'app/home.html' },
                 { title: '会员权益升级落地页', file: 'app/landing.html' },
                 { title: '会员中心',           file: 'app/member.html' },
                 { title: '积分明细',           file: 'app/coins.html' },
                 { title: '权益商城',           file: 'app/mall.html' },
-                { title: '我的优惠券',         file: 'app/my-rewards.html' },
-                { title: '活动优惠券',         file: 'app/coupons.html' },
+                { title: '我的优惠券',         file: 'app/my-rewards.html', hidden: true },
+                { title: '我的优惠券(积分兑换展示)', file: 'app/coupons.html' },
               ],
             },
             {
@@ -532,8 +532,8 @@
                 { title: '个人中心(未登录)',  file: 'app/profile.html' },
                 { title: '登录页',             file: 'app/login.html' },
                 { title: '个人中心(已登录)',  file: 'app/profile-loggedin.html' },
-                { title: '设置页',             file: 'app/settings.html' },
-                { title: '我的订单(买到的车)', file: 'app/won-orders.html' },
+                { title: '设置页',             file: 'app/settings.html', hidden: true },
+                { title: '我的订单(买到的车)-待支付入口', file: 'app/won-orders.html' },
                 { title: '订单详情',           file: 'app/won-order-detail.html' },
                 { title: '申请售后',           file: 'app/aftersale-apply.html' },
                 { title: '售后审批列表',       file: 'app/aftersale-approval-list.html' },
@@ -543,10 +543,10 @@
             {
               label: '全部车源', icon: 'car',
               items: [
-                { title: '全部车源(A 版)',   file: 'app/allcars.html' },
-                { title: '车辆详情',           file: 'app/car-detail.html' },
+                { title: '全部车源(A 版)',   file: 'app/allcars.html', hidden: true },
+                { title: '车辆详情',           file: 'app/car-detail.html', hidden: true },
                 { title: '车辆详情(有保留价)',   file: 'app/car-detail-reserve.html' },
-                { title: '出价 / 竞拍',        file: 'app/car-bid.html' },
+                { title: '出价页',             file: 'app/car-bid.html' },
                 { title: '维保查询',           file: 'app/maintenance-query.html' },
               ],
             },
@@ -558,20 +558,20 @@
             {
               label: '主站点', icon: 'globe',
               items: [
-                { title: '首页',         file: 'pc/home.html' },
-                { title: '全部车源',     file: 'pc/sources.html' },
-                { title: '有保留价',     file: 'pc/reserved.html' },
+                { title: '首页(会员权益广告入口)', file: 'pc/home.html' },
+                { title: '全部车源',     file: 'pc/sources.html', hidden: true },
+                { title: '有保留价',     file: 'pc/reserved.html', hidden: true },
                 { title: '会员权益说明', file: 'pc/member-intro.html' },
                 { title: '会员中心',     file: 'pc/member.html' },
                 { title: '积分明细',     file: 'pc/coins.html' },
                 { title: '积分兑换',     file: 'pc/mall.html' },
-                { title: '我的交易-买到的车', file: 'pc/orders.html' },
+                { title: '我的交易-买到的车(待支付-无理由退车权益)', file: 'pc/orders.html' },
               ],
             },
             {
               label: '车辆详情', icon: 'car',
               items: [
-                { title: '车辆详情(PC)', file: 'pc/car-detail.html' },
+                { title: '车辆详情(PC,有保留价和历史行情)', file: 'pc/car-detail.html' },
               ],
             },
           ],
@@ -647,9 +647,10 @@
       const rewards = memberCfg.redeemableRewards || [];
       const currentTab = computed(() => tabs.find(t => t.key === active.value));
 
+      const visibleItems = (g) => (g.items || []).filter(i => !i.hidden);
       const tabCount = (t) => {
-        if (t.groups) return t.groups.reduce((s, g) => s + g.items.length, 0);
-        if (t.items) return t.items.length;
+        if (t.groups) return t.groups.reduce((s, g) => s + visibleItems(g).length, 0);
+        if (t.items) return t.items.filter(i => !i.hidden).length;
         return null;
       };
 
@@ -657,7 +658,7 @@
       watch([active, subActive, prdActive], refresh);
       onMounted(refresh);
 
-      return { tabs, active, subActive, currentTab, tabCount, wordFile, prdChapters, prdActive, coinConfig, coinGroups, rewards };
+      return { tabs, active, subActive, currentTab, tabCount, visibleItems, wordFile, prdChapters, prdActive, coinConfig, coinGroups, rewards };
     },
   }).mount('#app');
 </script>
