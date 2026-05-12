@@ -149,7 +149,7 @@
           <div class="balance-row">
             <div class="balance-num">356</div>
             <div class="balance-validity">
-              <strong>积分有效期：</strong>{{ CFG.coin.validityDesc }}，到期自动清零，建议尽早使用。
+              <strong>积分有效期：</strong>{{ CFG.coin.validityDesc }}，到期自动清零。
             </div>
           </div>
           <div class="balance-stats">
@@ -176,9 +176,15 @@
         </div>
 
         <!-- Tab 切换 -->
-        <div class="tab-bar">
-          <div :class="['tab-item', activeTab === 'log' ? 'active' : '']" @click="activeTab = 'log'">积分明细</div>
-          <div :class="['tab-item', activeTab === 'earn' ? 'active' : '']" @click="activeTab = 'earn'">如何赚积分</div>
+        <div class="tab-bar" style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex">
+            <div :class="['tab-item', activeTab === 'log' ? 'active' : '']" @click="activeTab = 'log'">积分明细</div>
+            <div :class="['tab-item', activeTab === 'earn' ? 'active' : '']" @click="activeTab = 'earn'">如何赚积分</div>
+          </div>
+          <button @click="showSpec = true" style="position:relative;margin-right:4px;padding:5px 12px;border:1px solid #a78bfa;background:#faf5ff;color:#7c3aed;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>需求点说明
+            <span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff"></span>
+          </button>
         </div>
 
         <!-- 积分明细 -->
@@ -362,15 +368,36 @@ const app = createApp({
     const footer = window.PC_COMMON.renderFooter();
 
     const hasActivity = ref(true);
+    const showSpec = ref(false);
 
-    watch([activeTab, activeFilter, currentPage, hasActivity], () => nextTick(() => lucide.createIcons()));
+    watch([activeTab, activeFilter, currentPage, hasActivity, showSpec], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, hasActivity, header, footer };
+    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, hasActivity, header, footer, showSpec };
   }
 });
 app.component('recommended-tasks', window.RecommendedTasksComponent);
 app.mount('#app');
 </script>
+
+<!-- 需求点说明弹框 -->
+<div v-if="showSpec" style="position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px" @click.self="showSpec = false">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.18)">
+    <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:600;color:#1e293b">积分明细 · 需求点说明</span>
+      <span @click="showSpec = false" style="cursor:pointer;color:#94a3b8;font-size:20px;line-height:1;padding:0 4px">&#215;</span>
+    </div>
+    <div style="padding:20px;font-size:13px;color:#475569;line-height:1.85">
+      <ol style="margin:0;padding-left:20px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
+        <li>积分有效期：按「获得当月 + 12 个自然月」到月末到期，如 2026-04 获得的积分，到期日为 2027-04-30。</li>
+        <li>流水类型：发放（成交奖励 / 出价 / 转发 / 首次实名 / 首充保证金）、消耗（商城兑换）、到期清零三类；到期清零整条记录标红，含当期批次到期积分总量。</li>
+        <li>同日同行为记录可合并展示，备注注明「已合并 X 台」；成交奖励在过户完成后入账，非中标时即发。</li>
+      </ol>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end">
+      <button @click="showSpec = false" style="padding:8px 24px;background:#7c3aed;color:#fff;border:none;border-radius:20px;font-size:13px;cursor:pointer;font-weight:500">我知道了</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
