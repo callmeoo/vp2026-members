@@ -158,7 +158,7 @@
         <!-- 商品列表 -->
         <div class="rewards-wrap">
           <div class="section-head">
-            <h3>可兑换权益</h3>
+            <h3>可兑换商品</h3>
             <button @click="showRules = true" class="rules-btn">
               <i data-lucide="info" class="w-3.5 h-3.5"></i>兑换说明
             </button>
@@ -170,6 +170,7 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="reward-name">{{ r.name }}</div>
+              <div v-if="r.restriction" class="reward-desc">{{ r.restriction }}</div>
               <div class="reward-meta">
                 <span class="validity-chip">
                   <i data-lucide="clock" class="w-3 h-3"></i>有效期 {{ r.validityDays }} 天

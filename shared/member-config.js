@@ -155,10 +155,10 @@
     // 四、积分可兑换的权益卡(含有效期配置,用于商城与我的权益卡)
     // ─────────────────────────────────────────────
     redeemableRewards: [
-      { id: 'r_compfee_50',     name: '综合服务费 50 元券',      desc: '综合服务费直减 50 元;限平台成交车辆(非报废车)',                   coin: 500, scope: '所有等级商户', icon: 'percent',      validityDays: 30 },
-      { id: 'r_servicecenter_100', name: '服务中心消费 100 元券', desc: '过户服务费直减 100 元;限非平台成交车辆,在南沙、白云、佛山、东莞服务中心办理过户服务', coin: 500, scope: '所有等级商户', icon: 'building-2',   validityDays: 30 },
-      { id: 'r_dataquery_5',    name: '数据查询服务优惠券 5 元',  desc: '数据查询服务直减 5 元;优惠券不可叠加使用,V2/V3 等级打折兑换', coin: 50,  scope: '所有等级商户', icon: 'shield-alert', validityDays: 30 },
-      { id: 'r_dataquery_10',   name: '数据查询服务优惠券 10 元', desc: '数据查询服务直减 10 元;优惠券不可叠加使用,V2/V3 等级打折兑换', coin: 100, scope: '所有等级商户', icon: 'car-front',    validityDays: 30 }
+      { id: 'r_compfee_50',        name: '综合服务费 50 元券',       desc: '综合服务费直减 50 元;限平台成交车辆(非报废车)',                   coin: 500, scope: '所有等级商户', icon: 'percent',      validityDays: 30, restriction: '综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
+      { id: 'r_servicecenter_100', name: '服务中心消费 100 元券',    desc: '过户服务费直减 100 元;限非平台成交车辆,在南沙、白云、佛山、东莞服务中心办理过户服务', coin: 500, scope: '所有等级商户', icon: 'building-2',   validityDays: 30, restriction: '服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' },
+      { id: 'r_dataquery_5',       name: '数据查询服务优惠券 5 元',  desc: '数据查询服务直减 5 元;优惠券不可叠加使用,V2/V3 等级打折兑换',  coin: 50,  scope: '所有等级商户', icon: 'shield-alert', validityDays: 30, restriction: '数据查询服务直减 5 元;不可叠加使用。' },
+      { id: 'r_dataquery_10',      name: '数据查询服务优惠券 10 元', desc: '数据查询服务直减 10 元;优惠券不可叠加使用,V2/V3 等级打折兑换', coin: 100, scope: '所有等级商户', icon: 'car-front',    validityDays: 30, restriction: '数据查询服务直减 10 元;不可叠加使用。' }
     ],
 
     // ─────────────────────────────────────────────
