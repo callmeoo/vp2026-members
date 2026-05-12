@@ -234,18 +234,17 @@
 <script src="_sidebar-alert.js"></script>
 <script>
   const logs = [
-    { sn:"CL202604231032", user:"郑园", phone:"189****2868", level:"V2", type:"发放", src:"成交奖励", delta:+2000, balance:14380, expire:"2027-04-23", time:"2026-04-23 10:32:14", note:"订单 SO2026042301 成交奖励" },
-    { sn:"CL202604231005", user:"刘洋", phone:"130****8721", level:"V1", type:"消耗", src:"兑换扣减", delta:-200, balance:3620, expire:"—",         time:"2026-04-23 10:05:07", note:"兑换 车辆中标价查询卡" },
-    { sn:"CL202604230941", user:"黄楚雄", phone:"135****2067", level:"V3", type:"发放", src:"转发朋友圈", delta:+50,  balance:28740, expire:"2027-04-23", time:"2026-04-23 09:41:55", note:"转发引流 · 活动#A012" },
-    { sn:"CL202604230812", user:"林子墨", phone:"186****1145", level:"V2", type:"消耗", src:"兑换扣减", delta:-500, balance:7820,  expire:"—",         time:"2026-04-23 08:12:30", note:"兑换 过户 9.5 折卡" },
-    { sn:"CL202604222340", user:"陆嘉豪", phone:"158****6721", level:"V1", type:"到期", src:"系统结算", delta:-320, balance:2100,  expire:"2026-04-22", time:"2026-04-22 23:40:00", note:"2025-04 发放 · 自然到期" },
-    { sn:"CL202604221842", user:"陈敏",   phone:"137****4410", level:"V2", type:"发放", src:"成交奖励", delta:+1500, balance:12600, expire:"2027-04-22", time:"2026-04-22 18:42:28", note:"订单 SO2026042205 成交奖励" },
-    { sn:"CL202604221618", user:"张晓雯", phone:"159****0032", level:"V1", type:"调整", src:"人工调整", delta:+1000, balance:4800,  expire:"2027-04-22", time:"2026-04-22 16:18:11", note:"客服工单 CS20260422#3389 补偿" },
+    { sn:"CL202604231032", user:"郑园",   phone:"189****2868", level:"V2", type:"发放", src:"成交奖励",   delta:+2000, balance:14380, expire:"2027-04-23", time:"2026-04-23 10:32:14", note:"成交奖励 · 车牌号 粤A·12345" },
+    { sn:"CL202604230941", user:"黄楚雄", phone:"135****2067", level:"V3", type:"发放", src:"转发朋友圈", delta:+50,   balance:28740, expire:"2027-04-23", time:"2026-04-23 09:41:55", note:"转发引流 · 活动#A012" },
+    { sn:"CL202604230812", user:"林子墨", phone:"186****1145", level:"V2", type:"消耗", src:"兑换扣减",   delta:-500,  balance:7820,  expire:"—",          time:"2026-04-23 08:12:30", note:"兑换 过户 9.5 折卡" },
+    { sn:"CL202604222340", user:"陆嘉豪", phone:"158****6721", level:"V1", type:"到期", src:"系统结算",   delta:-320,  balance:2100,  expire:"2026-04-22", time:"2026-04-22 23:40:00", note:"2025-04 发放 · 自然到期" },
+    { sn:"CL202604221842", user:"陈敏",   phone:"137****4410", level:"V2", type:"发放", src:"成交奖励",   delta:+1500, balance:12600, expire:"2027-04-22", time:"2026-04-22 18:42:28", note:"成交奖励 · 车牌号 粤B·56789" },
+    { sn:"CL202604221618", user:"张晓雯", phone:"159****0032", level:"V1", type:"调整", src:"人工调整",   delta:+1000, balance:4800,  expire:"2027-04-22", time:"2026-04-22 16:18:11", note:"人工调整" },
     { sn:"CL202604221502", user:"王磊",   phone:"138****7788", level:"V2", type:"发放", src:"出价",       delta:+30,   balance:9210,  expire:"2027-04-22", time:"2026-04-22 15:02:49", note:"有效出价奖励" },
-    { sn:"CL202604221340", user:"孙勇英", phone:"130****0277", level:"V2", type:"消耗", src:"兑换扣减",   delta:-800, balance:6310,  expire:"—",         time:"2026-04-22 13:40:02", note:"兑换 交易行情查询卡" },
-    { sn:"CL202604220955", user:"李景文", phone:"156****8688", level:"V2", type:"发放", src:"成交奖励",   delta:+3500, balance:22400, expire:"2027-04-22", time:"2026-04-22 09:55:21", note:"订单 SO2026042201 成交奖励" },
-    { sn:"CL202604200834", user:"李明",   phone:"130****8721", level:"V0", type:"发放", src:"首次实名认证", delta:+5,    balance:5,     expire:"2027-04-20", time:"2026-04-20 08:34:11", note:"首次实名认证一次性奖励" },
-    { sn:"CL202604190911", user:"孙勇英", phone:"130****0277", level:"V1", type:"发放", src:"首充保证金",   delta:+5,    balance:2105,  expire:"2027-04-19", time:"2026-04-19 09:11:22", note:"首次充值保证金一次性奖励" }
+    { sn:"CL202604221340", user:"孙勇英", phone:"130****0277", level:"V2", type:"消耗", src:"兑换扣减",   delta:-800,  balance:6310,  expire:"—",          time:"2026-04-22 13:40:02", note:"兑换 交易行情查询卡" },
+    { sn:"CL202604220955", user:"李景文", phone:"156****8688", level:"V2", type:"发放", src:"成交奖励",   delta:+3500, balance:22400, expire:"2027-04-22", time:"2026-04-22 09:55:21", note:"成交奖励 · 车牌号 粤C·34567" },
+    { sn:"CL202604200834", user:"李明",   phone:"130****8721", level:"V0", type:"发放", src:"首次实名认证", delta:+5,   balance:5,     expire:"2027-04-20", time:"2026-04-20 08:34:11", note:"首次实名认证一次性奖励" },
+    { sn:"CL202604190911", user:"孙勇英", phone:"130****0277", level:"V1", type:"发放", src:"首充保证金",  delta:+5,   balance:2105,  expire:"2027-04-19", time:"2026-04-19 09:11:22", note:"首次充值保证金一次性奖励" }
   ];
 
   function renderLogs(data) {
