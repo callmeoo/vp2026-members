@@ -74,17 +74,24 @@
       <div class="text-xs text-slate-400 py-2 font-medium">{{ group.date }}</div>
       <div class="bg-white rounded-2xl overflow-hidden shadow-sm mb-3">
         <div v-for="(tx, i) in group.items" :key="i"
-             :class="['flex items-center gap-3 p-4', i < group.items.length - 1 ? 'border-b border-slate-50' : '']">
-          <div :class="['w-10 h-10 rounded-xl flex items-center justify-center text-white', tx.iconBg]">
-            <i :data-lucide="tx.icon" class="w-5 h-5"></i>
+             :class="['p-4', i < group.items.length - 1 ? 'border-b border-slate-50' : '']">
+          <div class="flex items-center gap-3">
+            <div :class="['w-10 h-10 rounded-xl flex items-center justify-center text-white flex-none', tx.iconBg]">
+              <i :data-lucide="tx.icon" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium text-slate-800">{{ tx.title }}</div>
+              <div class="text-xs text-slate-400 mt-0.5">{{ tx.meta }}</div>
+            </div>
+            <div class="text-right flex-none">
+              <div :class="['text-base font-bold', tx.amountColor]">{{ tx.amount }}</div>
+              <div class="text-[10px] text-slate-400">{{ tx.note }}</div>
+            </div>
           </div>
-          <div class="flex-1">
-            <div class="text-sm font-medium text-slate-800">{{ tx.title }}</div>
-            <div class="text-xs text-slate-400 mt-0.5">{{ tx.meta }}</div>
-          </div>
-          <div class="text-right">
-            <div :class="['text-base font-bold', tx.amountColor]">{{ tx.amount }}</div>
-            <div class="text-[10px] text-slate-400">{{ tx.note }}</div>
+          <div v-if="tx.activityName" class="mt-2 rounded-lg px-3 py-2 text-[11px] space-y-0.5" style="margin-left:52px;background:#fffbeb;border:1px solid #fde68a">
+            <div><span style="color:#b45309;font-weight:600">活动名称：</span><span style="color:#92400e">{{ tx.activityName }}</span></div>
+            <div><span style="color:#b45309;font-weight:600">活动时间：</span><span style="color:#92400e">{{ tx.activityPeriod }}</span></div>
+            <div><span style="color:#b45309;font-weight:600">活动规则：</span><span style="color:#92400e">{{ tx.activityRule }}</span></div>
           </div>
         </div>
       </div>
@@ -154,7 +161,10 @@ const app = createApp({
         amountColor: colorText[it.color] || 'text-slate-700',
         note: o.note || ('有效期至 ' + o.expire),
         icon: it.icon,
-        iconBg: colorBg[it.color]
+        iconBg: colorBg[it.color],
+        activityName:   o.activityName   || '',
+        activityPeriod: o.activityPeriod || '',
+        activityRule:   o.activityRule   || ''
       };
     }
     function spend(rewardId, meta, opts) {
@@ -207,6 +217,18 @@ const app = createApp({
       ]},
       { date: '2026-04-10', items: [
         expire('2025-04-10 获得 · 满 12 月', 12),
+      ]},
+      { date: '2026-04-05', items: [
+        earn('festival', '09:00', { coin:5, expire:'2027-04-05',
+          activityName:   '五一假期双倍积分活动',
+          activityPeriod: '2026-05-01 ~ 2026-05-07',
+          activityRule:   '活动期间完成出价 / 成交任务积分翻倍，每日上限 50 积分'
+        }),
+        earn('bid', '闽A12345 · 10:45', { title:'活动出价双倍', coin:20, expire:'2027-04-05',
+          activityName:   '五一假期双倍积分活动',
+          activityPeriod: '2026-05-01 ~ 2026-05-07',
+          activityRule:   '活动期间完成出价 / 成交任务积分翻倍，每日上限 50 积分'
+        }),
       ]},
     ];
 

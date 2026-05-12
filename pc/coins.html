@@ -192,15 +192,22 @@
           </div>
           <template v-for="group in visibleGroups" :key="group.date">
             <div class="tx-group-date">{{ group.date }}</div>
-            <div v-for="(tx, i) in group.items" :key="i" class="tx-row">
-              <div class="tx-icon" :class="tx.iconBg"><i :data-lucide="tx.icon" class="w-5 h-5"></i></div>
-              <div class="flex-1">
-                <div class="tx-title">{{ tx.title }}</div>
-                <div class="tx-meta">{{ tx.meta }}</div>
+            <div v-for="(tx, i) in group.items" :key="i" class="tx-row" style="flex-direction:column;align-items:stretch;gap:0">
+              <div style="display:flex;align-items:center;gap:14px">
+                <div class="tx-icon flex-none" :class="tx.iconBg"><i :data-lucide="tx.icon" class="w-5 h-5"></i></div>
+                <div class="flex-1 min-w-0">
+                  <div class="tx-title">{{ tx.title }}</div>
+                  <div class="tx-meta">{{ tx.meta }}</div>
+                </div>
+                <div style="flex-shrink:0;text-align:right;min-width:64px">
+                  <div class="tx-amount" :class="tx.amountColor">{{ tx.amount }}</div>
+                  <div class="tx-note">{{ tx.note }}</div>
+                </div>
               </div>
-              <div style="flex-shrink:0;text-align:right;min-width:64px">
-                <div class="tx-amount" :class="tx.amountColor">{{ tx.amount }}</div>
-                <div class="tx-note">{{ tx.note }}</div>
+              <div v-if="tx.activityName" style="margin-top:8px;margin-left:54px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.8">
+                <span style="color:#b45309;font-weight:600">活动名称：</span><span style="color:#92400e">{{ tx.activityName }}</span>
+                <span style="color:#b45309;font-weight:600">活动时间：</span><span style="color:#92400e">{{ tx.activityPeriod }}</span>
+                <div style="margin-top:2px"><span style="color:#b45309;font-weight:600">活动规则：</span><span style="color:#92400e">{{ tx.activityRule }}</span></div>
               </div>
             </div>
           </template>
@@ -293,7 +300,10 @@ const app = createApp({
       return { kind: 'earn', title: o.title || it.action, meta, amount: '+' + coin,
         amountColor: colorText[it.color] || 'text-slate-700',
         note: o.expire ? '有效期至 ' + o.expire : (o.note || ''),
-        icon: it.icon, iconBg: colorBg[it.color] };
+        icon: it.icon, iconBg: colorBg[it.color],
+        activityName:   o.activityName   || '',
+        activityPeriod: o.activityPeriod || '',
+        activityRule:   o.activityRule   || '' };
     }
     function spend(rewardId, meta, opts) {
       const r = rewardById[rewardId], o = opts || {};
@@ -333,6 +343,18 @@ const app = createApp({
       ]},
       { date: '2026-04-10', items: [
         expire('2025-04-10 获得 · 满 12 月 · 2026-04-10 00:00:00', 12)
+      ]},
+      { date: '2026-04-05', items: [
+        earn('festival', '2026-04-05 09:00:00', { coin: 5, expire: '2027-04-05',
+          activityName:   '五一假期双倍积分活动',
+          activityPeriod: '2026-05-01 ~ 2026-05-07',
+          activityRule:   '活动期间完成出价 / 成交任务积分翻倍，每日上限 50 积分'
+        }),
+        earn('bid', '闽A12345 · 2026-04-05 10:45:02', { title: '活动出价双倍', coin: 20, expire: '2027-04-05',
+          activityName:   '五一假期双倍积分活动',
+          activityPeriod: '2026-05-01 ~ 2026-05-07',
+          activityRule:   '活动期间完成出价 / 成交任务积分翻倍，每日上限 50 积分'
+        }),
       ]}
     ];
 

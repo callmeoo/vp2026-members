@@ -204,6 +204,10 @@
             <!-- 限时活动公用字段 -->
             <div v-if="currentType.key === 'limited'" style="background:#fafafa;border:1px solid #ebeef5;border-radius:6px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
               <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:13px;color:#606266;white-space:nowrap">活动名称</span>
+                <input class="ant-input" v-model="limitedCommon.activityName" :disabled="!editMode" maxlength="50" placeholder="如:五一假期双倍积分活动" style="width:200px">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:13px;color:#606266;white-space:nowrap">活动开始时间</span>
                 <input class="ant-input" type="date" v-model="limitedCommon.startDate" :disabled="!editMode" style="width:150px">
               </div>
@@ -565,7 +569,7 @@ createApp({
       { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' },
       { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' }
     ];
-    const limitedCommon = reactive({ startDate: '2026-05-01', endDate: '2026-05-07', frontDesc: '' });
+    const limitedCommon = reactive({ activityName: '五一假期双倍积分活动', startDate: '2026-05-01', endDate: '2026-05-07', frontDesc: '' });
 
     const defaultUpdatedAt = {
       deal:     '2026-04-10 14:22',
