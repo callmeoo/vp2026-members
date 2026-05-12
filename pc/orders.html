@@ -242,7 +242,19 @@
     <div class="modal-box">
       <div class="modal-head">
         <h3>申请售后</h3>
-        <span class="cursor-pointer text-slate-400 hover:text-slate-600" @click="afsOrder = null"><i data-lucide="x" class="w-5 h-5"></i></span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button @click="showAfsSpec = !showAfsSpec" style="position:relative;padding:4px 12px;border-radius:100px;border:1px solid #a78bfa;background:#faf5ff;color:#7c3aed;font-size:12px;font-weight:600;cursor:pointer">需求点说明<span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff"></span></button>
+          <span class="cursor-pointer text-slate-400 hover:text-slate-600" @click="afsOrder = null"><i data-lucide="x" class="w-5 h-5"></i></span>
+        </div>
+      </div>
+      <!-- 申请售后需求点说明展开区 -->
+      <div v-if="showAfsSpec" style="background:#faf5ff;border-bottom:1px solid #e9d5ff;padding:14px 24px;font-size:13px;color:#475569;line-height:1.85">
+        <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
+          <li>无理由退车：V3 钻石专享，每定级周期限用 1 台；中标后 24 小时内有效，超时自动失效，使用入口置灰并提示原因。</li>
+          <li>违约金抵扣：使用无理由退车时违约金全额抵扣（¥0），不向商户收取；未使用则正常扣除违约金。如果买家端发起申请且审批通过，从唯普收益中扣除 1200 元给到门店，买家保证金同步释放；如果通过 BMS 发起并使用无理由退车权益，且未选择款项分配，则执行相同逻辑。</li>
+          <li>权益来源区分：显示「等级权益」或「活动赠送」，多张时商户自行选择；来源信息由接口返回。</li>
+          <li>FNC 钱包账单：使用无理由退车的售后订单，钱包摘要追加「(无理由退车)」后缀，整行标红，供财务识别。</li>
+        </ol>
       </div>
       <div class="modal-body">
         <!-- 警告提示 -->
@@ -355,6 +367,23 @@
       <button class="tip-btn" @click="tipMsg = ''">确定</button>
     </div>
   </div>
+
+  <!-- 页面需求点说明 -->
+  <button @click="showSpec = !showSpec" style="position:fixed;top:72px;right:20px;z-index:300;background:#7c3aed;color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(124,58,237,.4);display:flex;align-items:center;gap:6px">需求点说明<span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block;flex-shrink:0"></span></button>
+  <div v-if="showSpec" style="position:fixed;top:112px;right:20px;z-index:300;width:360px;max-height:calc(100vh - 130px);background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.18);border:1px solid #e2e8f0;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:11px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <span style="font-size:13px;font-weight:600;color:#7c3aed">我的交易 · 需求点说明</span>
+      <span @click="showSpec = false" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
+    </div>
+    <div style="padding:14px 16px;font-size:13px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
+        <li>成交积分奖励：以车辆过户完成为发放节点，非中标时立即发放。</li>
+        <li>无理由退车入口：中标后 24h 内，可申请，超时本车无法使用。</li>
+        <li>退车积分扣回：使用无理由退车成功退车的订单，已发放的积分同步扣回；尚未过户（积分未发放）则不涉及扣分。</li>
+        <li>权益使用标记：已使用无理由退车权益申请售后，待审核及审批通过后，对应订单行展示「已使用无理由退车权益」标签；审批驳回则不展示。</li>
+      </ol>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -365,6 +394,8 @@ createApp({
   setup() {
     const tab = ref('all');
     const kw = ref('');
+    const showSpec = ref(false);
+    const showAfsSpec = ref(false);
     const payOrder = ref(null);
     const payAgreed = ref(false);
     const tipMsg = ref('');
@@ -378,7 +409,7 @@ createApp({
 
     // 无理由退车权益卡
     const refundCards = [
-      { id: 'rf001', name: '无理由退车', expire: '2026-06-30', source: 'V3 等级权益' },
+      { id: 'rf001', name: '无理由退车', expire: '2026-06-30', source: '等级权益' },
       { id: 'rf002', name: '无理由退车', expire: '2026-12-31', source: '活动赠送' }
     ];
 
@@ -488,6 +519,7 @@ createApp({
       payOrder, payAgreed, openPay, confirmPay,
       afsOrder, afsReason, afsHasBenefit, afsExpired, afsSelectedCard,
       refundCards, openAfs, openAfsFromPay, submitAfs,
+      showSpec, showAfsSpec,
       header, footer
     };
   }
