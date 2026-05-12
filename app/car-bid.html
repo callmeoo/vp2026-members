@@ -406,7 +406,7 @@ createApp({
       <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
-      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>出价积分奖励：有效出价 1 台计 1 次，+10 积分/台，上不封顶；积分在对应订单过户完成后发放，非出价时即发。</li>
         <li>保留价查看：V2+ 直接展示，V0/V1 积分兑换（50 积分）。本页已查看或兑换过的，返回车辆详情页同步展示，无需重复兑换，共用 localStorage key: chevip_unlocked_reserve_ids。</li>
         <li>自动出价：按用户设定步长自动加价至上限，期间每次有效加价均计入出价积分奖励（上不封顶）。</li>
