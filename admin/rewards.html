@@ -149,6 +149,13 @@
             <input class="ant-input" v-model="filters.keyword" placeholder="商品名称,支持模糊 / 精准搜索">
           </div>
           <div>
+            <label class="text-xs text-slate-500 block mb-1">类型</label>
+            <select class="ant-input" v-model="filters.type">
+              <option value="">全部</option>
+              <option v-for="t in productTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+            </select>
+          </div>
+          <div>
             <label class="text-xs text-slate-500 block mb-1">状态</label>
             <select class="ant-input" v-model="filters.status">
               <option value="">全部</option>
@@ -169,6 +176,7 @@
             <tr>
               <th class="text-left px-4 py-3 font-medium"><input type="checkbox"></th>
               <th class="text-left px-4 py-3 font-medium">商品名称</th>
+              <th class="text-center px-4 py-3 font-medium">类型</th>
               <th class="text-right px-4 py-3 font-medium">积分价</th>
               <th class="text-center px-4 py-3 font-medium">有效期(天)</th>
               <th class="text-right px-4 py-3 font-medium">库存</th>
@@ -184,6 +192,10 @@
                 <div class="font-medium text-slate-800">{{ p.name }}</div>
                 <div class="text-xs text-slate-400">{{ p.code }}</div>
               </td>
+              <td class="px-4 py-3 text-center">
+                <span v-if="p.productType" class="ant-tag" :class="typeTagCls(p.productType)">{{ typeLabel(p.productType) }}</span>
+                <span v-else class="text-slate-400 text-xs">—</span>
+              </td>
               <td class="px-4 py-3 text-right font-semibold">{{ p.coin }}</td>
               <td class="px-4 py-3 text-center">{{ p.validityDays }}</td>
               <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stock < 100 }">{{ p.stock.toLocaleString() }}</td>
@@ -195,7 +207,7 @@
               </td>
             </tr>
             <tr v-if="filteredProducts.length === 0">
-              <td colspan="8" class="px-4 py-12 text-center text-slate-400">暂无匹配商品</td>
+              <td colspan="9" class="px-4 py-12 text-center text-slate-400">暂无匹配商品</td>
             </tr>
           </tbody>
         </table>
@@ -222,6 +234,20 @@
       <span class="close" @click="closeModal"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
     </div>
     <div class="modal-body">
+      <div class="form-row">
+        <label>商品类型 <span class="text-rose-500">*</span></label>
+        <select class="ant-input" v-model="form.productType">
+          <option value="">请选择</option>
+          <option v-for="t in productTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+        </select>
+      </div>
+      <div class="form-row" v-if="currentTypeDenominations.length > 0">
+        <label>面额 <span class="text-rose-500">*</span></label>
+        <select class="ant-input" v-model.number="form.denomination">
+          <option value="">请选择</option>
+          <option v-for="d in currentTypeDenominations" :key="d" :value="d">{{ d }}元</option>
+        </select>
+      </div>
       <div class="form-row">
         <label>商品名称 <span class="text-rose-500">*</span></label>
         <input class="ant-input" v-model="form.name" placeholder="如:保留价查询权益">
@@ -278,13 +304,20 @@
 const { createApp, reactive, ref, computed, onMounted, watch, nextTick } = Vue;
 createApp({
   setup() {
+    const productTypes = [
+      { value: 'DATA_QUERY_COUPON', label: '数据查询优惠券',   denominations: [5, 10, 15, 20, 30, 50] },
+      { value: 'RESERVE_PRICE',     label: '保留价查询权益',   denominations: [] },
+      { value: 'COMPFEE_COUPON',    label: '综合服务费减免券', denominations: [50, 100] },
+      { value: 'SERVICE_COUPON',    label: '服务中心消费券',   denominations: [50, 100] },
+    ];
+
     const products = reactive([
-      { code:'RESERVE_PRICE',     name:'保留价查询权益',          icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', coin:50,  validityDays:30, stock:480,  issued:152, status:'上架', restriction:'每笔车辆查询限用 1 张,不与其他优惠叠加。' },
-      { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',      icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', coin:50,  validityDays:30, stock:688,  issued:212, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
-      { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',     icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', coin:100, validityDays:30, stock:688,  issued:312, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
-      { code:'COMPFEE_50',        name:'综合服务费 50 元券',       icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
-      { code:'SERVICECENTER_100', name:'服务中心消费 100 元券',     icon:'building-2',    iconBg:'linear-gradient(135deg,#60a5fa,#3b82f6)', category:'交易折扣', coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'过户服务费直减 100 元;限非平台成交车辆,在南沙、白云、佛山、东莞服务中心办理。' },
-      { code:'TRANSFER_100',      name:'过户费减免 100 元券',      icon:'percent',       iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', coin:500, validityDays:30, stock:128,  issued:612, status:'上架', restriction:'过户费直减 100 元;每订单限用 1 张。' }
+      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, status:'上架', restriction:'每笔车辆查询限用 1 张,不与其他优惠叠加。' },
+      { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',     icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:5,   coin:50,  validityDays:30, stock:688,  issued:212, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
+      { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',    icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:10,  coin:100, validityDays:30, stock:688,  issued:312, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
+      { code:'COMPFEE_50',        name:'综合服务费减免券 50 元',  icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:50,  coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
+      { code:'SERVICECENTER_100', name:'服务中心消费券 100 元',   icon:'building-2',    iconBg:'linear-gradient(135deg,#60a5fa,#3b82f6)', category:'交易折扣', productType:'SERVICE_COUPON',      denomination:100, coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' },
+      { code:'TRANSFER_100',      name:'过户费减免 100 元券',     icon:'percent',       iconBg:'linear-gradient(135deg,#a78bfa,#6366f1)', category:'交易折扣', productType:'',                    denomination:'',  coin:500, validityDays:30, stock:128,  issued:612, status:'上架', restriction:'过户费直减 100 元;每订单限用 1 张。' }
     ]);
 
     const stats = computed(() => {
@@ -300,11 +333,13 @@ createApp({
       ];
     });
 
-    const filters = reactive({ keyword:'', category:'', status:'' });
-    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.status=''; };
+    const filters = reactive({ keyword:'', category:'', status:'', type:'' });
+    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.status=''; filters.type=''; };
 
     const categoryTagCls = (c) => ({ '数据查询':'tag-blue', '交易折扣':'tag-purple' })[c] || 'tag-default';
     const statusTagCls = (s) => ({ '上架':'tag-green', '已下架':'tag-default' })[s] || 'tag-default';
+    const typeTagCls = (v) => ({ 'DATA_QUERY_COUPON':'tag-blue', 'RESERVE_PRICE':'tag-purple', 'COMPFEE_COUPON':'tag-orange', 'SERVICE_COUPON':'tag-cyan' })[v] || 'tag-default';
+    const typeLabel = (v) => (productTypes.find(t => t.value === v) || {}).label || '';
 
     const filteredProducts = computed(() => products.filter(p => {
       if (filters.keyword) {
@@ -313,6 +348,7 @@ createApp({
       }
       if (filters.category && p.category !== filters.category) return false;
       if (filters.status && p.status !== filters.status) return false;
+      if (filters.type && p.productType !== filters.type) return false;
       return true;
     }));
 
@@ -320,9 +356,14 @@ createApp({
     const modalOpen = ref(false);
     const editingIdx = ref(-1);
     const blankForm = () => ({
-      code: '', name: '', coin: 200, validityDays: 30, stock: 100, status: '上架',
+      code: '', name: '', productType: '', denomination: '',
+      coin: 200, validityDays: 30, stock: 100, status: '上架',
       restriction: '',
       icon: 'gift', iconBg: 'linear-gradient(135deg,#38bdf8,#3b82f6)'
+    });
+    const currentTypeDenominations = computed(() => {
+      const t = productTypes.find(t => t.value === form.productType);
+      return t ? t.denominations : [];
     });
     const form = reactive(blankForm());
     const openAdd = async () => {
@@ -352,6 +393,16 @@ createApp({
       }
       modalOpen.value = false;
     };
+    watch([() => form.productType, () => form.denomination], () => {
+      if (editingIdx.value !== -1) return;
+      const t = productTypes.find(t => t.value === form.productType);
+      if (!t) return;
+      if (t.denominations.length > 0 && form.denomination) {
+        form.name = `${t.label} ${form.denomination}元`;
+      } else if (t.denominations.length === 0 && form.productType) {
+        form.name = t.label;
+      }
+    });
     const toggleStatus = (p) => { p.status = p.status === '上架' ? '已下架' : '上架'; };
 
     const opsOpen = ref(false);
@@ -362,7 +413,8 @@ createApp({
 
     return {
       stats, filters, resetFilter, products, filteredProducts,
-      categoryTagCls, statusTagCls, toggleStatus,
+      categoryTagCls, statusTagCls, typeTagCls, typeLabel, toggleStatus,
+      productTypes, currentTypeDenominations,
       modalOpen, editingIdx, form, openAdd, openEdit, closeModal, saveProduct,
       opsOpen, toggleOps
     };
