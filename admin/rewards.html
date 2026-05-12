@@ -204,7 +204,7 @@
               </td>
               <td class="px-4 py-3 text-right font-semibold">{{ p.coin }}</td>
               <td class="px-4 py-3 text-center">{{ p.validityDays }}</td>
-              <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stock < 100 }">{{ p.stock.toLocaleString() }}</td>
+              <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stock < (p.alertThreshold ?? 20) }">{{ p.stock.toLocaleString() }}</td>
               <td class="px-4 py-3 text-right">{{ p.issued.toLocaleString() }}</td>
               <td class="px-4 py-3 text-center"><span class="ant-tag" :class="statusTagCls(p.status)">{{ p.status }}</span></td>
               <td class="px-4 py-3 text-center text-xs">
@@ -278,6 +278,13 @@
         <input class="ant-input" type="number" min="1" v-model.number="form.stock" placeholder="剩余可兑换份数">
       </div>
       <div class="form-row">
+        <label>告警阈值</label>
+        <div>
+          <input class="ant-input" type="number" min="1" v-model.number="form.alertThreshold" placeholder="默认 20">
+          <div class="hint">库存低于此数值时触发库存告警，默认 20</div>
+        </div>
+      </div>
+      <div class="form-row">
         <label>状态</label>
         <select class="ant-input" v-model="form.status">
           <option>上架</option>
@@ -342,17 +349,17 @@ createApp({
     ];
 
     const products = reactive([
-      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, status:'上架', restriction:'' },
-      { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',     icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:5,   coin:50,  validityDays:30, stock:688,  issued:212, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
-      { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',    icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:10,  coin:100, validityDays:30, stock:688,  issued:312, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
-      { code:'COMPFEE_50',        name:'综合服务费减免券 50 元',  icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:50,  coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
-      { code:'SERVICECENTER_100', name:'服务中心消费券 100 元',   icon:'building-2',    iconBg:'linear-gradient(135deg,#60a5fa,#3b82f6)', category:'交易折扣', productType:'SERVICE_COUPON',      denomination:100, coin:500, validityDays:30, stock:200,  issued:0,   status:'上架', restriction:'服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' }
+      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, alertThreshold:20, status:'上架', restriction:'' },
+      { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',     icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:5,   coin:50,  validityDays:30, stock:688,  issued:212, alertThreshold:20, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
+      { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',    icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:10,  coin:100, validityDays:30, stock:688,  issued:312, alertThreshold:20, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
+      { code:'COMPFEE_50',        name:'综合服务费减免券 50 元',  icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:50,  coin:500, validityDays:30, stock:200,  issued:0,   alertThreshold:20, status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
+      { code:'SERVICECENTER_100', name:'服务中心消费券 100 元',   icon:'building-2',    iconBg:'linear-gradient(135deg,#60a5fa,#3b82f6)', category:'交易折扣', productType:'SERVICE_COUPON',      denomination:100, coin:500, validityDays:30, stock:200,  issued:0,   alertThreshold:20, status:'上架', restriction:'服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' }
     ]);
 
     const stats = computed(() => {
       const up = products.filter(p => p.status === '上架').length;
       const down = products.filter(p => p.status === '已下架').length;
-      const low = products.filter(p => p.status === '上架' && p.stock < 100).length;
+      const low = products.filter(p => p.status === '上架' && p.stock < (p.alertThreshold ?? 20)).length;
       const issuedSum = products.reduce((s, p) => s + (p.issued || 0), 0);
       return [
         { label:'上架中', value: up },
@@ -386,7 +393,7 @@ createApp({
     const editingIdx = ref(-1);
     const blankForm = () => ({
       code: '', name: '', productType: '', denomination: '',
-      coin: 200, validityDays: 30, stock: 100, status: '上架',
+      coin: 200, validityDays: 30, stock: 100, alertThreshold: 20, status: '上架',
       restriction: '',
       icon: 'gift', iconBg: 'linear-gradient(135deg,#38bdf8,#3b82f6)'
     });
