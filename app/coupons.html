@@ -66,7 +66,6 @@
       <div class="coupon-meta pr-20">
         <div>获得时间:{{ c.gainAt }}</div>
         <div>活动类型:{{ c.activity }}</div>
-        <div>券码:{{ c.code }}</div>
         <div>有效期:{{ c.expire }}</div>
         <div>适用范围:{{ c.scope }}</div>
       </div>
@@ -90,17 +89,6 @@ const { createApp, onMounted } = Vue;
 createApp({
   setup() {
     const coupons = [
-      {
-        id: 'rp001',
-        name: '保留价查询',
-        gainAt: '2026-04-01 08:00:00',
-        activity: '等级权益',
-        code: '582039164817',
-        expire: '2026-07-01 23:59:59',
-        scope: '车辆保留价查看',
-        stamp: '待使用',
-        stampColor: 'green'
-      },
       {
         id: 'rp002',
         name: '保留价查询',
