@@ -309,11 +309,12 @@
       <span class="close" @click="showSpec = false"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
     </div>
     <div class="modal-body" style="line-height:1.9;font-size:13px;color:#303133">
-      <ol style="margin:0;padding-left:18px;list-style:decimal">
+      <ol style="margin:0;padding-left:18px;list-style:decimal;display:flex;flex-direction:column;gap:10px">
         <li>积分商城兑换内容数据来自本页配置。</li>
-        <li style="margin-top:10px;color:#f56c6c;font-weight:500">
-          待研发明确：库存不足时，前端不展示还是如何展示？点击「编辑」和「下架」分别是什么逻辑？库存告警如何定义（例如库存告警是否属于按商家维度单独计算）？
-        </li>
+        <li><strong>库存不足（库存 = 0）</strong>：前端商城仍展示该商品，但标记「已售罄」状态，兑换按钮置灰不可点击。不做隐藏处理，保留展示让商户感知到该权益存在。</li>
+        <li><strong>编辑逻辑</strong>：点击「编辑」打开编辑弹窗，可修改商品名称、积分价格、库存数量、适用范围等字段，保存后立即生效。编辑不改变上下架状态。</li>
+        <li><strong>下架逻辑</strong>：点击「下架」将商品状态变为「已下架」，前端商城立即隐藏该商品（无论库存是否充足）。已下架商品可重新上架，也可在下架状态下编辑内容。</li>
+        <li><strong>库存告警</strong>：按商品维度配置，与商家无关（积分商城为平台统一库存池）。每个商品单独设置告警阈值，当实际库存 ≤ 阈值时，后台列表对应行标橙色告警提示，提醒运营及时补货或下架。</li>
       </ol>
     </div>
     <div class="modal-foot">
