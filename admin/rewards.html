@@ -130,9 +130,15 @@
           <h1 class="text-xl font-semibold text-slate-800">商城商品配置</h1>
           <p class="text-sm text-slate-500 mt-1">管理积分兑换型商品,支持目录、库存与上下架。</p>
         </div>
-        <button class="ant-btn-primary inline-flex items-center gap-1" @click="openAdd">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i>新增商品
-        </button>
+        <div class="flex items-center gap-2">
+          <button class="ant-btn inline-flex items-center gap-1" style="position:relative;border-color:#a78bfa;color:#7c3aed;background:#faf5ff" @click="showSpec = true">
+            <i data-lucide="info" class="w-3.5 h-3.5"></i>需求点说明
+            <span style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff"></span>
+          </button>
+          <button class="ant-btn-primary inline-flex items-center gap-1" @click="openAdd">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>新增商品
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-4 gap-4 mb-5">
@@ -293,6 +299,29 @@
   </div>
 </div>
 
+<!-- 需求点说明 modal -->
+<div v-if="showSpec" class="modal-mask" @click.self="showSpec = false">
+  <div class="modal-box" style="width:560px">
+    <div class="modal-head">
+      <span style="display:flex;align-items:center;gap:8px">
+        <i data-lucide="info" class="w-4 h-4" style="color:#7c3aed"></i>商城商品配置 · 需求点说明
+      </span>
+      <span class="close" @click="showSpec = false"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
+    </div>
+    <div class="modal-body" style="line-height:1.9;font-size:13px;color:#303133">
+      <ol style="margin:0;padding-left:18px;list-style:decimal">
+        <li>积分商城兑换内容数据来自本页配置。</li>
+        <li style="margin-top:10px;color:#f56c6c;font-weight:500">
+          待研发明确：库存不足时，前端不展示还是如何展示？点击「编辑」和「下架」分别是什么逻辑？库存告警如何定义（例如库存告警是否属于按商家维度单独计算）？
+        </li>
+      </ol>
+    </div>
+    <div class="modal-foot">
+      <button class="ant-btn-primary" @click="showSpec = false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 <div class="fixed top-4 right-6 z-50">
   <a href="../index.html" class="px-3 py-1.5 bg-white border border-slate-200 rounded shadow-sm text-xs text-slate-600 hover:bg-slate-50"><i data-lucide="arrow-left" class="w-3 h-3 inline -mt-0.5"></i> Demo 导航</a>
 </div>
@@ -406,16 +435,17 @@ createApp({
 
     const opsOpen = ref(false);
     const toggleOps = () => opsOpen.value = !opsOpen.value;
+    const showSpec = ref(false);
 
     onMounted(() => lucide.createIcons());
-    watch([filteredProducts, modalOpen], async () => { await nextTick(); lucide.createIcons(); });
+    watch([filteredProducts, modalOpen, showSpec], async () => { await nextTick(); lucide.createIcons(); });
 
     return {
       stats, filters, resetFilter, products, filteredProducts,
       categoryTagCls, statusTagCls, typeTagCls, typeLabel, toggleStatus,
       productTypes, currentTypeDenominations,
       modalOpen, editingIdx, form, openAdd, openEdit, closeModal, saveProduct,
-      opsOpen, toggleOps
+      opsOpen, toggleOps, showSpec
     };
   }
 }).mount('#app');
