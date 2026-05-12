@@ -92,7 +92,7 @@
       <div class="text-2xl font-bold text-violet-600 mt-3">- {{ redeemItem.coin }} 积分</div>
       <div class="text-xs text-slate-400 mt-1">兑换后余额 {{ currentBalance - redeemItem.coin }} 积分</div>
       <div class="mt-4 bg-violet-50 rounded-xl p-3 text-[11px] text-violet-700 text-left">
-        有效期 {{ redeemItem.validityDays }} 天,可在「我的权益卡」查看。兑换后不可退换。
+        有效期 {{ redeemItem.validityDays }} 天,可在「我的优惠券」查看。兑换后不可退换。
       </div>
     </div>
     <div class="flex gap-3 p-4 border-t border-slate-100">
@@ -131,7 +131,7 @@ createApp({
     function confirmRedeem() {
       if (redeemItem.value) currentBalance.value -= Number(redeemItem.value.coin);
       redeemItem.value = null;
-      showToast('兑换成功,已存入我的权益卡');
+      showToast('兑换成功,已存入我的优惠券');
     }
     function showToast(msg) {
       toastText.value = msg;
@@ -160,7 +160,7 @@ createApp({
         <li>商品数据来自 admin/rewards.html 后台配置，实时读取，后台修改立即生效。</li>
         <li>折扣机制：V2 享 95 折、V3 享 8 折兑换积分；折扣影响消耗积分数，商品面值不变；V0/V1 按原价兑换。</li>
         <li>库存为 0：前端仍展示商品，兑换按钮变为「已售罄」并置灰，不做隐藏处理。</li>
-        <li>兑换完成后积分实时扣减，商品存入「我的权益卡」；兑换记录同步至 BMS 兑换记录页（bms-redeem-log.html）。</li>
+        <li>兑换完成后积分实时扣减，商品存入「我的优惠券」；兑换记录同步至 BMS 兑换记录页（bms-redeem-log.html）。</li>
       </ol>
     </div>
     <div style="padding:12px 16px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;flex-shrink:0">
