@@ -129,7 +129,7 @@
 - **「需求点说明」按钮**(评审专用): BMS 后台多个详情/列表页(bms-orders / bms-order-detail / bms-users / bms-user-detail / bms-sales-buyer-detail / fnc-wallet-log)在 tab 行右侧或表格上方加紫色「需求点说明」按钮,点击弹出 modal 列出当前页本期改造点。统一样式:`border:#a78bfa; bg:#faf5ff; color:#7c3aed`。
   - **红点规范(必须)**:按钮右上角常驻红点,不可消失,用于引导评审人员第一眼注意到需求说明入口。写法:button 加 `position:relative`,内部末尾追加:
     ```html
-    <span style="position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:#ef4444;border-radius:50%;"></span>
+    <span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff;"></span>
     ```
     新增任何「需求点说明」按钮时必须同步加上此红点。
 
