@@ -523,7 +523,7 @@ createApp({
     };
     const enterEdit = () => { editMode.value = true; };
     const cancelEdit = () => { editMode.value = false; };
-    const saveEdit = async () => { editMode.value = false; await nextTick(); lucide.createIcons(); };
+    const saveEdit = async () => { editMode.value = false; showToast('保存成功'); await nextTick(); lucide.createIcons(); };
 
     // 3 个 type 定义,顺序固定
     const typeDefs = [
