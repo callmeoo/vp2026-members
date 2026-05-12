@@ -403,7 +403,7 @@ createApp({
       <span style="font-size:13px;font-weight:600;color:#7c3aed">车辆详情（有保留价） · 需求点说明</span>
       <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
-    <div style="padding:12px 14px;font-size:18px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
+    <div style="padding:12px 14px;font-size:16px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
         <li>保留价权限：V2 及以上等级直接展示保留价；V0/V1 展示积分兑换入口（50 积分），兑换后本车保留价持久可见，刷新仍保留，不设时效。</li>
         <li>跨页状态同步：在竞价页（car-bid.html）已查看或已兑换保留价的，返回本详情页同步展示，无需重复兑换，共用 localStorage key: chevip_unlocked_reserve_ids。</li>
