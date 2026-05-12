@@ -127,6 +127,11 @@
 - **PC 个人中心专属 nav header**: `pc/member.html` / `pc/coins.html` / `pc/mall.html` / `pc/orders.html` 不使用 `PC_COMMON.renderHeader()`(那是车源浏览 nav),而是各自内联拼一个含「我的首页 / 我的交易 / 专用账号 / 会员中心 / 我的信息」5 项的 nav,active 项随当前页变化。
 - **演示切换面板**: 涉及多状态展示的演示页(如 `pc/mall.html` 等级折扣切换、`bms-order-detail.html` 权益使用 / 24h 过期切换),右上角浮窗或 Tab 行右侧加 demo toggle 按钮,**只为评审用**,不进生产。
 - **「需求点说明」按钮**(评审专用): BMS 后台多个详情/列表页(bms-orders / bms-order-detail / bms-users / bms-user-detail / bms-sales-buyer-detail / fnc-wallet-log)在 tab 行右侧或表格上方加紫色「需求点说明」按钮,点击弹出 modal 列出当前页本期改造点。统一样式:`border:#a78bfa; bg:#faf5ff; color:#7c3aed`。
+  - **红点规范(必须)**:按钮右上角常驻红点,不可消失,用于引导评审人员第一眼注意到需求说明入口。写法:button 加 `position:relative`,内部末尾追加:
+    ```html
+    <span style="position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:#ef4444;border-radius:50%;"></span>
+    ```
+    新增任何「需求点说明」按钮时必须同步加上此红点。
 
 ---
 
