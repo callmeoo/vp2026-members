@@ -78,9 +78,14 @@
   .toast-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,23,42,.92); color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; z-index: 200; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.25); }
 
   /* 演示切换 */
-  .demo-bar { position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%); z-index: 60; background: #111827; color: #fff; padding: 6px 12px; border-radius: 12px; font-size: 11px; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(0,0,0,.3); max-width: 380px; }
-  .demo-bar button { background: #1f2937; color: #fff; padding: 3px 8px; border-radius: 999px; cursor: pointer; font-size: 11px; border: none; }
-  .demo-bar button.on { background: #e60012; }
+  .demo-bar { position: fixed; right: 16px; top: 80px; z-index: 150; background: #fff; color: #1f2937; padding: 12px 14px; border-radius: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.2); border: 1px solid #e2e8f0; min-width: 240px; max-width: 280px; }
+  .demo-bar .demo-title { font-size: 12px; font-weight: 600; color: #7c3aed; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; }
+  .demo-bar .row { display: flex; flex-direction: column; gap: 4px; }
+  .demo-bar .row-label { font-size: 11px; color: #64748b; }
+  .demo-bar .row-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .demo-bar button { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; border: 1px solid transparent; }
+  .demo-bar button.on { background: #7c3aed; color: #fff; }
+  .demo-bar .lvl { font-weight: 700; min-width: 32px; text-align: center; }
 </style>
 </head>
 <body>
@@ -154,7 +159,7 @@
           <span class="text-sm text-slate-500">当前价</span>
           <span class="text-red-500 font-bold text-[22px] leading-none">¥{{ formatYuan(car.currentPrice) }}</span>
           <span class="reserve-tag"><i data-lucide="info" class="w-3 h-3"></i>有保留价</span>
-          <button @click="showHistoryModal = true" class="inline-flex items-center gap-0.5 text-red-500 text-[12px] ml-1">
+          <button @click="onHistoryClick" class="inline-flex items-center gap-0.5 text-red-500 text-[12px] ml-1">
             <i data-lucide="trending-up" class="w-3.5 h-3.5"></i><span>历史成交价</span>
           </button>
         </div>
@@ -218,7 +223,7 @@
         </div>
         <div class="flex items-baseline gap-2 mt-1">
           <span class="text-red-500 font-bold text-[20px] leading-none">¥{{ formatYuan(car.currentPrice) }}</span>
-          <button @click="showHistoryModal = true" class="inline-flex items-center gap-0.5 text-amber-600 text-[12px] leading-none">
+          <button @click="onHistoryClick" class="inline-flex items-center gap-0.5 text-amber-600 text-[12px] leading-none">
             <i data-lucide="trending-up" class="w-3 h-3"></i><span>历史成交价</span>
           </button>
         </div>
@@ -245,6 +250,22 @@
         <i data-lucide="phone" class="w-5 h-5"></i><span>咨询</span>
       </a>
       <a :href="'car-bid.html?id=' + car.id" class="flex-1 text-center py-2.5 rounded-full bg-red-500 text-white font-bold text-[15px] shadow-lg shadow-red-500/30 active:scale-95 transition">我要出价</a>
+    </div>
+  </div>
+
+  <!-- ========== 登录提示弹窗(未登录点保留价/历史) ========== -->
+  <div v-if="loginPromptFor" class="modal-mask" @click.self="loginPromptFor = null">
+    <div class="modal-card">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="log-in" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">登录后即可查看{{ loginPromptFor === 'reserve' ? '保留价' : '历史成交价' }}</div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="loginPromptFor = null" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">取消</button>
+        <button @click="confirmLogin" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">立即登录</button>
+      </div>
     </div>
   </div>
 
@@ -284,9 +305,6 @@
           <span class="label">当前积分</span>
           <span class="val" :class="{ warn: userCoins < RESERVE_UNLOCK_COST }">{{ userCoins }} 积分</span>
         </div>
-        <div v-if="userCoins < RESERVE_UNLOCK_COST" class="text-[12px] text-red-500 mt-2 text-center">
-          积分不足，<a href="coins.html" class="underline">前往赚取积分</a>
-        </div>
       </div>
       <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
         <button @click="reserveModal = null" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">取消</button>
@@ -305,6 +323,52 @@
         <div class="text-[32px] font-black text-red-500 leading-none my-2">¥{{ car ? formatYuan(car.reservePrice) : '' }}</div>
         <div class="text-[12px] text-slate-400 mb-4">({{ car ? (car.reservePrice/10000).toFixed(2) : '' }}万)</div>
         <button @click="reserveModal = null" class="w-full py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 历史成交价 · 锁定弹窗(V0) ========== -->
+  <div v-if="historyModal === 'lock'" class="modal-mask" @click.self="historyModal = null">
+    <div class="modal-card">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">V1 及以上可查看历史成交价</div>
+        <div class="text-[12px] text-slate-500">当前等级不支持直接查看，可使用积分兑换</div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="historyModal = null" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">我知道了</button>
+        <button @click="historyModal = 'confirm'" class="py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[14px] font-semibold text-center">积分兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 历史成交价 · 兑换确认弹窗 ========== -->
+  <div v-if="historyModal === 'confirm'" class="modal-mask" @click.self="historyModal = null">
+    <div class="modal-card">
+      <div class="px-5 pt-5 pb-2 text-center">
+        <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
+          <i data-lucide="key-round" class="w-6 h-6"></i>
+        </div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">兑换历史成交行情</div>
+        <div class="text-[12px] text-slate-500">兑换后可查看本车同车系历史成交价</div>
+      </div>
+      <div class="px-4">
+        <div class="coin-row">
+          <span class="label">兑换所需</span>
+          <span class="val"><span style="color:#e60012">{{ HISTORY_UNLOCK_COST }}</span> 积分</span>
+        </div>
+        <div class="coin-row">
+          <span class="label">当前积分</span>
+          <span class="val" :class="{ warn: userCoins < HISTORY_UNLOCK_COST }">{{ userCoins }} 积分</span>
+        </div>
+      </div>
+      <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
+        <button @click="historyModal = null" class="py-2.5 rounded-full bg-slate-100 text-slate-700 text-[14px] font-semibold">取消</button>
+        <button @click="confirmHistoryExchange" :disabled="userCoins < HISTORY_UNLOCK_COST"
+          :class="userCoins < HISTORY_UNLOCK_COST ? 'bg-slate-200 text-slate-400' : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'"
+          class="py-2.5 rounded-full text-[14px] font-semibold text-center">确认兑换</button>
       </div>
     </div>
   </div>
@@ -345,13 +409,39 @@
     <i data-lucide="check-circle" class="w-4 h-4"></i>{{ toastMsg }}
   </div>
 
-  <!-- 演示切换条 -->
+  <!-- 演示 Mock 切换 -->
   <div class="demo-bar">
-    <span style="opacity:.7">等级：</span>
-    <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
-            :class="{ on: levelCode === lv }"
-            @click="levelCode = lv">{{ lv }}</button>
-    <button @click="resetUnlock" style="background:#374151;margin-left:4px">重置</button>
+    <div class="demo-title">演示 Mock 切换</div>
+    <div class="row">
+      <span class="row-label">登录态</span>
+      <div class="row-btns">
+        <button :class="{ on: !loggedIn }" @click="loggedIn = false">未登录</button>
+        <button :class="{ on: loggedIn }"  @click="loggedIn = true">已登录</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-label">等级</span>
+      <div class="row-btns">
+        <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
+                class="lvl"
+                :class="{ on: levelCode === lv }"
+                @click="levelCode = lv; reserveModal = null; historyModal = null">{{ lv }}</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-label">积分兑换权益</span>
+      <div class="row-btns">
+        <button :class="{ on: demoRight === 'reserve' }" @click="setDemoRight('reserve')">保留价查询</button>
+        <button :class="{ on: demoRight === 'history' }" @click="setDemoRight('history')">历史成交价</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-label">积分场景（当前：{{ userCoins }} 积分）</span>
+      <div class="row-btns">
+        <button :class="{ on: demoScenario === 'enough' }"       @click="setDemoScenario('enough')">积分足</button>
+        <button :class="{ on: demoScenario === 'insufficient' }" @click="setDemoScenario('insufficient')">积分不足</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -368,20 +458,28 @@ const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
 
 createApp({
   setup() {
-    // 使用共享保留价逻辑
+    // 使用共享保留价 / 历史成交价 逻辑
     const RPL = window.ReservePriceLogic;
+    const HPL = window.HistoryPriceLogic;
 
     const params = new URLSearchParams(location.search);
     const carId = params.get('id') || 'r1';
     const car = ref((window.RESERVE_CARS || []).find(c => c.id === carId) || (window.RESERVE_CARS || [])[0]);
 
-    // 演示等级切换
+    // 演示状态
+    const loggedIn = ref(true);
+    const loginPromptFor = ref(null); // null | 'reserve' | 'history'
+    const demoRight = ref('reserve');
+    const demoScenario = ref('enough');
     const levelCode = ref('V2');
     const reserveModal = ref(null); // null | 'lock' | 'confirm' | 'show'
+    const historyModal = ref(null); // null | 'lock' | 'confirm'  (展示态复用 showHistoryModal)
     const userCoins = ref(RPL.getCoins());
     const unlockedIds = ref(RPL.getUnlockedIds());
+    const historyUnlockedIds = ref(HPL.getUnlockedIds());
     const toastMsg = ref('');
     const RESERVE_UNLOCK_COST = RPL.COST;
+    const HISTORY_UNLOCK_COST = HPL.COST;
 
     // 历史成交价 演示数据
     const showHistoryModal = ref(false);
@@ -396,13 +494,27 @@ createApp({
     const canViewReserve = computed(() =>
       ['V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
     );
+    // V1+ 或已为本车积分兑换过 → 可查看
+    const canViewHistory = computed(() =>
+      ['V1','V2','V3'].includes(levelCode.value) || historyUnlockedIds.value.includes(carId)
+    );
 
     function onRevealClick() {
-      if (canViewReserve.value) {
-        reserveModal.value = 'show';
-      } else {
-        reserveModal.value = 'lock';
-      }
+      if (!loggedIn.value) { loginPromptFor.value = 'reserve'; return; }
+      reserveModal.value = canViewReserve.value ? 'show' : 'lock';
+    }
+
+    // 历史成交价入口:V1+ 直接看,V0 弹锁定提示
+    function onHistoryClick() {
+      if (!loggedIn.value) { loginPromptFor.value = 'history'; return; }
+      if (canViewHistory.value) showHistoryModal.value = true;
+      else historyModal.value = 'lock';
+    }
+
+    // 登录提示弹窗 → 登录:置为已登录并关闭(需再次点击入口才会展开)
+    function confirmLogin() {
+      loggedIn.value = true;
+      loginPromptFor.value = null;
     }
 
     function confirmExchange() {
@@ -414,6 +526,47 @@ createApp({
         unlockedIds.value = RPL.getUnlockedIds();
         reserveModal.value = null;
         toastMsg.value = result.message;
+        setTimeout(() => { toastMsg.value = ''; }, 1500);
+      }
+    }
+
+    // 演示用:统一设置积分 + 清掉本车解锁 + 关闭弹窗
+    function setDemoCoins(n) {
+      userCoins.value = n;
+      RPL.writeStore(RPL.SK.coins, n);
+
+      const reserveIds = RPL.getUnlockedIds().filter(id => id !== carId);
+      RPL.writeStore(RPL.SK.unlocked, reserveIds);
+      unlockedIds.value = reserveIds;
+
+      const histIds = HPL.getUnlockedIds().filter(id => id !== carId);
+      HPL.writeStore(HPL.SK.unlocked, histIds);
+      historyUnlockedIds.value = histIds;
+
+      reserveModal.value = null;
+      historyModal.value = null;
+      showHistoryModal.value = false;
+    }
+
+    // 演示场景:权益类型 + 积分场景 联动设置积分
+    function applyDemoScenario() {
+      const enoughCoins = 200;
+      const insufficientCoins = demoRight.value === 'reserve' ? 30 : 80;
+      setDemoCoins(demoScenario.value === 'enough' ? enoughCoins : insufficientCoins);
+    }
+    function setDemoRight(r) { demoRight.value = r; applyDemoScenario(); }
+    function setDemoScenario(s) { demoScenario.value = s; applyDemoScenario(); }
+
+    function confirmHistoryExchange() {
+      if (userCoins.value < HISTORY_UNLOCK_COST) return;
+      const carTitle = car.value ? car.value.brand + ' ' + car.value.model : '';
+      const result = HPL.exchange(carId, carTitle);
+      if (result.success) {
+        userCoins.value = result.newCoins;
+        historyUnlockedIds.value = HPL.getUnlockedIds();
+        historyModal.value = null;
+        toastMsg.value = result.message;
+        showHistoryModal.value = true;
         setTimeout(() => { toastMsg.value = ''; }, 1500);
       }
     }
@@ -447,13 +600,15 @@ createApp({
     function pad(n) { return String(n).padStart(2, '0'); }
 
     onMounted(() => lucide.createIcons());
-    watch([reserveModal, levelCode, toastMsg, showHistoryModal], () => nextTick(() => lucide && lucide.createIcons()));
+    watch([reserveModal, historyModal, loginPromptFor, levelCode, toastMsg, showHistoryModal], () => nextTick(() => lucide && lucide.createIcons()));
 
     return {
-      car, carId, levelCode, canViewReserve,
-      reserveModal, userCoins, unlockedIds, toastMsg,
-      RESERVE_UNLOCK_COST,
-      onRevealClick, confirmExchange, resetUnlock, pad,
+      car, carId, levelCode, canViewReserve, canViewHistory,
+      reserveModal, historyModal, userCoins, unlockedIds, toastMsg,
+      RESERVE_UNLOCK_COST, HISTORY_UNLOCK_COST,
+      onRevealClick, onHistoryClick, confirmExchange, confirmHistoryExchange, resetUnlock, setDemoCoins, pad,
+      loggedIn, loginPromptFor, confirmLogin,
+      demoRight, demoScenario, setDemoRight, setDemoScenario,
       showHistoryModal, historyDeals,
       formatYuan: window.formatYuan
     };
@@ -470,9 +625,12 @@ createApp({
       <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
-      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li>保留价权限：V2 及以上等级直接展示保留价；V0/V1 展示积分兑换入口（50 积分），兑换后本车保留价持久可见，刷新仍保留，不设时效。</li>
-        <li>跨页状态同步：在竞价页（car-bid.html）已查看或已兑换保留价的，返回本详情页同步展示，无需重复兑换，共用 localStorage key: chevip_unlocked_reserve_ids。</li>
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:12px">
+        <li><b style="color:#1e293b">保留价查看</b><br>V2 及以上等级直接展示保留价；V0/V1 展示积分兑换入口（50 积分），兑换后在权益有效期内反复查看，无需再次扣减。</li>
+        <li><b style="color:#1e293b">历史成交行情</b><br>V1 及以上等级直接查看本车同车系成交记录；V0 展示积分兑换入口（100 积分），兑换后在权益有效期内反复查看，无需再次扣减。该入口仅本详情页提供，竞价页（car-bid.html）不展示。</li>
+        <li><b style="color:#1e293b">登录拦截</b><br>查看保留价、查看历史成交价均需登录后才可查看。未登录时移动端两个入口仍展示(PC端仅登录后可见)，点击跳转至登录页；登录后回到当前页，需<b>再次点击</b>该入口才会展开查看 / 兑换流程，不自动展开。</li>
+        <li><b style="color:#1e293b">跨页状态同步</b><br>仅保留价跨页同步——在竞价页（car-bid.html）已查看或已兑换保留价的，返回本详情页同步展示，无需重复兑换。历史行情解锁状态独立持久化，竞价页无该入口。</li>
+        <li><b style="color:#1e293b">演示 Mock 切换</b><br>底部浮窗 4 行——登录态 / 等级 / 积分兑换权益（保留价查询 ↔ 历史成交价）/ 积分场景（积分足 ↔ 积分不足）。「积分不足」按当前选中权益自动设为对应的不足值（保留价：30 / 历史：80），「积分足」统一设为 200。</li>
       </ol>
     </div>
   </div>

@@ -144,11 +144,15 @@
   .modal-close:hover { color:#111827; }
 
   /* ---------- 演示态切换条 ---------- */
-  .demo-toggle { position: fixed; right: 16px; bottom: 16px; background: #111827; color:#fff; padding: 8px 14px; font-size: 12px; border-radius: 12px; z-index: 60; display:flex; flex-direction:column; gap: 6px; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
-  .demo-toggle .row { display:flex; align-items:center; gap: 6px; }
-  .demo-toggle button { background: #1f2937; color: #fff; padding: 4px 10px; border-radius: 999px; cursor: pointer; font-size: 11px; }
-  .demo-toggle button.on { background: #e60012; }
-  .demo-toggle .lvl { font-weight: 700; padding: 4px 8px; }
+  .demo-toggle { position: fixed; right: 16px; bottom: 90px; background: #fff; color:#1f2937; padding: 12px 14px; font-size: 12px; border-radius: 12px; z-index: 150; display:flex; flex-direction:column; gap: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.18); border: 1px solid #e2e8f0; min-width: 220px; }
+  .demo-toggle .demo-title { font-size: 12px; font-weight: 600; color:#7c3aed; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; margin-bottom: 2px; }
+  .demo-toggle .row { display:flex; flex-direction:column; gap: 4px; }
+  .demo-toggle .row-label { font-size: 11px; color:#64748b; }
+  .demo-toggle .row-btns { display:flex; flex-wrap: wrap; gap: 6px; }
+  .demo-toggle button { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; border: 1px solid transparent; }
+  .demo-toggle button:hover { background: #e2e8f0; }
+  .demo-toggle button.on { background: #7c3aed; color: #fff; }
+  .demo-toggle .lvl { font-weight: 700; padding: 4px 10px; min-width: 32px; text-align:center; }
 
   /* ---------- 保留价相关 ---------- */
   .lvl-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; padding: 2px 8px; border-radius: 999px; color:#fff; }
@@ -695,10 +699,6 @@
         <span class="label">当前积分</span>
         <span class="val" :class="{ warn: userCoins < RESERVE_UNLOCK_COST }">{{ userCoins }} 积分</span>
       </div>
-      <div v-if="userCoins < RESERVE_UNLOCK_COST" class="text-[12px] text-red-500 mt-3 text-center">
-        积分不足，
-        <a href="mall.html" class="underline">前往积分商城</a>
-      </div>
       <div class="flex items-center gap-3 w-full mt-5">
         <button class="btn-modal-ghost flex-1" @click="reserveModal = null">取消</button>
         <button class="btn-modal-primary flex-1" :disabled="userCoins < RESERVE_UNLOCK_COST" @click="confirmExchange">确认兑换</button>
@@ -720,6 +720,21 @@
         <div class="reserve-num text-[36px] my-1">¥{{ formatNum(car.reservePrice) }}</div>
         <div class="text-[12px] text-slate-400 mb-5">({{ (car.reservePrice/10000).toFixed(2) }}万)</div>
         <button class="btn-modal-primary w-full" @click="reserveModal = null">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== 登录提示弹窗(未登录点保留价/历史) ============== -->
+  <div v-if="loginPromptFor" class="modal-mask" @click.self="loginPromptFor = null">
+    <div class="modal-box" style="width: 340px; padding: 32px 28px 24px;">
+      <div class="modal-close" @click="loginPromptFor = null"><i data-lucide="x" class="w-5 h-5"></i></div>
+      <div class="flex flex-col items-center text-center">
+        <div class="lock-circle"><i data-lucide="log-in" class="w-7 h-7"></i></div>
+        <div class="text-[15px] text-slate-700 my-5">登录后即可查看{{ loginPromptFor === 'reserve' ? '保留价' : '历史成交价' }}</div>
+        <div class="flex items-center gap-3 w-full">
+          <button class="btn-modal-ghost flex-1" @click="loginPromptFor = null">取消</button>
+          <button class="btn-modal-primary flex-1" @click="confirmLogin">立即登录</button>
+        </div>
       </div>
     </div>
   </div>
@@ -758,10 +773,6 @@
         <span class="label">当前积分</span>
         <span class="val" :class="{ warn: userCoins < HISTORY_UNLOCK_COST }">{{ userCoins }} 积分</span>
       </div>
-      <div v-if="userCoins < HISTORY_UNLOCK_COST" class="text-[12px] text-red-500 mt-3 text-center">
-        积分不足，
-        <a href="mall.html" class="underline">前往积分商城</a>
-      </div>
       <div class="flex items-center gap-3 w-full mt-5">
         <button class="btn-modal-ghost flex-1" @click="historyModal = null">取消</button>
         <button class="btn-modal-primary flex-1" :disabled="userCoins < HISTORY_UNLOCK_COST" @click="confirmHistoryExchange">确认兑换</button>
@@ -771,18 +782,36 @@
 
   <!-- ============== 演示态切换 ============== -->
   <div class="demo-toggle">
+    <div class="demo-title">演示 Mock 切换</div>
     <div class="row">
-      <span class="opacity-70">登录：</span>
-      <button :class="{ on: !loggedIn }" @click="loggedIn = false">未登录</button>
-      <button :class="{ on: loggedIn }" @click="loggedIn = true">已登录</button>
-      <button @click="showHistory = true" style="background:#374151">历史成交</button>
+      <span class="row-label">登录态</span>
+      <div class="row-btns">
+        <button :class="{ on: !loggedIn }" @click="loggedIn = false">未登录</button>
+        <button :class="{ on: loggedIn }"  @click="loggedIn = true">已登录</button>
+      </div>
     </div>
     <div class="row">
-      <span class="opacity-70">等级：</span>
-      <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
-              class="lvl"
-              :class="{ on: levelCode === lv }"
-              @click="levelCode = lv; reserveModal = null">{{ lv }}</button>
+      <span class="row-label">等级</span>
+      <div class="row-btns">
+        <button v-for="lv in ['V0','V1','V2','V3']" :key="lv"
+                class="lvl"
+                :class="{ on: levelCode === lv }"
+                @click="levelCode = lv; reserveModal = null; historyModal = null">{{ lv }}</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-label">积分兑换权益</span>
+      <div class="row-btns">
+        <button :class="{ on: demoRight === 'reserve' }" @click="setDemoRight('reserve')">保留价查询</button>
+        <button :class="{ on: demoRight === 'history' }" @click="setDemoRight('history')">历史成交价</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-label">积分场景（当前：{{ userCoins }} 积分）</span>
+      <div class="row-btns">
+        <button :class="{ on: demoScenario === 'enough' }"       @click="setDemoScenario('enough')">积分足</button>
+        <button :class="{ on: demoScenario === 'insufficient' }" @click="setDemoScenario('insufficient')">积分不足</button>
+      </div>
     </div>
   </div>
 
@@ -838,12 +867,19 @@ createApp({
     );
     const levelName = computed(() => LEVEL_NAMES[levelCode.value] || '');
     const onClickReserve = () => {
+      if (!loggedIn.value) { loginPromptFor.value = 'reserve'; return; }
       reserveModal.value = canViewReserve.value ? 'show' : 'lock';
     };
     // 历史成交价入口:V1+ 直接看,V0 弹锁定提示
     const onClickHistory = () => {
+      if (!loggedIn.value) { loginPromptFor.value = 'history'; return; }
       if (canViewHistory.value) showHistory.value = true;
       else historyModal.value = 'lock';
+    };
+    // 登录提示弹窗 → 点登录:置为已登录并关闭弹窗(需用户再次点击入口才会展开兑换/查看)
+    const confirmLogin = () => {
+      loggedIn.value = true;
+      loginPromptFor.value = null;
     };
     // 锁定弹窗·点积分兑换 → 自动登录 + 进入兑换确认
     const onClickExchange = () => {
@@ -881,6 +917,39 @@ createApp({
       nextTick(() => window.lucide && lucide.createIcons());
       setTimeout(() => { window.location.reload(); }, 900);
     };
+    // 演示用:统一设置积分 + 清除本车解锁 + 关闭弹窗,确保「未兑换 + 新积分」完整场景
+    const setDemoCoins = (n) => {
+      userCoins.value = n;
+      writeStore(SK.coins, n);
+
+      const reserveIds = readStore(SK.unlocked, []).filter(id => id !== carId);
+      writeStore(SK.unlocked, reserveIds);
+      unlockedIds.value = reserveIds;
+
+      const historyKey = window.HistoryPriceLogic.SK.unlocked;
+      const historyIds = readStore(historyKey, []).filter(id => id !== carId);
+      writeStore(historyKey, historyIds);
+      historyUnlockedIds.value = historyIds;
+
+      reserveModal.value = null;
+      historyModal.value = null;
+      showHistory.value = false;
+    };
+
+    // 演示场景:权益类型 + 积分场景 组合
+    const demoRight = ref('reserve'); // 'reserve' | 'history'
+    const demoScenario = ref('enough'); // 'enough' | 'insufficient'
+    const applyDemoScenario = () => {
+      const enoughCoins = 200;
+      const insufficientCoins = demoRight.value === 'reserve' ? 30 : 80;
+      setDemoCoins(demoScenario.value === 'enough' ? enoughCoins : insufficientCoins);
+    };
+    const setDemoRight = (r) => { demoRight.value = r; applyDemoScenario(); };
+    const setDemoScenario = (s) => { demoScenario.value = s; applyDemoScenario(); };
+
+    // 登录拦截:未登录时点击查看保留价/历史成交价,弹「需登录」提示
+    const loginPromptFor = ref(null); // null | 'reserve' | 'history'
+
     // 历史成交价兑换:走 shared/HistoryPriceLogic,成功后直接展开历史弹窗
     const confirmHistoryExchange = () => {
       if (userCoins.value < HISTORY_UNLOCK_COST) return;
@@ -1083,7 +1152,7 @@ createApp({
     const formatNum = (n) => Number(n).toLocaleString('en-US');
 
     const refresh = () => nextTick(() => window.lucide && lucide.createIcons());
-    watch([loggedIn, showHistory, detailActive, levelCode, reserveModal, activeImageIndex], refresh);
+    watch([loggedIn, showHistory, detailActive, levelCode, reserveModal, historyModal, activeImageIndex], refresh);
     onMounted(refresh);
 
     // 滚动联动 active tab
@@ -1105,6 +1174,9 @@ createApp({
       loggedIn, user, showHistory, historyDeals,
       levelCode, levelName, canViewReserve, reserveModal, onClickReserve,
       RESERVE_UNLOCK_COST, userCoins, onClickExchange, confirmExchange, toastMsg,
+      canViewHistory, historyModal, onClickHistory, onClickHistoryExchange, confirmHistoryExchange, HISTORY_UNLOCK_COST,
+      setDemoCoins, demoRight, demoScenario, setDemoRight, setDemoScenario,
+      loginPromptFor, confirmLogin,
       car, countdownText,
       ratings, basic, transfer, configRows,
       detailTabs, detailActive, scrollTo,
@@ -1125,9 +1197,10 @@ createApp({
     </div>
     <div style="padding:12px 14px;font-size:13px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li><b style="color:#1e293b">查看保留价</b>：入口固定展示在出价区，不随车辆状态（预展中 / 竞价中 / 已成交 / 已流拍）变化。是否可查看由权益判定：① 对应等级（V2 / V3）享有此项权益的用户，点击即可查看；② V0 / V1 等级用户可消耗 50 积分对单台车进行兑换，兑换后在权益有效期内反复查看，无需再次扣减。</li>
-        <li><b style="color:#1e293b">历史成交行情</b>：入口固定展示在出价区，不随车辆状态变化。是否可查看由权益判定：① 对应等级享有「行情查询」权益的用户，点击即可查看本车同车系历史成交记录；② 之前付费购买了带「行情查询」权益的会员卡用户，在卡片有效期内可查看。</li>
-        <li><b style="color:#1e293b">演示切换（评审专用）</b>：右下角浮窗可切换登录态、模拟用户等级（V0~V3）；保留价兑换状态使用 localStorage 持久化（key：chevip_user_coins / chevip_unlocked_reserve_ids），刷新后保留，便于跨页面演示与车辆详情、出价页、车辆详情(有保留价) 状态同步。</li>
+        <li><b style="color:#1e293b">查看保留价</b><br>入口固定展示在出价区，不随车辆状态（预展中 / 竞价中 / 已成交 / 已流拍）变化。是否可查看由权益判定：① 对应等级（V2 / V3）享有此项权益的用户，点击即可查看；② V0 / V1 等级用户可消耗 50 积分对单台车进行兑换，兑换后在权益有效期内反复查看，无需再次扣减。</li>
+        <li><b style="color:#1e293b">历史成交行情</b><br>入口固定展示在出价区，不随车辆状态变化。是否可查看由权益判定：① V1 / V2 / V3 享有「行情查询」权益的用户，点击即可查看本车同车系历史成交记录；② V0 等级用户可消耗 100 积分对单台车进行兑换，兑换后在权益有效期内反复查看，无需再次扣减；③ 之前付费购买了带「行情查询」权益的会员卡用户，在卡片有效期内可查看。</li>
+        <li><b style="color:#1e293b">登录拦截</b><br>查看保留价、查看历史成交价均需登录后才可查看。未登录时移动端两个入口仍展示(PC端仅登录后可见)，点击跳转至登录页；登录后回到当前页，需<b>再次点击</b>该入口才会展开查看 / 兑换流程，不自动展开。</li>
+        <li><b style="color:#1e293b">演示切换（评审专用）</b><br>右下角浮窗以 4 行 Mock 切换组织——登录态 / 等级 / 积分兑换权益（保留价查询 ↔ 历史成交价）/ 积分场景（积分足 ↔ 积分不足）。「积分不足」会根据当前选中权益自动设为对应的不足值（保留价：30 / 历史：80），「积分足」统一设为 200，配合权益入口即可演示锁定弹窗 + 确认兑换按钮 disabled 的完整链路。其中历史行情仅车辆详情页有入口，出价页不提供。</li>
       </ol>
     </div>
   </div>
