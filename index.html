@@ -355,6 +355,7 @@
           <div v-if="prdActive === 'c1'" class="prd-body">
             <h3>1.1 等级划分</h3>
             <p>4 级会员：<code>V0 普通</code> / <code>V1 金卡</code> / <code>V2 白金</code> / <code>V3 钻石</code>。评定周期为<strong>滚动近 3 个月成交台数</strong>，每月 1 号凌晨定时计算，自动升/降级。</p>
+            <p style="color:#dc2626;font-weight:700">成交台次定义变更：成交台次 = 统计周期内已付款的车辆台次，抛仲裁退车车辆。</p>
             <table>
               <thead><tr><th>等级</th><th>近 3 月成交</th><th>账户金额</th><th>典型权益</th></tr></thead>
               <tbody>
@@ -567,6 +568,7 @@
                 { title: '积分明细',     file: 'pc/coins.html' },
                 { title: '积分兑换',     file: 'pc/mall.html' },
                 { title: '我的交易-买到的车(待支付-无理由退车权益)', file: 'pc/orders.html' },
+                { title: '我的交易-我的卡包', file: 'pc/card-pack.html' },
                 { title: '充值保证金',     file: 'pc/recharge.html' },
               ],
             },
