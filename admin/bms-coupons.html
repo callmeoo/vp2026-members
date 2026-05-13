@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>优惠券 · 唯普会员体系后台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; color:#303133; font-size:13px; }
+  [v-cloak] { display:none; }
+  .ant-sider { background: #304156; width: 200px; flex: 0 0 200px; color: #bfcbd9; }
+  .ant-sider .logo { background: #263445; }
+  .ant-sider .brand-title { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+  .ant-sider .brand-sub { color: #8492a6; font-size: 10px; margin-top: 2px; letter-spacing: 1px; }
+  .ant-sider .menu-item { display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 44px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .menu-item:hover { background: #263445; color: #fff; }
+  .ant-sider .menu-item.open { background: #1f2d3d; color: #fff; }
+  .ant-sider .menu-item i.chevron { margin-left: auto; transition: transform .2s; }
+  .ant-sider .menu-item.open i.chevron { transform: rotate(90deg); }
+  .ant-sider .submenu { background: #1f2d3d; }
+  .ant-sider .submenu .sub-item { display: flex; align-items: center; height: 40px; padding-left: 50px; color: #bfcbd9; font-size: 13px; cursor: pointer; }
+  .ant-sider .submenu .sub-item:hover { color: #fff; background: #001528; }
+  .ant-sider .submenu .sub-item.active { color: #409eff; background: #263445; }
+  .ant-header { height: 50px; background:#fff; border-bottom:1px solid #e4e7ed; }
+  .breadcrumb-link { cursor:pointer; } .breadcrumb-link:hover { color:#409eff; }
+  .ant-card { background: #fff; border-radius: 4px; }
+  .ant-input { padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; width: 100%; box-sizing:border-box; height: 32px; background:#fff; }
+  .ant-input:focus { outline: none; border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,.1); }
+  .ant-input::placeholder { color:#c0c4cc; }
+  .ant-btn { padding: 0 16px; height: 32px; border-radius: 4px; font-size: 13px; border: 1px solid #d9d9d9; background: #fff; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
+  .ant-btn:hover { color: #1677ff; border-color: #1677ff; }
+  .ant-btn-primary { background: #1677ff; color: #fff; border: 1px solid #1677ff; padding: 0 16px; height: 32px; border-radius: 4px; font-size: 13px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
+  .ant-btn-primary:hover { background: #4096ff; border-color:#4096ff; }
+  .ant-tag { display: inline-flex; align-items: center; padding: 0 7px; font-size: 12px; line-height: 20px; border-radius: 4px; }
+  .tag-blue { background: #e6f4ff; color: #1677ff; border: 1px solid #91caff; }
+  .tag-green { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+  .tag-orange { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
+  .tag-red { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+  .tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
+  .tag-cyan { background: #e6fffb; color: #08979c; border: 1px solid #87e8de; }
+  .tag-default { background: #fafafa; color: #595959; border: 1px solid #d9d9d9; }
+  tbody tr:hover { background: #fafafa; }
+  /* Tabs */
+  .top-tabs { display:flex; border-bottom:1px solid #e8e8e8; }
+  .top-tab { padding:10px 16px; font-size:14px; color:#606266; cursor:pointer; position:relative; margin-right:6px; }
+  .top-tab:hover { color:#1677ff; }
+  .top-tab.active { color:#1677ff; }
+  .top-tab.active::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:#1677ff; }
+  /* Form labels */
+  .filter-row { display:flex; align-items:center; gap:8px; }
+  .filter-row .lbl { font-size:13px; color:#606266; white-space:nowrap; flex-shrink:0; }
+  /* Pagination */
+  .pager { display:flex; align-items:center; justify-content:center; gap:6px; padding:18px 0; font-size:13px; color:#606266; }
+  .pager .pg-btn { min-width:28px; height:28px; padding:0 8px; border:1px solid #d9d9d9; border-radius:4px; background:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+  .pager .pg-btn:hover:not(.disabled) { color:#1677ff; border-color:#1677ff; }
+  .pager .pg-btn.active { background:#1677ff; color:#fff; border-color:#1677ff; }
+  .pager .pg-btn.disabled { color:#c0c4cc; cursor:not-allowed; }
+  .pager .pg-input { width:50px; height:28px; border:1px solid #d9d9d9; border-radius:4px; text-align:center; }
+  /* Table */
+  table.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+  table.data-table thead th { background:#f7f8fa; color:#5a6477; font-weight:500; padding:10px 12px; text-align:center; border-bottom:1px solid #eaedf3; border-right:1px solid #eaedf3; white-space:nowrap; }
+  table.data-table thead th:last-child { border-right:none; }
+  table.data-table tbody td { padding:14px 12px; text-align:center; border-bottom:1px solid #f0f2f5; color:#303133; }
+  table.data-table tbody tr:hover td { background:#fafafa; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="flex min-h-screen">
+
+  <aside class="ant-sider flex flex-col">
+    <div class="logo h-14 flex flex-col items-center justify-center">
+      <div class="brand-title"><span style="color:#e6a23c">唯普</span>汽车</div>
+      <div class="brand-sub">www.chevip.com</div>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <a href="bms-orders.html" class="sub-item">订单列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-order-detail.html" class="sub-item">订单详情<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-users.html"  class="sub-item">用户列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-user-detail.html" class="sub-item">用户详情<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+      </div>
+
+      <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <a href="dashboard.html"           class="sub-item">运营仪表盘<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
+        <a href="bms-level-mgmt.html" class="sub-item" onclick="event.preventDefault();showRuleAlert('按新规则调整用户等级', this.href)">客户等级管理<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-sales-buyers.html"    class="sub-item">买家管理<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-sales-buyer-detail.html" class="sub-item">买家详情<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-sales-orders.html"    class="sub-item" onclick="event.preventDefault();showRuleAlert('按新规则调整用户等级', this.href)">销售订单<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a style="display:none" href="level-rule.html"          class="sub-item">等级设置</a>
+        <a href="coin-rule.html"           class="sub-item">积分规则<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
+        <a href="rewards.html"             class="sub-item">商城商品配置<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
+        <a href="bms-coin-log.html"        class="sub-item">积分流水<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
+        <a href="bms-redeem-log.html"      class="sub-item">兑换记录<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
+      </div>
+
+      <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <a href="bms-aftersales.html"                class="sub-item">售后服务</a>
+        <a href="bms-aftersales-list.html"           class="sub-item" onclick="event.preventDefault();showRuleAlert('用户等级更新', this.href)">售后列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+        <a href="bms-aftersale-approval-list.html" class="sub-item" onclick="event.preventDefault();showRuleToast('无理由权益使用的说明', this.href)">企微审批<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+      </div>
+
+      <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="briefcase" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
+        <a href="bms-coupons.html" class="sub-item active">优惠券<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
+      </div>
+
+    </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <header class="ant-header flex items-center justify-between px-4">
+      <div class="flex items-center gap-3 text-sm text-slate-600">
+        <i data-lucide="menu" class="w-5 h-5 cursor-pointer text-slate-500"></i>
+        <div class="flex items-center gap-1">
+          <i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span class="breadcrumb-link" onclick="location.href='../index.html'">首页</span>
+          <span class="text-slate-300">/</span>
+          <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>运营部</span>
+          <span class="text-slate-300">/</span>
+          <span class="font-medium text-slate-700">优惠券</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <i data-lucide="download" class="w-4 h-4 text-blue-500 cursor-pointer"></i>
+        <div class="flex items-center gap-2 cursor-pointer">
+          <div class="w-7 h-7 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+          <span class="text-sm text-slate-600">ylj</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 overflow-y-auto">
+      <div class="ant-card">
+
+        <!-- 顶部 tab -->
+        <div class="top-tabs px-4 pt-2 flex items-center justify-between">
+          <div class="flex items-center">
+            <div :class="['top-tab', tab === 'issued' ? 'active' : '']" @click="tab = 'issued'">已派发优惠券</div>
+            <div :class="['top-tab', tab === 'types'  ? 'active' : '']" @click="tab = 'types'">优惠券类型</div>
+          </div>
+          <button class="ant-btn" style="position:relative;border-color:#a78bfa;color:#7c3aed;background:#faf5ff;margin-bottom:6px" @click="showSpec = true">
+            <i data-lucide="info" class="w-3.5 h-3.5"></i>需求点说明
+            <span style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff"></span>
+          </button>
+        </div>
+
+        <!-- ===================== 已派发优惠券 ===================== -->
+        <div v-if="tab === 'issued'" class="p-4">
+
+          <!-- 筛选 -->
+          <div class="grid grid-cols-4 gap-3 mb-3">
+            <div class="filter-row"><span class="lbl">用户账号：</span><input class="ant-input" v-model="iF.account" placeholder="请输入用户账号"></div>
+            <div class="filter-row"><span class="lbl">用户手机：</span><input class="ant-input" v-model="iF.phone" placeholder="请输入用户手机"></div>
+            <div class="filter-row"><span class="lbl">来源：</span>
+              <select class="ant-input" v-model="iF.source">
+                <option value="">请选择优惠券来源</option>
+                <option v-for="s in sourceOpts" :key="s" :value="s">{{ s }}</option>
+              </select>
+            </div>
+            <div class="filter-row"><span class="lbl">使用状态：</span>
+              <select class="ant-input" v-model="iF.status">
+                <option value="">未使用/已使用/待领取</option>
+                <option>未使用</option><option>已使用</option><option>已过期</option><option>待领取</option>
+              </select>
+            </div>
+            <div class="filter-row"><span class="lbl">奖品活动：</span>
+              <select class="ant-input" v-model="iF.activity">
+                <option value="">请选择奖品活动</option>
+                <option>积分兑换</option><option>赠送券</option><option>活动奖品</option><option>补偿</option>
+              </select>
+            </div>
+            <div class="filter-row"><span class="lbl">优惠券：</span><input class="ant-input" v-model="iF.coupon" placeholder="请输入优惠券"></div>
+            <div class="filter-row"><span class="lbl">优惠券代码：</span><input class="ant-input" v-model="iF.code" placeholder="请输入优惠券代码"></div>
+            <div class="filter-row"><span class="lbl">领券时间：</span>
+              <input class="ant-input" type="date" v-model="iF.dateFrom">
+              <input class="ant-input" type="date" v-model="iF.dateTo">
+            </div>
+            <div class="filter-row col-span-2"><span class="lbl">绑定车辆：</span><input class="ant-input" v-model="iF.plate" placeholder="请输入车牌"></div>
+            <div class="filter-row col-span-2 justify-end" style="gap:8px">
+              <button class="ant-btn-primary" @click="search">搜索</button>
+              <button class="ant-btn" @click="exportData">导出</button>
+            </div>
+          </div>
+
+          <!-- 表格 -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>用户账号</th>
+                <th>用户手机</th>
+                <th>用户姓名</th>
+                <th>优惠券</th>
+                <th>优惠券代码</th>
+                <th>来源</th>
+                <th>使用状态</th>
+                <th>领取时间</th>
+                <th>有效期</th>
+                <th>价值</th>
+                <th>绑定车辆</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="r in issuedRows" :key="r.code">
+                <td>{{ r.account }}</td>
+                <td>{{ r.phone }}</td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.coupon }}</td>
+                <td>{{ r.code }}</td>
+                <td>{{ r.source }}</td>
+                <td>
+                  <span :class="['ant-tag', statusTag(r.status)]">{{ r.status }}</span>
+                </td>
+                <td>{{ r.gainAt }}</td>
+                <td>{{ r.expireAt }}</td>
+                <td>{{ r.value }}</td>
+                <td>{{ r.plate || '' }}</td>
+                <td>
+                  <button v-if="r.status === '未使用'" class="ant-btn-primary" style="padding:0 10px;height:24px;font-size:12px">使用</button>
+                  <span v-else style="color:#c0c4cc">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 分页 -->
+          <div class="pager">
+            <span>共 47342 条</span>
+            <button class="pg-btn disabled">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <span>...</span>
+            <button class="pg-btn">4735</button>
+            <button class="pg-btn">›</button>
+            <span>跳至</span>
+            <input class="pg-input" value="1">
+            <span>页</span>
+          </div>
+        </div>
+
+        <!-- ===================== 优惠券类型 ===================== -->
+        <div v-if="tab === 'types'" class="p-4">
+
+          <!-- 筛选 + 操作 -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="filter-row" style="min-width:280px"><span class="lbl">来源：</span>
+                <select class="ant-input" v-model="tF.source">
+                  <option value="">请选择优惠券来源</option>
+                  <option v-for="s in sourceOpts" :key="s" :value="s">{{ s }}</option>
+                </select>
+              </div>
+              <div class="filter-row" style="min-width:280px"><span class="lbl">优惠券类型：</span>
+                <select class="ant-input" v-model="tF.type">
+                  <option value="">请选择优惠券类型</option>
+                  <option v-for="t in typeOpts" :key="t" :value="t">{{ t }}</option>
+                </select>
+              </div>
+              <button class="ant-btn-primary" @click="search">搜索</button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="ant-btn-primary" @click="openAddType">新增</button>
+              <button class="ant-btn" @click="openAddSource">新增来源</button>
+            </div>
+          </div>
+
+          <!-- 表格 -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>优惠券</th>
+                <th>优惠类型</th>
+                <th>开始日期</th>
+                <th>结束日期</th>
+                <th>来源</th>
+                <th>类型代码</th>
+                <th>价值</th>
+                <th>有效时长</th>
+                <th>使用性质</th>
+                <th>订单范围</th>
+                <th>车辆来源</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="t in typeRows" :key="t.code + t.startAt">
+                <td>{{ t.name }}</td>
+                <td>{{ t.type }}</td>
+                <td>{{ t.startAt }}</td>
+                <td>{{ t.endAt }}</td>
+                <td>{{ t.source }}</td>
+                <td>{{ t.code }}</td>
+                <td>{{ t.value }}</td>
+                <td>{{ t.duration }}</td>
+                <td>{{ t.usage }}</td>
+                <td>{{ t.orderScope }}</td>
+                <td>{{ t.carScope }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 分页 -->
+          <div class="pager">
+            <span>共 137 条</span>
+            <button class="pg-btn disabled">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <span>...</span>
+            <button class="pg-btn">14</button>
+            <button class="pg-btn">›</button>
+            <span>跳至</span>
+            <input class="pg-input" value="1">
+            <span>页</span>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- 需求点说明 modal -->
+<div v-if="showSpec" class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.5)" @click.self="showSpec = false">
+  <div class="bg-white rounded-lg shadow-xl" style="width:640px;max-width:92vw;max-height:80vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:14px 20px;border-bottom:1px solid #ebeef5;display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <i data-lucide="info" class="w-4 h-4" style="color:#7c3aed"></i>
+      <span style="font-size:15px;font-weight:600;color:#7c3aed">优惠券 · 需求点说明</span>
+      <span @click="showSpec=false" style="margin-left:auto;cursor:pointer;color:#94a3b8;font-size:20px;line-height:1">&times;</span>
+    </div>
+    <div style="padding:18px 22px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
+      <p style="margin:0 0 10px"><strong>本期改造：将原「运营部·优惠券」模块与新会员体系打通。</strong></p>
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
+        <li><strong>已派发优惠券</strong>：展示所有用户已领取的优惠券明细，支持按账号 / 手机 / 来源 / 状态 / 奖品活动 / 优惠券名 / 代码 / 领券时间 / 绑定车辆 多维筛选;新增「使用」操作快速核销，状态实时同步至前端卡包。</li>
+        <li><strong>优惠券类型</strong>：维护可发放的优惠券模板。「优惠类型」字段需与「<a href="rewards.html" style="color:#1677ff">商城商品配置</a>」中的商品类型对齐 —— 当前包含数据查询权益、保留价查询、历史成交行情、数据查询优惠券(5/10/15/20/30/50 元)、综合服务费减免券、服务中心消费券等。新增积分商城兑换型商品时，对应的优惠券类型自动出现在此列表，无需重复维护。</li>
+        <li><strong>来源管理</strong>：「新增来源」支持配置赠送券、活动奖品、积分兑换、补偿等业务渠道;来源字段贯穿派发列表与类型列表，便于按渠道统计。</li>
+        <li><strong>有效时长 / 使用性质 / 订单范围 / 车辆来源</strong>：四个业务字段控制优惠券生效边界:有效时长决定领券后多久内可用、使用性质限制使用环节(订单支付 / 服务费抵扣等)、订单范围限制业务场景(拍卖大厅 / 一口价 / 唯普好车等)、车辆来源限制车型品类。</li>
+        <li><strong>导出</strong>：已派发列表支持按当前筛选条件导出 Excel，供财务对账与运营复盘。</li>
+      </ol>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #ebeef5;display:flex;justify-content:flex-end;background:#fafafa;flex-shrink:0">
+      <button class="ant-btn-primary" @click="showSpec=false">我知道了</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_sidebar-alert.js"></script>
+<script>
+const { createApp, ref, reactive, onMounted, nextTick } = Vue;
+
+createApp({
+  setup() {
+    const tab = ref('issued');
+    const showSpec = ref(false);
+
+    const sourceOpts = ['赠送券', '活动奖品', '积分兑换', '补偿', '产品测试'];
+    const typeOpts = ['交易佣金抵扣', '数据查询权益', '数据查询优惠券', '综合服务费减免', '服务中心消费', '保留价查询', '历史成交行情'];
+
+    // --------- 已派发优惠券 ---------
+    const iF = reactive({ account:'', phone:'', source:'', status:'', activity:'', coupon:'', code:'', dateFrom:'', dateTo:'', plate:'' });
+
+    const issuedRows = reactive([
+      { account:'m_3456817876233403', phone:'13333486496', name:'王欢',   coupon:'200元直减券',  code:'620620778248', source:'活动奖品', status:'未使用', gainAt:'2026-04-01 09:00:01', expireAt:'2026-06-30 23:59:59', value:200, plate:'' },
+      { account:'m_3456817876233403', phone:'13333486496', name:'王欢',   coupon:'200元直减券',  code:'610656577704', source:'活动奖品', status:'未使用', gainAt:'2026-04-01 09:00:00', expireAt:'2026-06-30 23:59:59', value:200, plate:'' },
+      { account:'m_3456817876233403', phone:'13333486496', name:'王欢',   coupon:'200元直减券',  code:'780410772248', source:'活动奖品', status:'未使用', gainAt:'2026-04-01 09:00:00', expireAt:'2026-06-30 23:59:59', value:200, plate:'' },
+      { account:'m_3456817876233403', phone:'13333486496', name:'王欢',   coupon:'200元直减券',  code:'950375776248', source:'活动奖品', status:'未使用', gainAt:'2026-04-01 09:00:00', expireAt:'2026-06-30 23:59:59', value:200, plate:'' },
+      { account:'m_3456817876233403', phone:'13333486496', name:'王欢',   coupon:'200元直减券',  code:'090281778248', source:'活动奖品', status:'未使用', gainAt:'2026-04-01 09:00:00', expireAt:'2026-06-30 23:59:59', value:200, plate:'' },
+      { account:'m_4675172207379376', phone:'15002778993', name:'万岭',   coupon:'300元直减券',  code:'180118770048', source:'赠送券',   status:'已过期', gainAt:'2026-03-18 11:47:03', expireAt:'2026-04-18 11:47:03', value:300, plate:'' },
+      { account:'m_1557323213690628', phone:'18210988593', name:'郝彩峰', coupon:'500元直减券',  code:'410039779048', source:'赠送券',   status:'已使用', gainAt:'2026-03-18 11:40:49', expireAt:'2026-09-18 11:40:49', value:500, plate:'桂ADC2224' },
+      { account:'m_1557323213690628', phone:'18210988593', name:'郝彩峰', coupon:'500元直减券',  code:'320906677440', source:'赠送券',   status:'已使用', gainAt:'2026-03-18 11:41:26', expireAt:'2026-09-18 11:41:26', value:500, plate:'桂DF09919' },
+      { account:'m_0134875297717253', phone:'13751715402', name:'何艺亨', coupon:'500元直减券',  code:'340800377134', source:'赠送券',   status:'已使用', gainAt:'2026-03-10 10:05:14', expireAt:'2026-04-10 10:05:14', value:500, plate:'粤A9ZK58' },
+      { account:'m_0134875297717253', phone:'13751715402', name:'何艺亨', coupon:'500元直减券',  code:'210784776948', source:'赠送券',   status:'已使用', gainAt:'2026-03-10 10:05:03', expireAt:'2026-04-10 10:05:03', value:500, plate:'粤TV594V' },
+      { account:'m_8821093746102587', phone:'13921045672', name:'陈伟铭', coupon:'综合服务费减免券 50 元', code:'675219384055', source:'积分兑换', status:'未使用', gainAt:'2026-04-28 09:42:17', expireAt:'2026-05-28 23:59:59', value:50,  plate:'' },
+      { account:'m_8821093746102587', phone:'13921045672', name:'陈伟铭', coupon:'数据查询优惠券 10 元',   code:'300681264627', source:'积分兑换', status:'未使用', gainAt:'2026-04-15 10:32:11', expireAt:'2026-10-15 23:59:59', value:10,  plate:'' },
+      { account:'m_5532117809334551', phone:'18602345987', name:'林晓玥', coupon:'数据查询优惠券 5 元',    code:'300681264628', source:'积分兑换', status:'未使用', gainAt:'2026-04-10 09:18:42', expireAt:'2026-05-10 23:59:59', value:5,   plate:'' },
+      { account:'m_5532117809334551', phone:'18602345987', name:'林晓玥', coupon:'保留价查询权益',         code:'391047825639', source:'积分兑换', status:'已使用', gainAt:'2026-04-22 14:30:00', expireAt:'2026-05-22 23:59:59', value:50,  plate:'粤B33K88' },
+      { account:'m_7733019458876402', phone:'17782046125', name:'赵蕾',   coupon:'历史成交行情权益',       code:'482937165048', source:'积分兑换', status:'未使用', gainAt:'2026-04-25 10:08:32', expireAt:'2026-05-25 23:59:59', value:100, plate:'' },
+    ]);
+
+    // --------- 优惠券类型 ---------
+    const tF = reactive({ source:'', type:'' });
+
+    const typeRows = reactive([
+      { name:'300元直减券',           type:'交易佣金抵扣', startAt:'2026-03-18', endAt:'2026-03-19', source:'赠送券',   code:'赠送券2026',   value:300,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-03-16', endAt:'2026-03-18', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'6个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-03-10', endAt:'2026-03-11', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'300元直减券',           type:'交易佣金抵扣', startAt:'2026-02-11', endAt:'2026-02-12', source:'赠送券',   code:'赠送券2026',   value:300,  duration:'2个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'300元直减券',           type:'交易佣金抵扣', startAt:'2026-02-11', endAt:'2026-02-12', source:'赠送券',   code:'赠送券2026',   value:300,  duration:'3个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-02-04', endAt:'2026-02-06', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'200元直减券',           type:'交易佣金抵扣', startAt:'2026-01-27', endAt:'2026-01-28', source:'赠送券',   code:'赠送券2026',   value:200,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-01-27', endAt:'2026-01-28', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-01-27', endAt:'2026-01-28', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'1000元直减券',          type:'交易佣金抵扣', startAt:'2026-01-21', endAt:'2026-01-22', source:'赠送券',   code:'赠送券2026',   value:1000, duration:'3天',    usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
+      { name:'保留价查询权益',         type:'数据查询权益', startAt:'2026-04-01', endAt:'长期有效',   source:'积分兑换', code:'RESERVE_PRICE',     value:50,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'历史成交行情权益',       type:'数据查询权益', startAt:'2026-04-01', endAt:'长期有效',   source:'积分兑换', code:'HISTORY_PRICE',     value:100,  duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'数据查询优惠券 5 元',    type:'数据查询优惠券', startAt:'2026-04-01', endAt:'长期有效',   source:'积分兑换', code:'DATA_QUERY_5',      value:5,    duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'数据查询优惠券 10 元',   type:'数据查询优惠券', startAt:'2026-04-01', endAt:'长期有效',   source:'积分兑换', code:'DATA_QUERY_10',     value:10,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'数据查询优惠券 15 元',   type:'数据查询优惠券', startAt:'2026-05-01', endAt:'长期有效',   source:'积分兑换', code:'DATA_QUERY_15',     value:15,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'数据查询优惠券 20 元',   type:'数据查询优惠券', startAt:'2026-05-01', endAt:'长期有效',   source:'积分兑换', code:'DATA_QUERY_20',     value:20,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'综合服务费减免券 50 元', type:'综合服务费减免', startAt:'2026-04-01', endAt:'长期有效',   source:'积分兑换', code:'COMPFEE_50',        value:50,   duration:'30天',   usage:'订单支付', orderScope:'平台成交', carScope:'非报废车' },
+      { name:'服务中心消费券 100 元',  type:'服务中心消费', startAt:'2026-04-01', endAt:'长期有效',   source:'积分兑换', code:'SERVICECENTER_100', value:100,  duration:'30天',   usage:'服务费抵扣', orderScope:'非平台成交', carScope:'指定服务中心' },
+    ]);
+
+    function search() { alert('已应用筛选条件'); }
+    function exportData() { alert('正在导出 Excel，请稍候…'); }
+    function openAddType() { alert('打开「新增优惠券类型」表单(占位)。生产环境从此处配置优惠券模板。'); }
+    function openAddSource() { alert('打开「新增来源」表单(占位)。可新增赠送券/活动奖品/积分兑换等业务渠道。'); }
+
+    function statusTag(s) {
+      if (s === '未使用') return 'tag-blue';
+      if (s === '已使用') return 'tag-default';
+      if (s === '已过期') return 'tag-orange';
+      if (s === '待领取') return 'tag-cyan';
+      return 'tag-default';
+    }
+
+    onMounted(() => nextTick(() => lucide && lucide.createIcons()));
+
+    return { tab, showSpec, sourceOpts, typeOpts, iF, tF, issuedRows, typeRows, search, exportData, openAddType, openAddSource, statusTag };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
