@@ -487,7 +487,7 @@ app.mount('#app');
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>本页为对外宣讲版，内容来自 shared/member-config.js 的 levels（等级权益）、coinEarning（积分获取规则）、qaList（Q&A），与 pc/member-intro.html 共用同一数据源，改一处两端同步。</li>
         <li>历史数据处理：7/1 上线日以前 3 月成交记录 + 当前余额跑数确认初始等级；积分从上线日起算，不追溯、不补发。</li>
-        <li>Q&A 数据来自 qaList 配置项，新增或修改问题只需改 shared/member-config.js，两端页面自动同步。</li>
+        <li>Q&A 数据来自 BMS-运营部-FAQ 中的问题（目前问题待录入）。</li>
         <li>点击「查看我的权益」按钮需先登录。登录完成后直接跳转至会员中心（member.html），无需重新返回本页。</li>
         <li>推荐任务 Mock 数据（页面右上角浮窗可切换演示状态，支持 5 个开关：登录态 / 实名认证 / 首充保证金 / 调研问卷 / 限时活动）：
           <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
@@ -507,7 +507,7 @@ app.mount('#app');
           <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
             <li>车辆成交 / 出价竞拍 / 活动专属任务（有活动）：不论是否登录，点击「去完成」直接跳转「全部车源」（移动 allcars.html / PC sources.html）。</li>
             <li>首次实名认证：未登录跳转登录页（login.html），登录成功后跳转实名认证首页（verify.html）；已登录直接跳转实名认证首页。</li>
-            <li>首充保证金：未登录跳转登录页，登录成功后判断实名状态——未实名时 Toast 提示「请先完成实名认证」引导用户去实名；已实名时 Toast 提示「请前往「专用账号」完成保证金充值，到账后自动发放 +5 积分」，引导用户到专用账号入口完成充值（本任务仅做引导，不直接跳转）。</li>
+            <li>首充保证金：未登录跳转登录页，登录成功后判断实名状态——未实名时 Toast 提示「请先完成实名认证」引导用户去实名；已实名则跳转充值保证金界面（recharge.html）。</li>
             <li>参与平台投票 / 问卷 / 调研：未登录跳转登录页，登录成功后跳转调研问卷页（survey.html）；已登录直接跳转调研问卷页。用户提交问卷后，由调研页负责回跳个人中心（移动端 profile-loggedin.html，PC 端 member.html）。<span style="color:#dc2626;font-weight:600">（调研问卷具体内容待定。）</span></li>
             <li>活动专属任务 · 无活动时：按钮置灰为「敬请期待」，不可点击。</li>
           </ol>
