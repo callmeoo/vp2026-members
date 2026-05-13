@@ -430,7 +430,7 @@
           <div style="margin-bottom:8px"><span class="fm-add">+ 添加责任人</span></div>
           <div class="fm-line">
             <select class="fm-select" v-model="applyForm.duty"><option value="">请选择</option><option>买家</option><option>门店</option><option>卖家</option><option>唯普</option></select>
-            <input class="fm-input" placeholder="责任人姓名,多个请用英文逗号隔开" />
+            <input class="fm-input" placeholder="责任人姓名，多个请用英文逗号隔开" />
             <span class="fm-del">删除</span>
           </div>
         </div>
@@ -480,7 +480,7 @@
             <span v-else class="b-remain" style="background:#f4f4f5;color:#909399;border-color:#e9e9eb">已用完</span>
           </div>
           <div class="b-validity">
-            有效期: <strong>{{ noReasonValidity.start }}</strong> 至 <strong>{{ noReasonValidity.end }}</strong> · 中标后 24h 内可申请,超时即使有权益也无法使用
+            有效期: <strong>{{ noReasonValidity.start }}</strong> 至 <strong>{{ noReasonValidity.end }}</strong> · 中标后 24h 内可申请，超时即使有权益也无法使用
           </div>
         </div>
         <div class="flex flex-col items-end gap-1.5">
@@ -585,7 +585,7 @@
           <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>2. 积分余额
         </div>
         <ul class="list-disc pl-6 space-y-1">
-          <li>展示该买家的当前积分余额,便于客服快速判断兑换能力</li>
+          <li>展示该买家的当前积分余额，便于客服快速判断兑换能力</li>
         </ul>
       </div>
       <div>
@@ -593,7 +593,7 @@
           <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>3. 本单使用权益
         </div>
         <ul class="list-disc pl-6 space-y-1">
-          <li>新增「本单使用的权益」区域,展示该订单已使用的权益清单(保留价查询、历史行情查询、积分折扣兑换、无理由退车 等)</li>
+          <li>新增「本单使用的权益」区域，展示该订单已使用的权益清单(保留价查询、历史行情查询、积分折扣兑换、无理由退车 等)</li>
           <li>未使用时显示「本单未使用等级权益」</li>
         </ul>
       </div>
@@ -603,8 +603,8 @@
         </div>
         <ul class="list-disc pl-6 space-y-1">
           <li>申请售后弹窗加「买家无理由退车权益」勾选项</li>
-          <li>展示剩余次数 + 有效期(中标后 24h 内可用),超时不可勾选</li>
-          <li>勾选后由系统自动提示发起人调整退车款项,并在审批流和订单详情中标记「已使用无理由退车权益」</li>
+          <li>展示剩余次数 + 有效期(中标后 24h 内可用)，超时不可勾选</li>
+          <li>勾选后由系统自动提示发起人调整退车款项，并在审批流和订单详情中标记「已使用无理由退车权益」</li>
           <li>通过 BMS 代为发起售后、已选用无理由退车权益且未自定义款项分配时，资金处理逻辑：唯普从自身收益（唯普新收益）中划拨 1200 元补偿给门店；若操作员人工进行了款项分配，则按操作员执行为准。</li>
         </ul>
       </div>
@@ -666,7 +666,7 @@ createApp({
     const activeTab = ref('款项信息');
     const tabs = ['款项信息','基本信息','拍卖信息','车辆照片','收车信息','查看记录','出价记录'];
 
-    // 演示用:'used' 显示一组使用了的权益样例,'none' 显示空状态,便于评审对比
+    // 演示用:'used' 显示一组使用了的权益样例，'none' 显示空状态，便于评审对比
     const mockUsageMode = ref('used');
     const usedBenefits = computed(() => {
       if (mockUsageMode.value === 'none') return [];
@@ -682,8 +682,8 @@ createApp({
 
     // 售后
     const noReasonRemain = ref(1);
-    // 无理由退车权益:中标(竞价结束)后 24 小时内可申请,超时不可使用(即使有权益)
-    // 演示用 expiredDemo 切换两种状态,因 demo 数据 deal 是过去日期,实际肯定已过期
+    // 无理由退车权益:中标(竞价结束)后 24 小时内可申请，超时不可使用(即使有权益)
+    // 演示用 expiredDemo 切换两种状态，因 demo 数据 deal 是过去日期，实际肯定已过期
     const noReasonExpiredDemo = ref(false);
     const noReasonValidity = computed(() => {
       const dt = new Date(deal.replace(' ', 'T') + ':00');
@@ -700,15 +700,15 @@ createApp({
 
     const afsList = reactive([
       { id:'demo', tagDate:'04-15', tagText:'04-15 售后', type:'售后类', reason:'车况申诉类-泡水展示争议', result:'直接退车', duty:'买家',
-        desc:'买受人提出车子有水泡,不是天窗漏水导致的,发动机拆修过,网页未告知,提出退车的诉求。经核查,该车发动机没大修,只是气门室盖螺丝动了,属于非承诺相;车内没看到泡水迹,情况不实。已驳回买家诉求。经协商,最终买家接受扣罚退车。',
-        plan:'现申请扣除买家2000元办理退车,1200元归门店,800元归唯普,请领导审批!。',
+        desc:'买受人提出车子有水泡，不是天窗漏水导致的，发动机拆修过，网页未告知，提出退车的诉求。经核查，该车发动机没大修，只是气门室盖螺丝动了，属于非承诺相;车内没看到泡水迹，情况不实。已驳回买家诉求。经协商，最终买家接受扣罚退车。',
+        plan:'现申请扣除买家2000元办理退车，1200元归门店，800元归唯普，请领导审批!。',
         useNoReason:true, status:'审核中', initiator:'唯普-小珂(ykk)', startAt:'2026-04-21 13:02:11',
         steps:[
           { type:'pass', title:'通过', at:'2026-04-21 14:16:29', meta:'售后专员:吕兆文(hpozw)' },
           { type:'pass', title:'通过', at:'2026-04-21 15:10:41', meta:'区域经理:林家杰(xinljj)' },
           { type:'pass', title:'通过', at:'2026-04-21 15:20:35', meta:'售后经理:吕兆文(hpozw)' },
           { type:'pass', title:'通过', at:'2026-04-21 15:22:24', meta:'区域总监:黄帆(kghf)' },
-          { type:'current', title:'审批中', meta:'总发部:刘建(liujian888),杜智辉(dzh)' },
+          { type:'current', title:'审批中', meta:'总发部:刘建(liujian888)，杜智辉(dzh)' },
           { type:'pending', title:'未开始', meta:'财务执行:' }
         ] }
     ]);
@@ -721,7 +721,7 @@ createApp({
     }
 
     // 勾选/取消「买家无理由退车权益」时的联动
-    // - 勾选:预填售后类型/结果/责任方/原因,在 情况说明 追加一行权益声明
+    // - 勾选:预填售后类型/结果/责任方/原因，在 情况说明 追加一行权益声明
     // - 取消:移除该行权益声明(保留用户手动输入的其他内容)
     const NO_REASON_DESC = '【已使用买家"无理由退车权益"】买家行使权益申请退车。';
     function onToggleNoReason() {

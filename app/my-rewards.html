@@ -138,7 +138,7 @@
 <!-- Toast -->
 <div v-if="showToast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50">
   <div class="toast bg-slate-800 text-white px-6 py-3 rounded-full text-sm shadow-xl inline-flex items-center gap-1.5">
-    <i data-lucide="check-circle-2" class="w-4 h-4"></i>权益已激活,正在跳转全部车源...
+    <i data-lucide="check-circle-2" class="w-4 h-4"></i>权益已激活，正在跳转全部车源...
   </div>
 </div>
 
@@ -172,7 +172,7 @@ createApp({
     // 后台配置(权益目录 + 有效期)取自 shared/member-config.js
     // 兑换后权益卡有效期 = 兑换日 + validityDays
     const catalog = (window.MEMBER_CONFIG && window.MEMBER_CONFIG.redeemableRewards) || [];
-    // 模拟兑换记录:3 张券均已兑换,兑换日 2026-04-22
+    // 模拟兑换记录:3 张券均已兑换，兑换日 2026-04-22
     const redeemDate = '2026-04-22';
     function addDays(base, days) {
       const d = new Date(base); d.setDate(d.getDate() + days);
@@ -187,10 +187,10 @@ createApp({
     }));
 
     const tips = [
-      '权益卡仅限本人使用,不可转让、折现、退换',
+      '权益卡仅限本人使用，不可转让、折现、退换',
       '降级后对应等级权益将自动失效',
       '退车/退款对应权益同步作废',
-      '权益兑换受库存限制,先兑先得'
+      '权益兑换受库存限制，先兑先得'
     ];
 
     const usedList = [

@@ -137,7 +137,7 @@
               </div>
               <div class="flex-1 min-w-0">
                 <div class="text-[17px] font-black tracking-tight leading-tight">本季度仅剩 15 天!</div>
-                <div class="text-[11px] text-orange-100 mt-0.5 truncate">再成交 1 台,保住 V3 钻石特权</div>
+                <div class="text-[11px] text-orange-100 mt-0.5 truncate">再成交 1 台，保住 V3 钻石特权</div>
                 <div class="flex items-center gap-1.5 mt-1.5">
                   <span class="text-[10px] px-1.5 py-0.5 bg-white/20 backdrop-blur rounded">钻石保级</span>
                   <span class="text-[10px] px-1.5 py-0.5 bg-amber-300 text-red-800 rounded font-bold">立即冲刺 →</span>
@@ -234,7 +234,7 @@
   <div class="sticky bottom-0 bg-white border-t border-slate-100 px-2 py-2 grid grid-cols-5 text-[11px]">
     <a v-for="t in bottomTabs" :key="t.label"
        :href="t.href || 'javascript:void(0)'"
-       @click="t.href ? null : toast('页面建设中,敬请期待')"
+       @click="t.href ? null : toast('页面建设中，敬请期待')"
        :class="['flex flex-col items-center gap-0.5 py-1 cursor-pointer', t.active ? 'text-red-500 font-semibold' : 'text-slate-500']">
       <i :data-lucide="t.icon" class="w-5 h-5"></i>{{ t.label }}
     </a>

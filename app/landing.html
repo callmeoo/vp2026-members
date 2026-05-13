@@ -98,7 +98,7 @@
   .qa-answer p { margin: 0 0 8px; }
   .qa-answer p:last-child { margin-bottom: 0; }
 
-  /* 按钮 · 字号 17,高度 50 */
+  /* 按钮 · 字号 17，高度 50 */
   .btn-primary { height: 50px; font-size: 17px; font-weight: 700; }
 
   /* 固定底部 CTA — 限宽跟随手机壳 */
@@ -194,7 +194,7 @@
     </h2>
     <div class="px-4">
       <benefit-matrix></benefit-matrix>
-      <div class="cap-text text-center mt-2">以实际页面展示为准,平台保留调整权</div>
+      <div class="cap-text text-center mt-2">以实际页面展示为准，平台保留调整权</div>
     </div>
   </section>
 
@@ -207,7 +207,7 @@
         <span class="sub-title">什么是积分?</span>
       </div>
       <div class="body-text">
-        积分是唯普汽车平台的<strong style="color:#1e293b">商户积分体系</strong>,根据商户在平台的交易与互动行为发放,可用于<strong style="color:#1e293b">兑换积分商城商品和服务</strong>或享受<strong style="color:#1e293b">折扣</strong>。
+        积分是唯普汽车平台的<strong style="color:#1e293b">商户积分体系</strong>，根据商户在平台的交易与互动行为发放，可用于<strong style="color:#1e293b">兑换积分商城商品和服务</strong>或享受<strong style="color:#1e293b">折扣</strong>。
       </div>
     </div>
 
@@ -239,7 +239,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="sub-title">积分商城兑换</div>
-            <div class="body-text mt-1">平台为您开设 <strong style="color:#1e293b">积分商城</strong>,您可使用积分在商城内兑换各类权益卡或实物商品,所兑即所得。</div>
+            <div class="body-text mt-1">平台为您开设 <strong style="color:#1e293b">积分商城</strong>，您可使用积分在商城内兑换各类权益卡或实物商品，所兑即所得。</div>
           </div>
         </div>
 
@@ -251,7 +251,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="sub-title">有效期到期自动扣除</div>
-            <div class="body-text mt-1">积分自获得当月起 <strong style="color:#1e293b">12 个自然月</strong> 内有效,到期未使用的积分将自动清零,建议尽早使用。</div>
+            <div class="body-text mt-1">积分自获得当月起 <strong style="color:#1e293b">12 个自然月</strong> 内有效，到期未使用的积分将自动清零，建议尽早使用。</div>
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@
     </div>
   </section>
 
-  <!-- 底部固定 CTA · 跟随手机壳限宽,悬浮在最上层 -->
+  <!-- 底部固定 CTA · 跟随手机壳限宽，悬浮在最上层 -->
   <div class="cta-fixed">
     <a href="member.html" class="btn-primary block w-full text-center rounded-xl text-white shadow-lg bg-gradient-to-r from-violet-600 to-violet-700 hover:opacity-95" style="line-height:50px">
       <i data-lucide="crown" class="w-5 h-5 inline align-text-bottom mr-1"></i>查看我的权益
@@ -354,7 +354,7 @@ const app = createApp({
     function switchTab(key) {
       if (activeTab.value === key) return;
       activeTab.value = key;
-      // 切 tab 时滚回 tab 栏顶部,避免内容看不见
+      // 切 tab 时滚回 tab 栏顶部，避免内容看不见
       const bar = document.querySelector('.tab-bar');
       if (bar) {
         const top = bar.getBoundingClientRect().top + window.scrollY - 4;
@@ -394,7 +394,7 @@ const app = createApp({
 
     onMounted(() => {
       lucide.createIcons();
-      // 监听 tab 哨兵是否离开视口,用于 tab 栏悬浮态样式
+      // 监听 tab 哨兵是否离开视口，用于 tab 栏悬浮态样式
       if (tabSentinel.value) {
         const io = new IntersectionObserver(
           ([e]) => { isStuck.value = !e.isIntersecting; },

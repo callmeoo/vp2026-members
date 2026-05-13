@@ -3,7 +3,7 @@
  *
  * 数据来源:window.MEMBER_CONFIG.coinEarning(shared/member-config.js)
  * 使用方式:
- *   1. 页面先引入 shared/member-config.js,再引入本文件
+ *   1. 页面先引入 shared/member-config.js，再引入本文件
  *   2. createApp(...) 后调用 app.component('coin-earning-rules', window.CoinEarningRulesComponent)
  *   3. 模板中使用 <coin-earning-rules></coin-earning-rules>
  */

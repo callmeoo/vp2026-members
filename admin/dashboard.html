@@ -403,8 +403,8 @@ new Chart(document.getElementById('chartDist'), {
     applyRange(rows, `${from} ~ ${to}`);
   });
 
-  // 导出 CSV:每日按发放类型拆行,与「积分获取方式」对齐
-  // 比例参考实际业务节奏:成交占大头,出价次之,其余一次性/活动类小份额
+  // 导出 CSV:每日按发放类型拆行，与「积分获取方式」对齐
+  // 比例参考实际业务节奏:成交占大头，出价次之，其余一次性/活动类小份额
   const ISSUE_CATEGORIES = [
     { name: '成交',         ratio: 0.50 },
     { name: '出价',         ratio: 0.25 },
@@ -422,7 +422,7 @@ new Chart(document.getElementById('chartDist'), {
       let allocated = 0;
       ISSUE_CATEGORIES.forEach((c, i) => {
         const v = i === ISSUE_CATEGORIES.length - 1
-          ? r.issued - allocated // 末项分配剩余,避免四舍五入误差
+          ? r.issued - allocated // 末项分配剩余，避免四舍五入误差
           : Math.round(r.issued * c.ratio);
         allocated += v;
         lines.push([r.date, c.name, v, ''].join(','));

@@ -22,10 +22,10 @@
   }
   [v-cloak] { display:none; }
 
-  /* 底部固定栏：移动端居中视口,桌面预览(stage 含 api-panel)与 phone-shell 对齐 */
+  /* 底部固定栏：移动端居中视口，桌面预览(stage 含 api-panel)与 phone-shell 对齐 */
   .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #fff; border-top: 1px solid #f1f5f9; z-index: 40; }
   @media (min-width: 768px) {
-    /* stage = 420(phone) + 24(gap) + 460(api-panel) = 904,水平居中 → phone-shell 中心相对视口中心偏左 (24+460)/2 = 242px */
+    /* stage = 420(phone) + 24(gap) + 460(api-panel) = 904，水平居中 → phone-shell 中心相对视口中心偏左 (24+460)/2 = 242px */
     .bottom-bar { transform: translateX(calc(-50% - 242px)); bottom: 24px; border-radius: 0 0 40px 40px; overflow: hidden; }
   }
 
@@ -227,15 +227,15 @@
     <div class="text-[13px] text-slate-500 leading-relaxed space-y-3">
       <div>
         <div class="text-slate-400">1、预计查询时间是多久?</div>
-        <div class="mt-1">预计查询时间为 30 分钟,等待查询期间内您可以续浏览其它内容特报告查询成功后会系统将会有消息通知告知与您。您亦可通过顶部历史订单"查看此报告。</div>
+        <div class="mt-1">预计查询时间为 30 分钟，等待查询期间内您可以续浏览其它内容特报告查询成功后会系统将会有消息通知告知与您。您亦可通过顶部历史订单"查看此报告。</div>
       </div>
       <div>
         <div class="text-slate-400">2、查询一定会有结果吗?</div>
-        <div class="mt-1">查询不一定每次成功,查询失败系统将会原路返回您的支付金额。</div>
+        <div class="mt-1">查询不一定每次成功，查询失败系统将会原路返回您的支付金额。</div>
       </div>
       <div>
         <div class="text-slate-400">3、特别声明:</div>
-        <div class="mt-1">请注意,本查询服务所有致据源均来自行业大数据或第三方且并非实时数据(由提供方按固定周期定期更新),查得结果仅供参考,本查询服务不构成任何建议或承诺,亦不对查询人运用本查询服务做出的其它专业判断所产生的结果负责,请查询人务必结合被查询对象的实际情况,综合做出更全面更准确的决策。</div>
+        <div class="mt-1">请注意，本查询服务所有致据源均来自行业大数据或第三方且并非实时数据(由提供方按固定周期定期更新)，查得结果仅供参考，本查询服务不构成任何建议或承诺，亦不对查询人运用本查询服务做出的其它专业判断所产生的结果负责，请查询人务必结合被查询对象的实际情况，综合做出更全面更准确的决策。</div>
       </div>
     </div>
 
@@ -349,7 +349,7 @@
     <div class="text-[12px] text-slate-600 mb-1">Query 参数</div>
     <pre>{
   "scene": "MAINTENANCE_QUERY",  // 业务场景:报告查询
-  "amount": 188,                 // 订单金额(元),用于满减判断
+  "amount": 188,                 // 订单金额(元)，用于满减判断
   "userId": "string"             // 用户 ID(后端从 token 解)
 }</pre>
     <div class="text-[12px] text-slate-600 mt-2 mb-1">响应 (按 expireAt 升序返回)</div>
@@ -451,7 +451,7 @@ createApp({
     const showDetail = ref(false);
     const showCouponList = ref(false);
 
-    // 优惠券(模拟数据,按过期时间升序)
+    // 优惠券(模拟数据，按过期时间升序)
     const allCoupons = [
       { id:'C202604001', title:'报告查询满减券', amount: 10, threshold: 50,  expireAt:'2026-05-03' },
       { id:'C202604002', title:'报告查询满减券', amount: 20, threshold: 100, expireAt:'2026-05-06' },
@@ -518,7 +518,7 @@ createApp({
       if (selectedCoupon.value) {
         extra = ` · 已用券 ${selectedCoupon.value.title} ¥${selectedCoupon.value.amount}`;
       }
-      alert(`已发起查询,实付 ¥${totalPrice.value.toFixed(2)}(${labelMap[payMethod.value]})${extra}`);
+      alert(`已发起查询，实付 ¥${totalPrice.value.toFixed(2)}(${labelMap[payMethod.value]})${extra}`);
     }
 
     // 模拟运营优惠:满 100 减 10

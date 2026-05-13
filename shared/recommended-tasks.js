@@ -3,15 +3,15 @@
  *
  * 数据来源:window.MEMBER_CONFIG.recommendedTasks(shared/member-config.js)
  * 使用方式:
- *   1. 页面先引入 shared/member-config.js,再引入本文件
+ *   1. 页面先引入 shared/member-config.js，再引入本文件
  *   2. createApp(...) 后调用 app.component('recommended-tasks', window.RecommendedTasksComponent)
  *   3. 模板中使用 <recommended-tasks :level="currentLv.short" :platform="'app'" :has-activity="true"></recommended-tasks>
  *
  * Props:
- *   - level: 当前用户等级 short(如 'V0','V1','V2','V3'),用于控制 V0 专属任务显隐
- *   - platform: 'app' | 'pc',决定渲染风格和跳转链接
- *   - hasActivity: Boolean,是否有活动(控制节日任务展示)
- *   - showActivityToggle: Boolean,是否展示活动切换按钮(仅 Demo 用)
+ *   - level: 当前用户等级 short(如 'V0','V1','V2','V3')，用于控制 V0 专属任务显隐
+ *   - platform: 'app' | 'pc'，决定渲染风格和跳转链接
+ *   - hasActivity: Boolean，是否有活动(控制节日任务展示)
+ *   - showActivityToggle: Boolean，是否展示活动切换按钮(仅 Demo 用)
  */
 (function (global) {
   'use strict';
@@ -89,7 +89,7 @@
       '            <div><span style="color:#b45309;font-weight:600">活动内容：</span>{{ t.activityDesc }}</div>',
       '          </div>',
       '          <div v-if="!hasActivity" class="rt-task-meta">',
-      '            <span>以具体活动为准,敬请期待</span>',
+      '            <span>以具体活动为准，敬请期待</span>',
       '          </div>',
       '        </template>',
       '        <!-- 其他任务 -->',

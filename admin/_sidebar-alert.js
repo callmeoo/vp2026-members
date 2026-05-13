@@ -1,6 +1,6 @@
-// Sidebar 通用居中弹框,替代 window.alert()
+// Sidebar 通用居中弹框，替代 window.alert()
 // msg     : 弹框正文
-// navHref : 可选,确定后跳转的目标 URL;不传则仅关闭
+// navHref : 可选，确定后跳转的目标 URL;不传则仅关闭
 window.showRuleAlert = function (msg, navHref) {
   // 已有同款弹框时不重复创建
   if (document.getElementById('__sb_alert_mask')) return;
@@ -25,7 +25,7 @@ window.showRuleAlert = function (msg, navHref) {
   function close() {
     if (mask.parentNode) mask.parentNode.removeChild(mask);
   }
-  // 仅「确定」按钮可关闭(点击遮罩 / 按 ESC 不关闭,避免误触)
+  // 仅「确定」按钮可关闭(点击遮罩 / 按 ESC 不关闭，避免误触)
   box.querySelector('[data-act="ok"]').onclick = function () {
     close();
     if (navHref) {

@@ -111,7 +111,7 @@
           <div class="el-input"><input v-model="search.keyword" placeholder="请输入姓名/手机号/账号进行查询" /></div>
           <div class="flex items-center"><span class="el-label">成交日期:</span><div class="el-input flex-1"><input type="date" v-model="search.dealStart" /></div><span class="range-sep">~</span><div class="el-input flex-1"><input type="date" v-model="search.dealEnd" /></div></div>
           <div class="flex items-center"><span class="el-label">来源:</span><div class="el-select flex-1"><select v-model="search.src"><option>请选择来源</option><option>官网</option><option>rncwp</option><option>mpcwp</option><option>车唯拍+小程序</option></select></div></div>
-          <div class="flex items-center"><span class="el-label">跟进销售:</span><div class="el-input flex-1"><input v-model="search.sales" placeholder="输入手机/姓名,支持按关键字" /></div></div>
+          <div class="flex items-center"><span class="el-label">跟进销售:</span><div class="el-input flex-1"><input v-model="search.sales" placeholder="输入手机/姓名，支持按关键字" /></div></div>
 
           <div class="flex items-center"><span class="el-label">交易类型:</span><div class="el-select flex-1"><select v-model="search.tx"><option>请选择交易类型</option><option>活跃客户</option><option>沉默客户</option><option>新客户</option></select></div></div>
           <div class="flex items-center"><span class="el-label">今年成交数:</span><input class="num-input" v-model="search.dealMin" /><span class="range-sep">到</span><input class="num-input" v-model="search.dealMax" /></div>

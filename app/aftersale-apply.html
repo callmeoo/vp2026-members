@@ -101,9 +101,9 @@
           <span v-if="noReasonExpired" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600">已超期 · 不可使用</span>
         </div>
         <div class="text-[12px] text-slate-500 mt-0.5">
-          <template v-if="noReasonExpired">中标后已超 24 小时,「无理由退车」权益本单无法使用</template>
+          <template v-if="noReasonExpired">中标后已超 24 小时，「无理由退车」权益本单无法使用</template>
           <template v-else-if="selectedCard">{{ selectedCard.name + ' · 中标后 24h 内可申请(' + selectedCard.source + ')' }}</template>
-          <template v-else>可使用「无理由退车」抵扣违约金,中标后 24h 内有效</template>
+          <template v-else>可使用「无理由退车」抵扣违约金，中标后 24h 内有效</template>
         </div>
       </div>
       <span :class="['text-[13px] mr-1', selectedCard && !noReasonExpired ? 'text-rose-500' : 'text-slate-400']">
@@ -136,9 +136,9 @@
     <div class="meta"><span></span><span>编号:20263115824</span></div>
     <div class="party">甲方:广东唯普汽车科技股份有限公司</div>
     <div class="party">乙方:产品test1</div>
-    <div class="intro">鉴于乙方于2026年03月06日在广东唯普汽车科技股份有限公司的竞价平台通过其他的方式竞得车辆,现双方签订成交确认书如下:</div>
+    <div class="intro">鉴于乙方于2026年03月06日在广东唯普汽车科技股份有限公司的竞价平台通过其他的方式竞得车辆，现双方签订成交确认书如下:</div>
     <div class="sec-title">一、标的</div>
-    <div>当前车牌号:闽A12345,品牌型号:保时捷123,车架号:WM0AC297XEL030334</div>
+    <div>当前车牌号:闽A12345，品牌型号:保时捷123，车架号:WM0AC297XEL030334</div>
     <div class="sec-title">二、成交价款(单位:元)</div>
     <table>
       <tr><th>车辆成交价格</th><th>平台使用费</th><th>手续费</th><th>综合服务费</th><th>其他费用</th></tr>
@@ -179,7 +179,7 @@
       <button @click="closeSheet" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
 
-    <div class="px-4 pt-3 text-[12px] text-slate-500">中标后 24 小时内可使用「无理由退车」权益,超时权益无法使用。</div>
+    <div class="px-4 pt-3 text-[12px] text-slate-500">中标后 24 小时内可使用「无理由退车」权益，超时权益无法使用。</div>
 
     <div>
       <div v-for="c in refundCards" :key="c.id" :class="['reward-card', { selected: selectedCard && selectedCard.id === c.id }]" @click="selectedCard = c">
@@ -214,12 +214,12 @@
     <div class="text-[16px] font-semibold text-slate-900 mb-3">您确认要取消交易吗?</div>
     <div class="text-[13px] text-slate-600 leading-relaxed mb-5">
       <template v-if="selectedCard">
-        您已选择使用「<span class="text-amber-600 font-semibold">无理由退车</span>」权益卡,
+        您已选择使用「<span class="text-amber-600 font-semibold">无理由退车</span>」权益卡，
         <br/>违约金 ¥{{ PENALTY }} 将<span class="text-emerald-600 font-semibold">全额抵扣为 ¥0</span>。
-        <br/><br/>提交后该权益卡将被核销且不可退还,是否确认?
+        <br/><br/>提交后该权益卡将被核销且不可退还，是否确认?
       </template>
       <template v-else>
-        根据竞价合约,如果您现在取消交易将要支付<span class="text-rose-500 font-semibold">{{ PENALTY }} 元违约金</span>,请您仔细考虑后再做决定。
+        根据竞价合约，如果您现在取消交易将要支付<span class="text-rose-500 font-semibold">{{ PENALTY }} 元违约金</span>，请您仔细考虑后再做决定。
       </template>
     </div>
     <div class="flex gap-3">
@@ -260,18 +260,18 @@ createApp({
     });
 
     const clauses = [
-      '(1) 乙方在成交前已经清楚了解该车辆状况,对该车辆有关情况及质量没有异议并自愿接受该标的的一切现状及瑕疵。',
-      '(2) 对于甲方未提供车况查验报告的车辆,则乙方对车辆证件信息准确性进行承诺,非证件信息的其它信息仅供参考。',
+      '(1) 乙方在成交前已经清楚了解该车辆状况，对该车辆有关情况及质量没有异议并自愿接受该标的的一切现状及瑕疵。',
+      '(2) 对于甲方未提供车况查验报告的车辆，则乙方对车辆证件信息准确性进行承诺，非证件信息的其它信息仅供参考。',
       '(3) 乙方须按照「竞买须知」约定的时间内向甲方付清成交价款、手续费、综合服务费、平台使用费等费用。',
-      '(4) 成交价款中除车辆成交价格、平台使用费、手续费、综合服务费、其他费用等服务类收入,由不同服务主体提供服务。',
-      '(5) 该车辆相关税费以网上公示信息为准,未缴纳的税费及保险均由乙方负责。',
-      '(6) 该车辆只转让登记给买受人或买受人指定的其他人,转让登记指定新车主须带齐转让登记所需证件。',
+      '(4) 成交价款中除车辆成交价格、平台使用费、手续费、综合服务费、其他费用等服务类收入，由不同服务主体提供服务。',
+      '(5) 该车辆相关税费以网上公示信息为准，未缴纳的税费及保险均由乙方负责。',
+      '(6) 该车辆只转让登记给买受人或买受人指定的其他人，转让登记指定新车主须带齐转让登记所需证件。',
       '(7) 该车辆转让登记时间以各地车管所实际业务处理时间为准。',
       '(8) 该车辆移交之前所产生的交通事故、债权债务等相关责任由甲方负责。',
       '(9) 若车辆或办理车辆转让登记手续中遇到不可预见或非主观刻意的原因导致不能办理转让登记的情况。',
-      '(10) 对上述第(9)款提到的情形,甲乙双方协商作退车退款处理时,互不追究责任。',
-      '(11) 本确认书未尽事宜,由双方协商解决,协商不成的,向甲方所在地的人民法院起诉。',
-      '(12) 本确认书电子版本与纸质版本具有同等效力,自乙方完成支付之日起生效。'
+      '(10) 对上述第(9)款提到的情形，甲乙双方协商作退车退款处理时，互不追究责任。',
+      '(11) 本确认书未尽事宜，由双方协商解决，协商不成的，向甲方所在地的人民法院起诉。',
+      '(12) 本确认书电子版本与纸质版本具有同等效力，自乙方完成支付之日起生效。'
     ];
 
     function openSheet() { showSheet.value = true; }
@@ -284,9 +284,9 @@ createApp({
     function onConfirm() {
       showConfirm.value = false;
       if (selectedCard.value) {
-        alert('已使用「无理由退车」权益(' + selectedCard.value.expire + ' 到期),违约金已全额抵扣。\n售后申请已提交。');
+        alert('已使用「无理由退车」权益(' + selectedCard.value.expire + ' 到期)，违约金已全额抵扣。\n售后申请已提交。');
       } else {
-        alert('已扣除违约金 ¥' + PENALTY + ',售后申请已提交。');
+        alert('已扣除违约金 ¥' + PENALTY + '，售后申请已提交。');
       }
       location.href = 'won-orders.html';
     }

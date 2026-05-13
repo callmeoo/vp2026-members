@@ -3,7 +3,7 @@
  *
  * 数据来源:window.MEMBER_CONFIG.levels[].benefits(shared/member-config.js)
  * 使用方式:
- *   1. 页面先引入 shared/member-config.js,再引入本文件
+ *   1. 页面先引入 shared/member-config.js，再引入本文件
  *   2. createApp(...) 后调用 app.component('benefit-matrix', window.BenefitMatrixComponent)
  *   3. 模板中使用 <benefit-matrix></benefit-matrix>
  *

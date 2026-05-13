@@ -310,7 +310,7 @@
                     </div>
                   </div>
                   <a href="mall.html" class="coin-panel-btn">
-                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>去兑换权益
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>去兑换
                   </a>
                 </div>
                 <div class="coin-expiry">
@@ -455,7 +455,7 @@ createApp({
       return '近 3 月成交 <strong>' + currentDeals.value + '</strong> 台';
     });
 
-    // 所有等级权益并集,去重;积分兑换类只保留当前等级对应的那一项
+    // 所有等级权益并集，去重;积分兑换类只保留当前等级对应的那一项
     const allBenefits = computed(() => {
       const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
       const currBenefits = currentLv.value.benefits || [];

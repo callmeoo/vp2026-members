@@ -2,7 +2,7 @@
 
 > 版本:v1.0  
 > 风格:RESTful + JSON  
-> 鉴权:现有用户鉴权体系(假设为 JWT / Session,具体按你们现有规范)
+> 鉴权:现有用户鉴权体系(假设为 JWT / Session，具体按你们现有规范)
 
 ---
 
@@ -16,7 +16,7 @@ https://api.wpcar.example/membership/v1
 ### 统一响应体
 ```json
 {
-  "code": 0,          // 0 成功,非 0 失败
+  "code": 0,          // 0 成功，非 0 失败
   "message": "OK",
   "data": { ... }
 }
@@ -29,7 +29,7 @@ https://api.wpcar.example/membership/v1
 | 0 | 成功 |
 | 40001 | 参数错误 |
 | 40101 | 未登录 |
-| 40301 | 等级不足,无法兑换 |
+| 40301 | 等级不足，无法兑换 |
 | 40302 | 积分不足 |
 | 40303 | 库存不足 |
 | 40304 | 转发已达上限 |
@@ -79,8 +79,8 @@ https://api.wpcar.example/membership/v1
 | type | string | 可选:EARN_BID / EARN_SHARE / EARN_DEAL / SPEND_REDEEM / EXPIRE |
 | start_date | string | 起始日期 YYYY-MM-DD |
 | end_date | string | 结束日期 |
-| page | int | 页码,默认 1 |
-| page_size | int | 每页条数,默认 20,最大 50 |
+| page | int | 页码，默认 1 |
+| page_size | int | 每页条数，默认 20，最大 50 |
 
 **Response**
 ```json
@@ -196,7 +196,7 @@ https://api.wpcar.example/membership/v1
 | 参数 | 说明 |
 |------|------|
 | category | 可选:QUERY / DISCOUNT / QUOTA / SERVICE |
-| level_filter | 可选,只看某等级可兑换 |
+| level_filter | 可选，只看某等级可兑换 |
 
 **Response**
 ```json
@@ -215,7 +215,7 @@ https://api.wpcar.example/membership/v1
         "grant_type": "REDEEM",
         "stock_left": 823,
         "validity_days": 30,
-        "description": "单次查询单台车历史中标价,有效期 30 天",
+        "description": "单次查询单台车历史中标价，有效期 30 天",
         "redeemable": true,      // 当前用户是否可兑换
         "unavailable_reason": null
       },
@@ -304,7 +304,7 @@ https://api.wpcar.example/membership/v1
 
 ## 二、内部接口(业务系统回调)
 
-这些接口**不对 APP/小程序开放**,只由业务系统(拍卖系统、订单系统、分享系统)内部调用,用于触发积分发放。
+这些接口**不对 APP/小程序开放**，只由业务系统(拍卖系统、订单系统、分享系统)内部调用，用于触发积分发放。
 
 ### 2.1 出价发积分
 
@@ -322,7 +322,7 @@ https://api.wpcar.example/membership/v1
 { "code": 0, "data": { "granted": true, "amount": 1, "coin_transaction_id": 988 } }
 ```
 
-**幂等**:重复调用同一 `(user_id, car_id)` 不会重复发放,但接口仍返回 200。
+**幂等**:重复调用同一 `(user_id, car_id)` 不会重复发放，但接口仍返回 200。
 
 ---
 
@@ -346,7 +346,7 @@ https://api.wpcar.example/membership/v1
 ```
 
 **业务规则**:
-- 校验用户登录(调用方传入时必须是登录态 user_id,否则不接受)
+- 校验用户登录(调用方传入时必须是登录态 user_id，否则不接受)
 - 去重:`(user_id, car_id)` 已有记录 → 幂等返回
 - 校验每日/总量上限
 
@@ -368,13 +368,13 @@ https://api.wpcar.example/membership/v1
 { "code": 0, "data": { "granted": true, "amount": 50, "coin_transaction_id": 1002 } }
 ```
 
-**幂等**:按 `order_id` 去重,同一订单不重复发放。
+**幂等**:按 `order_id` 去重，同一订单不重复发放。
 
 ---
 
 ### 2.4 退车/退款 —— 冲减成交台数(可选接口)
 
-> 积分**不扣**,但成交台数需要冲减。此处仅提供参考,也可让订单系统直接更新成交表,让月度结算自然处理。
+> 积分**不扣**，但成交台数需要冲减。此处仅提供参考，也可让订单系统直接更新成交表，让月度结算自然处理。
 
 **`POST /internal/deals/revoke`**
 
@@ -513,13 +513,13 @@ https://api.wpcar.example/membership/v1
 | level | 0/1/2/3 |
 | page / page_size | 分页 |
 
-**Response**(字段略,基本是 `member_profile` 的展示版本)
+**Response**(字段略，基本是 `member_profile` 的展示版本)
 
 ---
 
 ### 3.6 商户积分流水查询
 
-**`GET /admin/members/:user_id/transactions`** — 参数同前台流水接口,额外支持按任意用户查询。
+**`GET /admin/members/:user_id/transactions`** — 参数同前台流水接口，额外支持按任意用户查询。
 
 ---
 
@@ -530,11 +530,11 @@ https://api.wpcar.example/membership/v1
 ```json
 {
   "amount": -100,
-  "reason": "发现薅羊毛行为,扣回积分"
+  "reason": "发现薅羊毛行为，扣回积分"
 }
 ```
 
-触发后写入一条 `ADJUST` 类型的流水,有操作人审计。
+触发后写入一条 `ADJUST` 类型的流水，有操作人审计。
 
 ---
 
@@ -549,10 +549,10 @@ https://api.wpcar.example/membership/v1
 
 | 项 | 说明 |
 |----|------|
-| 时区 | 所有时间字段使用 ISO 8601(UTC+8),前端按需格式化 |
-| 分页 | 统一 `page` + `page_size`,最大 50 |
-| 金额单位 | 积分为整数,车价以分为单位 |
-| 接口限流 | 前台接口建议按 user 维度限流,内部接口按 IP 限流 |
+| 时区 | 所有时间字段使用 ISO 8601(UTC+8)，前端按需格式化 |
+| 分页 | 统一 `page` + `page_size`，最大 50 |
+| 金额单位 | 积分为整数，车价以分为单位 |
+| 接口限流 | 前台接口建议按 user 维度限流，内部接口按 IP 限流 |
 
 ---
 

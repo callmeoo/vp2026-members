@@ -114,7 +114,7 @@
       <div class="text-2xl font-bold text-violet-600 mt-1">- {{ actualCost(redeemItem.coin) }} 积分</div>
       <div class="text-xs text-slate-400 mt-1">兑换后余额 {{ currentBalance - actualCost(redeemItem.coin) }} 积分</div>
       <div class="mt-4 bg-violet-50 rounded-xl p-3 text-[11px] text-violet-700 text-left">
-        有效期 {{ redeemItem.validityDays }} 天,可在「我的优惠券」查看。兑换后不可退换。
+        有效期 {{ redeemItem.validityDays }} 天，可在「我的优惠券」查看。兑换后不可退换。
       </div>
     </div>
     <div class="flex gap-3 p-4 border-t border-slate-100">
@@ -183,7 +183,7 @@ createApp({
     function confirmRedeem() {
       if (redeemItem.value) currentBalance.value -= actualCost(redeemItem.value.coin);
       redeemItem.value = null;
-      showToast('兑换成功,已存入我的优惠券');
+      showToast('兑换成功，已存入我的优惠券');
     }
     function showToast(msg) {
       toastText.value = msg;

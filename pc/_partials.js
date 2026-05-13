@@ -1,8 +1,8 @@
-// PC 端公共数据 / 工具函数 · 各页面通过 <script> 引入,共享 header / footer / mock 数据
+// PC 端公共数据 / 工具函数 · 各页面通过 <script> 引入，共享 header / footer / mock 数据
 
 window.PC_COMMON = {
   // 顶栏 / 主导航数据
-  topbarLeft: '专业汽车服务平台!您好,欢迎来到唯普汽车!',
+  topbarLeft: '专业汽车服务平台!您好，欢迎来到唯普汽车!',
   topbarLeftLinks: [
     { text: '登录', href: '#' },
     { text: '免费注册', href: '#' },
@@ -39,7 +39,7 @@ window.PC_COMMON = {
     { key: 'reserved', label: '是否有保留价' },
   ],
 
-  // mock 车辆库 —— 字段对齐截图;img 用 Unsplash CDN 真实车辆图,与 app 端一致
+  // mock 车辆库 —— 字段对齐截图;img 用 Unsplash CDN 真实车辆图，与 app 端一致
   cars: (function () {
     const u = (id) => `https://images.unsplash.com/photo-${id}?w=600&h=400&fit=crop&auto=format&q=80`;
     return [

@@ -308,7 +308,7 @@
                   <span :class="['el-radio', { checked: userStatus === 'locked' }]" @click="userStatus = 'locked'"><span class="dot"></span>锁定</span>
                 </div>
               </div>
-              <div class="lock-hint">锁定后,该用户可能无法正常使用服务车商小程序、唯车查查小程序</div>
+              <div class="lock-hint">锁定后，该用户可能无法正常使用服务车商小程序、唯车查查小程序</div>
 
               <div class="info-row"><span class="lbl">企业名称:</span><div class="val"><span style="max-width:240px;line-height:1.5">{{ name }}</span><span class="edit">编辑</span></div></div>
               <div class="info-row"><span class="lbl">电话:</span><div class="val"><span>{{ phone }}</span><span class="edit">编辑</span></div></div>
@@ -358,7 +358,7 @@
         <div v-show="activeTab === 'level'">
           <div v-if="role === '卖家' || !levelCode" class="panel-empty">
             <i data-lucide="info"></i>
-            <div>该用户当前角色为「{{ role || '卖家' }}」,会员等级仅适用于买家用户</div>
+            <div>该用户当前角色为「{{ role || '卖家' }}」，会员等级仅适用于买家用户</div>
             <div style="margin-top:10px"><button class="el-btn-sm">变更为买家 / 双边</button></div>
           </div>
           <template v-else>
@@ -464,7 +464,7 @@
           <div class="panel-section">
             <div class="section-title">
               <i data-lucide="sliders-horizontal" class="w-4 h-4 text-blue-500"></i>
-              管理操作<span class="mini-label">· 所有调整均记入流水,操作人与原因必填</span>
+              管理操作<span class="mini-label">· 所有调整均记入流水，操作人与原因必填</span>
               <div style="margin-left:auto;display:flex;gap:8px">
                 <button class="el-btn-sm el-btn-primary-sm" @click="openCoinModal('add')"><i data-lucide="plus" class="w-3 h-3"></i>手动新增</button>
                 <button class="el-btn-sm el-btn-danger-sm" @click="openCoinModal('deduct')"><i data-lucide="minus" class="w-3 h-3"></i>手动扣减</button>
@@ -524,7 +524,7 @@
     </div>
     <div class="modal-body">
       <div class="rule-intro">
-        <div><b>定级周期</b>:每月 1 日按"近 3 个月成交台数 + 账户金额"重新评级,生效后维持本月。</div>
+        <div><b>定级周期</b>:每月 1 日按"近 3 个月成交台数 + 账户金额"重新评级，生效后维持本月。</div>
         <div><b>积分规则</b>:自获得当月起 {{ CFG.coin.validityMonths }} 个自然月内有效。</div>
         <div><b>当前用户等级</b>:<span :style="{ color: lv.color, fontWeight: 600 }">{{ lv.short }} {{ lv.name }}</span> · 浅蓝色列表示当前等级所在列</div>
       </div>
@@ -591,7 +591,7 @@
       <div class="form-row">
         <div class="f-lbl req">原因</div>
         <div class="f-ctl">
-          <textarea v-model="coinModal.reason" placeholder="请填写操作原因,将记入流水备注(必填)"></textarea>
+          <textarea v-model="coinModal.reason" placeholder="请填写操作原因，将记入流水备注(必填)"></textarea>
           <div v-if="coinModal.reasonErr" class="form-err">原因不能为空</div>
         </div>
       </div>
@@ -641,7 +641,7 @@
           <li>积分概览:当前余额 / 今年累计获得 / 已使用 / 30 天内到期</li>
           <li>积分流水明细(获取 / 消耗 / 过期 / 手动调整)+ 余额追溯</li>
           <li>已兑换商品记录</li>
-          <li>支持手动调整积分(发放 / 扣减),用于运营特殊场景</li>
+          <li>支持手动调整积分(发放 / 扣减)，用于运营特殊场景</li>
         </ul>
       </div>
       <div>
@@ -810,7 +810,7 @@ createApp({
       const cfgMap = {
         add:    { title:'手动新增积分', icon:'plus',      amtLbl:'新增数量', hint:'按实际业务补偿或活动奖励数量填写' },
         deduct: { title:'手动扣减积分', icon:'minus',     amtLbl:'扣减数量', hint:`本次最多可扣减 ${balance.value} 积分(当前余额)` },
-        freeze: { title:'冻结部分积分', icon:'snowflake', amtLbl:'冻结数量', hint:'冻结积分从余额扣除并锁定,解除冻结时再返还;演示版等同于手动扣减' }
+        freeze: { title:'冻结部分积分', icon:'snowflake', amtLbl:'冻结数量', hint:'冻结积分从余额扣除并锁定，解除冻结时再返还;演示版等同于手动扣减' }
       };
       const c = cfgMap[action];
       Object.assign(coinModal, { action, title:c.title, icon:c.icon, amtLbl:c.amtLbl, hint:c.hint, amount:'', reason:'', amountErr:'', reasonErr:false });

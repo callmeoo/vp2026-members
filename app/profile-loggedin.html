@@ -69,7 +69,7 @@
     </div>
 
     <!-- 等级 Banner + 进度 + 权益横滑 -->
-    <!-- 等级 Banner 顶部 + 进度:点击跳转会员中心;权益横滑独立 div,避免 <a> 拦截手势 -->
+    <!-- 等级 Banner 顶部 + 进度:点击跳转会员中心;权益横滑独立 div，避免 <a> 拦截手势 -->
     <div class="relative z-10 mx-4 mt-4 rounded-3xl member-banner p-4 shadow-2xl">
       <a href="member.html" class="block">
         <div class="relative z-10 flex items-center justify-between mb-3">
@@ -92,7 +92,7 @@
           <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full transition-all duration-300" :style="{ width: progress + '%' }"></div>
         </div>
       </a>
-      <!-- 权益横滑独立区(不在 <a> 内),避免触摸滑动被链接拦截 -->
+      <!-- 权益横滑独立区(不在 <a> 内)，避免触摸滑动被链接拦截 -->
       <div class="relative z-10 hscroll flex gap-2 overflow-x-auto pb-1">
         <div v-for="b in allBenefits" :key="b.id" :class="['benefit-card rounded-xl p-2.5 text-center', b.unlocked ? '' : 'locked']">
           <div class="h-8 flex items-center justify-center benefit-icon" :class="b.unlocked ? 'text-amber-300' : ''">
@@ -271,12 +271,12 @@ createApp({
       : 100);
 
     // 全部会员权益按固定顺序展示(历史数据 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无理由退车)
-    // 积分兑换类(coin_exchange_*)视为同一项,展示当前等级具体文案(1:1 / 95 折 / 8 折)
+    // 积分兑换类(coin_exchange_*)视为同一项，展示当前等级具体文案(1:1 / 95 折 / 8 折)
     const allBenefits = computed(() => {
       const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
       const currBenefits = currentLv.value.benefits || [];
       const findIn = (lv, id) => (lv.benefits || []).find(b => b.id === id);
-      // 聚合所有等级 benefits,用于取 icon/label
+      // 聚合所有等级 benefits，用于取 icon/label
       const poolMap = {};
       CFG.levels.forEach(lv => (lv.benefits || []).forEach(b => { poolMap[b.id] = b; }));
       const hasCurr = (id) => !!findIn(currentLv.value, id);

@@ -145,7 +145,7 @@
             <div class="text-base font-semibold text-slate-800 flex items-center gap-2">
               <i data-lucide="ruler" class="w-5 h-5 text-slate-500"></i>定级门槛
             </div>
-            <span class="text-xs text-slate-400">仅「名称」可编辑,其余字段由产品统一规划</span>
+            <span class="text-xs text-slate-400">仅「名称」可编辑，其余字段由产品统一规划</span>
           </div>
 
           <table class="w-full">
@@ -293,7 +293,7 @@ createApp({
         : (lv.threshold.dealsMin === 0 ? '0' : '不限')
     })));
 
-    // 全量权益汇总,每条记录在 4 个等级的启用状态
+    // 全量权益汇总，每条记录在 4 个等级的启用状态
     // 排除的权益 id(不在等级设置中暴露配置)
     const EXCLUDE_BENEFIT_IDS = new Set(['coin_exchange_100']); // 按 1 积分 = 0.1 元等值兑换
     const levelCodes = CFG.levels.map(l => l.short);

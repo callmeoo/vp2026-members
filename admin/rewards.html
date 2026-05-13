@@ -128,7 +128,7 @@
       <div class="flex items-center justify-between mb-5">
         <div>
           <h1 class="text-xl font-semibold text-slate-800">商城商品配置</h1>
-          <p class="text-sm text-slate-500 mt-1">管理积分兑换型商品,支持目录、库存与上下架。</p>
+          <p class="text-sm text-slate-500 mt-1">管理积分兑换型商品，支持目录、库存与上下架。</p>
         </div>
         <div class="flex items-center gap-2">
           <button class="ant-btn inline-flex items-center gap-1" style="position:relative;border-color:#a78bfa;color:#7c3aed;background:#faf5ff" @click="showSpec = true">
@@ -152,7 +152,7 @@
         <div class="grid grid-cols-5 gap-3 items-end">
           <div class="col-span-2">
             <label class="text-xs text-slate-500 block mb-1">关键字</label>
-            <input class="ant-input" v-model="filters.keyword" placeholder="商品名称,支持模糊 / 精准搜索">
+            <input class="ant-input" v-model="filters.keyword" placeholder="商品名称，支持模糊 / 精准搜索">
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">类型</label>
@@ -260,7 +260,7 @@
       </div>
       <div class="form-row">
         <label>商品编码</label>
-        <input class="ant-input" v-model="form.code" placeholder="系统唯一编码,留空自动生成">
+        <input class="ant-input" v-model="form.code" placeholder="系统唯一编码，留空自动生成">
       </div>
       <div class="form-row">
         <label>积分价 <span class="text-rose-500">*</span></label>
@@ -270,7 +270,7 @@
         <label>有效期(天) <span class="text-rose-500">*</span></label>
         <div>
           <input class="ant-input" type="number" min="1" v-model.number="form.validityDays" placeholder="如:30">
-          <div class="hint">用户兑换后,权益从发放日起 N 天内有效</div>
+          <div class="hint">用户兑换后，权益从发放日起 N 天内有效</div>
         </div>
       </div>
       <div class="form-row">
@@ -352,7 +352,7 @@ createApp({
       { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, alertThreshold:20, status:'上架', restriction:'' },
       { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',     icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:5,   coin:50,  validityDays:30, stock:688,  issued:212, alertThreshold:20, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
       { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',    icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:10,  coin:100, validityDays:30, stock:688,  issued:312, alertThreshold:20, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
-      { code:'COMPFEE_50',        name:'综合服务费减免券 50 元',  icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:50,  coin:500, validityDays:30, stock:200,  issued:0,   alertThreshold:20, status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆,报废车不可用。' },
+      { code:'COMPFEE_50',        name:'综合服务费减免券 50 元',  icon:'percent',       iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:50,  coin:500, validityDays:30, stock:200,  issued:0,   alertThreshold:20, status:'上架', restriction:'综合服务费直减 50 元;限平台成交车辆，报废车不可用。' },
       { code:'SERVICECENTER_100', name:'服务中心消费券 100 元',   icon:'building-2',    iconBg:'linear-gradient(135deg,#60a5fa,#3b82f6)', category:'交易折扣', productType:'SERVICE_COUPON',      denomination:100, coin:500, validityDays:30, stock:200,  issued:0,   alertThreshold:20, status:'上架', restriction:'服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' }
     ]);
 

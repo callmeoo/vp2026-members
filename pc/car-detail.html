@@ -187,9 +187,9 @@
   <div class="top-utility">
     <div class="container-1180 flex items-center justify-between h-9">
       <div>
-        专业汽车服务平台!您好,
+        专业汽车服务平台!您好，
         <template v-if="!loggedIn">欢迎来到唯普汽车!</template>
-        <template v-else>尊敬的 <span class="vp-red font-medium">{{ user.name }}</span>,欢迎来到唯普汽车!</template>
+        <template v-else>尊敬的 <span class="vp-red font-medium">{{ user.name }}</span>，欢迎来到唯普汽车!</template>
         <span class="mx-1"></span>
         <template v-if="!loggedIn">
           <a href="javascript:;" @click="loggedIn = true" class="vp-red mr-2">[登录]</a>
@@ -323,7 +323,7 @@
 
           <!-- 提示条 -->
           <div v-if="loggedIn && !car.passReserve" class="pill-warn mb-3 w-full justify-between" style="display:flex">
-            <span>当前竞价&lt;保留价,您的出价可自我超越,立即加价锁定爱车</span>
+            <span>当前竞价&lt;保留价，您的出价可自我超越，立即加价锁定爱车</span>
             <i data-lucide="hand" class="w-4 h-4"></i>
           </div>
 
@@ -436,7 +436,7 @@
         <div class="text-[13px] text-slate-600 leading-7 border-l border-slate-100 pl-6 self-center">
           此之外所产生的任何直接或间接损失。
           <div class="vp-red mt-3">*特别说明:</div>
-          <div>静态检测,是指在车辆静止(根据需要可以让发动机怠速运转)的状态下,通过对车辆外观、各部件总成进行观察,进而对车辆技术状况做出判断的鉴定方法。</div>
+          <div>静态检测，是指在车辆静止(根据需要可以让发动机怠速运转)的状态下，通过对车辆外观、各部件总成进行观察，进而对车辆技术状况做出判断的鉴定方法。</div>
         </div>
       </div>
     </div>
@@ -509,7 +509,7 @@
         <section :id="'sec-config'">
           <h3 class="text-[18px] font-semibold text-slate-800 mb-3 flex items-center gap-2">
             配置信息
-            <span class="vp-red text-[12px] font-normal">*由于配置信息过多,仅做部分显示,以实车为准</span>
+            <span class="vp-red text-[12px] font-normal">*由于配置信息过多，仅做部分显示，以实车为准</span>
           </h3>
           <div class="config-grid">
             <template v-for="(row, idx) in configRows" :key="idx">
@@ -689,7 +689,7 @@
         <span class="val" :class="{ warn: userCoins < RESERVE_UNLOCK_COST }">{{ userCoins }} 积分</span>
       </div>
       <div v-if="userCoins < RESERVE_UNLOCK_COST" class="text-[12px] text-red-500 mt-3 text-center">
-        积分不足,
+        积分不足，
         <a href="mall.html" class="underline">前往积分商城</a>
       </div>
       <div class="flex items-center gap-3 w-full mt-5">
@@ -752,7 +752,7 @@ createApp({
     const readStore = (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } };
     const writeStore = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
-    // 当前车辆 id(URLSearchParams 透传,默认值用于直接打开)
+    // 当前车辆 id(URLSearchParams 透传，默认值用于直接打开)
     const carId = new URLSearchParams(window.location.search).get('id') || 'demo';
 
     // 演示状态
@@ -807,7 +807,7 @@ createApp({
 
     const user = { name: 'cptest01' };
 
-    // 车辆基础数据(综合截图中的两辆车,默认展示「领克 01」)
+    // 车辆基础数据(综合截图中的两辆车，默认展示「领克 01」)
     const car = ref({
       title: '领克 领克01 2017款 2.0T 手自一体 型Pro',
       location: '东莞',
@@ -859,7 +859,7 @@ createApp({
       ],
     });
 
-    // 倒计时(直接给死数据展示样式,演示用)
+    // 倒计时(直接给死数据展示样式，演示用)
     const countdownText = ref('00:01:26');
     let cd = 86; // 秒
     onMounted(() => {
@@ -911,10 +911,10 @@ createApp({
       transferDesc: '—',
       transferRequire: '一周内过户',
       extra: '—',
-      annualDesc: '过户前如需年审,年审及其费用由买家负责',
-      violationDesc: '交车前的违章由卖家负责,交车后的违章由买家负责',
-      modifyDesc: '如有改装,过户时如需复原,改装及其费用由买家负责',
-      pickupDesc: '如有因年审、改装修复、约定买方自行过户等买受人过户前提车的,买受人必须在提车之日起且在网页约定过户时间前完成车辆转让登记手续,且提车时需另行缴纳5000元提车押金至唯普汽车专用账号,办完相关手续后退还押金。买受人申请退还押金时需提供车辆完整清晰的过户材料扫描件。超过规定时间未完成过户的,将按超时天数*200元/天 扣除押金并追究买受人超时违约责任。',
+      annualDesc: '过户前如需年审，年审及其费用由买家负责',
+      violationDesc: '交车前的违章由卖家负责，交车后的违章由买家负责',
+      modifyDesc: '如有改装，过户时如需复原，改装及其费用由买家负责',
+      pickupDesc: '如有因年审、改装修复、约定买方自行过户等买受人过户前提车的，买受人必须在提车之日起且在网页约定过户时间前完成车辆转让登记手续，且提车时需另行缴纳5000元提车押金至唯普汽车专用账号，办完相关手续后退还押金。买受人申请退还押金时需提供车辆完整清晰的过户材料扫描件。超过规定时间未完成过户的，将按超时天数*200元/天 扣除押金并追究买受人超时违约责任。',
     };
 
     // 配置信息

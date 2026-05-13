@@ -178,7 +178,7 @@
     <main class="flex-1 p-6 overflow-y-auto">
       <div class="mb-5">
         <h1 class="text-xl font-semibold text-slate-800">积分规则</h1>
-        <p class="text-sm text-slate-500 mt-1">按类型配置积分的发放规则与反作弊策略,修改后实时生效。</p>
+        <p class="text-sm text-slate-500 mt-1">按类型配置积分的发放规则与反作弊策略，修改后实时生效。</p>
       </div>
 
       <div class="ant-card overflow-hidden">
@@ -217,7 +217,7 @@
               </div>
               <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:260px">
                 <span style="font-size:13px;color:#606266;white-space:nowrap">前台任务说明</span>
-                <input class="ant-input" v-model="limitedCommon.frontDesc" :disabled="!editMode" maxlength="100" placeholder="前台展示,最多 100 字">
+                <input class="ant-input" v-model="limitedCommon.frontDesc" :disabled="!editMode" maxlength="100" placeholder="前台展示，最多 100 字">
               </div>
             </div>
             <table class="rule-table">
@@ -253,7 +253,7 @@
                   </td>
                   <td style="color:#606266">{{ it.desc || '—' }}</td>
                   <td v-if="currentType.key !== 'limited'">
-                    <input class="ant-input" v-model="it.frontDesc" :disabled="!editMode" maxlength="100" placeholder="前台展示,最多 100 字" style="max-width:220px">
+                    <input class="ant-input" v-model="it.frontDesc" :disabled="!editMode" maxlength="100" placeholder="前台展示，最多 100 字" style="max-width:220px">
                   </td>
                   <td style="text-align:center">
                     <label class="switch"><input type="checkbox" v-model="it.enabled"><span class="slider"></span></label>
@@ -315,7 +315,7 @@
                 </div>
               </div>
 
-              <!-- 黑名单(占整行,列表展示)-->
+              <!-- 黑名单(占整行，列表展示)-->
               <div v-else-if="r.type === 'blacklist'" class="risk-card" style="grid-column: span 2">
                 <div class="rc-head">
                   <div>
@@ -530,14 +530,14 @@ createApp({
     const cancelEdit = () => { editMode.value = false; };
     const saveEdit = async () => { editMode.value = false; showToast('保存成功'); await nextTick(); lucide.createIcons(); };
 
-    // 3 个 type 定义,顺序固定
+    // 3 个 type 定义，顺序固定
     const typeDefs = [
       { key:'deal',     label:'交易类',    icon:'wallet' },
       { key:'behavior', label:'行为活动类', icon:'message-circle' },
       { key:'limited',  label:'限时活动类', icon:'calendar-heart' }
     ];
 
-    // 按 item.id 直接归类(稳定,不依赖 category 字符串)
+    // 按 item.id 直接归类(稳定，不依赖 category 字符串)
     //  交易类:完成车辆交易 + 有效出价参与竞拍
     //  限时活动类:统一覆写为「出价倍率 / 成交倍率」两项
     //  行为活动类:其余(互动 / 社交裂变 等)
@@ -568,10 +568,10 @@ createApp({
     (bucket['behavior'] || []).forEach(it => {
       if (it.id === 'share') it.dailyMax = 10;
     });
-    // 限时活动类:统一为出价倍率 / 成交倍率两项,X / Y 可配置
+    // 限时活动类:统一为出价倍率 / 成交倍率两项，X / Y 可配置
     bucket['limited'] = [
-      { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' },
-      { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数,由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' }
+      { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数，由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' },
+      { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数，由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' }
     ];
     const limitedCommon = reactive({ activityName: '五一假期双倍积分活动', startDate: '2026-05-01', endDate: '2026-05-07', frontDesc: '' });
 
@@ -595,10 +595,10 @@ createApp({
     const currentType = computed(() => earning.find(g => g.key === activeType.value) || earning[0]);
 
     const risk = reactive([
-      { id:'blacklist', title:'异常账号黑名单', desc:'黑名单账号停止发放积分,支持手动维护', type:'blacklist', enabled:true, accounts:[
+      { id:'blacklist', title:'异常账号黑名单', desc:'黑名单账号停止发放积分，支持手动维护', type:'blacklist', enabled:true, accounts:[
           { username:'zhang_yuan',  name:'郑园',   phone:'189****2868', reason:'兑换后短时间内频繁申请退回' },
-          { username:'user_abc88',  name:'李明',   phone:'130****8721', reason:'IP 异常,疑似批量薅羊毛' },
-          { username:'lin_ziwen',   name:'林子墨', phone:'186****1145', reason:'多次违反平台规则,已封禁' }
+          { username:'user_abc88',  name:'李明',   phone:'130****8721', reason:'IP 异常，疑似批量薅羊毛' },
+          { username:'lin_ziwen',   name:'林子墨', phone:'186****1145', reason:'多次违反平台规则，已封禁' }
         ] }
     ]);
     // 平台用户池(支持联想搜索)
@@ -632,7 +632,7 @@ createApp({
       showSuggest.value = false;
     };
     const onKeywordInput = () => {
-      // 输入变更时,若不再匹配已选用户,清空选择
+      // 输入变更时，若不再匹配已选用户，清空选择
       if (blacklistForm.selected) {
         const expected = `${blacklistForm.selected.username}(${blacklistForm.selected.phone})`;
         if (blacklistForm.keyword !== expected) blacklistForm.selected = null;
@@ -651,7 +651,7 @@ createApp({
       if (!blacklistForm.reason.trim()) { alert('请填写黑名单原因'); return; }
       const r = risk.find(x => x.id === 'blacklist');
       const u = blacklistForm.selected;
-      // 去重:若已在黑名单中,提示
+      // 去重:若已在黑名单中，提示
       if (r.accounts.some(a => a.username === u.username)) { alert('该用户已在黑名单中'); return; }
       r.accounts.unshift({
         username: u.username,
@@ -687,7 +687,7 @@ createApp({
       { at:'2026-04-10 14:22', user:'产品-小李', type:'交易类',    action:'新增「有效出价参与竞拍」10 积分规则' },
       { at:'2026-04-02 11:12', user:'运营-小王', type:'行为活动类', action:'设置「转发车源并成功分享朋友圈」日最高发放 10 积分' },
       { at:'2026-03-28 09:05', user:'运营-小王', type:'行为活动类', action:'关闭「投票 / 问卷 / 调研」临时期间发放' },
-      { at:'2026-03-20 15:42', user:'风控-Alex', type:'反作弊',    action:'更新「异常账号黑名单」,新增 2 个高风险账号' }
+      { at:'2026-03-20 15:42', user:'风控-Alex', type:'反作弊',    action:'更新「异常账号黑名单」，新增 2 个高风险账号' }
     ];
 
     const opsOpen = ref(false);
