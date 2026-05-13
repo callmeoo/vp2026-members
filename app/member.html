@@ -311,8 +311,29 @@ app.mount('#app');
         <li>等级进度：展示距下一等级还差 X 台成交；V3 为最高等级时进度区域改为「已达最高等级」，不显示进度条。</li>
         <li>积分到期提醒：卡片展示最近 30 天内即将到期的积分汇总量；无到期积分时隐藏该提示行。</li>
         <li>可享权益：已解锁的权益正常展示，未解锁的置灰叠加锁图标；积分折扣按当前等级显示（V0/V1 = 1:1，V2 = 95折，V3 = 8折）。</li>
-        <li>推荐任务数据来自 shared/member-config.js 的 recommendedTasks，任务完成状态由接口返回，前端仅做展示与跳转。</li>
-        <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」，右侧「去完成」按钮同步替换为置灰不可点击的「敬请期待」；后台配置活动后自动恢复正常展示。</li>
+        <li>推荐任务 Mock 数据（页面右上角浮窗可切换演示状态，支持 4 个开关：实名认证 / 首充保证金 / 调研问卷 / 限时活动；本页默认已登录态，不含登录态开关）：
+          <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+            <li>已完成的一次性任务（实名认证 / 首充保证金 / 调研问卷）从列表中移除，不再展示。</li>
+            <li>活动专属任务 · 无活动时：任务行展示占位文案「以具体活动为准，敬请期待」，「去完成」按钮置灰为「敬请期待」不可点击。</li>
+            <li>活动专属任务 · 有活动时：
+              <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
+                <li>活动名称：取自 BMS 后台「积分规则 - 限时活动类 - 活动名称」字段。</li>
+                <li>活动时间：取自 BMS 后台「积分规则 - 限时活动类 - 活动开始 / 结束时间」字段。</li>
+                <li>活动内容：由「活动期间 + 出价积分 × 倍数」与「成交积分 × 倍数」拼接生成。</li>
+                <li>注意：若出价积分或成交积分任一项未设置，对应描述项置空，不参与拼接。</li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+        <li>推荐任务交互跳转（统一封装于 shared/recommended-tasks.js，所有调用页生效；本页为已登录态）：
+          <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+            <li>车辆成交 / 出价竞拍 / 活动专属任务（有活动）：点击「去完成」直接跳转「全部车源」（allcars.html）。</li>
+            <li>首次实名认证：跳转实名认证首页（verify.html）。</li>
+            <li>首充保证金：判断实名状态——未实名时 Toast 提示「请先完成实名认证」引导用户去实名；已实名则跳转充值保证金界面（recharge.html）。</li>
+            <li>参与平台投票 / 问卷 / 调研：跳转调研问卷页（survey.html）。用户提交问卷后，由调研页负责回跳个人中心（profile-loggedin.html）。<span style="color:#dc2626;font-weight:600">（调研问卷具体内容待定。）</span></li>
+            <li>活动专属任务 · 无活动时：按钮置灰为「敬请期待」，不可点击。</li>
+          </ol>
+        </li>
       </ol>
     </div>
   </div>

@@ -512,6 +512,20 @@ app.mount('#app');
             <li>活动专属任务 · 无活动时：按钮置灰为「敬请期待」，不可点击。</li>
           </ol>
         </li>
+        <li>分享功能（右上角分享图标）：点击后底部弹出分享面板，提供「微信朋友圈」「复制链接」两个入口。
+          <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+            <li>微信分享需通过微信 JS-SDK（wx.config + updateAppMessageShareData / updateTimelineShareData）调起，需后端配合签名；当前 demo 为 alert 占位。</li>
+            <li>所需素材如下：
+              <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
+                <li><b>标题 title</b>：「唯普汽车 · 会员权益重磅上线」。</li>
+                <li><b>描述 desc</b>：「出价有奖 · 成交返金 · 权益直达」。</li>
+                <li><b>分享链接 link</b>：本页完整 URL（landing.html）。</li>
+                <li><b>封面图 imgUrl</b>：300×300 px、≤ 200 KB、jpg / png 格式；由设计师提供，建议使用唯普会员主视觉（王冠 + 会员权益重磅上线）。</li>
+              </ul>
+            </li>
+            <li>复制链接：复制本页 URL 到剪贴板，toast 提示「链接已复制」。</li>
+          </ol>
+        </li>
       </ol>
     </div>
   </div>
