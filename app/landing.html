@@ -506,16 +506,11 @@ app.mount('#app');
         </li>
         <li>推荐任务交互跳转（统一封装于 shared/recommended-tasks.js，所有调用页生效）：
           <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
-            <li>未登录时：任意任务点击「去完成」一律跳转登录页（login.html）。</li>
-            <li>已登录时：
-              <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
-                <li>车辆成交 / 出价竞拍 / 活动专属任务（有活动）→ 跳转「全部车源」（allcars.html / 移动）/ sources.html（PC）。</li>
-                <li>首次实名认证 → 跳转实名认证页（verify.html）。</li>
-                <li>首充保证金 → 先判断实名状态：已实名跳转充值页（recharge.html）；未实名 Toast 提示「请先完成实名认证」并阻止跳转。</li>
-                <li>参与平台投票 / 问卷 / 调研 → 按钮置灰为「敬请期待」，不可点击。</li>
-                <li>活动专属任务 · 无活动时 → 按钮置灰为「敬请期待」，不可点击。</li>
-              </ul>
-            </li>
+            <li>车辆成交 / 出价竞拍 / 活动专属任务（有活动）：不论是否登录，点击「去完成」直接跳转「全部车源」（移动 allcars.html / PC sources.html）。</li>
+            <li>首次实名认证：未登录跳转登录页（login.html），登录成功后跳转实名认证首页（verify.html）；已登录直接跳转实名认证首页。</li>
+            <li>首充保证金：未登录跳转登录页，登录成功后判断实名状态——未实名时 Toast 提示「请先完成实名认证」引导用户去实名；已实名则跳转充值保证金界面（recharge.html）。</li>
+            <li>参与平台投票 / 问卷 / 调研：按钮置灰为「敬请期待」，不可点击。</li>
+            <li>活动专属任务 · 无活动时：按钮置灰为「敬请期待」，不可点击。</li>
           </ol>
         </li>
       </ol>

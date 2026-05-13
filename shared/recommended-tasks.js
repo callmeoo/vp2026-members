@@ -12,13 +12,11 @@
  *   - depositDone: Boolean，是否已完成首充保证金
  *   - voteDone: Boolean，是否已完成调研问卷
  *
- * 统一跳转规则（已登录）:
- *   - t_deal / t_bid / t_festival(有活动): → 全部车源(allcars.html / sources.html)
- *   - t_verify: → 实名认证页(verify.html)
- *   - t_deposit: 已实名 → 充值页(recharge.html)；未实名 → toast「需先实名认证」
- *   - t_vote: 敬请期待(按钮置灰)
- *   - t_festival(无活动): 敬请期待
- * 未登录: 任何任务点击 → login.html
+ * 统一跳转规则:
+ *   - t_deal / t_bid / t_festival(有活动): 不论是否登录 → 全部车源(allcars.html / sources.html)
+ *   - t_verify:  未登录 → login.html(登录后跳实名认证页)；已登录 → 实名认证页(verify.html)
+ *   - t_deposit: 未登录 → login.html(登录后判断实名)；已登录 · 已实名 → 充值页(recharge.html)；已登录 · 未实名 → toast「请先完成实名认证」
+ *   - t_vote / t_festival(无活动): 按钮置灰为「敬请期待」，不可点击
  */
 (function (global) {
   'use strict';
@@ -120,19 +118,20 @@
       },
       // 统一跳转 / toast 逻辑
       handleClick: function (t) {
-        // 未登录 → 一律先去登录
-        if (!this.isLogin) {
-          this.go(TARGETS.login);
+        // 实名认证: 未登录先去登录，登录后才能进认证页
+        if (t.id === 't_verify') {
+          if (!this.isLogin) { this.go(TARGETS.login); return; }
+          this.go(TARGETS.verify);
           return;
         }
-        // 已登录 · 分任务路由
-        if (t.id === 't_verify') { this.go(TARGETS.verify); return; }
+        // 首充保证金: 未登录先去登录；已登录但未实名 toast；已实名跳充值
         if (t.id === 't_deposit') {
+          if (!this.isLogin) { this.go(TARGETS.login); return; }
           if (!this.verifyDone) { this.showToast('请先完成实名认证'); return; }
           this.go(TARGETS.recharge);
           return;
         }
-        // t_deal / t_bid / t_festival(有活动) → 全部车源
+        // 成交 / 出价 / 活动专属(有活动): 不论是否登录 → 全部车源
         this.go(TARGETS.allcars);
       },
       go: function (target) {
