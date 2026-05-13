@@ -22,7 +22,7 @@
 
 /* 主区 */
 .trade-main { background: transparent; }
-.trade-title { background: #fff; border: 1px solid var(--pc-border); padding: 16px 24px; margin-bottom: 12px; font-size: 16px; font-weight: 600; color: #1f2937; }
+.trade-title { background: #fff; border: 1px solid var(--pc-border); padding: 12px 24px; margin-bottom: 12px; font-size: 16px; font-weight: 600; color: #1f2937; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
 .trade-toolbar { background: #fff; border: 1px solid var(--pc-border); border-bottom: none; padding: 18px 24px 0; display: flex; align-items: center; justify-content: space-between; }
 .trade-tabs { display: flex; gap: 24px; }
@@ -368,14 +368,17 @@
     </div>
   </div>
 
-  <!-- 页面需求点说明 -->
-  <button @click="showSpec = !showSpec" style="position:fixed;top:72px;right:20px;z-index:300;background:#7c3aed;color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(124,58,237,.4);display:flex;align-items:center;gap:6px">需求点说明<span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block;flex-shrink:0"></span></button>
-  <div v-if="showSpec" style="position:fixed;top:112px;right:20px;z-index:300;width:360px;max-height:calc(100vh - 130px);background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.18);border:1px solid #e2e8f0;overflow:hidden;display:flex;flex-direction:column">
-    <div style="padding:11px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+</div>
+
+<!-- 需求点说明浮动按钮(仿 pc/member.html 模式：固定左侧 + 纯 JS 控制) -->
+<button style="position:fixed;left:12px;top:56px;background:#7c3aed;color:#fff;border:none;padding:8px 14px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;z-index:200;box-shadow:0 3px 12px rgba(124,58,237,.45);display:flex;align-items:center;gap:6px" onclick="toggleSpec()">需求说明<span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block;flex-shrink:0"></span></button>
+<div id="specPanel" style="display:block;position:fixed;left:12px;top:110px;z-index:200;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 130px);background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.18);overflow:hidden;border:1px solid #e2e8f0">
+  <div style="display:flex;flex-direction:column;max-height:calc(100vh - 130px)">
+    <div style="padding:11px 14px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <span style="font-size:13px;font-weight:600;color:#7c3aed">我的交易 · 需求点说明</span>
-      <span @click="showSpec = false" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
+      <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
-    <div style="padding:14px 16px;font-size:13px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
+    <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>成交积分奖励：以车辆过户完成为发放节点，非中标时立即发放。</li>
         <li>无理由退车入口：中标后 24h 内，可申请，超时本车无法使用。</li>
@@ -394,6 +397,7 @@
     </div>
   </div>
 </div>
+<script>function toggleSpec(){var p=document.getElementById('specPanel');p.style.display=p.style.display==='none'?'block':'none';}</script>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
@@ -403,7 +407,6 @@ createApp({
   setup() {
     const tab = ref('all');
     const kw = ref('');
-    const showSpec = ref(false);
     const showAfsSpec = ref(false);
     const payOrder = ref(null);
     const payAgreed = ref(false);
@@ -528,7 +531,7 @@ createApp({
       payOrder, payAgreed, openPay, confirmPay,
       afsOrder, afsReason, afsHasBenefit, afsExpired, afsSelectedCard,
       refundCards, openAfs, openAfsFromPay, submitAfs,
-      showSpec, showAfsSpec,
+      showAfsSpec,
       header, footer
     };
   }
