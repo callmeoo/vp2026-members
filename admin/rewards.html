@@ -300,8 +300,8 @@
       <div class="form-row">
         <label>限制说明</label>
         <div>
-          <textarea class="ant-input" rows="4" maxlength="200" v-model="form.restriction" placeholder="如：过户服务优惠券的限制条件是：限平台成交车辆使用(非报废车);服务中心消费 100 元券限以下服务中心消费使用(唯普白云服务中心、唯普南沙服务中心、唯普东莞服务中心、唯普深圳服务中心、唯普惠州交付中心、广物佛山二手车中心)"></textarea>
-          <div class="hint">{{ (form.restriction || '').length }} / 200 字</div>
+          <textarea class="ant-input" rows="4" maxlength="200" v-model="form.restriction" placeholder="选择「商品类型」后将自动带出预设说明，可手动覆盖"></textarea>
+          <div class="hint">选择商品类型后自动填充预设值(由后台开发维护);最多 200 字 · 当前 {{ (form.restriction || '').length }} 字</div>
         </div>
       </div>
     </div>
@@ -327,7 +327,19 @@
         <li><strong>库存不足（库存 = 0）</strong>：前端商城仍展示该商品，但标记「已售罄」状态，兑换按钮置灰不可点击。不做隐藏处理，保留展示让商户感知到该权益存在。</li>
         <li><strong>编辑逻辑</strong>：点击「编辑」打开编辑弹窗，可修改商品名称、积分价格、库存数量、适用范围等字段，保存后立即生效。编辑不改变上下架状态。</li>
         <li><strong>下架逻辑</strong>：点击「下架」将商品状态变为「已下架」，前端商城立即隐藏该商品（无论库存是否充足）。已下架商品可重新上架，也可在下架状态下编辑内容。</li>
-        <li><strong>库存告警</strong>：按商品维度配置，与商家无关（积分商城为平台统一库存池）。每个商品单独设置告警阈值，当实际库存 ≤ 阈值时，后台列表对应行标橙色告警提示，提醒运营及时补货或下架。</li>
+        <li><strong>库存告警</strong>：按商品维度配置。每个商品单独设置告警阈值，当实际库存 ≤ 阈值时，后台列表对应行标橙色告警提示，提醒及时补货或下架。</li>
+        <li><strong>限制说明 · 预设值</strong>：「新增商品」弹框中「限制说明」字段绑定到「商品类型」——选择类型后自动带出预设说明，预设文案由后台开发维护。对应优惠券的「适用范围」展示。当前预设如下：
+          <table style="width:100%;margin-top:8px;border-collapse:collapse;font-size:12px">
+            <thead><tr style="background:#f7f8fa"><th style="border:1px solid #eaedf3;padding:6px 8px;text-align:left;width:34%">商品</th><th style="border:1px solid #eaedf3;padding:6px 8px;text-align:left">限制说明</th></tr></thead>
+            <tbody>
+              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">保留价查询</td><td style="border:1px solid #eaedf3;padding:6px 8px">有保留价车辆保留价查询</td></tr>
+              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">历史行情查询</td><td style="border:1px solid #eaedf3;padding:6px 8px">平台历史成交数据查询</td></tr>
+              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">综合服务费</td><td style="border:1px solid #eaedf3;padding:6px 8px">限平台成交车辆，报废车不可用</td></tr>
+              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">服务中心消费券</td><td style="border:1px solid #eaedf3;padding:6px 8px">适用于非平台成交车辆，在唯普南沙服务中心、唯普白云服务中心、广物佛山二手车中心、唯普东莞服务中心办理过户服务</td></tr>
+              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">数据查询服务优惠券</td><td style="border:1px solid #eaedf3;padding:6px 8px">优惠券不可叠加使用</td></tr>
+            </tbody>
+          </table>
+        </li>
       </ol>
     </div>
     <div class="modal-foot">
@@ -355,8 +367,18 @@ createApp({
       { value: 'SERVICE_COUPON',    label: '服务中心消费券',   denominations: [50, 100] },
     ];
 
+    // 商品类型 → 限制说明 预设(由后台开发维护)
+    const restrictionPresets = {
+      RESERVE_PRICE:     '有保留价车辆保留价查询',
+      HISTORY_PRICE:     '平台历史成交数据查询',
+      COMPFEE_COUPON:    '限平台成交车辆，报废车不可用',
+      SERVICE_COUPON:    '适用于非平台成交车辆，在唯普南沙服务中心、唯普白云服务中心、广物佛山二手车中心、唯普东莞服务中心办理过户服务',
+      DATA_QUERY_COUPON: '优惠券不可叠加使用'
+    };
+
     const products = reactive([
-      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, alertThreshold:20, status:'上架', restriction:'' },
+      { code:'COMPFEE_100',       name:'综合服务费减免券 100 元', icon:'percent',       iconBg:'linear-gradient(135deg,#f97316,#ea580c)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:100, coin:1000,validityDays:30, stock:5,    issued:18,  alertThreshold:20, status:'上架', restriction:'限平台成交车辆，报废车不可用' },
+      { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, alertThreshold:20, status:'上架', restriction:'有保留价车辆保留价查询' },
       { code:'HISTORY_PRICE',     name:'历史成交行情权益',       icon:'line-chart',    iconBg:'linear-gradient(135deg,#fbbf24,#f97316)', category:'数据查询', productType:'HISTORY_PRICE',       denomination:'',  coin:100, validityDays:30, stock:480,  issued:0,   alertThreshold:20, status:'上架', restriction:'V1 及以上会员免兑可查;V0 兑换后可查看该车辆的同车系历史成交价。' },
       { code:'DATA_QUERY_5',      name:'数据查询优惠券 5 元',     icon:'shield-alert',  iconBg:'linear-gradient(135deg,#fb923c,#ef4444)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:5,   coin:50,  validityDays:30, stock:688,  issued:212, alertThreshold:20, status:'上架', restriction:'数据查询服务直减 5 元;不可叠加使用。' },
       { code:'DATA_QUERY_10',     name:'数据查询优惠券 10 元',    icon:'car-front',     iconBg:'linear-gradient(135deg,#818cf8,#a855f7)', category:'数据查询', productType:'DATA_QUERY_COUPON',   denomination:10,  coin:100, validityDays:30, stock:688,  issued:312, alertThreshold:20, status:'上架', restriction:'数据查询服务直减 10 元;不可叠加使用。' },
@@ -446,6 +468,11 @@ createApp({
       } else if (t.denominations.length === 0 && form.productType) {
         form.name = t.label;
       }
+    });
+    // 选中商品类型时,限制说明自动带出预设值(由后台开发维护);用户仍可手动覆盖
+    watch(() => form.productType, (v) => {
+      if (editingIdx.value !== -1) return;
+      if (v && restrictionPresets[v]) form.restriction = restrictionPresets[v];
     });
     const toggleStatus = (p) => { p.status = p.status === '上架' ? '已下架' : '上架'; };
 
