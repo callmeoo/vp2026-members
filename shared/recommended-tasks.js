@@ -2,33 +2,33 @@
  * 推荐任务 · Vue 全局组件(移动端 + PC 端共用)
  *
  * 数据来源:window.MEMBER_CONFIG.recommendedTasks(shared/member-config.js)
- * 使用方式:
- *   1. 页面先引入 shared/member-config.js，再引入本文件
- *   2. createApp(...) 后调用 app.component('recommended-tasks', window.RecommendedTasksComponent)
- *   3. 模板中使用 <recommended-tasks :level="currentLv.short" :platform="'app'" :has-activity="true"></recommended-tasks>
  *
  * Props:
- *   - level: 当前用户等级 short(如 'V0','V1','V2','V3')，用于控制 V0 专属任务显隐
+ *   - level: 当前用户等级 short(V0~V3)
  *   - platform: 'app' | 'pc'，决定渲染风格和跳转链接
- *   - hasActivity: Boolean，是否有活动(控制节日任务展示)
- *   - showActivityToggle: Boolean，是否展示活动切换按钮(仅 Demo 用)
+ *   - isLogin: Boolean，是否已登录(默认 true)
+ *   - hasActivity: Boolean，是否有限时活动
+ *   - verifyDone: Boolean，是否已完成首次实名认证
+ *   - depositDone: Boolean，是否已完成首充保证金
+ *   - voteDone: Boolean，是否已完成调研问卷
+ *
+ * 统一跳转规则（已登录）:
+ *   - t_deal / t_bid / t_festival(有活动): → 全部车源(allcars.html / sources.html)
+ *   - t_verify: → 实名认证页(verify.html)
+ *   - t_deposit: 已实名 → 充值页(recharge.html)；未实名 → toast「需先实名认证」
+ *   - t_vote: 敬请期待(按钮置灰)
+ *   - t_festival(无活动): 敬请期待
+ * 未登录: 任何任务点击 → login.html
  */
 (function (global) {
   'use strict';
 
-  // 注入组件样式(仅注入一次)
   if (!document.getElementById('rt-component-styles')) {
     var style = document.createElement('style');
     style.id = 'rt-component-styles';
     style.textContent = [
       '.rt-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #f1f5f9; }',
       '.rt-title { font-size:15px; font-weight:700; color:#1f2937; }',
-      '.rt-header-right { display:flex; align-items:center; gap:8px; }',
-      '.rt-sub { font-size:11px; color:#94a3b8; }',
-      '.rt-toggle-label { font-size:11px; color:#94a3b8; }',
-      '.rt-toggle-btn { padding:2px 10px; border-radius:100px; border:1px solid #e9d5ff; background:#faf5ff; color:#7c3aed; font-size:11px; font-weight:500; cursor:pointer; transition:all .12s; }',
-      '.rt-toggle-btn.active { background:#7c3aed; border-color:#7c3aed; color:#fff; }',
-      '.rt-list { }',
       '.rt-row { display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid #f8fafc; transition:background .1s; }',
       '.rt-row:last-child { border-bottom:none; }',
       '.rt-row:hover { background:#fafafa; }',
@@ -39,105 +39,115 @@
       '.rt-pts-normal { color:#7c3aed; }',
       '.rt-pts-highlight { color:#ef4444; }',
       '.rt-activity-badge { display:inline-flex; align-items:center; gap:4px; color:#ef4444; font-weight:600; }',
-      '.rt-btn { flex-shrink:0; padding:6px 18px; border-radius:100px; font-size:13px; font-weight:600; cursor:pointer; border:none; white-space:nowrap; text-decoration:none; display:inline-block; text-align:center; }',
+      '.rt-btn { flex-shrink:0; padding:6px 18px; border-radius:100px; font-size:13px; font-weight:600; cursor:pointer; border:none; white-space:nowrap; text-align:center; }',
       '.rt-btn-go { background:linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; }',
       '.rt-btn-go:hover { opacity:.88; }',
-      '.rt-btn-pending { background:#f1f5f9; color:#94a3b8; cursor:not-allowed; }'
+      '.rt-btn-pending { background:#f1f5f9; color:#94a3b8; cursor:not-allowed; }',
+      '.rt-toast { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(15,23,42,.92); color:#fff; padding:10px 20px; border-radius:8px; font-size:14px; z-index:9999; box-shadow:0 8px 24px rgba(0,0,0,.25); }'
     ].join('\n');
     document.head.appendChild(style);
   }
 
-  var PENDING_TASKS = ['t_vote'];
-  // 一次性任务:Mock 完成后不再展示(评审用 demo toggle 可切换)
-  var ONCE_TASKS = ['t_verify', 't_deposit'];
-
-  // 根据平台决定跳转链接
-  function getTaskHref(taskId, platform) {
-    if (PENDING_TASKS.indexOf(taskId) >= 0) return null;
-    if (platform === 'pc') return 'sources.html';
-    // app 端
-    var ALLCARS_TASKS = ['t_deal', 't_bid', 't_share', 't_festival'];
-    if (ALLCARS_TASKS.indexOf(taskId) >= 0) return 'allcars.html';
-    if (ONCE_TASKS.indexOf(taskId) >= 0) return 'allcars.html';
-    return null;
-  }
+  // 跳转目标(已登录态)
+  var TARGETS = {
+    allcars:  { app: 'allcars.html',  pc: 'sources.html' },
+    verify:   { app: 'verify.html',   pc: 'verify.html'  },
+    recharge: { app: 'recharge.html', pc: 'recharge.html' },
+    login:    { app: 'login.html',    pc: 'login.html' }
+  };
 
   global.RecommendedTasksComponent = {
     name: 'RecommendedTasks',
     props: {
       level:       { type: String,  default: 'V0' },
       platform:    { type: String,  default: 'app' },
+      isLogin:     { type: Boolean, default: true },
       hasActivity: { type: Boolean, default: true },
-      onceDone:    { type: Boolean, default: false }
+      verifyDone:  { type: Boolean, default: false },
+      depositDone: { type: Boolean, default: false },
+      voteDone:    { type: Boolean, default: false }
+    },
+    data: function () {
+      return { toastMsg: '' };
     },
     template: [
       '<div class="recommended-tasks-wrap">',
-      '  <!-- 标题栏 -->',
-      '  <div class="rt-header">',
-      '    <span class="rt-title">推荐任务</span>',
-      '  </div>',
-      '  <!-- 任务列表 -->',
+      '  <div class="rt-header"><span class="rt-title">推荐任务</span></div>',
       '  <div class="rt-list">',
       '    <div v-for="t in visibleTasks" :key="t.id" class="rt-row">',
       '      <div class="rt-row-body">',
       '        <div class="rt-task-name">{{ t.action }}</div>',
-      '        <!-- 活动专属任务 -->',
       '        <template v-if="t.id === \'t_festival\'">',
       '          <div v-if="hasActivity" style="margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.9;color:#92400e">',
       '            <div><span style="color:#b45309;font-weight:600">活动名称：</span>{{ t.activityName }}</div>',
       '            <div><span style="color:#b45309;font-weight:600">活动时间：</span>{{ t.activityPeriod }}</div>',
       '            <div><span style="color:#b45309;font-weight:600">活动内容：</span>{{ t.activityDesc }}</div>',
       '          </div>',
-      '          <div v-if="!hasActivity" class="rt-task-meta">',
-      '            <span>以具体活动为准，敬请期待</span>',
-      '          </div>',
+      '          <div v-if="!hasActivity" class="rt-task-meta"><span>以具体活动为准，敬请期待</span></div>',
       '        </template>',
-      '        <!-- 其他任务 -->',
       '        <div v-else class="rt-task-meta">',
       '          <span>积分 <span class="rt-pts" :class="t.highlight ? \'rt-pts-highlight\' : \'rt-pts-normal\'">+{{ t.points }}{{ t.unit }}</span></span>',
       '          <span v-if="t.dailyMax">日上限 <span class="rt-pts rt-pts-normal">{{ t.dailyMax }} 积分</span></span>',
       '          <span v-if="t.desc">{{ t.desc }}</span>',
       '        </div>',
       '      </div>',
-      '      <a v-if="taskAction(t).href" :href="taskAction(t).href"',
-      '         class="rt-btn rt-btn-go">{{ taskAction(t).label }}</a>',
-      '      <button v-else-if="taskAction(t).label === \'敬请期待\'" disabled',
-      '         class="rt-btn rt-btn-pending">{{ taskAction(t).label }}</button>',
-      '      <button v-else class="rt-btn rt-btn-go">{{ taskAction(t).label }}</button>',
+      '      <button v-if="taskAction(t).pending" disabled class="rt-btn rt-btn-pending">敬请期待</button>',
+      '      <button v-else class="rt-btn rt-btn-go" @click="handleClick(t)">去完成</button>',
       '    </div>',
       '  </div>',
+      '  <div v-if="toastMsg" class="rt-toast">{{ toastMsg }}</div>',
       '</div>'
     ].join('\n'),
     computed: {
       visibleTasks: function () {
         var cfg = global.MEMBER_CONFIG;
         if (!cfg || !cfg.recommendedTasks) return [];
-        var done = this.onceDone;
+        var self = this;
         return cfg.recommendedTasks.filter(function (t) {
-          if (t.once && done) return false;
+          if (t.id === 't_verify'  && self.verifyDone)  return false;
+          if (t.id === 't_deposit' && self.depositDone) return false;
+          if (t.id === 't_vote'    && self.voteDone)    return false;
           return true;
         });
       }
     },
     methods: {
+      // 标记任务是否为「敬请期待」(置灰按钮)
       taskAction: function (t) {
-        if (t.id === 't_festival') {
-          if (this.hasActivity) {
-            return { href: this.platform === 'pc' ? 'sources.html' : 'allcars.html', label: '去完成' };
-          }
-          return { href: null, label: '敬请期待' };
+        if (t.id === 't_festival' && !this.hasActivity) return { pending: true };
+        if (t.id === 't_vote') return { pending: true };
+        return { pending: false };
+      },
+      // 统一跳转 / toast 逻辑
+      handleClick: function (t) {
+        // 未登录 → 一律先去登录
+        if (!this.isLogin) {
+          this.go(TARGETS.login);
+          return;
         }
-        var href = getTaskHref(t.id, this.platform);
-        if (href) return { href: href, label: '去完成' };
-        if (PENDING_TASKS.indexOf(t.id) >= 0) return { href: null, label: '敬请期待' };
-        return { href: null, label: '去完成' };
+        // 已登录 · 分任务路由
+        if (t.id === 't_verify') { this.go(TARGETS.verify); return; }
+        if (t.id === 't_deposit') {
+          if (!this.verifyDone) { this.showToast('请先完成实名认证'); return; }
+          this.go(TARGETS.recharge);
+          return;
+        }
+        // t_deal / t_bid / t_festival(有活动) → 全部车源
+        this.go(TARGETS.allcars);
+      },
+      go: function (target) {
+        var url = target[this.platform] || target.app;
+        window.location.href = url;
+      },
+      showToast: function (msg) {
+        var self = this;
+        this.toastMsg = msg;
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(function () { self.toastMsg = ''; }, 2000);
       }
     },
-    mounted: function () {
-      if (global.lucide) global.lucide.createIcons();
-    },
+    mounted: function () { if (global.lucide) global.lucide.createIcons(); },
     updated: function () {
-      var self = this;
       setTimeout(function () { if (global.lucide) global.lucide.createIcons(); }, 0);
     }
   };

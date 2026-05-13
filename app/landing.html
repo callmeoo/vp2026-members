@@ -218,7 +218,14 @@
         <span class="sub-title">获取方式</span>
       </div>
       <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <recommended-tasks level="V2" platform="app" :has-activity="hasActivity" :show-activity-toggle="false"></recommended-tasks>
+        <recommended-tasks
+          level="V2"
+          platform="app"
+          :is-login="isLogin"
+          :has-activity="hasActivity"
+          :verify-done="verifyDone"
+          :deposit-done="depositDone"
+          :vote-done="voteDone"></recommended-tasks>
       </div>
     </div>
 
@@ -314,6 +321,52 @@
 <div class="hidden md:block fixed top-4 left-4 z-50">
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
+
+<!-- 推荐任务 Mock 演示切换(评审用) -->
+<div class="hidden md:block fixed top-4 right-4 z-50">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-3 border border-slate-200" style="width:200px">
+    <div class="text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+      <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>推荐任务 Mock 切换</span>
+    </div>
+    <div class="space-y-2">
+      <div>
+        <div class="text-[10px] text-slate-400 mb-1">登录态</div>
+        <div class="flex gap-1">
+          <button @click="isLogin = false" :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', !isLogin ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未登录</button>
+          <button @click="isLogin = true"  :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', isLogin  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已登录</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-400 mb-1">实名认证</div>
+        <div class="flex gap-1">
+          <button @click="verifyDone = false" :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', !verifyDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未认证</button>
+          <button @click="verifyDone = true"  :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', verifyDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已认证</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-400 mb-1">首充保证金</div>
+        <div class="flex gap-1">
+          <button @click="depositDone = false" :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', !depositDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未充值</button>
+          <button @click="depositDone = true"  :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', depositDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已充值</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-400 mb-1">调研问卷</div>
+        <div class="flex gap-1">
+          <button @click="voteDone = false" :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', !voteDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未完成</button>
+          <button @click="voteDone = true"  :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', voteDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已完成</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-400 mb-1">限时活动</div>
+        <div class="flex gap-1">
+          <button @click="hasActivity = false" :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', !hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">无活动</button>
+          <button @click="hasActivity = true"  :class="['flex-1 px-2 py-1 rounded text-[11px] font-bold', hasActivity  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">有活动</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -332,6 +385,11 @@ const app = createApp({
     const showShareModal = ref(false);
     const openQa = ref(0);
     const hasActivity = ref(true);
+    // 推荐任务 Mock 状态(评审用 demo 切换)
+    const isLogin     = ref(true);
+    const verifyDone  = ref(false);
+    const depositDone = ref(false);
+    const voteDone    = ref(false);
 
     const tabs = [
       { key: 'levels', label: '等级权益', icon: 'shield-check' },
@@ -406,6 +464,7 @@ const app = createApp({
 
     return {
       CFG, activeTab, showShareModal, openQa, tabs, levelRows, qaList, hasActivity,
+      isLogin, verifyDone, depositDone, voteDone,
       tabSentinel, isStuck,
       switchTab, toggleQa, back, shareToWechat, copyLink
     };
@@ -431,15 +490,30 @@ app.mount('#app');
         <li>历史数据处理：7/1 上线日以前 3 月成交记录 + 当前余额跑数确认初始等级；积分从上线日起算，不追溯、不补发。</li>
         <li>Q&A 数据来自 qaList 配置项，新增或修改问题只需改 shared/member-config.js，两端页面自动同步。</li>
         <li>点击「查看我的权益」按钮需先登录。登录完成后直接跳转至会员中心（member.html），无需重新返回本页。</li>
-        <li>活动专属任务（Mock 数据可在 PC 端「会员中心 → 赚积分 → 推荐任务」演示切换，支持「有活动 / 无活动」两种状态）：
+        <li>推荐任务 Mock 数据（页面右上角浮窗可切换演示状态，支持 5 个开关：登录态 / 实名认证 / 首充保证金 / 调研问卷 / 限时活动）：
           <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
-            <li>无活动时：任务行展示占位文案「以具体活动为准，敬请期待」，「去完成」按钮置灰为「敬请期待」不可点击（详见 pc/coins.html 需求点说明第 7 条）。</li>
-            <li>有活动时：
+            <li>已完成的一次性任务（实名认证 / 首充保证金 / 调研问卷）从列表中移除，不再展示。</li>
+            <li>活动专属任务 · 无活动时：任务行展示占位文案「以具体活动为准，敬请期待」，「去完成」按钮置灰为「敬请期待」不可点击（详见 pc/coins.html 需求点说明第 7 条）。</li>
+            <li>活动专属任务 · 有活动时：
               <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
                 <li>活动名称：取自 BMS 后台「积分规则 - 限时活动类 - 活动名称」字段。</li>
                 <li>活动时间：取自 BMS 后台「积分规则 - 限时活动类 - 活动开始 / 结束时间」字段。</li>
                 <li>活动内容：由「活动期间 + 出价积分 × 倍数」与「成交积分 × 倍数」拼接生成。</li>
                 <li>注意：若出价积分或成交积分任一项未设置，对应描述项置空，不参与拼接。</li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+        <li>推荐任务交互跳转（统一封装于 shared/recommended-tasks.js，所有调用页生效）：
+          <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+            <li>未登录时：任意任务点击「去完成」一律跳转登录页（login.html）。</li>
+            <li>已登录时：
+              <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
+                <li>车辆成交 / 出价竞拍 / 活动专属任务（有活动）→ 跳转「全部车源」（allcars.html / 移动）/ sources.html（PC）。</li>
+                <li>首次实名认证 → 跳转实名认证页（verify.html）。</li>
+                <li>首充保证金 → 先判断实名状态：已实名跳转充值页（recharge.html）；未实名 Toast 提示「请先完成实名认证」并阻止跳转。</li>
+                <li>参与平台投票 / 问卷 / 调研 → 按钮置灰为「敬请期待」，不可点击。</li>
+                <li>活动专属任务 · 无活动时 → 按钮置灰为「敬请期待」，不可点击。</li>
               </ul>
             </li>
           </ol>
