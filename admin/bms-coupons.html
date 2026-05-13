@@ -67,6 +67,9 @@
   .addtype-row { display:grid; grid-template-columns:90px 1fr; gap:14px; align-items:center; margin-bottom:14px; }
   .addtype-row label { font-size:13px; color:#606266; text-align:left; }
   .addtype-row .ant-input { height:34px; }
+  /* 优惠券类型下拉:商城商品分组 label 标红 */
+  optgroup.new-types { color:#ef4444; font-weight:600; font-style:normal; }
+  optgroup.new-types option { color:#303133; font-weight:normal; }
 </style>
 </head>
 <body>
@@ -357,6 +360,24 @@
   </div>
 </div>
 
+<!-- 新增优惠券来源 modal -->
+<div v-if="showAddSource" class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.45)" @click.self="closeAddSource">
+  <div class="bg-white rounded-lg shadow-xl" style="width:560px;max-width:92vw;display:flex;flex-direction:column">
+    <div style="padding:14px 22px;border-bottom:1px solid #ebeef5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <span style="font-size:16px;font-weight:600;color:#303133">优惠券来源</span>
+      <span @click="closeAddSource" style="cursor:pointer;color:#94a3b8;font-size:22px;line-height:1">&times;</span>
+    </div>
+    <div style="padding:28px 32px">
+      <div class="addtype-row"><label><span style="color:#f56c6c;margin-right:2px">*</span>来源名称</label><input class="ant-input" v-model="sourceForm.name" placeholder="请输入名称"></div>
+      <div class="addtype-row"><label><span style="color:#f56c6c;margin-right:2px">*</span>来源编码</label><input class="ant-input" v-model="sourceForm.code" placeholder="请输入编码：建议名称首字母+活动年份"></div>
+    </div>
+    <div style="padding:12px 22px;border-top:1px solid #ebeef5;display:flex;justify-content:flex-end;gap:10px;background:#fff;flex-shrink:0">
+      <button class="ant-btn" @click="closeAddSource">取消</button>
+      <button class="ant-btn-primary" @click="submitAddSource">确定</button>
+    </div>
+  </div>
+</div>
+
 <!-- 新增优惠券类型 modal -->
 <div v-if="showAddType" class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.45)" @click.self="closeAddType">
   <div class="bg-white rounded-lg shadow-xl" style="width:640px;max-width:92vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column">
@@ -377,7 +398,7 @@
             <option>行情查询</option>
             <option>交易佣金抵扣</option>
           </optgroup>
-          <optgroup label="商城商品配置 - 商品">
+          <optgroup class="new-types" label="新增优惠券类型为会员等级权益和积分兑换商品，对外不可见">
             <option v-for="p in mallProducts" :key="p">{{ p }}</option>
           </optgroup>
         </select>
@@ -385,7 +406,7 @@
       <div class="addtype-row"><label>来源</label>
         <select class="ant-input" v-model="addForm.source">
           <option value="" disabled>请选择优惠券来源</option>
-          <option v-for="s in sourceOpts" :key="s" :value="s">{{ s }}</option>
+          <option v-for="s in addSourceOpts" :key="s" :value="s">{{ s }}</option>
         </select>
       </div>
       <div class="addtype-row"><label>开始日期</label><input class="ant-input" type="date" v-model="addForm.startAt"></div>
@@ -427,8 +448,14 @@ createApp({
     const tab = ref('issued');
     const showSpec = ref(false);
     const showAddType = ref(false);
+    const showAddSource = ref(false);
 
-    const sourceOpts = ['赠送券', '活动奖品', '积分兑换', '补偿', '产品测试'];
+    // 来源列表(reactive,新增后筛选/新增弹窗的下拉实时同步)
+    const sourceOpts = reactive(['等级权益', '积分兑换', '赠送券', '活动奖品', '补偿', '产品测试']);
+    // 「新增优惠券类型」modal 内来源仅展示 2 项:等级权益 / 积分兑换
+    const addSourceOpts = ['等级权益', '积分兑换'];
+    const sourceCodes = reactive({});
+    const sourceForm = reactive({ name: '', code: '' });
     const typeOpts = ['交易佣金抵扣', '数据查询权益', '数据查询优惠券', '综合服务费减免', '服务中心消费', '保留价查询', '历史成交行情'];
     // 商城商品配置 · 商品清单(与 rewards.html 对齐)
     const mallProducts = [
@@ -533,7 +560,23 @@ createApp({
       showAddType.value = false;
       alert('新增成功(本期演示版本，刷新页面后回到初始数据)');
     }
-    function openAddSource() { alert('打开「新增来源」表单(占位)。可新增赠送券/活动奖品/积分兑换等业务渠道。'); }
+    function openAddSource() {
+      sourceForm.name = '';
+      sourceForm.code = '';
+      showAddSource.value = true;
+    }
+    function closeAddSource() { showAddSource.value = false; }
+    function submitAddSource() {
+      var name = (sourceForm.name || '').trim();
+      var code = (sourceForm.code || '').trim();
+      if (!name) { alert('请输入来源名称'); return; }
+      if (!code) { alert('请输入来源编码'); return; }
+      if (sourceOpts.indexOf(name) !== -1) { alert('该来源名称已存在'); return; }
+      sourceOpts.unshift(name);
+      sourceCodes[name] = code;
+      showAddSource.value = false;
+      alert('新增成功:' + name + '(编码:' + code + ')');
+    }
 
     function statusTag(s) {
       if (s === '未使用') return 'tag-blue';
@@ -545,7 +588,7 @@ createApp({
 
     onMounted(() => nextTick(() => lucide && lucide.createIcons()));
 
-    return { tab, showSpec, showAddType, sourceOpts, typeOpts, mallProducts, iF, tF, issuedRows, typeRows, addForm, search, exportData, openAddType, closeAddType, submitAddType, openAddSource, statusTag };
+    return { tab, showSpec, showAddType, showAddSource, sourceOpts, addSourceOpts, sourceForm, typeOpts, mallProducts, iF, tF, issuedRows, typeRows, addForm, search, exportData, openAddType, closeAddType, submitAddType, openAddSource, closeAddSource, submitAddSource, statusTag };
   }
 }).mount('#app');
 </script>
