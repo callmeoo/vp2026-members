@@ -425,12 +425,25 @@ app.mount('#app');
       <span onclick="toggleSpec()" style="cursor:pointer;color:#94a3b8;font-size:18px;line-height:1;padding:0 2px">&#215;</span>
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
-      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>本页为对外宣讲版，内容来自 shared/member-config.js 的 levels（等级权益）、coinEarning（积分获取规则）、qaList（Q&A），与 pc/member-intro.html 共用同一数据源，改一处两端同步。</li>
         <li>会员等级判定：账号余额（含冻结）≥ 2000 且前 3 个自然月成交台数达标，每月 1 日刷新；不满足条件默认 V0。</li>
         <li>历史数据处理：7/1 上线日以前 3 月成交记录 + 当前余额跑数确认初始等级；积分从上线日起算，不追溯、不补发。</li>
         <li>Q&A 数据来自 qaList 配置项，新增或修改问题只需改 shared/member-config.js，两端页面自动同步。</li>
         <li>点击「查看我的权益」按钮需先登录。登录完成后直接跳转至会员中心（member.html），无需重新返回本页。</li>
+        <li>活动专属任务（Mock 数据可在 PC 端「会员中心 → 赚积分 → 推荐任务」演示切换，支持「有活动 / 无活动」两种状态）：
+          <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+            <li>无活动时：任务行展示占位文案「以具体活动为准，敬请期待」，「去完成」按钮置灰为「敬请期待」不可点击（详见 pc/coins.html 需求点说明第 7 条）。</li>
+            <li>有活动时：
+              <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
+                <li>活动名称：取自 BMS 后台「积分规则 - 限时活动类 - 活动名称」字段。</li>
+                <li>活动时间：取自 BMS 后台「积分规则 - 限时活动类 - 活动开始 / 结束时间」字段。</li>
+                <li>活动内容：由「活动期间 + 出价积分 × 倍数」与「成交积分 × 倍数」拼接生成。</li>
+                <li>注意：若出价积分或成交积分任一项未设置，对应描述项置空，不参与拼接。</li>
+              </ul>
+            </li>
+          </ol>
+        </li>
       </ol>
     </div>
   </div>

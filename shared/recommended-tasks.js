@@ -84,7 +84,7 @@
       '        <!-- 活动专属任务 -->',
       '        <template v-if="t.id === \'t_festival\'">',
       '          <div v-if="hasActivity" style="margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.9;color:#92400e">',
-      '            <div><span style="color:#b45309;font-weight:600">活动标题：</span>{{ t.activityName }}</div>',
+      '            <div><span style="color:#b45309;font-weight:600">活动名称：</span>{{ t.activityName }}</div>',
       '            <div><span style="color:#b45309;font-weight:600">活动时间：</span>{{ t.activityPeriod }}</div>',
       '            <div><span style="color:#b45309;font-weight:600">活动内容：</span>{{ t.activityDesc }}</div>',
       '          </div>',
