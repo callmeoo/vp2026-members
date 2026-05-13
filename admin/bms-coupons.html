@@ -63,6 +63,10 @@
   table.data-table thead th:last-child { border-right:none; }
   table.data-table tbody td { padding:14px 12px; text-align:center; border-bottom:1px solid #f0f2f5; color:#303133; }
   table.data-table tbody tr:hover td { background:#fafafa; }
+  /* 新增类型 modal 行 */
+  .addtype-row { display:grid; grid-template-columns:90px 1fr; gap:14px; align-items:center; margin-bottom:14px; }
+  .addtype-row label { font-size:13px; color:#606266; text-align:left; }
+  .addtype-row .ant-input { height:34px; }
 </style>
 </head>
 <body>
@@ -353,6 +357,64 @@
   </div>
 </div>
 
+<!-- 新增优惠券类型 modal -->
+<div v-if="showAddType" class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.45)" @click.self="closeAddType">
+  <div class="bg-white rounded-lg shadow-xl" style="width:640px;max-width:92vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:14px 22px;border-bottom:1px solid #ebeef5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <span style="font-size:16px;font-weight:600;color:#303133">优惠券类型</span>
+      <span @click="closeAddType" style="cursor:pointer;color:#94a3b8;font-size:22px;line-height:1">&times;</span>
+    </div>
+    <div style="padding:22px 28px;overflow-y:auto;flex:1">
+      <div class="addtype-row"><label>优惠券名称</label><input class="ant-input" v-model="addForm.name" placeholder="请输入优惠券名称: xxx元直减券"></div>
+      <div class="addtype-row"><label>优惠券类型</label>
+        <select class="ant-input" v-model="addForm.type">
+          <option value="" disabled>请选择优惠券类型</option>
+          <optgroup label="原有类型">
+            <option>数据报告查询</option>
+            <option>专属客服</option>
+            <option>服务费抵扣</option>
+            <option>免押竞拍权</option>
+            <option>行情查询</option>
+            <option>交易佣金抵扣</option>
+          </optgroup>
+          <optgroup label="商城商品配置 - 商品">
+            <option v-for="p in mallProducts" :key="p">{{ p }}</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="addtype-row"><label>来源</label>
+        <select class="ant-input" v-model="addForm.source">
+          <option value="" disabled>请选择优惠券来源</option>
+          <option v-for="s in sourceOpts" :key="s" :value="s">{{ s }}</option>
+        </select>
+      </div>
+      <div class="addtype-row"><label>开始日期</label><input class="ant-input" type="date" v-model="addForm.startAt"></div>
+      <div class="addtype-row"><label>结束日期</label><input class="ant-input" type="date" v-model="addForm.endAt"></div>
+      <div class="addtype-row"><label>使用性质</label>
+        <select class="ant-input" v-model="addForm.usage">
+          <option value="" disabled>请选择</option>
+          <option>订单支付</option>
+          <option>服务费抵扣</option>
+          <option>数据查询</option>
+          <option>过户服务</option>
+        </select>
+      </div>
+      <div class="addtype-row"><label>有效时长</label>
+        <select class="ant-input" v-model="addForm.duration">
+          <option value="" disabled>请选择</option>
+          <option>3天</option><option>7天</option><option>30天</option><option>1个月</option><option>2个月</option><option>3个月</option><option>6个月</option><option>12个月</option>
+        </select>
+      </div>
+      <div class="addtype-row"><label>发放数量</label><input class="ant-input" type="number" min="1" v-model.number="addForm.quantity"></div>
+      <div class="addtype-row"><label>优惠券内容</label><input class="ant-input" v-model="addForm.intro" placeholder="请简单介绍优惠券"></div>
+    </div>
+    <div style="padding:12px 22px;border-top:1px solid #ebeef5;display:flex;justify-content:flex-end;gap:10px;background:#fff;flex-shrink:0">
+      <button class="ant-btn" @click="closeAddType">取消</button>
+      <button class="ant-btn-primary" @click="submitAddType">确定</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -364,9 +426,30 @@ createApp({
   setup() {
     const tab = ref('issued');
     const showSpec = ref(false);
+    const showAddType = ref(false);
 
     const sourceOpts = ['赠送券', '活动奖品', '积分兑换', '补偿', '产品测试'];
     const typeOpts = ['交易佣金抵扣', '数据查询权益', '数据查询优惠券', '综合服务费减免', '服务中心消费', '保留价查询', '历史成交行情'];
+    // 商城商品配置 · 商品清单(与 rewards.html 对齐)
+    const mallProducts = [
+      '保留价查询权益',
+      '历史成交行情权益',
+      '数据查询优惠券 5 元',
+      '数据查询优惠券 10 元',
+      '数据查询优惠券 15 元',
+      '数据查询优惠券 20 元',
+      '数据查询优惠券 30 元',
+      '数据查询优惠券 50 元',
+      '综合服务费减免券 50 元',
+      '综合服务费减免券 100 元',
+      '服务中心消费券 50 元',
+      '服务中心消费券 100 元'
+    ];
+
+    function emptyForm() {
+      return { name:'', type:'', source:'', startAt:'', endAt:'', usage:'', duration:'', quantity:100, intro:'' };
+    }
+    const addForm = reactive(emptyForm());
 
     // --------- 已派发优惠券 ---------
     const iF = reactive({ account:'', phone:'', source:'', status:'', activity:'', coupon:'', code:'', dateFrom:'', dateTo:'', plate:'' });
@@ -415,7 +498,41 @@ createApp({
 
     function search() { alert('已应用筛选条件'); }
     function exportData() { alert('正在导出 Excel，请稍候…'); }
-    function openAddType() { alert('打开「新增优惠券类型」表单(占位)。生产环境从此处配置优惠券模板。'); }
+    function openAddType() {
+      Object.assign(addForm, emptyForm());
+      showAddType.value = true;
+    }
+    function closeAddType() { showAddType.value = false; }
+    function submitAddType() {
+      if (!addForm.name.trim()) { alert('请输入优惠券名称'); return; }
+      if (!addForm.type)        { alert('请选择优惠券类型'); return; }
+      if (!addForm.source)      { alert('请选择优惠券来源'); return; }
+      if (!addForm.startAt)     { alert('请选择开始日期'); return; }
+      if (!addForm.endAt)       { alert('请选择结束日期'); return; }
+      if (!addForm.usage)       { alert('请选择使用性质'); return; }
+      if (!addForm.duration)    { alert('请选择有效时长'); return; }
+      if (!addForm.quantity || addForm.quantity < 1) { alert('发放数量需大于 0'); return; }
+
+      // 从名称推断价值(xxx元直减券 → xxx;其他取 0 占位)
+      var m = String(addForm.name).match(/(\d+)\s*元/);
+      var val = m ? Number(m[1]) : 0;
+
+      typeRows.unshift({
+        name: addForm.name.trim(),
+        type: addForm.type,
+        startAt: addForm.startAt,
+        endAt: addForm.endAt,
+        source: addForm.source,
+        code: addForm.source + '2026',
+        value: val,
+        duration: addForm.duration,
+        usage: addForm.usage,
+        orderScope: '拍卖大厅',
+        carScope: '全部'
+      });
+      showAddType.value = false;
+      alert('新增成功(本期演示版本，刷新页面后回到初始数据)');
+    }
     function openAddSource() { alert('打开「新增来源」表单(占位)。可新增赠送券/活动奖品/积分兑换等业务渠道。'); }
 
     function statusTag(s) {
@@ -428,7 +545,7 @@ createApp({
 
     onMounted(() => nextTick(() => lucide && lucide.createIcons()));
 
-    return { tab, showSpec, sourceOpts, typeOpts, iF, tF, issuedRows, typeRows, search, exportData, openAddType, openAddSource, statusTag };
+    return { tab, showSpec, showAddType, sourceOpts, typeOpts, mallProducts, iF, tF, issuedRows, typeRows, addForm, search, exportData, openAddType, closeAddType, submitAddType, openAddSource, statusTag };
   }
 }).mount('#app');
 </script>
