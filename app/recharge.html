@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>充值保证金 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 24px; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  /* 顶部状态/导航 */
+  .topbar { background: #fff; }
+  .nav { background: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 30; }
+  .nav-title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; color: #1f2937; }
+  .nav-back { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: #1f2937; }
+  .nav-side { width: 32px; }
+
+  /* 当前可用 */
+  .current-bar { background: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #f1f5f9; font-size: 13px; }
+  .current-bar .label { color: #64748b; }
+  .current-bar .val { color: #ef4444; font-weight: 700; }
+
+  /* 区块 */
+  .section { background: #fff; padding: 18px 16px; margin-top: 10px; }
+  .section-title { font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 14px; }
+
+  /* 金额按钮 */
+  .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .amount-btn { text-align: center; padding: 14px 0; font-size: 14px; color: #1f2937; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all .12s; }
+  .amount-btn:active { transform: scale(.97); }
+  .amount-btn.active { background: #fef2f2; border-color: #ef4444; color: #ef4444; font-weight: 700; }
+
+  /* 支付方式 */
+  .pay-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f8fafc; cursor: pointer; user-select: none; }
+  .pay-row:last-child { border-bottom: none; }
+  .pay-icon { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
+  .pay-icon.wechat { background: #22c55e; }
+  .pay-icon.balance { background: #f59e0b; }
+  .pay-row-text { flex: 1; font-size: 15px; color: #1f2937; }
+  .pay-row-text small { font-size: 12px; color: #94a3b8; margin-left: 4px; }
+  .radio { width: 18px; height: 18px; border: 1.5px solid #cbd5e1; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .radio-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; }
+  .pay-row.checked .radio { border-color: #ef4444; }
+
+  /* QR */
+  .qr-wrap { margin-top: 14px; padding: 16px 0; text-align: center; background: #f8fafc; border-radius: 8px; }
+  .qr-img { width: 140px; height: 140px; margin: 0 auto; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #e5e7eb; }
+  .qr-tip { margin-top: 10px; font-size: 13px; color: #64748b; }
+
+  /* 立即充值按钮 + 协议 */
+  .submit-area { padding: 18px 16px 0; }
+  .btn-submit { width: 100%; height: 48px; border-radius: 999px; border: none; font-size: 16px; font-weight: 700; color: #fff; cursor: pointer; transition: all .12s; }
+  .btn-submit.enabled { background: #ef4444; }
+  .btn-submit.enabled:active { transform: scale(.98); }
+  .btn-submit.disabled { background: #fca5a5; cursor: not-allowed; }
+  .agree-row { display: flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 13px; color: #475569; cursor: pointer; user-select: none; }
+  .agree-row a { color: #ef4444; }
+
+  /* 保证金说明 */
+  .notice { background: #fff; padding: 16px; margin-top: 10px; }
+  .notice-title { color: #ef4444; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+  .notice ol { margin: 0; padding: 0; list-style: none; }
+  .notice li { font-size: 13px; color: #334155; line-height: 1.75; margin-bottom: 12px; }
+  .notice li:last-child { margin-bottom: 0; }
+  .notice li b { color: #1e293b; font-weight: 700; display: block; margin-bottom: 2px; }
+  .notice li a { color: #ef4444; }
+
+  /* toast */
+  .toast { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(15,23,42,.92); color: #fff; padding: 10px 22px; border-radius: 8px; font-size: 14px; z-index: 9999; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- Status bar -->
+  <div class="topbar flex items-center justify-between px-5 py-2 text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <button type="button" class="nav-back" @click="back"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+    <div class="nav-title">充值保证金</div>
+    <div class="nav-side"></div>
+  </div>
+
+  <!-- 当前可用保证金 -->
+  <div class="current-bar">
+    <span class="label">当前可用保证金：</span>
+    <span class="val">{{ currentDeposit.toLocaleString() }} 元</span>
+  </div>
+
+  <!-- 充值金额 -->
+  <div class="section">
+    <div class="section-title">充值金额</div>
+    <div class="amount-grid">
+      <div v-for="a in amountOptions" :key="a"
+           :class="['amount-btn', amount === a ? 'active' : '']"
+           @click="amount = a">{{ a.toLocaleString() }}元</div>
+    </div>
+  </div>
+
+  <!-- 充值方式 -->
+  <div class="section">
+    <div class="section-title">充值方式</div>
+
+    <div :class="['pay-row', payMethod === 'wechat' ? 'checked' : '']" @click="setPay('wechat')">
+      <span class="pay-icon wechat"><i data-lucide="message-circle" class="w-4 h-4"></i></span>
+      <span class="pay-row-text">微信支付</span>
+      <span class="radio"><span v-if="payMethod === 'wechat'" class="radio-dot"></span></span>
+    </div>
+
+    <div :class="['pay-row', payMethod === 'balance' ? 'checked' : '']" @click="setPay('balance')">
+      <span class="pay-icon balance"><i data-lucide="wallet" class="w-4 h-4"></i></span>
+      <span class="pay-row-text">余额转入<small>(可用余额 {{ availableBalance.toLocaleString() }} 元)</small></span>
+      <span class="radio"><span v-if="payMethod === 'balance'" class="radio-dot"></span></span>
+    </div>
+
+    <!-- 微信支付二维码 -->
+    <div v-if="payMethod === 'wechat'" class="qr-wrap">
+      <div class="qr-img">
+        <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" fill="#fff"/>
+          <g fill="#000">
+            <rect x="0" y="0" width="28" height="28"/>
+            <rect x="4" y="4" width="20" height="20" fill="#fff"/>
+            <rect x="8" y="8" width="12" height="12"/>
+            <rect x="72" y="0" width="28" height="28"/>
+            <rect x="76" y="4" width="20" height="20" fill="#fff"/>
+            <rect x="80" y="8" width="12" height="12"/>
+            <rect x="0" y="72" width="28" height="28"/>
+            <rect x="4" y="76" width="20" height="20" fill="#fff"/>
+            <rect x="8" y="80" width="12" height="12"/>
+            <rect x="34" y="4" width="4" height="4"/><rect x="44" y="4" width="4" height="4"/><rect x="54" y="4" width="4" height="4"/>
+            <rect x="34" y="14" width="4" height="4"/><rect x="58" y="14" width="4" height="4"/>
+            <rect x="38" y="24" width="4" height="4"/><rect x="48" y="24" width="4" height="4"/><rect x="58" y="24" width="4" height="4"/>
+            <rect x="34" y="34" width="4" height="4"/><rect x="44" y="34" width="4" height="4"/><rect x="74" y="34" width="4" height="4"/><rect x="84" y="34" width="4" height="4"/>
+            <rect x="38" y="44" width="4" height="4"/><rect x="48" y="44" width="4" height="4"/><rect x="58" y="44" width="4" height="4"/><rect x="68" y="44" width="4" height="4"/><rect x="88" y="44" width="4" height="4"/>
+            <rect x="34" y="54" width="4" height="4"/><rect x="54" y="54" width="4" height="4"/><rect x="74" y="54" width="4" height="4"/><rect x="84" y="54" width="4" height="4"/>
+            <rect x="38" y="64" width="4" height="4"/><rect x="48" y="64" width="4" height="4"/><rect x="68" y="64" width="4" height="4"/>
+            <rect x="34" y="74" width="4" height="4"/><rect x="44" y="74" width="4" height="4"/><rect x="58" y="74" width="4" height="4"/><rect x="74" y="74" width="4" height="4"/><rect x="88" y="74" width="4" height="4"/>
+            <rect x="38" y="84" width="4" height="4"/><rect x="54" y="84" width="4" height="4"/><rect x="68" y="84" width="4" height="4"/><rect x="78" y="84" width="4" height="4"/>
+            <rect x="34" y="94" width="4" height="4"/><rect x="48" y="94" width="4" height="4"/><rect x="64" y="94" width="4" height="4"/><rect x="84" y="94" width="4" height="4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="qr-tip">请打开微信扫一扫</div>
+    </div>
+  </div>
+
+  <!-- 立即充值按钮 + 协议 -->
+  <div class="submit-area">
+    <button :class="['btn-submit', canSubmit ? 'enabled' : 'disabled']" :disabled="!canSubmit" @click="confirmRecharge">立即充值</button>
+    <label class="agree-row" @click="agreed = !agreed">
+      <span class="radio" :style="agreed ? 'border-color:#ef4444' : ''"><span v-if="agreed" class="radio-dot"></span></span>
+      <span>我已阅读并同意 <a href="#" @click.stop.prevent>《保证金管理协议》</a></span>
+    </label>
+  </div>
+
+  <!-- 保证金说明 -->
+  <div class="notice">
+    <div class="notice-title">*保证金说明：</div>
+    <ol>
+      <li>
+        <b>1.竞买保证金是什么？</b>
+        为保障交易双方利益，竞买保证金的设立是用于保证交易双方遵守平台规则进行交易。竞价大厅保证金分 3 档：2000 元 / 4000 元 / 6000 元，充值不同保证金阶梯将获取不同价位车源的竞价授权；专场保证金：以具体专场拍页面显示的需缴纳保证金为准。当竞买人或委托方发生违规行为时，平台将根据 <a href="#">《竞买须知》</a> 中相关规则及标准执行罚则及赔付。
+      </li>
+      <li>
+        <b>2.保证金的冻结与解冻规则？</b>
+        竞买人出价最高或交易成功时，根据出价条件会冻结相应金额。竞买人竞价被超越、交易失败、支付车款完成转让登记、仲裁免责时，被冻结的金额会自动解冻。
+      </li>
+      <li>
+        <b>3.保证金的提取规则是什么？</b>
+        当您成交的订单未完成车辆过户时，对应的保证金将根据竞买规则进行对应金额的冻结，暂不可提取；当您成交的订单已完成车辆过户并按相关要求完成过户资料回收后，保证金将解冻；已解冻的保证金可选择继续参与下一次交易或发起提取申请。
+      </li>
+      <li>
+        <b>4.保证金提取是否需要手续费？</b>
+        保证金已有关联成交订单，订单完结后发起提取，可减免提取手续费；保证金未有关联成交订单时发起提取，需收取提取手续费，具体请以页面提示为准。
+      </li>
+    </ol>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+
+<!-- toast -->
+<div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const payMethod = ref('');           // '' | 'wechat' | 'balance'
+    const amount = ref(null);
+    const agreed = ref(false);
+    const toastMsg = ref('');
+    const currentDeposit = ref(0);
+    const availableBalance = ref(0);
+
+    // 余额转入支持更多档位（与 PC 端保持一致）
+    const amountOptions = computed(() =>
+      payMethod.value === 'balance'
+        ? [2000, 4000, 6000, 10000, 20000, 50000]
+        : [2000, 4000, 6000]
+    );
+
+    const canSubmit = computed(() => !!payMethod.value && amount.value != null && agreed.value);
+
+    function setPay(method) {
+      payMethod.value = method;
+      if (amount.value != null && !amountOptions.value.includes(amount.value)) {
+        amount.value = null;
+      }
+    }
+
+    function back() {
+      if (window.smartBack) { smartBack('profile-loggedin.html'); return; }
+      window.history.back();
+    }
+
+    function showToast(msg) {
+      toastMsg.value = msg;
+      setTimeout(() => { toastMsg.value = ''; }, 1800);
+    }
+
+    function confirmRecharge() {
+      if (!canSubmit.value) return;
+      if (payMethod.value === 'balance' && amount.value > availableBalance.value) {
+        showToast('可用余额不足，请选择较小档位或切换微信支付');
+        return;
+      }
+      showToast('充值申请已提交，请等待到账');
+      currentDeposit.value += amount.value;
+      if (payMethod.value === 'balance') availableBalance.value -= amount.value;
+      agreed.value = false;
+    }
+
+    watch([payMethod, amount, agreed, toastMsg], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return {
+      payMethod, amount, amountOptions, agreed, canSubmit, toastMsg,
+      currentDeposit, availableBalance,
+      setPay, back, confirmRecharge
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

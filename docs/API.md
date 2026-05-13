@@ -356,7 +356,7 @@ https://api.wpcar.example/membership/v1
 
 **`POST /internal/coins/grant-deal`**
 
-**触发时机**:订单系统在**过户完成 或 付款完成**时调用
+**触发时机**:订单系统在**过户完成（资料回收完毕） 或 付款完成**时调用
 
 **Request**
 ```json
