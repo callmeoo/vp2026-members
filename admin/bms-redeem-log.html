@@ -107,7 +107,7 @@
       <div class="submenu">
         <a href="bms-aftersales.html"                class="sub-item">售后服务</a>
         <a href="bms-aftersales-list.html"           class="sub-item" onclick="event.preventDefault();showRuleAlert('用户等级更新', this.href)">售后列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
-        <a href="bms-aftersale-approval-list.html"   class="sub-item">企微审批</a>
+        <a href="bms-aftersale-approval-list.html" class="sub-item" onclick="event.preventDefault();showRuleToast('无理由权益使用的说明', this.href)">企微审批<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
       </div>
 
     </nav>
@@ -160,7 +160,7 @@
               <select v-model="activeTab">
                 <option value="全部">全部</option>
                 <option>待核销</option><option>已核销</option>
-                <option>已退回</option><option>已过期</option>
+                <option>已过期</option>
               </select>
             </div>
           </div>
@@ -247,7 +247,7 @@ createApp({
     const rewardName = (id) => rewardById[id] ? rewardById[id].name : '-';
     const rewardCoin = (id) => rewardById[id] ? rewardById[id].coin : 0;
 
-    const tabs = ['全部','待核销','已核销','已退回','已过期'];
+    const tabs = ['全部','待核销','已核销','已过期'];
     const activeTab = ref('全部');
     const filters = reactive({ user:'', rewardId:'', dateFrom:'', dateTo:'' });
     const resetFilter = () => { filters.user=''; filters.rewardId=''; filters.dateFrom=''; filters.dateTo=''; activeTab.value='全部'; };
@@ -261,7 +261,6 @@ createApp({
       { id:5,  user:"陈敏",   phone:"137****4410", rewardId:"r_dataquery_10",      status:"已核销", time:"2026-04-22 17:15:58", dealTime:"2026-04-22 18:42:10", reason:"" },
       { id:6,  user:"陆嘉豪", phone:"158****6721", rewardId:"r_dataquery_5",       status:"已过期", time:"2026-04-01 15:12:09", dealTime:"2026-05-01 00:00:00", reason:"有效期 30 天内未使用，系统自动回收" },
       { id:7,  user:"孙勇英", phone:"130****0277", rewardId:"r_dataquery_10",      status:"已核销", time:"2026-04-22 13:40:02", dealTime:"2026-04-22 15:22:49", reason:"" },
-      { id:8,  user:"张晓雯", phone:"159****0032", rewardId:"r_servicecenter_100", status:"已退回", time:"2026-04-22 11:05:44", dealTime:"2026-04-22 14:30:00", reason:"用户申请退回 · 已原额返还积分" },
       { id:9,  user:"王磊",   phone:"138****7788", rewardId:"r_compfee_50",        status:"待核销", time:"2026-04-22 09:48:21", dealTime:"—",                    reason:"" },
       { id:10, user:"李景文", phone:"156****8688", rewardId:"r_servicecenter_100", status:"已核销", time:"2026-04-22 08:15:36", dealTime:"2026-04-22 16:00:11", reason:"" }
     ];
@@ -276,7 +275,7 @@ createApp({
       return true;
     }));
 
-    const statusTag = (s) => ({ '已核销':'tag-green', '待核销':'tag-blue', '已退回':'tag-red', '已过期':'tag-gray' })[s] || 'tag-blue';
+    const statusTag = (s) => ({ '已核销':'tag-green', '待核销':'tag-blue', '已过期':'tag-gray' })[s] || 'tag-blue';
 
     const opsOpen = ref(false);
     const toggleOps = () => opsOpen.value = !opsOpen.value;

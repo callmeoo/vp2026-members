@@ -35,3 +35,22 @@ window.showRuleAlert = function (msg, navHref) {
     }
   };
 };
+
+// 顶部居中 toast 提示，默认 3 秒后消失;可选 navHref 在 toast 消失后跳转
+window.showRuleToast = function (msg, navHref, durationMs) {
+  var dur = typeof durationMs === 'number' ? durationMs : 3000;
+  if (document.getElementById('__sb_toast')) return;
+  var t = document.createElement('div');
+  t.id = '__sb_toast';
+  t.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-12px);background:rgba(15,23,42,.92);color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:opacity .25s ease,transform .25s ease;display:inline-flex;align-items:center;gap:8px;max-width:80vw';
+  t.innerHTML = '<span style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:#1677ff;color:#fff;align-items:center;justify-content:center;font-size:12px;font-weight:700">i</span><span>' + msg + '</span>';
+  document.body.appendChild(t);
+  requestAnimationFrame(function () { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+  setTimeout(function () {
+    t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-12px)';
+    setTimeout(function () {
+      if (t.parentNode) t.parentNode.removeChild(t);
+      if (navHref && navHref.charAt(0) !== '#') location.href = navHref;
+    }, 260);
+  }, dur);
+};
