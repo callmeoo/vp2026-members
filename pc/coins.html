@@ -182,9 +182,15 @@
               <span style="font-size:12px;color:#94a3b8">活动</span>
               <button @click="hasActivity = true"  :class="['rt-toggle-btn', hasActivity  ? 'active' : '']">有活动</button>
               <button @click="hasActivity = false" :class="['rt-toggle-btn', !hasActivity ? 'active' : '']">无活动</button>
-              <span style="font-size:12px;color:#94a3b8;margin-left:6px">首次任务</span>
-              <button @click="onceDone = false" :class="['rt-toggle-btn', !onceDone ? 'active' : '']">未完成</button>
-              <button @click="onceDone = true"  :class="['rt-toggle-btn', onceDone  ? 'active' : '']">已完成</button>
+              <span style="font-size:12px;color:#94a3b8;margin-left:6px">实名</span>
+              <button @click="verifyDone = false" :class="['rt-toggle-btn', !verifyDone ? 'active' : '']">未认证</button>
+              <button @click="verifyDone = true"  :class="['rt-toggle-btn', verifyDone  ? 'active' : '']">已认证</button>
+              <span style="font-size:12px;color:#94a3b8;margin-left:6px">充值</span>
+              <button @click="depositDone = false" :class="['rt-toggle-btn', !depositDone ? 'active' : '']">未充值</button>
+              <button @click="depositDone = true"  :class="['rt-toggle-btn', depositDone  ? 'active' : '']">已充值</button>
+              <span style="font-size:12px;color:#94a3b8;margin-left:6px">调研</span>
+              <button @click="voteDone = false" :class="['rt-toggle-btn', !voteDone ? 'active' : '']">未完成</button>
+              <button @click="voteDone = true"  :class="['rt-toggle-btn', voteDone  ? 'active' : '']">已完成</button>
             </template>
             <button @click="showSpec = true" style="position:relative;padding:5px 12px;border:1px solid #a78bfa;background:#faf5ff;color:#7c3aed;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px">
               <i data-lucide="file-text" class="w-3.5 h-3.5"></i>需求点说明
@@ -233,7 +239,14 @@
 
         <!-- 如何赚积分 -->
         <div class="earn-rules-wrap" v-show="activeTab === 'earn'">
-          <recommended-tasks level="V2" platform="pc" :has-activity="hasActivity" :once-done="onceDone"></recommended-tasks>
+          <recommended-tasks
+            level="V2"
+            platform="pc"
+            :is-login="true"
+            :has-activity="hasActivity"
+            :verify-done="verifyDone"
+            :deposit-done="depositDone"
+            :vote-done="voteDone"></recommended-tasks>
         </div>
       </div>
     </div>
@@ -252,12 +265,34 @@
         <ol style="margin:0;padding-left:20px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
           <li>积分有效期：按「获得当月 + 12 个自然月」到月末到期，如 2026-04 获得的积分，到期日为 2027-04-30。</li>
           <li>流水类型：发放（成交奖励 / 出价 / 首次实名 / 首充保证金）、消耗（商城兑换）、到期清零、人工调整四类；到期清零整条记录标红，含当期批次到期积分总量。</li>
-          <li>发放时机：成交奖励（+50）与出价竞拍（+10）在对应车辆过户完成后发放；首次实名认证（+1~5）、首充保证金（+1~5）在操作完成后即时发放。</li>
+          <li>发放时机：成交奖励（+50）在对应车辆过户完成后发放；出价竞拍（+10）在车辆竞价结束后发放；首次实名认证（+1~5）在实名认证完成（后台审核通过）后发放；首充保证金（+1~5）在保证金充值完成（后台确认到账）后发放。</li>
           <li>撤回时机：使用无理由退车成功退车的订单，已发放的成交奖励（+50）同步扣回；过户前退车（积分未发放）不涉及扣减；出价积分及其他行为积分不撤回。</li>
           <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」。</li>
           <li>活动额外奖励：限时活动期间产生的出价 / 成交积分，在对应流水行末尾展示<span style="display:inline-block;margin:0 3px;padding:1px 6px;font-size:10px;font-weight:600;border-radius:3px;background:#fef3c7;color:#d97706;border:1px solid #fde68a">限时活动</span>标签，帮助用户识别该笔积分来源于活动加成。</li>
-          <li>无活动期间默认文案：「如何赚积分」列表中的活动专属任务行统一显示占位文案「以具体活动为准，敬请期待」，右侧「去完成」按钮同步替换为置灰不可点击的「敬请期待」；后台「积分规则 - 限时活动类」存在进行中活动时，该任务行自动恢复正常展示。</li>
-          <li>推荐任务副标题读取后台「积分规则 - 前台任务说明」字段；当前默认值：车辆成交「限非报废车，过户完成后获得，售后退车退回」、出价竞拍「按出价台次计算，上不封顶」、首次实名认证 / 首充保证金「一次性奖励」、参与平台问卷：无说明。</li>
+          <li>推荐任务 Mock 数据（PC 端默认已登录态，「如何赚积分」tab 右上方 demo toggle 支持 4 个开关：限时活动 / 实名认证 / 首充保证金 / 调研问卷）：
+            <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+              <li>已完成的一次性任务（实名认证 / 首充保证金 / 调研问卷）从列表中移除，不再展示。</li>
+              <li>活动专属任务 · 无活动时：任务行展示占位文案「以具体活动为准，敬请期待」，「去完成」按钮置灰为「敬请期待」不可点击。</li>
+              <li>活动专属任务 · 有活动时：
+                <ul style="margin:4px 0 0;padding-left:16px;list-style-type:disc">
+                  <li>活动名称：取自 BMS 后台「积分规则 - 限时活动类 - 活动名称」字段。</li>
+                  <li>活动时间：取自 BMS 后台「积分规则 - 限时活动类 - 活动开始 / 结束时间」字段。</li>
+                  <li>活动内容：由「活动期间 + 出价积分 × 倍数」与「成交积分 × 倍数」拼接生成。</li>
+                  <li>注意：若出价积分或成交积分任一项未设置，对应描述项置空，不参与拼接。</li>
+                </ul>
+              </li>
+              <li>推荐任务副标题读取后台「积分规则 - 前台任务说明」字段；当前默认值：车辆成交「限非报废车，过户完成后获得，售后退车退回」、出价竞拍「按出价台次计算，上不封顶」、首次实名认证 / 首充保证金「一次性奖励」、参与平台问卷：无说明。</li>
+            </ol>
+          </li>
+          <li>推荐任务交互跳转（PC 端为已登录态，统一封装于 shared/recommended-tasks.js）：
+            <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
+              <li>车辆成交 / 出价竞拍 / 活动专属任务（有活动）：点击「去完成」直接跳转「全部车源」（sources.html）。</li>
+              <li>首次实名认证：跳转实名认证首页（verify.html）。</li>
+              <li>首充保证金：判断实名状态——未实名时 Toast 提示「请先完成实名认证」引导用户去实名；已实名则跳转充值保证金界面（recharge.html）。</li>
+              <li>参与平台投票 / 问卷 / 调研：跳转调研问卷页（survey.html），用户提交问卷后由调研页负责回跳「我的首页」（member.html）。<span style="color:#dc2626;font-weight:600">（调研问卷具体内容待定。）</span></li>
+              <li>活动专属任务 · 无活动时：按钮置灰为「敬请期待」，不可点击。</li>
+            </ol>
+          </li>
         </ol>
       </div>
       <div style="padding:12px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end">
@@ -415,13 +450,15 @@ const app = createApp({
     const footer = window.PC_COMMON.renderFooter();
 
     const hasActivity = ref(true);
-    const onceDone   = ref(false);
-    const showSpec   = ref(false);
+    const verifyDone  = ref(false);
+    const depositDone = ref(false);
+    const voteDone    = ref(false);
+    const showSpec    = ref(false);
 
-    watch([activeTab, activeFilter, currentPage, hasActivity, onceDone, showSpec], () => nextTick(() => lucide.createIcons()));
+    watch([activeTab, activeFilter, currentPage, hasActivity, verifyDone, depositDone, voteDone, showSpec], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
-    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, hasActivity, onceDone, header, footer, showSpec };
+    return { CFG, initTab, activeTab, activeFilter, filterTabs, visibleGroups, currentPage, totalPages, totalItems, hasActivity, verifyDone, depositDone, voteDone, header, footer, showSpec };
   }
 });
 app.component('recommended-tasks', window.RecommendedTasksComponent);
