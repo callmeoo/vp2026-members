@@ -300,8 +300,8 @@
       <div class="form-row">
         <label>限制说明</label>
         <div>
-          <textarea class="ant-input" rows="4" maxlength="200" v-model="form.restriction" placeholder="选择「商品类型」后将自动带出预设说明，可手动覆盖"></textarea>
-          <div class="hint">选择商品类型后自动填充预设值(由后台开发维护);最多 200 字 · 当前 {{ (form.restriction || '').length }} 字</div>
+          <textarea class="ant-input" rows="4" maxlength="200" v-model="form.restriction" readonly placeholder="选择「商品类型」后将自动带出预设说明，不支持手动覆盖" style="background:#f5f7fa;cursor:not-allowed"></textarea>
+          <div class="hint">选择商品类型后自动填充预设值(由后台开发维护)</div>
         </div>
       </div>
     </div>
