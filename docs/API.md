@@ -1,8 +1,8 @@
 # API 接口设计文档
 
-> 版本:v1.0  
-> 风格:RESTful + JSON  
-> 鉴权:现有用户鉴权体系(假设为 JWT / Session，具体按你们现有规范)
+> 版本：v1.0  
+> 风格：RESTful + JSON  
+> 鉴权：现有用户鉴权体系(假设为 JWT / Session，具体按你们现有规范)
 
 ---
 
@@ -76,7 +76,7 @@ https://api.wpcar.example/membership/v1
 **Query 参数**
 | 参数 | 类型 | 说明 |
 |------|------|------|
-| type | string | 可选:EARN_BID / EARN_SHARE / EARN_DEAL / SPEND_REDEEM / EXPIRE |
+| type | string | 可选：EARN_BID / EARN_SHARE / EARN_DEAL / SPEND_REDEEM / EXPIRE |
 | start_date | string | 起始日期 YYYY-MM-DD |
 | end_date | string | 结束日期 |
 | page | int | 页码，默认 1 |
@@ -195,7 +195,7 @@ https://api.wpcar.example/membership/v1
 **Query 参数**
 | 参数 | 说明 |
 |------|------|
-| category | 可选:QUERY / DISCOUNT / QUOTA / SERVICE |
+| category | 可选：QUERY / DISCOUNT / QUOTA / SERVICE |
 | level_filter | 可选，只看某等级可兑换 |
 
 **Response**
@@ -277,7 +277,7 @@ https://api.wpcar.example/membership/v1
 **Query 参数**
 | 参数 | 说明 |
 |------|------|
-| status | 可选:ACTIVE / USED / EXPIRED / INVALID |
+| status | 可选：ACTIVE / USED / EXPIRED / INVALID |
 
 **Response**
 ```json
@@ -347,7 +347,7 @@ https://api.wpcar.example/membership/v1
 
 **业务规则**:
 - 校验用户登录(调用方传入时必须是登录态 user_id，否则不接受)
-- 去重:`(user_id, car_id)` 已有记录 → 幂等返回
+- 去重：`(user_id, car_id)` 已有记录 → 幂等返回
 - 校验每日/总量上限
 
 ---
@@ -372,9 +372,9 @@ https://api.wpcar.example/membership/v1
 
 ---
 
-### 2.4 退车/退款 —— 冲减成交台数(可选接口)
+### 2.4 仲裁退车 —— 冲减成交台数(可选接口)
 
-> 积分**不扣**，但成交台数需要冲减。此处仅提供参考，也可让订单系统直接更新成交表，让月度结算自然处理。
+> 仅**仲裁退车**触发台数冲减（一般售后退车不影响台数）。积分**不扣**，但成交台数需要冲减。此处仅提供参考，也可让订单系统直接更新成交表，让月度结算自然处理。
 
 **`POST /internal/deals/revoke`**
 

@@ -1,13 +1,13 @@
 /**
  * 会员权益对比矩阵 · Vue 全局组件(移动端 + PC 端共用)
  *
- * 数据来源:window.MEMBER_CONFIG.levels[].benefits(shared/member-config.js)
- * 使用方式:
+ * 数据来源：window.MEMBER_CONFIG.levels[].benefits(shared/member-config.js)
+ * 使用方式：
  *   1. 页面先引入 shared/member-config.js，再引入本文件
  *   2. createApp(...) 后调用 app.component('benefit-matrix', window.BenefitMatrixComponent)
  *   3. 模板中使用 <benefit-matrix></benefit-matrix>
  *
- * 权益类目顺序:历史行情查询 → 保留价查询 → 专属销售顾问 → 1V1专属客服 → 积分兑换折扣 → 无理由退车
+ * 权益类目顺序：历史行情查询 → 保留价查询 → 专属销售顾问 → 1V1专属客服 → 积分兑换折扣 → 无理由退车
  */
 (function (global) {
   'use strict';

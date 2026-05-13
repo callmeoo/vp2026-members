@@ -1,7 +1,7 @@
 /**
  * 推荐任务 · Vue 全局组件(移动端 + PC 端共用)
  *
- * 数据来源:window.MEMBER_CONFIG.recommendedTasks(shared/member-config.js)
+ * 数据来源：window.MEMBER_CONFIG.recommendedTasks(shared/member-config.js)
  *
  * Props:
  *   - level: 当前用户等级 short(V0~V3)
@@ -12,7 +12,7 @@
  *   - depositDone: Boolean，是否已完成首充保证金
  *   - voteDone: Boolean，是否已完成调研问卷
  *
- * 统一跳转规则:
+ * 统一跳转规则：
  *   - t_deal / t_bid / t_festival(有活动): 不论是否登录 → 全部车源(allcars.html / sources.html)
  *   - t_verify:  未登录 → login.html(登录后跳实名认证页)；已登录 → 实名认证页(verify.html)
  *   - t_deposit: 未登录 → login.html(登录后判断实名)；已登录 · 已实名 → 充值页(recharge.html)；已登录 · 未实名 → toast「请先完成实名认证」
@@ -119,20 +119,20 @@
       },
       // 统一跳转 / toast 逻辑
       handleClick: function (t) {
-        // 实名认证: 未登录先去登录，登录后才能进认证页
+        // 实名认证： 未登录先去登录，登录后才能进认证页
         if (t.id === 't_verify') {
           if (!this.isLogin) { this.go(TARGETS.login); return; }
           this.go(TARGETS.verify);
           return;
         }
-        // 首充保证金: 未登录先去登录；已登录但未实名 toast；已实名跳充值
+        // 首充保证金： 未登录先去登录；已登录但未实名 toast；已实名跳充值
         if (t.id === 't_deposit') {
           if (!this.isLogin) { this.go(TARGETS.login); return; }
           if (!this.verifyDone) { this.showToast('请先完成实名认证'); return; }
           this.go(TARGETS.recharge);
           return;
         }
-        // 调研问卷: 未登录先去登录，登录后进调研页(提交后由调研页回跳个人中心)
+        // 调研问卷： 未登录先去登录，登录后进调研页(提交后由调研页回跳个人中心)
         if (t.id === 't_vote') {
           if (!this.isLogin) { this.go(TARGETS.login); return; }
           this.go(TARGETS.survey);

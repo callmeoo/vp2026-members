@@ -121,18 +121,18 @@
       <!-- 查询条件 -->
       <div class="ant-card p-4 mb-3">
         <div class="grid grid-cols-3 gap-x-6 gap-y-3 items-center">
-          <div class="flex items-center"><span class="el-label" style="width:50px">用户:</span><div class="el-input flex-1"><input v-model="search.user" placeholder="姓名/子账号/登录账号/手机号码..." /></div></div>
-          <div class="flex items-center"><span class="el-label" style="width:50px">时间:</span><div class="el-input flex-1"><input type="date" v-model="search.startDate" placeholder="开始日期" /></div><span class="date-sep">--</span><div class="el-input flex-1"><input type="date" v-model="search.endDate" placeholder="结束日期" /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:50px">用户：</span><div class="el-input flex-1"><input v-model="search.user" placeholder="姓名/子账号/登录账号/手机号码..." /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:50px">时间：</span><div class="el-input flex-1"><input type="date" v-model="search.startDate" placeholder="开始日期" /></div><span class="date-sep">--</span><div class="el-input flex-1"><input type="date" v-model="search.endDate" placeholder="结束日期" /></div></div>
           <div class="flex items-center justify-end">
             <button class="el-btn el-btn-primary" style="padding:0 24px"><i data-lucide="search" class="w-3.5 h-3.5"></i>搜索</button>
           </div>
 
-          <div class="flex items-center"><span class="el-label" style="width:50px">摘要:</span><div class="el-input flex-1"><input v-model="search.memo" /></div></div>
-          <div class="flex items-center"><span class="el-label" style="width:50px">金额:</span><div class="el-input flex-1"><input v-model="search.amtMin" placeholder="" /></div><span class="num-sep"></span><div class="el-input flex-1"><input v-model="search.amtMax" placeholder="" /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:50px">摘要：</span><div class="el-input flex-1"><input v-model="search.memo" /></div></div>
+          <div class="flex items-center"><span class="el-label" style="width:50px">金额：</span><div class="el-input flex-1"><input v-model="search.amtMin" placeholder="" /></div><span class="num-sep"></span><div class="el-input flex-1"><input v-model="search.amtMax" placeholder="" /></div></div>
           <div class="flex items-center gap-3">
-            <span class="el-label" style="width:50px">类型:</span>
+            <span class="el-label" style="width:50px">类型：</span>
             <div class="el-select flex-1"><select v-model="search.type"><option>全部</option><option>提现</option><option>充值</option><option>保证金提取</option><option>订单售后款项</option><option>扣减订单售后款项</option></select></div>
-            <span class="el-label" style="width:50px">状态:</span>
+            <span class="el-label" style="width:50px">状态：</span>
             <div class="el-select flex-1"><select v-model="search.status"><option>全部</option><option>已清算</option><option>处理中</option><option>失败</option></select></div>
           </div>
         </div>
@@ -237,11 +237,11 @@
       </div>
       <p class="pl-3">售后使用「无理由退车」权益的订单，钱包账单流水摘要需追加无理由退车说明文案，便于财务人员快速识别。</p>
       <div class="mt-3 pl-3">
-        <div class="text-xs text-slate-400 mb-1">摘要格式:</div>
+        <div class="text-xs text-slate-400 mb-1">摘要格式：</div>
         <code class="block px-3 py-2 bg-slate-50 border border-slate-200 rounded text-violet-600 text-[13px]">订单售后款项(无理由退车):{车牌号}</code>
       </div>
       <div class="mt-3 pl-3">
-        <div class="text-xs text-slate-400 mb-1">显示效果:</div>
+        <div class="text-xs text-slate-400 mb-1">显示效果：</div>
         <div class="px-3 py-2 bg-rose-50 border border-rose-100 rounded text-rose-500 text-[13px] font-medium">订单售后款项(无理由退车):粤EG3B98</div>
       </div>
     </div>
@@ -265,7 +265,7 @@ createApp({
     const rows = [
       { userName:'广州市长和汽车销售服务...', userId:'gzch',
         subId:'2306307114', subName:'广州市长和汽车销售服务有限公司', subBank:'3602****3955',
-        amount:'-1,200.00', time:'2026-05-04 14:15:06', memo:'提现:粤EG3B98',
+        amount:'-1,200.00', time:'2026-05-04 14:15:06', memo:'提现：粤EG3B98',
         serial:'6260504778752571393324', status:'已清算' },
       { userName:'陈秋菊', userId:'m_1397784961350885',
         subId:'2102249825', subName:'陈秋菊', subBank:'6230****3453',

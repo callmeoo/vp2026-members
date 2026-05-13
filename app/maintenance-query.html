@@ -149,7 +149,7 @@
       </button>
     </div>
 
-    <!-- 展开:可选产品 -->
+    <!-- 展开：可选产品 -->
     <div v-if="showAll" class="mt-3 grid grid-cols-2 gap-2">
       <button v-for="p in availableProducts" :key="p.key"
               :class="['text-left p-3 rounded-lg border text-[13px]', isSelected(p.key) ? 'border-blue-400 bg-blue-50 text-blue-600' : 'border-slate-200 text-slate-600']"
@@ -162,7 +162,7 @@
 
   <!-- 支付方式 -->
   <div class="mx-3 mt-3 bg-white rounded-xl p-4">
-    <div class="text-[15px] font-semibold text-slate-800 mb-3">支付方式:</div>
+    <div class="text-[15px] font-semibold text-slate-800 mb-3">支付方式：</div>
     <div class="flex flex-wrap gap-3">
       <div :class="['pay-card', payMethod === 'wechat' && 'active']" @click="payMethod = 'wechat'">
         <span class="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center"><i data-lucide="message-circle" class="w-3 h-3"></i></span>
@@ -234,7 +234,7 @@
         <div class="mt-1">查询不一定每次成功，查询失败系统将会原路返回您的支付金额。</div>
       </div>
       <div>
-        <div class="text-slate-400">3、特别声明:</div>
+        <div class="text-slate-400">3、特别声明：</div>
         <div class="mt-1">请注意，本查询服务所有致据源均来自行业大数据或第三方且并非实时数据(由提供方按固定周期定期更新)，查得结果仅供参考，本查询服务不构成任何建议或承诺，亦不对查询人运用本查询服务做出的其它专业判断所产生的结果负责，请查询人务必结合被查询对象的实际情况，综合做出更全面更准确的决策。</div>
       </div>
     </div>
@@ -266,7 +266,7 @@
     <div class="px-3 py-2.5 flex items-end gap-3">
       <div class="flex-1 min-w-0">
         <div class="flex items-baseline gap-1">
-          <span class="text-[12px] text-slate-700">实付:</span>
+          <span class="text-[12px] text-slate-700">实付：</span>
           <span class="text-red-500 font-bold text-[22px] leading-none">¥{{ totalPrice.toFixed(2) }}</span>
         </div>
         <div class="flex items-center gap-2 mt-1 text-[11px]">
@@ -348,7 +348,7 @@
     </div>
     <div class="text-[12px] text-slate-600 mb-1">Query 参数</div>
     <pre>{
-  "scene": "MAINTENANCE_QUERY",  // 业务场景:报告查询
+  "scene": "MAINTENANCE_QUERY",  // 业务场景：报告查询
   "amount": 188,                 // 订单金额(元)，用于满减判断
   "userId": "string"             // 用户 ID(后端从 token 解)
 }</pre>
@@ -461,7 +461,7 @@ createApp({
     ];
     const today = new Date('2026-04-29');
 
-    // mock 两种状态: 微信支付 → 有优惠券; 微信支付(mock) → 无可用优惠券
+    // mock 两种状态： 微信支付 → 有优惠券; 微信支付(mock) → 无可用优惠券
     const availableCoupons = computed(() => {
       if (payMethod.value === 'wechat_mock') return []; // mock: 无可用优惠券
       return allCoupons
@@ -521,7 +521,7 @@ createApp({
       alert(`已发起查询，实付 ¥${totalPrice.value.toFixed(2)}(${labelMap[payMethod.value]})${extra}`);
     }
 
-    // 模拟运营优惠:满 100 减 10
+    // 模拟运营优惠：满 100 减 10
     watch(originalPrice, (v) => { discount.value = v >= 100 ? 0 : 0; }, { immediate: true });
 
     onMounted(() => lucide.createIcons());

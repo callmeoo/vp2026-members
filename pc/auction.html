@@ -27,7 +27,7 @@
     <!-- 筛选 -->
     <div class="filter-card" style="margin-top: 14px;">
       <div class="filter-row">
-        <div class="filter-label">品牌:</div>
+        <div class="filter-label">品牌：</div>
         <div class="filter-chips">
           <span class="chip" :class="{ active: brand === '热门' }" @click="brand = '热门'">热门</span>
           <span v-for="l in brandLetters" :key="l" class="chip" :class="{ active: brand === l }" @click="brand = l">{{ l }}</span>
@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="filter-row">
-        <div class="filter-label">价格:</div>
+        <div class="filter-label">价格：</div>
         <div class="filter-chips">
           <span class="chip" :class="{ active: price === '不限' }" @click="price = '不限'">不限</span>
           <span v-for="p in priceRanges" :key="p" class="chip" :class="{ active: price === p }" @click="price = p">{{ p }}</span>
@@ -52,20 +52,20 @@
         </div>
       </div>
       <div class="filter-row">
-        <div class="filter-label">车源地:</div>
+        <div class="filter-label">车源地：</div>
         <div class="filter-chips">
           <span class="chip" :class="{ active: region === '不限' }" @click="region = '不限'">不限</span>
           <span v-for="r in regions" :key="r" class="chip" :class="{ active: region === r }" @click="region = r">{{ r }}</span>
         </div>
       </div>
       <div class="filter-row">
-        <div class="filter-label">更多:</div>
+        <div class="filter-label">更多：</div>
         <div class="filter-chips">
           <select v-for="m in moreFilters" :key="m.key" class="more-select"><option>{{ m.label }}</option></select>
         </div>
       </div>
       <div class="filter-foot">
-        <div>当前筛选: <span class="text-slate-400" style="border:1px solid #e2e8f0; padding: 1px 14px; margin: 0 8px;">空</span> <span class="reset">重置条件</span></div>
+        <div>当前筛选： <span class="text-slate-400" style="border:1px solid #e2e8f0; padding: 1px 14px; margin: 0 8px;">空</span> <span class="reset">重置条件</span></div>
         <div class="right-links">
           <a>竞价须知 ›</a>
           <a>充值保证金 ›</a>

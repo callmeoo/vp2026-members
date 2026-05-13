@@ -145,7 +145,7 @@
     </div>
   </div>
 
-  <!-- Tab 哨兵:用于判断是否进入悬浮态 -->
+  <!-- Tab 哨兵：用于判断是否进入悬浮态 -->
   <div ref="tabSentinel"></div>
 
   <!-- Tab 栏 -->
@@ -167,7 +167,7 @@
     </h2>
     <div class="px-4">
       <div class="bg-violet-50 border border-violet-100 rounded-xl p-4 leading-relaxed" style="font-size:15px;color:#334155;">
-        会员等级根据账号余额（含冻结）及前 3 个自然月完成成交的<strong style="color:#6d28d9">车辆台数</strong>计算，每月 1 日更新。成交台数越高，当月等级越高，可获平台更多权益。
+        会员等级根据账户总额（含冻结）及前 3 个自然月已付款（不含退车）的车辆台数计算，每月 1 日更新。成交台数越高，当月等级越高，可获平台更多权益。
       </div>
     </div>
 
@@ -207,7 +207,7 @@
         <span class="sub-title">什么是积分?</span>
       </div>
       <div class="body-text">
-        积分是唯普汽车平台的<strong style="color:#1e293b">商户积分体系</strong>，根据商户在平台的交易与互动行为发放，可用于<strong style="color:#1e293b">兑换积分商城商品和服务</strong>或享受<strong style="color:#1e293b">折扣</strong>。
+        积分是唯普汽车平台的商户积分体系，根据商户在平台的交易与互动行为发放，可用于兑换积分商城商品和服务或享受折扣。
       </div>
     </div>
 
@@ -246,7 +246,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="sub-title">积分商城兑换</div>
-            <div class="body-text mt-1">平台为您开设 <strong style="color:#1e293b">积分商城</strong>，您可使用积分在商城内兑换各类权益卡或实物商品，所兑即所得。</div>
+            <div class="body-text mt-1">平台为您开设 积分商城，您可使用积分在商城内兑换各类权益卡或实物商品，所兑即所得。</div>
           </div>
         </div>
 
@@ -258,7 +258,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="sub-title">有效期到期自动扣除</div>
-            <div class="body-text mt-1">积分自获得当月起 <strong style="color:#1e293b">12 个自然月</strong> 内有效，到期未使用的积分将自动清零，建议尽早使用。</div>
+            <div class="body-text mt-1">积分自获得当月起 12 个自然月 内有效，到期未使用的积分将自动清零，建议尽早使用。</div>
           </div>
         </div>
       </div>
@@ -487,7 +487,7 @@ app.mount('#app');
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>本页为对外宣讲版，内容来自 shared/member-config.js 的 levels（等级权益）、coinEarning（积分获取规则）、qaList（Q&A），与 pc/member-intro.html 共用同一数据源，改一处两端同步。</li>
         <li>历史数据处理：7/1 上线日以前 3 月成交记录 + 当前余额跑数确认初始等级；积分从上线日起算，不追溯、不补发。</li>
-        <li>Q&A 数据来自 BMS-运营部-FAQ 中的问题（目前问题待录入）。</li>
+        <li>Q&A 数据来自 BMS-运营部-FAQ 中的问题<span style="color:#dc2626;font-weight:600">（目前问题待录入）</span>。</li>
         <li>点击「查看我的权益」按钮需先登录。登录完成后直接跳转至会员中心（member.html），无需重新返回本页。</li>
         <li>推荐任务 Mock 数据（页面右上角浮窗可切换演示状态，支持 5 个开关：登录态 / 实名认证 / 首充保证金 / 调研问卷 / 限时活动）：
           <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">

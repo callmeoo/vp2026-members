@@ -112,9 +112,9 @@
       <i v-if="!noReasonExpired" data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
     </div>
 
-    <!-- 演示切换:有效 / 已超期 -->
+    <!-- 演示切换：有效 / 已超期 -->
     <div class="mt-2 px-3 flex items-center gap-2 text-[11px] text-slate-400">
-      <span>演示状态:</span>
+      <span>演示状态：</span>
       <button @click="noReasonExpired = false"
         :style="!noReasonExpired ? 'background:#7c3aed;color:#fff;border-color:#7c3aed' : ''"
         style="padding:2px 8px;border:1px solid #e9d5ff;background:#faf5ff;color:#7c3aed;border-radius:100px;font-size:11px">未超期</button>
@@ -128,34 +128,34 @@
   <div class="contract">
     <div class="top">
       <span class="logo">唯普汽车</span>
-      <span>官网:www.chevip.com</span>
-      <span>APP/小程序:唯车拍</span>
-      <span>热线:4008912345</span>
+      <span>官网：www.chevip.com</span>
+      <span>APP/小程序：唯车拍</span>
+      <span>热线：4008912345</span>
     </div>
     <h2>竞价车辆竞买成交确认书</h2>
-    <div class="meta"><span></span><span>编号:20263115824</span></div>
-    <div class="party">甲方:广东唯普汽车科技股份有限公司</div>
-    <div class="party">乙方:产品test1</div>
-    <div class="intro">鉴于乙方于2026年03月06日在广东唯普汽车科技股份有限公司的竞价平台通过其他的方式竞得车辆，现双方签订成交确认书如下:</div>
+    <div class="meta"><span></span><span>编号：20263115824</span></div>
+    <div class="party">甲方：广东唯普汽车科技股份有限公司</div>
+    <div class="party">乙方：产品test1</div>
+    <div class="intro">鉴于乙方于2026年03月06日在广东唯普汽车科技股份有限公司的竞价平台通过其他的方式竞得车辆，现双方签订成交确认书如下：</div>
     <div class="sec-title">一、标的</div>
-    <div>当前车牌号:闽A12345，品牌型号:保时捷123，车架号:WM0AC297XEL030334</div>
-    <div class="sec-title">二、成交价款(单位:元)</div>
+    <div>当前车牌号：闽A12345，品牌型号：保时捷123，车架号：WM0AC297XEL030334</div>
+    <div class="sec-title">二、成交价款(单位：元)</div>
     <table>
       <tr><th>车辆成交价格</th><th>平台使用费</th><th>手续费</th><th>综合服务费</th><th>其他费用</th></tr>
       <tr><td>6866.0</td><td>300.0</td><td>200.0</td><td>0.0</td><td>0.0</td></tr>
     </table>
-    <div class="total-row">合计:7366.0 元 大写:柒仟叁佰陆拾陆圆整</div>
+    <div class="total-row">合计：7366.0 元 大写：柒仟叁佰陆拾陆圆整</div>
     <div class="sec-title">三、其他约定</div>
     <ol>
       <li v-for="(l, i) in clauses" :key="i">{{ l }}</li>
     </ol>
     <div class="signoff">
       <div>
-        <div>甲方:广东唯普汽车科技股份有限公司</div>
-        <div>签约代表:</div><div>电话:</div><div>日期:</div>
+        <div>甲方：广东唯普汽车科技股份有限公司</div>
+        <div>签约代表：</div><div>电话：</div><div>日期：</div>
       </div>
       <div>
-        <div>乙方:</div><div>签约代表:</div><div>电话:</div><div>日期:</div>
+        <div>乙方：</div><div>签约代表：</div><div>电话：</div><div>日期：</div>
       </div>
     </div>
   </div>
@@ -245,7 +245,7 @@ createApp({
     const reason = ref('test');
     const showSheet = ref(false);
     const showConfirm = ref(false);
-    // 演示用:中标后超 24h 后无理由退车权益不可用
+    // 演示用：中标后超 24h 后无理由退车权益不可用
     const noReasonExpired = ref(false);
 
     const refundCards = [

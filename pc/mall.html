@@ -279,7 +279,7 @@ createApp({
     const mockLvCode = ref('LV2');
     const mockLv = computed(() => CFG.getLevelByCode(mockLvCode.value));
 
-    // 积分折扣: V2 → 95折， V3 → 8折， 其余 1
+    // 积分折扣： V2 → 95折， V3 → 8折， 其余 1
     const discountMap = { LV2: 0.95, LV3: 0.80 };
     const discountRate = computed(() => discountMap[mockLv.value.code] || 1);
     const discountLabel = computed(() =>

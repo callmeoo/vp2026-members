@@ -64,10 +64,10 @@
     <div v-for="c in coupons" :key="c.id" class="coupon-card">
       <div class="coupon-title pr-20">{{ c.name }}</div>
       <div class="coupon-meta pr-20">
-        <div>获得时间:{{ c.gainAt }}</div>
-        <div>活动类型:{{ c.activity }}</div>
-        <div>有效期:{{ c.expire }}</div>
-        <div>适用范围:{{ c.scope }}</div>
+        <div>获得时间：{{ c.gainAt }}</div>
+        <div>活动类型：{{ c.activity }}</div>
+        <div>有效期：{{ c.expire }}</div>
+        <div>适用范围：{{ c.scope }}</div>
       </div>
       <div :class="['stamp', c.stampColor]">{{ c.stamp }}</div>
     </div>

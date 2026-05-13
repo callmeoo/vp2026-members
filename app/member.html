@@ -35,7 +35,7 @@
     color: #7c3aed;
   }
   .ben-label { font-size: 11px; font-weight: 600; margin-top: 6px; color: #334155; line-height: 1.3; }
-  /* 未解锁态:整体置灰，右上角小锁 */
+  /* 未解锁态：整体置灰，右上角小锁 */
   .ben-cell.locked .ben-ic { background: #f1f5f9; color: #cbd5e1; }
   .ben-cell.locked .ben-label { color: #94a3b8; }
   .ben-lock {
@@ -113,7 +113,7 @@
       <span class="w-1 h-1 bg-violet-300 rounded-full"></span>
     </div>
 
-    <!-- 权益网格:所有等级并集;已享正常色 / 未解锁置灰加锁 -->
+    <!-- 权益网格：所有等级并集;已享正常色 / 未解锁置灰加锁 -->
     <div class="px-4 mt-5 grid grid-cols-4 gap-y-5 gap-x-2">
       <div v-for="b in allBenefits" :key="b.id" :class="['ben-cell', b.unlocked ? '' : 'locked']">
         <div class="ben-ic"><i :data-lucide="b.icon" class="w-6 h-6"></i></div>
@@ -125,7 +125,13 @@
     <!-- 推荐任务 -->
     <div class="px-4 mt-7">
       <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <recommended-tasks :level="currentLv.short" platform="app" :has-activity="hasActivity" :verify-done="onceDone" :deposit-done="onceDone"></recommended-tasks>
+        <recommended-tasks
+          :level="currentLv.short"
+          platform="app"
+          :has-activity="hasActivity"
+          :verify-done="verifyDone"
+          :deposit-done="depositDone"
+          :vote-done="voteDone"></recommended-tasks>
       </div>
     </div>
 
@@ -161,17 +167,34 @@
       </button>
     </div>
     <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
-    <div class="mt-2 pt-2 border-t border-slate-100">
-      <div class="text-[10px] text-slate-400 mb-1.5">活动状态</div>
-      <div class="flex gap-1.5 mb-2">
-        <button @click="hasActivity = true"  :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', hasActivity  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">有活动</button>
-        <button @click="hasActivity = false" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', !hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">无活动</button>
-      </div>
-      <div class="text-[10px] text-slate-400 mb-1.5">首次任务</div>
-      <div class="flex gap-1.5">
-        <button @click="onceDone = false" :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', !onceDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未完成</button>
-        <button @click="onceDone = true"  :class="['px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all', onceDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已完成</button>
-      </div>
+  </div>
+</div>
+
+<!-- 推荐任务 Mock 切换 · 仅 Demo -->
+<div class="hidden md:block fixed top-[270px] right-4 z-50">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[160px]">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>推荐任务 Mock 切换</span>
+    </div>
+    <div class="text-[10px] text-slate-400 mb-1">实名认证</div>
+    <div class="flex gap-1.5 mb-2">
+      <button @click="verifyDone = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !verifyDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未认证</button>
+      <button @click="verifyDone = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', verifyDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已认证</button>
+    </div>
+    <div class="text-[10px] text-slate-400 mb-1">首充保证金</div>
+    <div class="flex gap-1.5 mb-2">
+      <button @click="depositDone = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !depositDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未充值</button>
+      <button @click="depositDone = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', depositDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已充值</button>
+    </div>
+    <div class="text-[10px] text-slate-400 mb-1">调研问卷</div>
+    <div class="flex gap-1.5 mb-2">
+      <button @click="voteDone = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !voteDone ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">未完成</button>
+      <button @click="voteDone = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', voteDone  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">已完成</button>
+    </div>
+    <div class="text-[10px] text-slate-400 mb-1">限时活动</div>
+    <div class="flex gap-1.5">
+      <button @click="hasActivity = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !hasActivity ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">无活动</button>
+      <button @click="hasActivity = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', hasActivity  ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">有活动</button>
     </div>
   </div>
 </div>
@@ -194,9 +217,11 @@ const app = createApp({
     const selectedIdx = ref(currentIdx.value);
     const selectedLv = computed(() => CFG.levels[selectedIdx.value]);
     const hasActivity = ref(true);
-    const onceDone   = ref(false);
+    const verifyDone  = ref(false);
+    const depositDone = ref(false);
+    const voteDone    = ref(false);
 
-    // 可享权益:聚合所有等级的 benefits，去重;当前等级未含的置灰加锁
+    // 可享权益：聚合所有等级的 benefits，去重;当前等级未含的置灰加锁
     // 积分兑换类(coin_exchange_*)视为同一项，展示当前等级的具体文案(如 V0 → 1:1、V2 → 95 折)
     const allBenefits = computed(() => {
       const exchangeIds = ['coin_exchange_100', 'coin_exchange_95', 'coin_exchange_80'];
@@ -257,7 +282,7 @@ const app = createApp({
 
     function back() { smartBack('profile-loggedin.html'); }
 
-    watch([currentDeals, selectedIdx], () => nextTick(() => window.lucide && lucide.createIcons()));
+    watch([currentDeals, selectedIdx, hasActivity, verifyDone, depositDone, voteDone], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
@@ -265,7 +290,7 @@ const app = createApp({
       selectedLv, heroDate, heroMain, heroProgress,
       simulateLevel, back,
       allBenefits,
-      hasActivity, onceDone
+      hasActivity, verifyDone, depositDone, voteDone
     };
   }
 });

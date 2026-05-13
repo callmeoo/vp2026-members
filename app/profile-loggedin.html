@@ -39,13 +39,6 @@
     <div class="relative z-10 flex items-center justify-between px-5 py-3">
       <div></div>
       <div class="flex items-center gap-6">
-        <a class="flex flex-col items-center gap-0.5 relative">
-          <div class="relative">
-            <i data-lucide="message-circle" class="w-6 h-6"></i>
-            <span class="dot-new absolute -top-0.5 -right-0.5"></span>
-          </div>
-          <span class="text-[10px] opacity-90">消息</span>
-        </a>
         <a href="settings.html" class="flex flex-col items-center gap-0.5">
           <i data-lucide="settings" class="w-6 h-6"></i>
           <span class="text-[10px] opacity-90">设置</span>
@@ -69,7 +62,7 @@
     </div>
 
     <!-- 等级 Banner + 进度 + 权益横滑 -->
-    <!-- 等级 Banner 顶部 + 进度:点击跳转会员中心;权益横滑独立 div，避免 <a> 拦截手势 -->
+    <!-- 等级 Banner 顶部 + 进度：点击跳转会员中心;权益横滑独立 div，避免 <a> 拦截手势 -->
     <div class="relative z-10 mx-4 mt-4 rounded-3xl member-banner p-4 shadow-2xl">
       <a href="member.html" class="block">
         <div class="relative z-10 flex items-center justify-between mb-3">
@@ -247,7 +240,7 @@ createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
 
-    // 演示用:每个等级假设的近 3 月成交台数
+    // 演示用：每个等级假设的近 3 月成交台数
     const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 15 };
     const currentLvShort = ref('V2');
     const isVerified = ref(true);
@@ -284,7 +277,7 @@ createApp({
         const b = poolMap[id];
         return b ? { id, icon: b.icon, label: b.label, unlocked: hasCurr(id) } : null;
       };
-      // 积分兑换槽:当前等级具体折扣(1:1 / 95 折 / 8 折)
+      // 积分兑换槽：当前等级具体折扣(1:1 / 95 折 / 8 折)
       const currExchange = currBenefits.find(b => exchangeIds.includes(b.id));
       const fallbackExchange = CFG.levels[0].benefits.find(b => exchangeIds.includes(b.id));
       const exchange = currExchange || fallbackExchange;

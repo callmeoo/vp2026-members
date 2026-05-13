@@ -1,4 +1,4 @@
-// 智能返回:
+// 智能返回：
 // 1) 如果是新开 tab / 直达页面(history.length <= 1) → 用 fallback 指定页面
 // 2) 否则调用 history.back();若 300ms 后仍停留在当前 URL，说明 back 无效，再用 fallback
 // 不依赖 document.referrer:某些环境(preview 面板 / 隐私模式 / Referrer-Policy)referrer 为空，

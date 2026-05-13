@@ -68,10 +68,10 @@
         <a href="bms-redeem-log.html"      class="sub-item">兑换记录<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
       </div>
 
-      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" style="display:none">
+      <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
         <a href="bms-aftersales.html"                class="sub-item">售后服务</a>
-        <a href="bms-aftersales-list.html"           class="sub-item">售后列表</a>
+        <a href="bms-aftersales-list.html"           class="sub-item" onclick="event.preventDefault();showRuleAlert('用户等级更新', this.href)">售后列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
         <a href="bms-aftersale-approval-list.html"   class="sub-item">企微审批</a>
       </div>
 
@@ -102,7 +102,7 @@
               <span class="ant-tag ant-tag-orange">{{ order.status }}</span>
               <span class="ant-tag ant-tag-red inline-flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i>存在售后申请</span>
             </div>
-            <div class="text-sm text-slate-500">成交时间:{{ order.dealAt }} · 订单时效剩余 {{ order.countdown }}</div>
+            <div class="text-sm text-slate-500">成交时间：{{ order.dealAt }} · 订单时效剩余 {{ order.countdown }}</div>
           </div>
           <div class="flex gap-2">
             <button class="ant-btn inline-flex items-center gap-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i>打印</button>
@@ -125,7 +125,7 @@
 
       <div class="grid grid-cols-3 gap-5 mb-5">
 
-        <!-- 左:商户信息(含会员等级与权益) -->
+        <!-- 左：商户信息(含会员等级与权益) -->
         <div class="col-span-1 space-y-5">
 
           <!-- 商户卡片 -->
@@ -171,7 +171,7 @@
 
         </div>
 
-        <!-- 右:车辆 + 费用 + 售后 -->
+        <!-- 右：车辆 + 费用 + 售后 -->
         <div class="col-span-2 space-y-5">
 
           <!-- 车辆信息 -->
@@ -216,7 +216,7 @@
               <div class="flex items-start justify-between mb-2">
                 <div>
                   <div class="text-sm font-semibold text-slate-800">{{ aftersale.title }}</div>
-                  <div class="text-xs text-slate-500 mt-0.5">售后单号:{{ aftersale.no }} · 提交时间:{{ aftersale.submitAt }}</div>
+                  <div class="text-xs text-slate-500 mt-0.5">售后单号：{{ aftersale.no }} · 提交时间：{{ aftersale.submitAt }}</div>
                 </div>
                 <span class="ant-tag ant-tag-red">处理中</span>
               </div>
@@ -298,7 +298,7 @@ createApp({
     const benefits = [
       { title:'过户 8 折 / 复检 8 折', sub:'V3 专享 · 积分兑换使用',
         bg:'bg-violet-50', border:'border-violet-100', icoBg:'from-violet-400 to-indigo-500', icon:'tag',
-        desc:'<i data-lucide="coins" class="w-3 h-3 inline"></i> 本单节省:<span class="font-bold">¥ 240</span>(原 ¥1,200 降至 ¥ 960)',
+        desc:'<i data-lucide="coins" class="w-3 h-3 inline"></i> 本单节省：<span class="font-bold">¥ 240</span>(原 ¥1,200 降至 ¥ 960)',
         descCls:'text-violet-700', tag:'已生效', tagCls:'ant-tag-purple' },
       { title:'无理由退车 1 台卡', sub:'V3 专享 · 成交后 7 日内可申请',
         bg:'bg-rose-50', border:'border-rose-100', icoBg:'from-rose-400 to-red-500', icon:'undo-2',
@@ -306,7 +306,7 @@ createApp({
         descCls:'text-rose-700', tag:'申请中', tagCls:'ant-tag-red' },
       { title:'成交积分奖励', sub:'过户完成（资料回收完毕）后发放',
         bg:'bg-amber-50', border:'border-amber-100', icoBg:'from-amber-400 to-orange-500', icon:'coins',
-        desc:'<i data-lucide="clock" class="w-3 h-3 inline"></i> 待发放:<span class="font-bold">+50 积分</span>',
+        desc:'<i data-lucide="clock" class="w-3 h-3 inline"></i> 待发放：<span class="font-bold">+50 积分</span>',
         descCls:'text-amber-700', tag:'待发放', tagCls:'ant-tag-orange' },
       { title:'代送车上门', sub:'V3 等级直达权益',
         bg:'bg-emerald-50', border:'border-emerald-100', icoBg:'from-emerald-400 to-teal-500', icon:'truck',

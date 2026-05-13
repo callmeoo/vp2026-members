@@ -168,7 +168,7 @@
       <!-- 4 级等级卡 -->
       <h2 class="sec-hd"><i data-lucide="layers" class="w-5 h-5"></i>会员等级</h2>
       <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:14.5px;color:#0c4a6e;line-height:1.8">
-        <strong>会员等级</strong>根据账号余额（含冻结）及前 3 个自然月完成成交的<strong>车辆台数</strong>计算，每月 1 日更新。成交台数越高，当月等级越高，可获平台更多权益。
+        会员等级根据账户总额（含冻结）及前 3 个自然月已付款（不含退车）的车辆台数计算，每月 1 日更新。成交台数越高，当月等级越高，可获平台更多权益。
       </div>
       <div class="level-cards">
         <div v-for="lv in levelCards" :key="lv.code" class="level-card" :style="{ background: `linear-gradient(135deg, ${lv.g0}, ${lv.g1})` }">
@@ -192,11 +192,11 @@
       <!-- 积分介绍 -->
       <div class="coins-intro">
         <div class="icon-box"><i data-lucide="coins" class="w-5 h-5"></i></div>
-        <p>积分是唯普汽车平台的<strong>商户积分体系</strong>，根据商户在平台的交易与互动行为发放，可用于<strong>兑换积分商城商品和服务</strong>或享受<strong>折扣优惠</strong>。有效期 12 个自然月，按获得月滚动到期。</p>
+        <p>积分是唯普汽车平台的商户积分体系，根据商户在平台的交易与互动行为发放，可用于兑换积分商城商品和服务或享受折扣优惠。有效期 12 个自然月，按获得月滚动到期。</p>
       </div>
 
       <div class="coins-grid">
-        <!-- 左: 积分获取方式 · 推荐任务组件 -->
+        <!-- 左： 积分获取方式 · 推荐任务组件 -->
         <div>
           <h2 class="sec-hd"><i data-lucide="plus-circle" class="w-5 h-5"></i>积分获取方式</h2>
           <div class="mi-table-wrap">
@@ -204,7 +204,7 @@
           </div>
         </div>
 
-        <!-- 右: 积分使用方式 -->
+        <!-- 右： 积分使用方式 -->
         <div>
           <h2 class="sec-hd"><i data-lucide="shopping-bag" class="w-5 h-5"></i>积分使用方式</h2>
           <div class="spend-card">
@@ -218,7 +218,7 @@
             <div class="icon-box" style="background:#f59e0b"><i data-lucide="timer-off" class="w-5 h-5"></i></div>
             <div>
               <div class="title">有效期提示</div>
-              <div class="desc">积分自获得当月起 <strong>12 个自然月</strong>内有效，到期未使用自动清零，建议尽早使用。</div>
+              <div class="desc">积分自获得当月起 12 个自然月内有效，到期未使用自动清零，建议尽早使用。</div>
             </div>
           </div>
         </div>

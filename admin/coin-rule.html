@@ -119,8 +119,8 @@
       <div class="brand-sub">www.chevip.com</div>
     </div>
     <nav class="flex-1 overflow-y-auto">
-      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" style="display:none">
+      <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
         <a href="bms-orders.html" class="sub-item">订单列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
         <a href="bms-order-detail.html" class="sub-item">订单详情<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
         <a href="bms-users.html"  class="sub-item">用户列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
@@ -141,10 +141,10 @@
         <a href="bms-redeem-log.html"      class="sub-item">兑换记录<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#10b981;color:#fff;font-weight:500;letter-spacing:0">新增</span></a>
       </div>
 
-      <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-      <div class="submenu" style="display:none">
+      <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+      <div class="submenu">
         <a href="bms-aftersales.html"                class="sub-item">售后服务</a>
-        <a href="bms-aftersales-list.html"           class="sub-item">售后列表</a>
+        <a href="bms-aftersales-list.html"           class="sub-item" onclick="event.preventDefault();showRuleAlert('用户等级更新', this.href)">售后列表<span style="margin-left:6px;font-size:10px;padding:1px 5px;border-radius:3px;background:#f59e0b;color:#fff;font-weight:500;letter-spacing:0">调整</span></a>
         <a href="bms-aftersale-approval-list.html"   class="sub-item">企微审批</a>
       </div>
 
@@ -205,7 +205,7 @@
             <div v-if="currentType.key === 'limited'" style="background:#fafafa;border:1px solid #ebeef5;border-radius:6px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
               <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:13px;color:#606266;white-space:nowrap">活动名称</span>
-                <input class="ant-input" v-model="limitedCommon.activityName" :disabled="!editMode" maxlength="50" placeholder="如:五一假期双倍积分活动" style="width:200px">
+                <input class="ant-input" v-model="limitedCommon.activityName" :disabled="!editMode" maxlength="50" placeholder="如：五一假期双倍积分活动" style="width:200px">
               </div>
               <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:13px;color:#606266;white-space:nowrap">活动开始时间</span>
@@ -270,7 +270,7 @@
           </div>
           <div class="save-bar">
             <div style="display:flex;align-items:center;gap:14px">
-              <div class="time">最后更新:{{ currentType.updatedAt }}</div>
+              <div class="time">最后更新：{{ currentType.updatedAt }}</div>
               <div v-if="!editMode" style="font-size:12px;color:#909399;border-left:1px solid #ebeef5;padding-left:14px;display:flex;align-items:center;gap:4px">
                 <i data-lucide="zap" class="w-3 h-3" style="color:#f59e0b;flex-shrink:0"></i>
                 开关立即生效；修改数值 / 说明请点击「编辑」
@@ -473,10 +473,10 @@
         <div class="text-sm" style="color:#303133">
           <div>确定要将以下账号移出黑名单?</div>
           <div v-if="pendingRemove.account" class="mt-2 p-2 rounded" style="background:#fafafa;border:1px solid #ebeef5">
-            <div><span class="text-slate-400 text-xs">用户名:</span> {{ pendingRemove.account.username }}</div>
-            <div><span class="text-slate-400 text-xs">姓名:</span> {{ pendingRemove.account.name }}</div>
-            <div><span class="text-slate-400 text-xs">绑定手机:</span> {{ pendingRemove.account.phone }}</div>
-            <div class="mt-1 text-xs text-slate-500">原因:{{ pendingRemove.account.reason }}</div>
+            <div><span class="text-slate-400 text-xs">用户名：</span> {{ pendingRemove.account.username }}</div>
+            <div><span class="text-slate-400 text-xs">姓名：</span> {{ pendingRemove.account.name }}</div>
+            <div><span class="text-slate-400 text-xs">绑定手机：</span> {{ pendingRemove.account.phone }}</div>
+            <div class="mt-1 text-xs text-slate-500">原因：{{ pendingRemove.account.reason }}</div>
           </div>
           <div class="mt-2 text-xs text-slate-400">移除后该账号将恢复正常积分发放。</div>
         </div>
@@ -538,9 +538,9 @@ createApp({
     ];
 
     // 按 item.id 直接归类(稳定，不依赖 category 字符串)
-    //  交易类:完成车辆交易 + 有效出价参与竞拍
-    //  限时活动类:统一覆写为「出价倍率 / 成交倍率」两项
-    //  行为活动类:其余(互动 / 社交裂变 等)
+    //  交易类：完成车辆交易 + 有效出价参与竞拍
+    //  限时活动类：统一覆写为「出价倍率 / 成交倍率」两项
+    //  行为活动类：其余(互动 / 社交裂变 等)
     const idToType = {
       deal: 'deal',
       bid: 'deal',
@@ -568,7 +568,7 @@ createApp({
     (bucket['behavior'] || []).forEach(it => {
       if (it.id === 'share') it.dailyMax = 10;
     });
-    // 限时活动类:统一为出价倍率 / 成交倍率两项，X / Y 可配置
+    // 限时活动类：统一为出价倍率 / 成交倍率两项，X / Y 可配置
     bucket['limited'] = [
       { id:'limited_bid',  action:'活动出价多倍积分', coin:'出价积分 × 2', desc:'X 为可变参数，由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' },
       { id:'limited_deal', action:'活动成交多倍积分', coin:'成交积分 × 2', desc:'Y 为可变参数，由具体活动方案决定', enabled:true,  startDate:'2026-05-01', endDate:'2026-05-07' }
@@ -651,7 +651,7 @@ createApp({
       if (!blacklistForm.reason.trim()) { alert('请填写黑名单原因'); return; }
       const r = risk.find(x => x.id === 'blacklist');
       const u = blacklistForm.selected;
-      // 去重:若已在黑名单中，提示
+      // 去重：若已在黑名单中，提示
       if (r.accounts.some(a => a.username === u.username)) { alert('该用户已在黑名单中'); return; }
       r.accounts.unshift({
         username: u.username,

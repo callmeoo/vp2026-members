@@ -91,15 +91,15 @@
     <div class="veh-info flex-1">
       <div class="veh-name">{{ veh.name }}</div>
       <div class="veh-meta">{{ veh.meta }}</div>
-      <div class="veh-price">成交价: <b>{{ veh.price }}</b></div>
+      <div class="veh-price">成交价： <b>{{ veh.price }}</b></div>
     </div>
   </div>
 
   <div class="sec-card">
-    <div class="sec-title">售后申请: <span class="sec-tag">售后类</span></div>
+    <div class="sec-title">售后申请： <span class="sec-tag">售后类</span></div>
     <div style="display:inline-flex;align-items:center;gap:4px;background:#fff7e6;border:1px solid #ffe7ba;color:#b45309;padding:3px 8px;border-radius:3px;font-size:11px;margin:4px 0 10px">
       <i data-lucide="shield-check" class="w-3 h-3"></i>
-      已使用「无理由退车」权益 · 来源:V3 等级权益
+      已使用「无理由退车」权益 · 来源：V3 等级权益
     </div>
     <div v-for="kv in requestKV" :key="kv.k" class="kv-row"><span class="k">{{ kv.k }}</span><span class="v">{{ kv.v }}</span></div>
 
@@ -166,13 +166,13 @@ createApp({
     const veh = { plate:'苏A3333', name:'大众 朗逸 2017款 1.6L 自动风尚版', meta:'2019-07 | 11万公里', price:'1200元' };
     const tabs = ['概述信息','费用相关','车身检测','门店卖家','款项相关'];
     const requestKV = [
-      { k:'原因:',       v:'买家违约类-买家反悔' },
-      { k:'结果:',       v:'直接退车' },
-      { k:'责任方:',     v:'买家' },
-      { k:'基本信息:',   v:'我确认要退车' },
-      { k:'情况说明:',   v:'' },
-      { k:'处理方案:',   v:'' },
-      { k:'附件:',       v:'' }
+      { k:'原因：',       v:'买家违约类-买家反悔' },
+      { k:'结果：',       v:'直接退车' },
+      { k:'责任方：',     v:'买家' },
+      { k:'基本信息：',   v:'我确认要退车' },
+      { k:'情况说明：',   v:'' },
+      { k:'处理方案：',   v:'' },
+      { k:'附件：',       v:'' }
     ];
     const priceRows = [
       { party:'买家', origin:'-2,000', afs:'-2,000' },
@@ -180,19 +180,19 @@ createApp({
       { party:'唯普', origin:'-200',   afs:'800'    }
     ];
     const overviewKV = [
-      { k:'拍卖方式:', v:'竞价' },
-      { k:'拍卖时间:', v:'2025-04-23 00:00-2025-04-23 17:32' },
-      { k:'入场状态:', v:'在门店库(系统演示|A区)' },
-      { k:'过户状态:', v:'未接收' },
-      { k:'看车地址:', v:'伟腾大厦 | 联系人: 菲菲公主(18826453321)' },
-      { k:'过户次数:', v:'0次' },
-      { k:'补充信息:', v:'' },
-      { k:'车况描述:', v:'' },
-      { k:'登记证:',   v:'<span class="tip-line">未收齐 <span class="small">【缺失登记证证件信息所导致的售后由门店承担】</span></span>', html:true }
+      { k:'拍卖方式：', v:'竞价' },
+      { k:'拍卖时间：', v:'2025-04-23 00:00-2025-04-23 17:32' },
+      { k:'入场状态：', v:'在门店库(系统演示|A区)' },
+      { k:'过户状态：', v:'未接收' },
+      { k:'看车地址：', v:'伟腾大厦 | 联系人： 菲菲公主(18826453321)' },
+      { k:'过户次数：', v:'0次' },
+      { k:'补充信息：', v:'' },
+      { k:'车况描述：', v:'' },
+      { k:'登记证：',   v:'<span class="tip-line">未收齐 <span class="small">【缺失登记证证件信息所导致的售后由门店承担】</span></span>', html:true }
     ];
     const steps = [
-      { state:'done', icon:'check',         title:'发起申请', time:'2025-04-25 17:37:28', meta:'评估师:产品测试1' },
-      { state:'cur',  icon:'chevron-down',  title:'客服主管', status:'处理中',             meta:'处理人:--' }
+      { state:'done', icon:'check',         title:'发起申请', time:'2025-04-25 17:37:28', meta:'评估师：产品测试1' },
+      { state:'cur',  icon:'chevron-down',  title:'客服主管', status:'处理中',             meta:'处理人：--' }
     ];
 
     function doReject() { alert('已驳回'); }

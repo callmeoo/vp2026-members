@@ -1,8 +1,8 @@
 # 数据库设计文档
 
-> 版本:v1.0  
-> 说明:基于已有用户体系扩展，只列**会员体系新增/调整**的表。  
-> 数据库:MySQL 8.0(与现有后端一致，假设;如为 PostgreSQL 语法需微调)
+> 版本：v1.0  
+> 说明：基于已有用户体系扩展，只列**会员体系新增/调整**的表。  
+> 数据库：MySQL 8.0(与现有后端一致，假设;如为 PostgreSQL 语法需微调)
 
 ---
 
@@ -91,10 +91,10 @@ CREATE TABLE member_profile (
 |------|------|------|
 | id | BIGINT | PK |
 | user_id | BIGINT | 用户 ID |
-| type | VARCHAR(20) | 类型:EARN_BID / EARN_SHARE / EARN_DEAL / SPEND_REDEEM / EXPIRE / ADJUST |
+| type | VARCHAR(20) | 类型：EARN_BID / EARN_SHARE / EARN_DEAL / SPEND_REDEEM / EXPIRE / ADJUST |
 | amount | INT | 积分数(正数=增，负数=减) |
 | balance_after | BIGINT | 交易后余额(便于审计) |
-| ref_type | VARCHAR(20) | 关联业务类型:CAR / ORDER / REWARD / NULL |
+| ref_type | VARCHAR(20) | 关联业务类型：CAR / ORDER / REWARD / NULL |
 | ref_id | BIGINT | 关联业务 ID(车辆 ID / 订单 ID / 权益兑换 ID) |
 | expire_at | DATETIME | 该笔积分过期时间(仅 EARN 类型有值) |
 | remaining | INT | 剩余未消耗积分数(FIFO 过期计算用) |
@@ -175,7 +175,7 @@ CREATE TABLE coin_dedup (
 | settle_month | CHAR(7) | 结算月(YYYY-MM) |
 | window_start | DATE | 统计窗口起始日 |
 | window_end | DATE | 统计窗口结束日 |
-| deal_count | INT | 窗口内成交台数 |
+| deal_count | INT | 窗口内成交台数（已付款，不含退车）|
 | previous_level | TINYINT | 变更前等级 |
 | new_level | TINYINT | 变更后等级 |
 | change_type | VARCHAR(10) | UPGRADE / DOWNGRADE / KEEP |
@@ -363,7 +363,7 @@ function grantCoin(userId, action, carId):
     amount = getCoinAmount(action)  # 从 coin_rule 读
     expireAt = currentDate + N months
     
-    // 事务:
+    // 事务：
     BEGIN
       insert coin_transaction (...)
       update member_profile.coin_balance += amount
@@ -430,7 +430,7 @@ function monthlyLevelSettle():
     
 ```
 
-> 备注:v1.1 起取消钻石荣誉标签，只算 4 级。
+> 备注：v1.1 起取消钻石荣誉标签，只算 4 级。
 
 ---
 

@@ -59,17 +59,17 @@
       <div class="flex-1 min-w-0">
         <div class="text-[14px] text-slate-900 leading-snug">{{ carTitle }}</div>
         <div class="text-right text-[16px] font-semibold text-slate-900 mt-2">¥{{ totalShown.toFixed(2) }}</div>
-        <div v-if="status === 'pending'" class="text-right text-[12px] text-rose-500 mt-1">订单剩余有效时间:支付超时</div>
+        <div v-if="status === 'pending'" class="text-right text-[12px] text-rose-500 mt-1">订单剩余有效时间：支付超时</div>
         <div v-else class="text-right text-[12px] mt-1"><span class="badge-done"><i data-lucide="check" class="w-3 h-3"></i>交易完成</span></div>
       </div>
     </div>
     <div class="px-4 pb-4 text-[13px] text-slate-700 space-y-1.5">
       <div class="flex">
-        <span class="w-24 text-slate-500">看车联系人:</span><span>菲菲</span>
-        <span class="ml-auto text-slate-500">联系电话:</span><span class="ml-1">18826453321</span>
+        <span class="w-24 text-slate-500">看车联系人：</span><span>菲菲</span>
+        <span class="ml-auto text-slate-500">联系电话：</span><span class="ml-1">18826453321</span>
       </div>
       <div class="flex">
-        <span class="w-24 text-slate-500">看车地址:</span><span>某某看车地址</span>
+        <span class="w-24 text-slate-500">看车地址：</span><span>某某看车地址</span>
       </div>
     </div>
   </div>
@@ -128,16 +128,16 @@
   <div class="bg-white mt-3">
     <div class="section-title"><i data-lucide="file-text" class="w-4 h-4 text-slate-700"></i><span>订单详情</span></div>
     <div class="pb-3">
-      <div class="row"><span class="lbl">订单号:</span><span class="val text-slate-500">{{ orderId }}</span></div>
-      <div class="row"><span class="lbl">成交时间:</span><span class="val text-slate-500">{{ orderMeta.dealAt }}</span></div>
-      <div class="row"><span class="lbl">支付时间:</span>
+      <div class="row"><span class="lbl">订单号：</span><span class="val text-slate-500">{{ orderId }}</span></div>
+      <div class="row"><span class="lbl">成交时间：</span><span class="val text-slate-500">{{ orderMeta.dealAt }}</span></div>
+      <div class="row"><span class="lbl">支付时间：</span>
         <span v-if="status === 'pending'" class="text-blue-500">待支付</span>
         <span v-else class="val text-slate-500">{{ orderMeta.paidAt }}</span>
       </div>
-      <div v-if="benefit === 'refund'" class="row"><span class="lbl">退款时间:</span><span class="val text-slate-500">{{ orderMeta.refundAt }}</span></div>
-      <div v-if="benefit === 'coupon'" class="row"><span class="lbl">优惠券核销:</span><span class="val text-slate-500">{{ orderMeta.paidAt }}</span></div>
+      <div v-if="benefit === 'refund'" class="row"><span class="lbl">退款时间：</span><span class="val text-slate-500">{{ orderMeta.refundAt }}</span></div>
+      <div v-if="benefit === 'coupon'" class="row"><span class="lbl">优惠券核销：</span><span class="val text-slate-500">{{ orderMeta.paidAt }}</span></div>
       <div class="row items-start">
-        <span class="lbl flex-shrink-0">温馨提示:</span>
+        <span class="lbl flex-shrink-0">温馨提示：</span>
         <span :class="['text-right max-w-[260px]', tipsColor]">{{ tipsText }}</span>
       </div>
     </div>
@@ -147,7 +147,7 @@
   <div class="bg-white mt-3">
     <div class="section-title"><i data-lucide="alert-circle" class="w-4 h-4 text-slate-700"></i><span>违章情况</span></div>
     <div class="pb-4">
-      <div class="row"><span class="lbl">是否有违章:</span><span class="val">无</span></div>
+      <div class="row"><span class="lbl">是否有违章：</span><span class="val">无</span></div>
     </div>
   </div>
 

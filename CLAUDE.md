@@ -7,10 +7,10 @@
 ## 一、用户协作偏好
 
 ### 决策与自治
-- **默认放手执行，不要反复确认**。包括:创建/切换分支、合并 main、本地 commit。
-- 任务流程默认为:**开发 → 本地 commit**，完成即可，**不要自动 push 到 GitHub**。
+- **默认放手执行，不要反复确认**。包括：创建/切换分支、合并 main、本地 commit。
+- 任务流程默认为：**开发 → 本地 commit**，完成即可，**不要自动 push 到 GitHub**。
 - **GitHub 推送必须由用户显式触发**(例如「推一下」「push 到 github」「现在可以推了」)。
-  原因:高频推送会触发 GitHub 风控，导致账号被封。多次本地改动累积后，由用户一次性下达推送指令再 push。
+  原因：高频推送会触发 GitHub 风控，导致账号被封。多次本地改动累积后，由用户一次性下达推送指令再 push。
 - 同理，**不要自动合并 main**(本仓库主分支直推，无 feature branch)，也避免在未推送前做远程操作。
 - 遇到破坏性操作(强推 main、删除分支、删除文件)仍然先问一句，其余全部可以直接做。
 - 不要在每一步都列 plan 等审核;简短汇报结果即可。
@@ -24,7 +24,7 @@
 ### 代码与文档
 - 代码注释尽量少、只写「为什么这样做」的非显而易见信息。
 - 不要生成 README / 设计文档 / 方案评估等长文档，除非我明确要求。
-- 演示/原型页面技术栈:**Vue 3(CDN)+ Tailwind(CDN)+ Lucide 图标**，不要引入构建工具(Vite / webpack 等)。
+- 演示/原型页面技术栈：**Vue 3(CDN)+ Tailwind(CDN)+ Lucide 图标**，不要引入构建工具(Vite / webpack 等)。
 - **前端框架统一使用 Vue.js**:页面以 `createApp({ setup(){...} }).mount('#app')` 的组合式 API 组织;用 `ref / computed / v-for / v-if / @click / {{ }}` 代替 `document.getElementById` 与 `innerHTML` 直接操作 DOM。
 - **全局统一使用 Lucide icons，禁止使用 emoji**(🔒 ✓ ✗ 🎯 等)。所有图标需求一律改为 `<i data-lucide="xxx"></i>`,Vue 页面在 `onMounted` 和相关状态变化后调用 `lucide.createIcons()` 重绘。
 - **文案统一使用「积分」**:禁止出现"金币 / 唯金币"等历史写法(包括注释、提示、页面文案、表头、按钮、提示弹框)。如需提到"1 积分 ≈ X 元"口径时也统一用"积分"。文件名 / JS 变量 / CSS 类名中的 `coin` 保留不动，只规范中文显示。
@@ -33,7 +33,7 @@
 ### Lucide 图标 + Vue @click 陷阱(踩过多次，务必遵守)
 **`@click` 不要直接绑在 `<i data-lucide="xxx">` 上**——`lucide.createIcons()` 会用 `<svg>` 替换 `<i>` 元素，绑在原 `<i>` 上的 Vue 事件随之销毁，表现就是按钮"点了没反应"。
 
-正确写法:把事件绑到外层 `<span>` / `<button>` 等不会被替换的元素:
+正确写法：把事件绑到外层 `<span>` / `<button>` 等不会被替换的元素：
 ```html
 <!-- 错误 -->
 <i data-lucide="x" @click="close"></i>
@@ -46,7 +46,7 @@
 .row { cursor: pointer; }
 .row > * { pointer-events: none; }   /* 子元素不接收事件，直接冒泡到 row */
 ```
-参考案例:`app/aftersale-apply.html` 的 `.benefit-row`。
+参考案例：`app/aftersale-apply.html` 的 `.benefit-row`。
 
 ---
 
@@ -55,7 +55,7 @@
 ### 定位
 唯普汽车「商户会员体系」演示站点 —— 静态 HTML 原型，用于评审会员等级、积分、商品(权益卡/优惠券)三大体系的规则与交互。当前演示包含 **商户端(APP/小程序 + PC)**、**BMS 后台**、**FNC 后台** 三套界面。
 
-远程仓库: `git@github.com:callmeoo/vp2026-members.git` (main 直推)。
+远程仓库： `git@github.com:callmeoo/vp2026-members.git` (main 直推)。
 
 ### 目录结构
 ```
@@ -105,7 +105,7 @@
 ### 关键约定
 
 #### 数据层
-- **唯一数据源**: `shared/member-config.js` 导出 `window.MEMBER_CONFIG`，字段:
+- **唯一数据源**: `shared/member-config.js` 导出 `window.MEMBER_CONFIG`，字段：
   - `levels` — 4 级会员(V0 普通/V1 金卡/V2 白金/V3 钻石)，含配色/门槛/权益清单
   - `coin` — 积分单价、有效期
   - `coinEarning` — 积分获取规则(用于规则展示)
@@ -126,8 +126,8 @@
 - **列表→详情 跳转**: 参照 `bms-orders.html` 模式——整行可点击，行内 `<a>` 保留原生行为，详情参数用 URLSearchParams 透传。
 - **PC 个人中心专属 nav header**: `pc/member.html` / `pc/coins.html` / `pc/mall.html` / `pc/orders.html` 不使用 `PC_COMMON.renderHeader()`(那是车源浏览 nav)，而是各自内联拼一个含「我的首页 / 我的交易 / 专用账号 / 会员中心 / 我的信息」5 项的 nav,active 项随当前页变化。
 - **演示切换面板**: 涉及多状态展示的演示页(如 `pc/mall.html` 等级折扣切换、`bms-order-detail.html` 权益使用 / 24h 过期切换)，右上角浮窗或 Tab 行右侧加 demo toggle 按钮，**只为评审用**，不进生产。
-- **「需求点说明」按钮**(评审专用): BMS 后台多个详情/列表页(bms-orders / bms-order-detail / bms-users / bms-user-detail / bms-sales-buyer-detail / fnc-wallet-log)在 tab 行右侧或表格上方加紫色「需求点说明」按钮，点击弹出 modal 列出当前页本期改造点。统一样式:`border:#a78bfa; bg:#faf5ff; color:#7c3aed`。
-  - **红点规范(必须)**:按钮右上角常驻红点，不可消失，用于引导评审人员第一眼注意到需求说明入口。写法:button 加 `position:relative`，内部末尾追加:
+- **「需求点说明」按钮**(评审专用): BMS 后台多个详情/列表页(bms-orders / bms-order-detail / bms-users / bms-user-detail / bms-sales-buyer-detail / fnc-wallet-log)在 tab 行右侧或表格上方加紫色「需求点说明」按钮，点击弹出 modal 列出当前页本期改造点。统一样式：`border:#a78bfa; bg:#faf5ff; color:#7c3aed`。
+  - **红点规范(必须)**:按钮右上角常驻红点，不可消失，用于引导评审人员第一眼注意到需求说明入口。写法：button 加 `position:relative`，内部末尾追加：
     ```html
     <span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff;"></span>
     ```
@@ -148,9 +148,9 @@
     <div class="brand-sub">www.chevip.com</div>
   </div>
   <nav class="flex-1 overflow-y-auto">
-    <!-- 业务数据 4 项 -->
-    <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-    <div class="submenu" style="display:none">
+    <!-- 业务数据 4 项 · 默认展开 -->
+    <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="database" class="w-4 h-4"></i><span>业务数据</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <div class="submenu">
       <a href="bms-orders.html"      class="sub-item">订单列表<span class="adj-tag">调整</span></a>
       <a href="bms-order-detail.html" class="sub-item">订单详情<span class="adj-tag">调整</span></a>
       <a href="bms-users.html"        class="sub-item">用户列表<span class="adj-tag">调整</span></a>
@@ -172,11 +172,11 @@
       <a href="bms-redeem-log.html"      class="sub-item">兑换记录<span class="new-tag">新增</span></a>
     </div>
 
-    <!-- 服务中心 3 项 -->
-    <div class="menu-item" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
-    <div class="submenu" style="display:none">
+    <!-- 服务中心 3 项 · 默认展开 -->
+    <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="headphones" class="w-4 h-4"></i><span>服务中心</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <div class="submenu">
       <a href="bms-aftersales.html"              class="sub-item">售后服务</a>
-      <a href="bms-aftersales-list.html"         class="sub-item">售后列表</a>
+      <a href="bms-aftersales-list.html"         class="sub-item" onclick="event.preventDefault();showRuleAlert('用户等级更新', this.href)">售后列表<span class="adj-tag">调整</span></a>
       <a href="bms-aftersale-approval-list.html" class="sub-item">企微审批</a>
     </div>
   </nav>
@@ -192,15 +192,15 @@
 
 ### 规则
 
-1. **一级项 3 个，顺序固定**:业务数据(可折叠) / 销售管理(展开) / 服务中心(可折叠)。**严禁出现**:运营部、检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
+1. **一级项 3 个，顺序固定**:业务数据 / 销售管理 / 服务中心。**三组默认全部展开**(`menu-item` 都加 `open` 类，`submenu` 不带 `style="display:none"`)，避免评审/开发遗漏 submenu 下的需求点。onclick 保留允许手动折叠。**严禁出现**:运营部、检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
 2. **业务数据 submenu 4 项**(本期由 2 项扩为 4 项):订单列表 / 订单详情 / 用户列表 / 用户详情。**全部带「调整」橙色标签**，因为本期均加入了买家等级展示和「需求点说明」入口。
 3. **销售管理 submenu 9 项，按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 买家详情 / 销售订单 / 等级设置(隐藏) / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。
    - 「客户等级管理」和「销售订单」点击触发 `showRuleAlert('按新规则调整用户等级', this.href)`，先弹框确认再跳转(确定后才跳)
    - 客户等级管理跳 `bms-level-mgmt.html`(占位空页，本期实际功能由「跑数 + 重新定级」承担，详细界面待补)
    - 「等级设置」`<a style="display:none">` 隐藏，文件 `admin/level-rule.html` 保留以备复查
-4. **服务中心 submenu 3 项**:售后服务 / 售后列表 / 企微审批。无标签，无 onclick。
+4. **服务中心 submenu 3 项**:售后服务 / 售后列表(带「调整」标签 + 点击弹框「用户等级更新」) / 企微审批。其余无标签、无 onclick。
 5. **当前页 active**:仅在对应 `sub-item` 上加 `active` 类。详情页归属对应列表的 active(如 `bms-order-detail.html` 上是「订单详情」active，不是「订单列表」)。
-6. **业务数据 / 服务中心默认折叠**，点击展开;当前页在某 submenu 下时，`menu-item` 加 `open` 且对应 `submenu` 去掉 `display:none`(`onclick` 始终保留，允许手动收起)。
+6. **三组默认全部展开**(见 1.)，无论当前页归属哪个 submenu;`onclick` 保留允许手动折叠。
 7. **新增「调整 / 新增」标签**:全部使用上方内联 style 模板，不引外部 CSS class，避免与各页自有样式冲突。
 8. **`_sidebar-alert.js`** 提供 `window.showRuleAlert(msg, navHref?)`:页面正中央居中弹框，有遮罩，**只能点「确定」关闭**(点遮罩或 ESC 不关)，关闭后若传了 navHref 则跳转。所有用 `showRuleAlert` 的页面必须在 `</body>` 之前引入此脚本。
 
