@@ -16,7 +16,8 @@
  *   - t_deal / t_bid / t_festival(有活动): 不论是否登录 → 全部车源(allcars.html / sources.html)
  *   - t_verify:  未登录 → login.html(登录后跳实名认证页)；已登录 → 实名认证页(verify.html)
  *   - t_deposit: 未登录 → login.html(登录后判断实名)；已登录 · 已实名 → 充值页(recharge.html)；已登录 · 未实名 → toast「请先完成实名认证」
- *   - t_vote / t_festival(无活动): 按钮置灰为「敬请期待」，不可点击
+ *   - t_vote: 未登录 → login.html(登录后跳调研问卷页)；已登录 → 调研问卷页(survey.html)。提交后由调研页负责回跳至个人中心(profile-loggedin.html / pc:member.html)
+ *   - t_festival(无活动): 按钮置灰为「敬请期待」，不可点击
  */
 (function (global) {
   'use strict';
@@ -51,6 +52,7 @@
     allcars:  { app: 'allcars.html',  pc: 'sources.html' },
     verify:   { app: 'verify.html',   pc: 'verify.html'  },
     recharge: { app: 'recharge.html', pc: 'recharge.html' },
+    survey:   { app: 'survey.html',   pc: 'survey.html' },
     login:    { app: 'login.html',    pc: 'login.html' }
   };
 
@@ -113,7 +115,6 @@
       // 标记任务是否为「敬请期待」(置灰按钮)
       taskAction: function (t) {
         if (t.id === 't_festival' && !this.hasActivity) return { pending: true };
-        if (t.id === 't_vote') return { pending: true };
         return { pending: false };
       },
       // 统一跳转 / toast 逻辑
@@ -129,6 +130,12 @@
           if (!this.isLogin) { this.go(TARGETS.login); return; }
           if (!this.verifyDone) { this.showToast('请先完成实名认证'); return; }
           this.go(TARGETS.recharge);
+          return;
+        }
+        // 调研问卷: 未登录先去登录，登录后进调研页(提交后由调研页回跳个人中心)
+        if (t.id === 't_vote') {
+          if (!this.isLogin) { this.go(TARGETS.login); return; }
+          this.go(TARGETS.survey);
           return;
         }
         // 成交 / 出价 / 活动专属(有活动): 不论是否登录 → 全部车源
