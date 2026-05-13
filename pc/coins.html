@@ -178,20 +178,6 @@
             <div :class="['tab-item', activeTab === 'earn' ? 'active' : '']" @click="activeTab = 'earn'">如何赚积分</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-right:4px">
-            <template v-if="activeTab === 'earn'">
-              <span style="font-size:12px;color:#94a3b8">活动</span>
-              <button @click="hasActivity = true"  :class="['rt-toggle-btn', hasActivity  ? 'active' : '']">有活动</button>
-              <button @click="hasActivity = false" :class="['rt-toggle-btn', !hasActivity ? 'active' : '']">无活动</button>
-              <span style="font-size:12px;color:#94a3b8;margin-left:6px">实名</span>
-              <button @click="verifyDone = false" :class="['rt-toggle-btn', !verifyDone ? 'active' : '']">未认证</button>
-              <button @click="verifyDone = true"  :class="['rt-toggle-btn', verifyDone  ? 'active' : '']">已认证</button>
-              <span style="font-size:12px;color:#94a3b8;margin-left:6px">充值</span>
-              <button @click="depositDone = false" :class="['rt-toggle-btn', !depositDone ? 'active' : '']">未充值</button>
-              <button @click="depositDone = true"  :class="['rt-toggle-btn', depositDone  ? 'active' : '']">已充值</button>
-              <span style="font-size:12px;color:#94a3b8;margin-left:6px">调研</span>
-              <button @click="voteDone = false" :class="['rt-toggle-btn', !voteDone ? 'active' : '']">未完成</button>
-              <button @click="voteDone = true"  :class="['rt-toggle-btn', voteDone  ? 'active' : '']">已完成</button>
-            </template>
             <button @click="showSpec = true" style="position:relative;padding:5px 12px;border:1px solid #a78bfa;background:#faf5ff;color:#7c3aed;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px">
               <i data-lucide="file-text" class="w-3.5 h-3.5"></i>需求点说明
               <span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:#ef4444;border-radius:50%;box-shadow:0 0 0 2px #fff"></span>
@@ -269,7 +255,7 @@
           <li>撤回时机：使用无理由退车成功退车的订单，已发放的成交奖励（+50）同步扣回；过户前退车（积分未发放）不涉及扣减；出价积分及其他行为积分不撤回。</li>
           <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」。</li>
           <li>活动额外奖励：限时活动期间产生的出价 / 成交积分，在对应流水行末尾展示<span style="display:inline-block;margin:0 3px;padding:1px 6px;font-size:10px;font-weight:600;border-radius:3px;background:#fef3c7;color:#d97706;border:1px solid #fde68a">限时活动</span>标签，帮助用户识别该笔积分来源于活动加成。</li>
-          <li>推荐任务 Mock 数据（PC 端默认已登录态，「如何赚积分」tab 右上方 demo toggle 支持 4 个开关：限时活动 / 实名认证 / 首充保证金 / 调研问卷）：
+          <li>推荐任务 Mock 数据（PC 端默认已登录态，「如何赚积分」tab 右侧悬浮 Mock 切换卡片支持 4 个开关：实名认证 / 首充保证金 / 调研问卷 / 限时活动）：
             <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
               <li>已完成的一次性任务（实名认证 / 首充保证金 / 调研问卷）从列表中移除，不再展示。</li>
               <li>活动专属任务 · 无活动时：任务行展示占位文案「以具体活动为准，敬请期待」，「去完成」按钮置灰为「敬请期待」不可点击。</li>
@@ -297,6 +283,43 @@
       </div>
       <div style="padding:12px 20px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end">
         <button @click="showSpec = false" style="padding:8px 24px;background:#7c3aed;color:#fff;border:none;border-radius:20px;font-size:13px;cursor:pointer;font-weight:500">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 推荐任务 Mock 演示切换(仅「如何赚积分」tab 显示，已登录态无需登录态开关) -->
+  <div v-show="activeTab === 'earn'" style="position:fixed;top:96px;right:20px;z-index:90;width:200px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.1);border:1px solid #e2e8f0;padding:12px">
+    <div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;display:flex;align-items:center;gap:5px">
+      <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>推荐任务 Mock 切换</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">实名认证</div>
+        <div style="display:flex;gap:4px">
+          <button @click="verifyDone = false" :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:!verifyDone?'#7c3aed':'#f1f5f9', color:!verifyDone?'#fff':'#64748b'}">未认证</button>
+          <button @click="verifyDone = true"  :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:verifyDone?'#7c3aed':'#f1f5f9', color:verifyDone?'#fff':'#64748b'}">已认证</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">首充保证金</div>
+        <div style="display:flex;gap:4px">
+          <button @click="depositDone = false" :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:!depositDone?'#7c3aed':'#f1f5f9', color:!depositDone?'#fff':'#64748b'}">未充值</button>
+          <button @click="depositDone = true"  :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:depositDone?'#7c3aed':'#f1f5f9', color:depositDone?'#fff':'#64748b'}">已充值</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">调研问卷</div>
+        <div style="display:flex;gap:4px">
+          <button @click="voteDone = false" :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:!voteDone?'#7c3aed':'#f1f5f9', color:!voteDone?'#fff':'#64748b'}">未完成</button>
+          <button @click="voteDone = true"  :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:voteDone?'#7c3aed':'#f1f5f9', color:voteDone?'#fff':'#64748b'}">已完成</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">限时活动</div>
+        <div style="display:flex;gap:4px">
+          <button @click="hasActivity = false" :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:!hasActivity?'#7c3aed':'#f1f5f9', color:!hasActivity?'#fff':'#64748b'}">无活动</button>
+          <button @click="hasActivity = true"  :style="{flex:1, padding:'4px 0', border:'none', borderRadius:'4px', fontSize:'11px', fontWeight:700, cursor:'pointer', background:hasActivity?'#7c3aed':'#f1f5f9', color:hasActivity?'#fff':'#64748b'}">有活动</button>
+        </div>
       </div>
     </div>
   </div>
@@ -379,8 +402,6 @@ const app = createApp({
       { date: '今天 · 2026-04-30', items: [
         earn('deal', '2026-04-30 11:23:18', { metaR:'粤A78546', expire: '2027-04-30' }),
         earn('bid',  '2026-04-30 11:05:44', { metaR:'闽A12345', expire: '2027-04-30' }),
-        earn('bid',  '2026-04-30 10:45:02', { metaR:'粤B88888', expire: '2027-04-30' }),
-        earn('bid',  '2026-04-30 10:22:17', { metaR:'粤HSB009', expire: '2027-04-30' }),
         earn('bid',  '2026-04-30 10:00:31', { metaR:'粤G55219', coin: 20, activityTag:'限时活动', expire: '2027-04-30' }),
       ]},
       { date: '昨天 · 2026-04-29', items: [
