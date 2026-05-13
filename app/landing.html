@@ -486,7 +486,6 @@ app.mount('#app');
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>本页为对外宣讲版，内容来自 shared/member-config.js 的 levels（等级权益）、coinEarning（积分获取规则）、qaList（Q&A），与 pc/member-intro.html 共用同一数据源，改一处两端同步。</li>
-        <li>会员等级判定：账号余额（含冻结）≥ 2000 且前 3 个自然月成交台数达标，每月 1 日刷新；不满足条件默认 V0。</li>
         <li>历史数据处理：7/1 上线日以前 3 月成交记录 + 当前余额跑数确认初始等级；积分从上线日起算，不追溯、不补发。</li>
         <li>Q&A 数据来自 qaList 配置项，新增或修改问题只需改 shared/member-config.js，两端页面自动同步。</li>
         <li>点击「查看我的权益」按钮需先登录。登录完成后直接跳转至会员中心（member.html），无需重新返回本页。</li>
