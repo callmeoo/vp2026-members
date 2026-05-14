@@ -159,7 +159,7 @@
       </div>
 
       <div class="ant-card p-4 mb-5">
-        <div class="grid grid-cols-5 gap-3 items-end">
+        <div class="grid grid-cols-6 gap-3 items-end">
           <div class="col-span-2">
             <label class="text-xs text-slate-500 block mb-1">关键字</label>
             <input class="ant-input" v-model="filters.keyword" placeholder="商品名称，支持模糊 / 精准搜索">
@@ -177,6 +177,14 @@
               <option value="">全部</option>
               <option>上架</option>
               <option>已下架</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-500 block mb-1">库存告警</label>
+            <select class="ant-input" v-model="filters.alert">
+              <option value="">不限</option>
+              <option value="alert">告警</option>
+              <option value="ok">未告警</option>
             </select>
           </div>
           <div class="flex gap-2">
@@ -406,8 +414,8 @@ createApp({
       ];
     });
 
-    const filters = reactive({ keyword:'', category:'', status:'', type:'' });
-    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.status=''; filters.type=''; };
+    const filters = reactive({ keyword:'', category:'', status:'', type:'', alert:'' });
+    const resetFilter = () => { filters.keyword=''; filters.category=''; filters.status=''; filters.type=''; filters.alert=''; };
 
     const categoryTagCls = (c) => ({ '数据查询':'tag-blue', '交易折扣':'tag-purple' })[c] || 'tag-default';
     const statusTagCls = (s) => ({ '上架':'tag-green', '已下架':'tag-default' })[s] || 'tag-default';
@@ -424,6 +432,8 @@ createApp({
       if (filters.category && p.category !== filters.category) return false;
       if (filters.status && p.status !== filters.status) return false;
       if (filters.type && p.productType !== filters.type) return false;
+      if (filters.alert === 'alert' && !isLowStock(p)) return false;
+      if (filters.alert === 'ok'    &&  isLowStock(p)) return false;
       return true;
     }));
 
