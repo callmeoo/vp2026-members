@@ -210,7 +210,7 @@
           <div class="num blue">{{ submissions.length }}</div>
         </div>
         <div class="stat-tile">
-          <div class="lbl">来源占比（移动端 / 小程序 / PC）</div>
+          <div class="lbl">来源占比（app / 小程序 / pc）</div>
           <div class="num orange" style="font-size:22px">{{ countApp }} / {{ countMp }} / {{ countPc }}</div>
         </div>
         <div class="stat-tile">
@@ -310,7 +310,7 @@
       <span @click="detail = null" style="cursor:pointer;color:#94a3b8;font-size:22px;line-height:1">&times;</span>
     </div>
     <div style="padding:18px 22px;overflow-y:auto;flex:1">
-      <div class="text-[12px] text-slate-500 mb-3">{{ fmtTime(detail.at) }} · 来自 {{ detail.platform === 'pc' ? 'PC 端' : '移动端' }} · 配置版本 {{ detail.surveyVersion }}</div>
+      <div class="text-[12px] text-slate-500 mb-3">{{ fmtTime(detail.at) }} · 来自 {{ platformLabel(detail.platform) }} · 配置版本 {{ detail.surveyVersion }}</div>
       <div v-for="(q, qi) in survey.questions" :key="qi" class="mb-4 pb-3 border-b border-dashed border-slate-100">
         <div class="text-[13px] font-medium text-slate-800 mb-1">Q{{ qi + 1 }}. {{ q.text }}</div>
         <div class="text-[12px] text-slate-600 pl-3" v-html="renderAns(detail.answers[qi], q)"></div>
@@ -346,7 +346,7 @@
       <div style="margin-bottom:14px">
         <div style="font-weight:700;color:#1677ff;margin-bottom:6px">二、问卷详情视图</div>
         <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px">
-          <li>顶部 KPI:累计提交份数 / 来源占比（移动端 / 小程序 / PC）/ 最近提交时间。</li>
+          <li>顶部 KPI:累计提交份数 / 来源占比（app / 小程序 / pc）/ 最近提交时间。</li>
           <li>题目维度统计(默认收起):单选/多选题展示选项分布柱状图;简述题不在此卡片显示,具体内容进入答题详情查看。</li>
           <li>提交记录列表:序号 / 用户姓名 / 用户名(系统唯一标识) / 绑定手机号(掩码展示) / 来源 / 提交时间 / 操作(查看答题)。</li>
           <li>「导出全部」将本问卷下所有提交导出为 CSV，列依次为 用户姓名 / 用户名 / 绑定手机号 / 来源 / 提交时间 / Q1~Qn 回答;<b>CSV 内容不脱敏</b>，便于运营线下分析。「清空本问卷」仅清除当前问卷的演示数据,其他问卷不受影响。</li>
@@ -561,7 +561,7 @@ createApp({
       return s.slice(0, 3) + '****' + s.slice(-4);
     }
     // 来源平台 → tag class / 中文标签
-    function platformLabel(p) { return ({ app: '移动端', mp: '小程序', pc: 'PC 端' })[p] || '移动端'; }
+    function platformLabel(p) { return ({ app: 'app', mp: '小程序', pc: 'pc' })[p] || 'app'; }
     function platformTag(p)   { return ({ app: 'tag-orange', mp: 'tag-green', pc: 'tag-blue' })[p] || 'tag-orange'; }
 
     // CSV 导出:不再做掩码(便于运营线下分析);列依次为 用户姓名 / 用户名 / 绑定手机号 / 来源 / 提交时间 / Q1~Qn
