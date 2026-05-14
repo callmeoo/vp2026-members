@@ -320,7 +320,7 @@ createApp({
         <li><strong>触发入口</strong>：会员中心「推荐任务」→「参与平台投票 / 问卷 / 调研」点击「去完成」进入本页;一次性任务，提交后不再展示。</li>
         <li><strong>题型支持</strong>：单选 / 多选 / 文本三类。单选 / 多选支持「其他」分支(选中后弹出 chip 标签 + 文本补充框);文本题最多 200 字。</li>
         <li><strong>积分奖励</strong>：提交成功后赠送 <strong style="color:#7c3aed">2 积分</strong>(参考 <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">recommendedTasks.t_vote</code>)，回跳至会员中心(已登录态)。</li>
-        <li><strong>匿名提交</strong>：用户账号 / 手机号 / IP 等敏感字段在落库时<strong>不与回答关联</strong>，仅保留聚合结果用于产品改进。</li>
+        <li><strong>用户信息脱敏</strong>：回答数据保留用户账号 / 手机号字段，但在 BMS 统计页与导出时<strong>统一掩码展示</strong>(如 <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">张**</code> / <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">138****1234</code>)，保护隐私的同时支持运营按用户维度分析。</li>
         <li><strong>提交校验</strong>：必答题未作答时底部「提交」按钮置灰;所有必答完成后按钮高亮可点。</li>
       </ol>
     </div>
