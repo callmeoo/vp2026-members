@@ -40,6 +40,10 @@
   .tag-cyan { background: #e6fffb; color: #08979c; border: 1px solid #87e8de; }
   .tag-default { background: #fafafa; color: #595959; border: 1px solid #d9d9d9; }
   tbody tr:hover { background: #fafafa; }
+  /* 库存告警行:橙色背景 + 左侧橙条 */
+  tbody tr.stock-alert-row { background: #fff7e6; }
+  tbody tr.stock-alert-row:hover { background: #ffeec2; }
+  tbody tr.stock-alert-row td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
   .icon-tile { width:36px; height:36px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0; }
   /* 关键字搜索 */
   .kw-wrap { position: relative; }
@@ -198,7 +202,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <tr v-for="p in filteredProducts" :key="p.code">
+            <tr v-for="p in filteredProducts" :key="p.code" :class="{ 'stock-alert-row': isLowStock(p) }">
               <td class="px-4 py-3"><input type="checkbox"></td>
               <td class="px-4 py-3">
                 <div class="font-medium text-slate-800">{{ p.name }}</div>
@@ -210,7 +214,10 @@
               </td>
               <td class="px-4 py-3 text-right font-semibold">{{ p.coin }}</td>
               <td class="px-4 py-3 text-center">{{ p.validityDays }}</td>
-              <td class="px-4 py-3 text-right" :class="{ 'text-rose-600 font-semibold': p.stock < (p.alertThreshold ?? 20) }">{{ p.stock.toLocaleString() }}</td>
+              <td class="px-4 py-3 text-right">
+                <span :class="{ 'text-orange-600 font-semibold': isLowStock(p) }">{{ p.stock.toLocaleString() }}</span>
+                <span v-if="isLowStock(p)" class="ant-tag tag-orange ml-1" style="font-size:11px"><i data-lucide="alert-triangle" class="w-3 h-3 mr-0.5"></i>库存告警</span>
+              </td>
               <td class="px-4 py-3 text-right">{{ p.issued.toLocaleString() }}</td>
               <td class="px-4 py-3 text-center"><span class="ant-tag" :class="statusTagCls(p.status)">{{ p.status }}</span></td>
               <td class="px-4 py-3 text-center text-xs">
@@ -389,7 +396,7 @@ createApp({
     const stats = computed(() => {
       const up = products.filter(p => p.status === '上架').length;
       const down = products.filter(p => p.status === '已下架').length;
-      const low = products.filter(p => p.status === '上架' && p.stock < (p.alertThreshold ?? 20)).length;
+      const low = products.filter(p => p.status === '上架' && p.stock <= (p.alertThreshold ?? 20)).length;
       const issuedSum = products.reduce((s, p) => s + (p.issued || 0), 0);
       return [
         { label:'上架中', value: up },
@@ -406,6 +413,8 @@ createApp({
     const statusTagCls = (s) => ({ '上架':'tag-green', '已下架':'tag-default' })[s] || 'tag-default';
     const typeTagCls = (v) => ({ 'DATA_QUERY_COUPON':'tag-blue', 'RESERVE_PRICE':'tag-purple', 'COMPFEE_COUPON':'tag-orange', 'SERVICE_COUPON':'tag-cyan' })[v] || 'tag-default';
     const typeLabel = (v) => (productTypes.find(t => t.value === v) || {}).label || '';
+    // 库存 ≤ 阈值 触发告警(上架商品才标红)
+    const isLowStock = (p) => p.status === '上架' && p.stock <= (p.alertThreshold ?? 20);
 
     const filteredProducts = computed(() => products.filter(p => {
       if (filters.keyword) {
@@ -485,7 +494,7 @@ createApp({
 
     return {
       stats, filters, resetFilter, products, filteredProducts,
-      categoryTagCls, statusTagCls, typeTagCls, typeLabel, toggleStatus,
+      categoryTagCls, statusTagCls, typeTagCls, typeLabel, isLowStock, toggleStatus,
       productTypes, currentTypeDenominations,
       modalOpen, editingIdx, form, openAdd, openEdit, closeModal, saveProduct,
       opsOpen, toggleOps, showSpec
