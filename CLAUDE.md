@@ -62,65 +62,81 @@
 /
 ├─ index.html                  # Demo 导航首页 + 需求说明 + Word 内联展示
 ├─ app/                        # 商户端(手机) 原型
-│   ├─ home.html              # APP 首页
-│   ├─ landing.html           # 会员体系落地页(对外宣讲版，含 Q&A)
-│   ├─ member.html            # 会员中心
-│   ├─ coins.html             # 积分明细
-│   ├─ level.html             # 等级成长
-│   ├─ mall.html              # 权益商城
-│   ├─ my-rewards.html        # 我的权益卡
+│   ├─ home.html / landing.html / member.html / coins.html / level.html
+│   ├─ mall.html / my-rewards.html / coupons.html
 │   ├─ profile.html / profile-loggedin.html / login.html / settings.html
-│   ├─ orders.html / order-detail.html / won-order(s)*
+│   ├─ orders.html / won-order(s)* / order-detail.html
+│   ├─ car-detail.html / car-detail-reserve.html / car-bid.html / maintenance-query.html
+│   ├─ allcars.html / all-cars.html / splash.html / recharge.html
+│   ├─ survey.html            # 调研问卷(登录后从「推荐任务」进入,单次提交)
 │   ├─ aftersale-apply.html   # 售后申请(含「无理由退车」勾选 + 24h 演示切换)
-│   └─ aftersale-approval-detail.html
+│   └─ aftersale-approval-list.html / aftersale-approval-detail.html
 ├─ pc/                         # 商户端(PC)原型
-│   ├─ home.html / sources.html / reserved.html
-│   ├─ car-detail.html        # 含保留价积分兑换闭环
-│   ├─ member.html            # 会员中心(我的首页定位)
-│   ├─ member-intro.html      # 会员权益说明(对外版，含 Q&A)
-│   ├─ coins.html             # 积分明细 + 如何赚积分
-│   ├─ mall.html              # 积分商城(等级折扣演示切换 V0~V3)
-│   ├─ orders.html            # 我的交易-买到的车(含支付占位弹窗)
-│   ├─ common.css / _partials.js
+│   ├─ home.html / sources.html / reserved.html / auction.html / special.html
+│   ├─ car-detail.html        # 含保留价/历史成交行情积分兑换闭环
+│   ├─ member.html / member-intro.html / coins.html / mall.html / orders.html
+│   ├─ card-pack.html         # 我的卡包(权益+优惠券)
+│   ├─ recharge.html / survey.html
+│   └─ common.css / _partials.js
 ├─ admin/                      # BMS / FNC 后台 — Ant Design 风格
 │   ├─ _sidebar-alert.js      # 通用居中弹框 showRuleAlert(替代浏览器 alert)
-│   ├─ dashboard.html         # 运营仪表盘
-│   ├─ level-rule.html        # 等级设置(已从 sidebar 隐藏，文件保留)
-│   ├─ coin-rule.html         # 积分规则(交易/行为/限时活动 三类)
-│   ├─ rewards.html           # 商城商品配置
-│   ├─ members.html           # 商户档案
-│   ├─ bms-orders.html / bms-order-detail.html / order-detail.html  # 订单
-│   ├─ bms-users.html / bms-user-detail.html                        # 用户
-│   ├─ bms-sales-buyers.html / bms-sales-buyer-detail.html          # 买家
-│   ├─ bms-sales-orders.html / sales-orders.html                    # 销售订单
-│   ├─ bms-level-mgmt.html    # 客户等级管理(占位空页，新规则定级跑数后填充)
-│   ├─ bms-coin-log.html / bms-redeem-log.html                      # 积分流水/兑换记录
-│   ├─ bms-aftersales*.html / bms-aftersale-approval-list.html      # 售后/审批
-│   └─ fnc-home.html / fnc-wallet-log.html                          # FNC 后台
-├─ shared/
-│   └─ member-config.js       # 会员/积分/权益卡/Q&A/推荐任务 · 全站统一数据源
-└─ docs/                       # PRD / DB Schema / API 文档
+│   ├─ dashboard.html / level-rule.html(隐藏) / coin-rule.html / rewards.html / members.html
+│   ├─ bms-orders.html / bms-order-detail.html / order-detail.html       # 订单
+│   ├─ bms-users.html / bms-user-detail.html                              # 用户
+│   ├─ bms-sales-buyers.html / bms-sales-buyer-detail.html                # 买家
+│   ├─ bms-sales-orders.html / sales-orders.html                          # 销售订单
+│   ├─ bms-level-mgmt.html / bms-coin-log.html / bms-redeem-log.html      # 等级/积分
+│   ├─ bms-survey.html        # 调研问卷结果(按 surveyId 聚合统计 + CSV 导出)
+│   ├─ bms-coupons.html       # 运营部 · 优惠券(派发/类型/来源管理)
+│   ├─ bms-aftersales*.html / bms-aftersale-approval-list.html            # 售后/审批
+│   └─ fnc-home.html / fnc-wallet-log.html                                # FNC 后台
+├─ shared/                     # 全站共享数据源 + 逻辑模块
+│   ├─ member-config.js       # 会员/积分/Q&A/推荐任务 配置(window.MEMBER_CONFIG)
+│   ├─ survey-config.js       # 调研问卷库(window.SURVEY_CONFIGS / SURVEY_CONFIG)
+│   ├─ reserve-cars.js        # 有保留价车源列表 + window.VPUser 登录态
+│   ├─ reserve-price-logic.js # 保留价/历史成交价兑换共享逻辑(ReservePriceLogic / HistoryPriceLogic)
+│   ├─ recommended-tasks.js   # 推荐任务 Vue 全局组件(t_vote 跳 survey.html)
+│   ├─ coin-earning-rules.js  # 积分获取规则展示
+│   └─ benefit-matrix.js      # 权益矩阵渲染
+└─ docs/                       # PRD / DB Schema / API 文档(原型阶段不维护)
 ```
 
 ### 关键约定
 
 #### 数据层
-- **唯一数据源**: `shared/member-config.js` 导出 `window.MEMBER_CONFIG`，字段：
+- **`shared/member-config.js` → `window.MEMBER_CONFIG`**(会员/积分/Q&A 主配置):
   - `levels` — 4 级会员(V0 普通/V1 金卡/V2 白金/V3 钻石)，含配色/门槛/权益清单
   - `coin` — 积分单价、有效期
   - `coinEarning` — 积分获取规则(用于规则展示)
-  - `recommendedTasks` — 推荐任务(含 `dailyMax` 字段表示日上限，如 `t_share.dailyMax = 20`)
+  - `recommendedTasks` — 推荐任务(含 `dailyMax`，`t_vote` 跳 `survey.html`)
   - `redeemableRewards` — 商城商品/权益卡
   - `qaList` — Q&A 常见问题(app/landing.html 与 pc/member-intro.html 共用，改这里两端同步)
+- **`shared/survey-config.js` → `window.SURVEY_CONFIGS` / `SURVEY_CONFIG`**:调研问卷库,active 标记当前对外发放的问卷;`SURVEY_CONFIG` = active 一份,`SURVEY_CONFIGS` 是全部历史问卷数组(BMS 后台用)。题目支持 `single / multi / text`,可在每题加 `followUp.tagsByOption` 触发「选完展开补充」。
+- **`shared/reserve-price-logic.js`**:导出 `ReservePriceLogic` (50 积分 / V2+ 免费) + `HistoryPriceLogic` (100 积分 / V1+ 免费),两者同形,API:`canView(levelCode, carId)` / `getCoins()` / `exchange(carId, carTitle)` / `getUnlockedIds()`。
+- **`shared/recommended-tasks.js`**:推荐任务 Vue 全局组件 `RecommendedTasksComponent`,处理 t_verify / t_deposit / t_vote 的登录拦截 + 跳转。
 - **配色**(按 V 编号位置固定，与等级名解耦): V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`
 - **积分**: 1 积分 = 0.1 元;有效期 12 个自然月，按 `获得月 + 12 月` 滚动到期
 - **等级门槛**: V0 帐户 < 2000 且近 3 月无成交 / V1 ≥ 2000 且 1-3 台 / V2 ≥ 2000 且 4-14 台 / V3 ≥ 2000 且 ≥ 15 台
 
 #### 业务规则
 - **「无理由退车」权益**: V3 钻石专享，**车辆中标后 24 小时内可申请**，超时即使有权益也无法使用。所有相关页面(BMS 申请售后、APP/PC 售后申请)都需要在 UI 显示这个有效期，且支持「未超期 / 超 24h」演示切换。
+- **保留价查询权益**:V2/V3 直接查看;V0/V1 消耗 50 积分对单车兑换,有效期内反复查看。pc/car-detail.html + app/car-detail-reserve.html 入口。
+- **历史成交行情权益**:V1/V2/V3 直接查看;V0 消耗 100 积分对单车兑换,有效期内反复查看。**仅车辆详情页有入口,出价页 (car-bid) 不展示**。
+- **登录拦截**:`查看保留价` / `历史成交价` / `调研问卷` 均需登录后才可使用。未登录点击 → 跳 `login.html?from=<page>.html`;登录回跳后需**再次点击**入口才打开,不自动展开。
 - **售后使用无理由退车的钱包账单**: FNC 钱包账单流水摘要追加 `(无理由退车)` 后缀，**整行标红**(`color:#f56c6c`)，格式 `订单售后款项(无理由退车):{车牌号}` / `扣减订单售后款项(无理由退车):{车牌号}`。
 - **历史数据处理(7/1 上线日)**: 等级跑数 + 积分不追溯。系统对前 3 个月历史成交记录(抛成交退车) + 当前账户余额跑数，7/1 当天确定每个用户的等级与权益;积分从功能上线起正式计算，不补发。
-- **跨页 demo state · localStorage 三键**: `pc/car-detail.html` 保留价积分兑换闭环用以下键持久化(刷新后保留):`chevip_user_coins`(余额) / `chevip_unlocked_reserve_ids`(已解锁车辆 id 列表) / `chevip_redeemed_records`(兑换流水)。后续 `pc/mall.html`、`admin/bms-redeem-log.html`、`admin/bms-coin-log.html` 接入相同状态请读这三个键。
+- **调研问卷**:从「推荐任务」→「参与平台投票 / 问卷 / 调研」→「去完成」进入 `survey.html`(app/pc 同一份 config)。需登录;提交得 +2 积分;**同一用户只能填一次**,提交后 `chevip_survey_done='1'`,推荐任务列表自动隐藏该任务。提交记录写 `chevip_survey_submissions`,BMS 「调研问卷结果」按 surveyId 聚合统计。
+- **跨页 demo state · localStorage 键清单**:
+  | key | 含义 | 写入者 |
+  |---|---|---|
+  | `vp_user` | 登录态 + 等级(JSON `{level, loginAt}`) | `shared/reserve-cars.js → VPUser.set()` |
+  | `chevip_user_coins` | 积分余额(默认 356) | 兑换 / demo 切换 |
+  | `chevip_unlocked_reserve_ids` | 保留价已解锁车辆 id 列表 | ReservePriceLogic.exchange |
+  | `chevip_unlocked_history_ids` | 历史成交价已解锁车辆 id 列表 | HistoryPriceLogic.exchange |
+  | `chevip_redeemed_records` | 兑换流水(两类共用,按 `type: reserve_price / history_price` 区分) | 两类 exchange |
+  | `chevip_survey_submissions` | 调研问卷提交数组(含 surveyId / user / answers) | app/pc survey.html |
+  | `chevip_survey_done` | 当前用户已完成调研,推荐任务列表据此隐藏 t_vote | survey.html 提交成功 |
+  | `chevip_user_name` | 兜底用户显示名(legacy) | demo seed |
 
 #### UI 模式
 - **列表→详情 跳转**: 参照 `bms-orders.html` 模式——整行可点击，行内 `<a>` 保留原生行为，详情参数用 URLSearchParams 透传。
@@ -157,7 +173,7 @@
       <a href="bms-user-detail.html" class="sub-item">用户详情<span class="adj-tag">调整</span></a>
     </div>
 
-    <!-- 销售管理 9 项(等级设置 display:none 隐藏) -->
+    <!-- 销售管理 10 项 · 默认展开(等级设置 display:none 隐藏) -->
     <div class="menu-item open"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>销售管理</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
     <div class="submenu">
       <a href="dashboard.html"           class="sub-item">运营仪表盘<span class="new-tag">新增</span></a>
@@ -170,6 +186,7 @@
       <a href="rewards.html"             class="sub-item">商城商品配置<span class="new-tag">新增</span></a>
       <a href="bms-coin-log.html"        class="sub-item">积分流水<span class="new-tag">新增</span></a>
       <a href="bms-redeem-log.html"      class="sub-item">兑换记录<span class="new-tag">新增</span></a>
+      <a href="bms-survey.html"          class="sub-item">调研问卷结果<span class="new-tag">新增</span></a>
     </div>
 
     <!-- 服务中心 3 项 · 默认展开 -->
@@ -177,7 +194,13 @@
     <div class="submenu">
       <a href="bms-aftersales.html"              class="sub-item">售后服务</a>
       <a href="bms-aftersales-list.html"         class="sub-item" onclick="event.preventDefault();showRuleAlert('用户等级更新', this.href)">售后列表<span class="adj-tag">调整</span></a>
-      <a href="bms-aftersale-approval-list.html" class="sub-item">企微审批</a>
+      <a href="bms-aftersale-approval-list.html" class="sub-item" onclick="event.preventDefault();showRuleToast('无理由权益使用的说明', this.href)">企微审批<span class="adj-tag">调整</span></a>
+    </div>
+
+    <!-- 运营部 1 项 · 默认展开 -->
+    <div class="menu-item open" onclick="const s=this.nextElementSibling;this.classList.toggle('open');s.style.display=s.style.display==='none'?'':'none'"><i data-lucide="briefcase" class="w-4 h-4"></i><span>运营部</span><i data-lucide="chevron-right" class="w-3 h-3 chevron"></i></div>
+    <div class="submenu">
+      <a href="bms-coupons.html" class="sub-item">优惠券<span class="adj-tag">调整</span></a>
     </div>
   </nav>
 </aside>
@@ -192,17 +215,18 @@
 
 ### 规则
 
-1. **一级项 3 个，顺序固定**:业务数据 / 销售管理 / 服务中心。**三组默认全部展开**(`menu-item` 都加 `open` 类，`submenu` 不带 `style="display:none"`)，避免评审/开发遗漏 submenu 下的需求点。onclick 保留允许手动折叠。**严禁出现**:运营部、检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
-2. **业务数据 submenu 4 项**(本期由 2 项扩为 4 项):订单列表 / 订单详情 / 用户列表 / 用户详情。**全部带「调整」橙色标签**，因为本期均加入了买家等级展示和「需求点说明」入口。
-3. **销售管理 submenu 9 项，按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 买家详情 / 销售订单 / 等级设置(隐藏) / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录。
+1. **一级项 4 个，顺序固定**:业务数据 / 销售管理 / 服务中心 / 运营部。**四组默认全部展开**(`menu-item` 都加 `open` 类，`submenu` 不带 `style="display:none"`)，避免评审/开发遗漏 submenu 下的需求点。onclick 保留允许手动折叠。**严禁出现**:检测认证管理、政企大客户、库存管理、查验管理、人力资源、集团门店管理、共享拍、配置管理、报表管理、中控中心 等旧项。
+2. **业务数据 submenu 4 项**:订单列表 / 订单详情 / 用户列表 / 用户详情。**全部带「调整」橙色标签**，因为本期均加入了买家等级展示和「需求点说明」入口。
+3. **销售管理 submenu 10 项，按此顺序**:运营仪表盘 / 客户等级管理 / 买家管理 / 买家详情 / 销售订单 / 等级设置(隐藏) / 积分规则 / 商城商品配置 / 积分流水 / 兑换记录 / 调研问卷结果。
    - 「客户等级管理」和「销售订单」点击触发 `showRuleAlert('按新规则调整用户等级', this.href)`，先弹框确认再跳转(确定后才跳)
    - 客户等级管理跳 `bms-level-mgmt.html`(占位空页，本期实际功能由「跑数 + 重新定级」承担，详细界面待补)
    - 「等级设置」`<a style="display:none">` 隐藏，文件 `admin/level-rule.html` 保留以备复查
-4. **服务中心 submenu 3 项**:售后服务 / 售后列表(带「调整」标签 + 点击弹框「用户等级更新」) / 企微审批。其余无标签、无 onclick。
-5. **当前页 active**:仅在对应 `sub-item` 上加 `active` 类。详情页归属对应列表的 active(如 `bms-order-detail.html` 上是「订单详情」active，不是「订单列表」)。
-6. **三组默认全部展开**(见 1.)，无论当前页归属哪个 submenu;`onclick` 保留允许手动折叠。
-7. **新增「调整 / 新增」标签**:全部使用上方内联 style 模板，不引外部 CSS class，避免与各页自有样式冲突。
-8. **`_sidebar-alert.js`** 提供 `window.showRuleAlert(msg, navHref?)`:页面正中央居中弹框，有遮罩，**只能点「确定」关闭**(点遮罩或 ESC 不关)，关闭后若传了 navHref 则跳转。所有用 `showRuleAlert` 的页面必须在 `</body>` 之前引入此脚本。
+4. **服务中心 submenu 3 项**:售后服务 / 售后列表(带「调整」+ `showRuleAlert('用户等级更新')`) / 企微审批(带「调整」+ `showRuleToast('无理由权益使用的说明')`)。
+5. **运营部 submenu 1 项**:优惠券(带「调整」标签)。
+6. **当前页 active**:仅在对应 `sub-item` 上加 `active` 类。详情页归属对应列表的 active(如 `bms-order-detail.html` 上是「订单详情」active，不是「订单列表」)。
+7. **四组默认全部展开**(见 1.)，无论当前页归属哪个 submenu;`onclick` 保留允许手动折叠。
+8. **新增「调整 / 新增」标签**:全部使用上方内联 style 模板，不引外部 CSS class，避免与各页自有样式冲突。
+9. **`_sidebar-alert.js`** 提供 `window.showRuleAlert(msg, navHref?)`:页面正中央居中弹框，有遮罩，**只能点「确定」关闭**(点遮罩或 ESC 不关)，关闭后若传了 navHref 则跳转。所有用 `showRuleAlert` 的页面必须在 `</body>` 之前引入此脚本。
 
 ### FNC 后台 sidebar(独立模板)
 
@@ -214,10 +238,13 @@
 
 | 任务 | 入口 |
 |---|---|
-| 改会员等级 / 权益 / 积分规则 / Q&A | `shared/member-config.js` |
+| 改会员等级 / 权益 / 积分规则 / Q&A / 推荐任务 | `shared/member-config.js` |
+| 改调研问卷内容 / 加新问卷 | `shared/survey-config.js`(SURVEYS 数组,active:true 切换发放问卷) |
+| 改保留价/历史成交价兑换逻辑 | `shared/reserve-price-logic.js`(同时影响 PC + APP 详情页) |
+| 改推荐任务路由/登录拦截 | `shared/recommended-tasks.js` |
+| 看调研问卷结果 + 导 CSV | `admin/bms-survey.html`(按 surveyId 切换,自带 mock 填充) |
 | 新增 BMS 后台页 | `admin/bms-*.html` + sidebar 模板复用 + `index.html` 导航卡 |
 | 新增 FNC 后台页 | `admin/fnc-*.html` + 同 fnc 风格 sidebar + `index.html` 导航卡 |
 | 新增 PC 个人中心页 | `pc/*.html` 用「个人中心专属 nav」(参考 member/coins/mall/orders) |
 | 新增商户端 APP 页 | `app/` + `index.html` 导航卡 |
-| 修改 PRD / 数据库 / API 文档 | `docs/` |
 | 加居中弹框 | 引入 `admin/_sidebar-alert.js`，调用 `showRuleAlert('文案'， 跳转URL?)` |
