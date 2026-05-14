@@ -154,7 +154,6 @@
               <tr>
                 <th style="width:60px">序号</th>
                 <th>问卷名称</th>
-                <th style="width:120px">版本</th>
                 <th style="width:100px">状态</th>
                 <th style="width:130px">发布时间</th>
                 <th style="width:90px">题目数</th>
@@ -166,7 +165,6 @@
               <tr v-for="(s, si) in allSurveys" :key="s.id" style="cursor:pointer" @click="openSurvey(s.id)">
                 <td>{{ si + 1 }}</td>
                 <td><span class="text-slate-800 font-medium">{{ s.title }}</span></td>
-                <td>{{ s.version }}</td>
                 <td><span class="tag" :class="s.active ? 'tag-green' : 'tag-gray'">{{ s.status }}</span></td>
                 <td>{{ s.updatedAt }}</td>
                 <td>{{ s.questions.length }}</td>
@@ -340,7 +338,7 @@
       <div style="margin-bottom:14px">
         <div style="font-weight:700;color:#1677ff;margin-bottom:6px">一、问卷列表(默认视图)</div>
         <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px">
-          <li>展示所有调研问卷:问卷名称、版本、状态(上线中/已下线/草稿)、发布时间、题目数、提交份数。</li>
+          <li>展示所有调研问卷:问卷名称、状态(上线中/已下线/草稿)、发布时间、题目数、提交份数。</li>
           <li>点击行或「查看详情」进入问卷详情页,可查看题目统计与逐份答题记录。</li>
           <li>多份问卷时,「上线中」状态最多 1 份(由 <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">survey-config.js → active:true</code> 控制)。</li>
         </ol>
