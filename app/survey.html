@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>调研问卷 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/survey-config.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background:#f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background:#f4f5f7; position: relative; padding-bottom: 100px; }
+  @media (min-width: 768px) {
+    body { background:#f5f5f7; padding:24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display:none; }
+
+  /* 顶部品牌区 */
+  .hero { background: linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; padding: 18px 18px 28px; }
+  .hero .title { font-size:18px; font-weight:700; line-height:1.45; }
+  .hero .meta  { font-size:12px; opacity:.85; margin-top:6px; }
+  .hero .intro { font-size:12px; opacity:.85; margin-top:10px; line-height:1.7; background:rgba(255,255,255,.12); border-radius:8px; padding:10px 12px; }
+
+  .stage-bar { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .stage-bar span { font-size:11px; background:rgba(255,255,255,.18); padding:3px 10px; border-radius:9999px; }
+
+  /* 题卡 */
+  .q-card { background:#fff; border-radius:14px; padding:16px 16px 18px; margin:12px; box-shadow: 0 1px 0 rgba(0,0,0,.02); }
+  .q-title { display:flex; align-items:flex-start; gap:8px; font-size:14px; color:#1f2937; font-weight:600; line-height:1.55; }
+  .q-no { color:#7c3aed; flex-shrink:0; font-weight:700; }
+  .q-type-tag { margin-left:auto; flex-shrink:0; font-size:10px; padding:1px 8px; border-radius:9999px; font-weight:500; }
+  .tag-single { background:#eff6ff; color:#2563eb; }
+  .tag-multi  { background:#fff7ed; color:#c2410c; }
+  .tag-text   { background:#f1f5f9; color:#475569; }
+
+  /* 选项 */
+  .opt-list { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+  .opt {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border:1px solid #e2e8f0; border-radius:10px;
+    color:#1f2937; font-size:13px; cursor:pointer; transition: all .15s;
+  }
+  .opt input { accent-color:#7c3aed; cursor:pointer; }
+  .opt.on { border-color:#7c3aed; background:#f5f3ff; color:#6d28d9; }
+  .opt:active { transform: scale(.98); }
+
+  /* 文本框 */
+  .ta { width:100%; min-height:88px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:10px; font-size:13px; color:#1f2937; resize:vertical; box-sizing:border-box; font-family:inherit; }
+  .ta:focus { outline:none; border-color:#7c3aed; }
+
+  /* 补充信息 */
+  .followup { margin-top:14px; padding:12px; background:#faf5ff; border:1px dashed #d8b4fe; border-radius:10px; }
+  .followup .hint { font-size:12px; color:#7c3aed; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .chip-grid { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip {
+    padding:6px 12px; border-radius:9999px; background:#fff; border:1px solid #e2e8f0;
+    color:#475569; font-size:12px; cursor:pointer; transition: all .15s;
+  }
+  .chip.on { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+  .followup .ta { margin-top:10px; background:#fff; min-height:64px; font-size:12px; }
+
+  /* 底部提交栏 */
+  .submit-bar {
+    position: fixed; bottom:0; left:50%; transform: translateX(-50%);
+    width:100%; max-width: 420px; background:#fff; padding: 10px 14px 16px;
+    border-top:1px solid #f1f5f9; z-index:30;
+  }
+  .submit-btn {
+    width:100%; padding:13px; border-radius:9999px;
+    background: linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff;
+    font-size:15px; font-weight:600; border:none; cursor:pointer;
+    box-shadow: 0 6px 18px rgba(124,58,237,.32);
+  }
+  .submit-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
+
+  .toast { position: fixed; top:50%; left:50%; transform: translate(-50%,-50%); background: rgba(15,23,42,.92); color:#fff; padding: 12px 24px; border-radius:10px; font-size:14px; z-index:200; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- 状态栏 -->
+  <div class="flex items-center justify-between px-5 py-2 bg-purple-600 text-white text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- 顶部 hero -->
+  <div class="hero">
+    <button @click="back" class="text-white/80 mb-2"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+    <div class="intro" style="margin-top:0">{{ survey.intro }}</div>
+  </div>
+
+  <!-- 题目 -->
+  <div v-for="(q, qi) in survey.questions" :key="qi" class="q-card">
+    <div class="q-title">
+      <span class="q-no">Q{{ qi + 1 }}.</span>
+      <span class="flex-1">{{ q.text }}</span>
+      <span class="q-type-tag" :class="typeTag(q.type)">{{ typeLabel(q.type) }}</span>
+    </div>
+
+    <!-- 单选 -->
+    <div v-if="q.type === 'single'" class="opt-list">
+      <div v-for="opt in q.options" :key="opt"
+           class="opt" :class="{ on: answers[qi] && answers[qi].option === opt }"
+           @click="pickSingle(qi, opt)">
+        <input type="radio" :name="'q' + qi" :checked="answers[qi] && answers[qi].option === opt">
+        <span>{{ opt }}</span>
+      </div>
+    </div>
+
+    <!-- 多选 -->
+    <div v-else-if="q.type === 'multi'" class="opt-list">
+      <div v-for="opt in q.options" :key="opt"
+           class="opt" :class="{ on: isMultiSelected(qi, opt) }"
+           @click="toggleMulti(qi, opt)">
+        <input type="checkbox" :checked="isMultiSelected(qi, opt)">
+        <span>{{ opt }}</span>
+      </div>
+    </div>
+
+    <!-- 文本 -->
+    <div v-else-if="q.type === 'text'" class="mt-3">
+      <textarea class="ta" v-model="answers[qi]" :placeholder="q.placeholder || '请输入'"></textarea>
+    </div>
+
+    <!-- 补充信息(选项触发) -->
+    <div v-if="needFollowUp(q, qi)" class="followup">
+      <div class="hint">
+        <i data-lucide="message-square-text" class="w-3.5 h-3.5"></i>
+        <span>{{ followUpHint(q, qi) }}</span>
+      </div>
+      <div class="chip-grid">
+        <div v-for="t in followUpTags(q, qi)" :key="t"
+             class="chip" :class="{ on: isTagSelected(qi, t) }"
+             @click="toggleTag(qi, t)">{{ t }}</div>
+      </div>
+      <textarea class="ta" v-model="answers[qi].extraText" :placeholder="q.followUp.textPlaceholder || '请补充'"></textarea>
+    </div>
+  </div>
+
+</div>
+
+<!-- 底部提交 -->
+<div class="submit-bar">
+  <button class="submit-btn" :disabled="!canSubmit" @click="submit">
+    {{ canSubmit ? '提交问卷（+2 积分）' : '请完成所有题目后提交' }}
+  </button>
+</div>
+
+<div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script>
+const { createApp, reactive, ref, computed, onMounted, nextTick, watch } = Vue;
+
+createApp({
+  setup() {
+    // ── 登录拦截:未登录 → 跳登录页(登录成功回跳回来) ──
+    // 登录态由 shared/reserve-cars.js 的 VPUser 维护,key = localStorage.vp_user (JSON)
+    const vpUser = (function () {
+      try { return JSON.parse(localStorage.getItem('vp_user') || 'null'); }
+      catch (e) { return null; }
+    })();
+    if (!vpUser || !vpUser.level) {
+      location.replace('login.html?from=survey.html');
+    }
+
+    const survey = window.SURVEY_CONFIG;
+
+    // answers[qi] 形态:
+    //   single:  { option: 'A', tags: ['x','y'], extraText: '...' }
+    //   multi:   { options: ['A','B'], extraText: '...' }
+    //   text:    '...'(直接字符串,简化)
+    const answers = reactive({});
+    function reset() {
+      survey.questions.forEach(function (q, i) {
+        if (q.type === 'single') answers[i] = { option: '', tags: [], extraText: '' };
+        else if (q.type === 'multi') answers[i] = { options: [], extraText: '' };
+        else answers[i] = '';
+      });
+    }
+    reset();
+
+    function pickSingle(qi, opt) {
+      const cur = answers[qi];
+      if (cur.option !== opt) {
+        // 切换选项时,清空之前的 tags(因为 single 的 tags 跟 option 绑定)
+        answers[qi] = { option: opt, tags: [], extraText: cur.extraText || '' };
+      }
+    }
+    function toggleMulti(qi, opt) {
+      const arr = answers[qi].options.slice();
+      const idx = arr.indexOf(opt);
+      if (idx === -1) arr.push(opt); else arr.splice(idx, 1);
+      answers[qi].options = arr;
+    }
+    function isMultiSelected(qi, opt) {
+      return answers[qi] && answers[qi].options && answers[qi].options.indexOf(opt) !== -1;
+    }
+
+    function typeLabel(t) { return ({ single: '单选', multi: '多选', text: '简述' })[t] || t; }
+    function typeTag(t)   { return ({ single: 'tag-single', multi: 'tag-multi', text: 'tag-text' })[t] || 'tag-text'; }
+
+    // 补充信息逻辑
+    function needFollowUp(q, qi) {
+      if (!q.followUp) return false;
+      if (q.type === 'single') return !!(answers[qi] && answers[qi].option);
+      if (q.type === 'multi')  return !!(answers[qi] && answers[qi].options && answers[qi].options.length);
+      return false;
+    }
+    function followUpTags(q, qi) {
+      if (!q.followUp) return [];
+      if (q.type === 'single') {
+        const map = q.followUp.tagsByOption || {};
+        return map[answers[qi].option] || [];
+      }
+      return q.followUp.tags || [];
+    }
+    function followUpHint(q, qi) {
+      if (q.type === 'single' && answers[qi].option) {
+        return '关于「' + answers[qi].option + '」,以下哪些方面是？';
+      }
+      return '请补充说明';
+    }
+    function isTagSelected(qi, t) {
+      const a = answers[qi];
+      const arr = (a && a.tags) || [];
+      return arr.indexOf(t) !== -1;
+    }
+    function toggleTag(qi, t) {
+      const a = answers[qi];
+      if (!a.tags) a.tags = [];
+      const idx = a.tags.indexOf(t);
+      const next = a.tags.slice();
+      if (idx === -1) next.push(t); else next.splice(idx, 1);
+      a.tags = next;
+    }
+
+    // 可提交校验:single/multi 题必须有作答;text 题允许空
+    const canSubmit = computed(function () {
+      for (let i = 0; i < survey.questions.length; i++) {
+        const q = survey.questions[i];
+        const a = answers[i];
+        if (q.type === 'single' && (!a || !a.option)) return false;
+        if (q.type === 'multi'  && (!a || !a.options.length)) return false;
+        // text 允许空
+        // followUp.required: 若标记必填,需要勾选至少 1 个 tag
+        if (q.followUp && q.followUp.required) {
+          const tags = (a && a.tags) || [];
+          if (tags.length === 0) return false;
+        }
+      }
+      return true;
+    });
+
+    const toastMsg = ref('');
+    function showToast(msg) {
+      toastMsg.value = msg;
+      setTimeout(function () { toastMsg.value = ''; }, 1500);
+    }
+
+    function submit() {
+      if (!canSubmit.value) { showToast('请完成所有题目'); return; }
+      const userName = (vpUser && vpUser.name) || localStorage.getItem('chevip_user_name') || ('用户·' + ((vpUser && vpUser.level) || 'V0'));
+      const submission = {
+        id: 'sb_' + Date.now(),
+        user: userName,
+        userLevel: (vpUser && vpUser.level) || '',
+        at: new Date().toISOString(),
+        platform: 'app',
+        surveyId: survey.id,
+        surveyVersion: survey.version,
+        answers: JSON.parse(JSON.stringify(answers)),
+      };
+      try {
+        const list = JSON.parse(localStorage.getItem('chevip_survey_submissions') || '[]');
+        list.unshift(submission);
+        localStorage.setItem('chevip_survey_submissions', JSON.stringify(list));
+        localStorage.setItem('chevip_survey_done', '1'); // 标记本用户已完成,推荐任务列表会自动隐藏
+      } catch (e) {}
+      showToast('提交成功,+2 积分');
+      setTimeout(function () { location.href = 'profile-loggedin.html'; }, 1200);
+    }
+
+    function back() { if (window.smartBack) smartBack('profile-loggedin.html'); else location.href = 'profile-loggedin.html'; }
+
+    onMounted(function () { lucide.createIcons(); });
+    watch(answers, function () { nextTick(function () { lucide && lucide.createIcons(); }); }, { deep: true });
+
+    return {
+      survey, answers, canSubmit, toastMsg,
+      pickSingle, toggleMulti, isMultiSelected,
+      typeLabel, typeTag,
+      needFollowUp, followUpTags, followUpHint, isTagSelected, toggleTag,
+      submit, back,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
