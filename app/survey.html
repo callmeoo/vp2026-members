@@ -124,8 +124,11 @@
     </div>
 
     <!-- 文本 -->
-    <div v-else-if="q.type === 'text'" class="mt-3">
-      <textarea class="ta" v-model="answers[qi]" :placeholder="q.placeholder || '请输入'"></textarea>
+    <div v-else-if="q.type === 'text'" class="mt-3" style="position:relative">
+      <textarea class="ta" v-model="answers[qi]" :maxlength="q.maxLength || undefined" :placeholder="q.placeholder || '请输入'"></textarea>
+      <div v-if="q.maxLength" style="position:absolute;right:10px;bottom:8px;font-size:11px;color:#94a3b8;pointer-events:none;background:rgba(255,255,255,.85);padding:0 4px;border-radius:3px">
+        {{ (answers[qi] || '').length }}/{{ q.maxLength }}
+      </div>
     </div>
 
     <!-- 补充信息(选项触发) -->
