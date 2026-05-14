@@ -203,22 +203,17 @@
             <button class="el-btn el-btn-primary" @click="exportCsv"><i data-lucide="download" class="w-3.5 h-3.5"></i>导出全部</button>
           </div>
         </div>
-        <div class="text-[12px] text-slate-400">{{ survey.meta }}</div>
       </div>
 
       <!-- 顶部 KPI -->
-      <div class="grid grid-cols-4 gap-3 mb-3">
+      <div class="grid grid-cols-3 gap-3 mb-3">
         <div class="stat-tile">
           <div class="lbl">累计提交份数</div>
           <div class="num blue">{{ submissions.length }}</div>
         </div>
         <div class="stat-tile">
-          <div class="lbl">最近 7 天</div>
-          <div class="num green">{{ countLast7 }}</div>
-        </div>
-        <div class="stat-tile">
-          <div class="lbl">移动端 / PC 占比</div>
-          <div class="num orange">{{ countApp }} / {{ countPc }}</div>
+          <div class="lbl">来源占比（移动端 / 小程序 / PC）</div>
+          <div class="num orange" style="font-size:22px">{{ countApp }} / {{ countMp }} / {{ countPc }}</div>
         </div>
         <div class="stat-tile">
           <div class="lbl">最近提交时间</div>
@@ -261,8 +256,7 @@
               </div>
             </div>
 
-            <!-- text: 简述类题目不在本卡片显示明细,改至「提交记录 → 详情」逐条查看 -->
-            <div v-else class="text-[12px] text-slate-400 pl-1">本题为简述题,共 {{ textAnswers(qi).length }} 条文本回答 — 请进入下方「提交记录 → 详情」查看具体内容。</div>
+            <!-- text 类题目不在统计卡片显示,详情可在「提交记录 → 详情」查看 -->
           </div>
         </div>
       </div>
@@ -271,6 +265,7 @@
       <div class="ant-card p-4">
         <div class="flex items-center justify-between mb-2">
           <div class="text-[14px] font-semibold text-slate-800">提交记录（{{ submissions.length }} 条）</div>
+          <span class="text-[12px] text-slate-400">导出 CSV:每行 1 份提交,列依次为 用户姓名 / 用户名 / 绑定手机号 / 来源 / 提交时间 / Q1~Q{{ survey.questions.length }} 回答（CSV 内容不做脱敏，便于运营线下分析）</span>
         </div>
         <div v-if="submissions.length === 0" class="text-center py-10 text-slate-400 text-[13px]">
           暂无提交记录。点击右上「填充演示数据」可在 localStorage 写入若干示例提交，或在 app/survey.html / pc/survey.html 完成一次问卷后回到本页查看。
@@ -278,18 +273,22 @@
         <table v-else class="ans-table">
           <thead>
             <tr>
-              <th style="width:60px">序号</th>
-              <th style="width:140px">用户</th>
-              <th style="width:100px">来源</th>
-              <th style="width:200px">提交时间</th>
-              <th style="width:120px">操作</th>
+              <th style="width:50px">序号</th>
+              <th style="width:90px">用户姓名</th>
+              <th style="width:180px">用户名<div style="font-size:11px;color:#94a3b8;font-weight:400">系统唯一标识</div></th>
+              <th style="width:130px">绑定手机号<div style="font-size:11px;color:#94a3b8;font-weight:400">掩码展示</div></th>
+              <th style="width:90px">来源</th>
+              <th style="width:170px">提交时间</th>
+              <th style="width:110px">操作</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(s, si) in submissions" :key="s.id">
               <td>{{ si + 1 }}</td>
-              <td>{{ s.user }}</td>
-              <td><span class="tag" :class="s.platform === 'pc' ? 'tag-blue' : 'tag-orange'">{{ s.platform === 'pc' ? 'PC 端' : '移动端' }}</span></td>
+              <td>{{ s.user || '—' }}</td>
+              <td style="font-family:Menlo,Consolas,monospace;font-size:12px;color:#475569">{{ s.account || '—' }}</td>
+              <td>{{ maskPhone(s.phone) }}</td>
+              <td><span class="tag" :class="platformTag(s.platform)">{{ platformLabel(s.platform) }}</span></td>
               <td>{{ fmtTime(s.at) }}</td>
               <td>
                 <button class="el-btn" @click="showDetail(s)"><i data-lucide="eye" class="w-3.5 h-3.5"></i>查看答题</button>
@@ -349,18 +348,32 @@
       <div style="margin-bottom:14px">
         <div style="font-weight:700;color:#1677ff;margin-bottom:6px">二、问卷详情视图</div>
         <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px">
-          <li>顶部 KPI:累计提交份数 / 最近 7 天 / 移动端 PC 占比 / 最近提交时间。</li>
-          <li>题目维度统计(默认收起):单选/多选题展示选项分布柱状图;简述题仅显示总数,具体内容进入答题详情查看。</li>
-          <li>提交记录列表:序号 / 用户 / 来源 / 提交时间 / 操作(查看答题)。</li>
-          <li>「导出全部」将本问卷下所有提交导出为 CSV;「清空本问卷」仅清除当前问卷的演示数据,其他问卷不受影响。</li>
+          <li>顶部 KPI:累计提交份数 / 来源占比（移动端 / 小程序 / PC）/ 最近提交时间。</li>
+          <li>题目维度统计(默认收起):单选/多选题展示选项分布柱状图;简述题不在此卡片显示,具体内容进入答题详情查看。</li>
+          <li>提交记录列表:序号 / 用户姓名 / 用户名(系统唯一标识) / 绑定手机号(掩码展示) / 来源 / 提交时间 / 操作(查看答题)。</li>
+          <li>「导出全部」将本问卷下所有提交导出为 CSV，列依次为 用户姓名 / 用户名 / 绑定手机号 / 来源 / 提交时间 / Q1~Qn 回答;<b>CSV 内容不脱敏</b>，便于运营线下分析。「清空本问卷」仅清除当前问卷的演示数据,其他问卷不受影响。</li>
         </ol>
       </div>
-      <div>
+      <div style="margin-bottom:14px">
         <div style="font-weight:700;color:#1677ff;margin-bottom:6px">三、答题详情(弹窗)</div>
         <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px">
           <li>逐题展示该用户回答:单选含「补充标签」与「补充文本」;多选展示已选项;简述展示原文。</li>
           <li>底部「导出 CSV」可<strong style="color:#7c3aed">仅导出该单份提交</strong>的明细,文件名带用户名 + 时间戳。</li>
           <li>用户信息脱敏:用户名 / 手机号在 CSV 中以掩码展示(如 <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">张**</code> / <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">138****1234</code>),原始明文仅在系统底层保留。</li>
+        </ol>
+      </div>
+
+      <!-- 演示评审专用按钮(不进入生产) -->
+      <div style="border:1px dashed #fcd34d;background:#fffbeb;border-radius:6px;padding:12px 14px">
+        <div style="font-weight:700;color:#b45309;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+          <i data-lucide="info" class="w-3.5 h-3.5"></i>
+          <span>评审/演示专用按钮 — 不进入生产,无需开发</span>
+        </div>
+        <div style="font-size:12px;color:#78350f;margin-bottom:8px">下列按钮仅用于本 Demo 站点的评审与现场演示,不属于本期需求范围;后端实现时<strong>无需任何对应接口或权限</strong>。</div>
+        <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px;color:#78350f">
+          <li><strong>预览用户端</strong>:新窗口打开 <code style="background:#fef3c7;padding:1px 5px;border-radius:3px">app/survey.html</code>,方便评审人直接体验商户填写流程。</li>
+          <li><strong>填充演示数据</strong>:本地 <code style="background:#fef3c7;padding:1px 5px;border-radius:3px">localStorage</code> 写入 ~7 条 mock 提交记录(陈伟铭/林晓玥/郑园 等),用于现场演示统计与详情查看。生产由真实提交接口落库,无需此按钮。</li>
+          <li><strong>清空本问卷</strong>:清除当前问卷在 <code style="background:#fef3c7;padding:1px 5px;border-radius:3px">localStorage</code> 中的 mock 数据,其他问卷不受影响。仅供评审反复演示时复位。</li>
         </ol>
       </div>
     </div>
@@ -379,13 +392,14 @@ const { createApp, reactive, ref, computed, onMounted, nextTick, watch } = Vue;
 const SK = 'chevip_survey_submissions';
 
 // 预置 demo 数据(评审用,首次进入若 localStorage 为空则不主动写入,等用户点「填充演示数据」再写)
+// user: 用户姓名 / account: 用户名(系统唯一标识) / phone: 绑定手机号(展示时按规则掩码)
 const DEMO_SUBS = [
-  { user: '陈伟铭', platform: 'app', daysAgo: 0, picks: [0, 1, [0,1,2], 1, [0,1,2], '车源很多,价格合理,客服响应快,希望增加跨城物流。'], tagsQ4: ['整体体验不错','价格合理'] },
-  { user: '林晓玥', platform: 'pc',  daysAgo: 1, picks: [2, 2, [0,2,4,7], 2, [0,5], '希望平台增加更多专场活动,提升车源覆盖。'], tagsQ4: ['车源数量可丰富','价格可更优'] },
-  { user: '郑园',   platform: 'app', daysAgo: 2, picks: [0, 3, [0,1,4,5,6], 0, [1,4], ''], tagsQ4: ['车源信息准确','物流快捷','客服响应及时'] },
-  { user: '王磊',   platform: 'app', daysAgo: 3, picks: [1, 0, [3,7], 3, [0], '价格能否更透明一些。'], tagsQ4: ['车源信息不实','价格不透明'] },
-  { user: '万岭',   platform: 'pc',  daysAgo: 5, picks: [2, 2, [0,2,5,6], 1, [1,2], ''], tagsQ4: ['整体体验不错','部分环节可优化'] },
-  { user: '黄楚雄', platform: 'app', daysAgo: 8, picks: [0, 1, [0,1,3], 0, [0,1,5], '继续保持!'], tagsQ4: ['车源信息准确','检测报告专业','物流快捷'] },
+  { user: '陈伟铭', account: 'm_8821093746102587', phone: '13921045672', platform: 'app', daysAgo: 0, picks: [0, 1, [0,1,2], 1, [0,1,2], '车源很多,价格合理,客服响应快,希望增加跨城物流。'], tagsQ4: ['整体体验不错','价格合理'] },
+  { user: '林晓玥', account: 'm_5532117809334551', phone: '18602345987', platform: 'pc',  daysAgo: 1, picks: [2, 2, [0,2,4,7], 2, [0,5], '希望平台增加更多专场活动,提升车源覆盖。'], tagsQ4: ['车源数量可丰富','价格可更优'] },
+  { user: '郑园',   account: 'm_2210448519887042', phone: '18922868401', platform: 'mp',  daysAgo: 2, picks: [0, 3, [0,1,4,5,6], 0, [1,4], ''], tagsQ4: ['车源信息准确','物流快捷','客服响应及时'] },
+  { user: '王磊',   account: 'm_7733019458876402', phone: '17782046125', platform: 'app', daysAgo: 3, picks: [1, 0, [3,7], 3, [0], '价格能否更透明一些。'], tagsQ4: ['车源信息不实','价格不透明'] },
+  { user: '万岭',   account: 'm_4675172207379376', phone: '15002778993', platform: 'pc',  daysAgo: 5, picks: [2, 2, [0,2,5,6], 1, [1,2], ''], tagsQ4: ['整体体验不错','部分环节可优化'] },
+  { user: '黄楚雄', account: 'm_0134875297717253', phone: '13751715402', platform: 'mp',  daysAgo: 8, picks: [0, 1, [0,1,3], 0, [0,1,5], '继续保持!'], tagsQ4: ['车源信息准确','检测报告专业','物流快捷'] },
 ];
 
 createApp({
@@ -442,7 +456,8 @@ createApp({
         });
         return {
           id: 'sb_demo_' + (now - d.daysAgo * 86400000) + '_' + i,
-          user: d.user, at: new Date(now - d.daysAgo * 86400000).toISOString(),
+          user: d.user, account: d.account || '', phone: d.phone || '',
+          at: new Date(now - d.daysAgo * 86400000).toISOString(),
           platform: d.platform, surveyId: survey.value.id, surveyVersion: survey.value.version,
           answers: ans,
         };
@@ -491,6 +506,7 @@ createApp({
       return submissions.value.filter(function (s) { return new Date(s.at).getTime() >= cut; }).length;
     });
     const countApp = computed(function () { return submissions.value.filter(function (s) { return s.platform === 'app'; }).length; });
+    const countMp  = computed(function () { return submissions.value.filter(function (s) { return s.platform === 'mp';  }).length; });
     const countPc  = computed(function () { return submissions.value.filter(function (s) { return s.platform === 'pc'; }).length; });
     const lastAt   = computed(function () { return submissions.value[0] ? fmtTime(submissions.value[0].at) : ''; });
 
@@ -539,10 +555,22 @@ createApp({
       if (n.length === 2) return n[0] + '*';
       return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
     }
+    // 手机号掩码:138****1234;空值或非 11 位手机号则原样返回
+    function maskPhone(p) {
+      if (!p) return '—';
+      var s = String(p).replace(/\s+/g, '');
+      if (s.length < 7) return s;
+      return s.slice(0, 3) + '****' + s.slice(-4);
+    }
+    // 来源平台 → tag class / 中文标签
+    function platformLabel(p) { return ({ app: '移动端', mp: '小程序', pc: 'PC 端' })[p] || '移动端'; }
+    function platformTag(p)   { return ({ app: 'tag-orange', mp: 'tag-green', pc: 'tag-blue' })[p] || 'tag-orange'; }
+
+    // CSV 导出:不再做掩码(便于运营线下分析);列依次为 用户姓名 / 用户名 / 绑定手机号 / 来源 / 提交时间 / Q1~Qn
     function rowsForSubmissions(list) {
-      const rows = [['用户','等级','来源','提交时间'].concat(survey.value.questions.map(function (q, i) { return 'Q' + (i+1) + '. ' + q.text; }))];
+      const rows = [['用户姓名','用户名(系统唯一标识)','绑定手机号','来源','提交时间'].concat(survey.value.questions.map(function (q, i) { return 'Q' + (i+1) + '. ' + q.text; }))];
       list.forEach(function (s) {
-        const row = [maskName(s.user), s.userLevel || '—', s.platform === 'pc' ? 'PC' : 'App', fmtTime(s.at)];
+        const row = [s.user || '', s.account || '', s.phone || '', platformLabel(s.platform), fmtTime(s.at)];
         survey.value.questions.forEach(function (q, qi) {
           const a = s.answers && s.answers[qi];
           if (!a) { row.push(''); return; }
@@ -583,10 +611,11 @@ createApp({
       allSurveys, activeSurveyId, submissionsBySurvey,
       survey, submissions, detail, statsOpen,
       view, showSpec, openSurvey,
-      countLast7, countApp, countPc, lastAt,
+      countLast7, countApp, countMp, countPc, lastAt,
       seedMock, clearAll,
       optCount, optPct, textAnswers,
       qLabel, qtag, fmtTime, summarize, showDetail, renderAns, exportCsv, exportSingleCsv,
+      maskPhone, platformLabel, platformTag,
       userSurveyLink,
     };
   }
