@@ -67,9 +67,6 @@
   .addtype-row { display:grid; grid-template-columns:90px 1fr; gap:14px; align-items:center; margin-bottom:14px; }
   .addtype-row label { font-size:13px; color:#606266; text-align:left; }
   .addtype-row .ant-input { height:34px; }
-  /* 优惠券类型下拉:商城商品分组 label 标红 */
-  optgroup.new-types { color:#ef4444; font-weight:600; font-style:normal; }
-  optgroup.new-types option { color:#303133; font-weight:normal; }
 </style>
 </head>
 <body>
@@ -415,17 +412,12 @@
       <div class="addtype-row"><label>优惠券类型</label>
         <select class="ant-input" v-model="addForm.type">
           <option value="" disabled>请选择优惠券类型</option>
-          <optgroup label="原有类型">
-            <option>数据报告查询</option>
-            <option>专属客服</option>
-            <option>服务费抵扣</option>
-            <option>免押竞拍权</option>
-            <option>行情查询</option>
-            <option>交易佣金抵扣</option>
-          </optgroup>
-          <optgroup class="new-types" label="新增优惠券类型为会员等级权益和积分兑换商品，对外不可见">
-            <option v-for="p in mallProducts" :key="p">{{ p }}</option>
-          </optgroup>
+          <option>数据报告查询</option>
+          <option>专属客服</option>
+          <option>服务费抵扣</option>
+          <option>免押竞拍权</option>
+          <option>行情查询</option>
+          <option>交易佣金抵扣</option>
         </select>
       </div>
       <div class="addtype-row"><label>来源</label>
@@ -482,21 +474,6 @@ createApp({
     const sourceCodes = reactive({});
     const sourceForm = reactive({ name: '', code: '' });
     const typeOpts = ['交易佣金抵扣', '数据查询权益', '数据查询优惠券', '综合服务费减免', '服务中心消费', '保留价查询', '历史成交行情'];
-    // 商城商品配置 · 商品清单(与 rewards.html 对齐)
-    const mallProducts = [
-      '保留价查询权益',
-      '历史成交行情权益',
-      '数据查询优惠券 5 元',
-      '数据查询优惠券 10 元',
-      '数据查询优惠券 15 元',
-      '数据查询优惠券 20 元',
-      '数据查询优惠券 30 元',
-      '数据查询优惠券 50 元',
-      '综合服务费减免券 50 元',
-      '综合服务费减免券 100 元',
-      '服务中心消费券 50 元',
-      '服务中心消费券 100 元'
-    ];
 
     function emptyForm() {
       return { name:'', type:'', source:'', startAt:'', endAt:'', usage:'', duration:'', quantity:100, intro:'' };
@@ -522,15 +499,6 @@ createApp({
     const tF = reactive({ source:'', type:'' });
 
     const typeRows = reactive([
-      { name:'300元直减券',           type:'交易佣金抵扣', startAt:'2026-03-18', endAt:'2026-03-19', source:'赠送券',   code:'赠送券2026',   value:300,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-03-16', endAt:'2026-03-18', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'6个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-03-10', endAt:'2026-03-11', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'300元直减券',           type:'交易佣金抵扣', startAt:'2026-02-11', endAt:'2026-02-12', source:'赠送券',   code:'赠送券2026',   value:300,  duration:'2个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'300元直减券',           type:'交易佣金抵扣', startAt:'2026-02-11', endAt:'2026-02-12', source:'赠送券',   code:'赠送券2026',   value:300,  duration:'3个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-02-04', endAt:'2026-02-06', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'200元直减券',           type:'交易佣金抵扣', startAt:'2026-01-27', endAt:'2026-01-28', source:'赠送券',   code:'赠送券2026',   value:200,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-01-27', endAt:'2026-01-28', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
-      { name:'500元直减券',           type:'交易佣金抵扣', startAt:'2026-01-27', endAt:'2026-01-28', source:'赠送券',   code:'赠送券2026',   value:500,  duration:'1个月',  usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
       { name:'1000元直减券',          type:'交易佣金抵扣', startAt:'2026-01-21', endAt:'2026-01-22', source:'赠送券',   code:'赠送券2026',   value:1000, duration:'3天',    usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
       { name:'保留价查询权益',         type:'数据查询权益', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'RESERVE_PRICE',     value:50,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
       { name:'历史成交行情权益',       type:'数据查询权益', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'HISTORY_PRICE',     value:100,  duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
@@ -607,7 +575,7 @@ createApp({
 
     onMounted(() => nextTick(() => lucide && lucide.createIcons()));
 
-    return { tab, showSpec, showAddType, showAddSource, sourceOpts, addSourceOpts, sourceForm, typeOpts, mallProducts, iF, tF, issuedRows, typeRows, addForm, search, exportData, openAddType, closeAddType, submitAddType, openAddSource, closeAddSource, submitAddSource, statusTag };
+    return { tab, showSpec, showAddType, showAddSource, sourceOpts, addSourceOpts, sourceForm, typeOpts, iF, tF, issuedRows, typeRows, addForm, search, exportData, openAddType, closeAddType, submitAddType, openAddSource, closeAddSource, submitAddSource, statusTag };
   }
 }).mount('#app');
 </script>
