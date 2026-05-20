@@ -391,13 +391,28 @@ const SK = 'chevip_survey_submissions';
 
 // 预置 demo 数据(评审用,首次进入若 localStorage 为空则不主动写入,等用户点「填充演示数据」再写)
 // user: 用户姓名 / account: 用户名(系统唯一标识) / phone: 绑定手机号(展示时按规则掩码)
+// picks 数组按 survey-config.js → questions 顺序映射:
+//   Q1 single(业务方向)      → option index
+//   Q2 multi (看重环节)      → option index 数组
+//   Q3 multi (通知方式)      → option index 数组
+//   Q4 text+fields(商户信息) → 对象 { city, years, monthly }
+//   Q5 text  (改进建议)      → 字符串
+// extraTextByQ:某道 multi 题(尤其勾了「其他」时)的补充文本,在 seedMock 中写入 answers[qi].extraText
 const DEMO_SUBS = [
-  { user: '陈伟铭', account: 'm_8821093746102587', phone: '13921045672', platform: 'app', daysAgo: 0, picks: [0, 1, [0,1,2], 1, [0,1,2], '车源很多,价格合理,客服响应快,希望增加跨城物流。'], tagsQ4: ['整体体验不错','价格合理'] },
-  { user: '林晓玥', account: 'm_5532117809334551', phone: '18602345987', platform: 'pc',  daysAgo: 1, picks: [2, 2, [0,2,4,7], 2, [0,5], '希望平台增加更多专场活动,提升车源覆盖。'], tagsQ4: ['车源数量可丰富','价格可更优'] },
-  { user: '郑园',   account: 'm_2210448519887042', phone: '18922868401', platform: 'mp',  daysAgo: 2, picks: [0, 3, [0,1,4,5,6], 0, [1,4], ''], tagsQ4: ['车源信息准确','物流快捷','客服响应及时'] },
-  { user: '王磊',   account: 'm_7733019458876402', phone: '17782046125', platform: 'app', daysAgo: 3, picks: [1, 0, [3,7], 3, [0], '价格能否更透明一些。'], tagsQ4: ['车源信息不实','价格不透明'] },
-  { user: '万岭',   account: 'm_4675172207379376', phone: '15002778993', platform: 'pc',  daysAgo: 5, picks: [2, 2, [0,2,5,6], 1, [1,2], ''], tagsQ4: ['整体体验不错','部分环节可优化'] },
-  { user: '黄楚雄', account: 'm_0134875297717253', phone: '13751715402', platform: 'mp',  daysAgo: 8, picks: [0, 1, [0,1,3], 0, [0,1,5], '继续保持!'], tagsQ4: ['车源信息准确','检测报告专业','物流快捷'] },
+  { user: '陈伟铭', account: 'm_8821093746102587', phone: '13921045672', platform: 'app', daysAgo: 0,
+    picks: [0, [0,1,2], [0,1],     { city: '上海', years: '5',  monthly: '30' }, '车源很多,价格合理,客服响应快,希望平台后续能增加跨城物流到店服务,并完善车辆质保期内的快速响应机制。'] },
+  { user: '林晓玥', account: 'm_5532117809334551', phone: '18602345987', platform: 'pc',  daysAgo: 1,
+    picks: [2, [0,2,4,7], [0,3,4], { city: '杭州', years: '8',  monthly: '45' }, '希望平台增加更多专场活动,提升车源覆盖。'],
+    extraTextByQ: { 2: '微信群消息推送(销售经理代发)' } },
+  { user: '郑园',   account: 'm_2210448519887042', phone: '18922868401', platform: 'mp',  daysAgo: 2,
+    picks: [0, [0,1,4,5,6], [1,2], { city: '广州', years: '3',  monthly: '20' }, ''] },
+  { user: '王磊',   account: 'm_7733019458876402', phone: '17782046125', platform: 'app', daysAgo: 3,
+    picks: [1, [3,7], [0,4],       { city: '成都', years: '10', monthly: '60' }, '价格能否更透明一些。'],
+    extraTextByQ: { 2: '电话回访' } },
+  { user: '万岭',   account: 'm_4675172207379376', phone: '15002778993', platform: 'pc',  daysAgo: 5,
+    picks: [2, [0,2,5,6], [0,3,1], { city: '北京', years: '12', monthly: '80' }, ''] },
+  { user: '黄楚雄', account: 'm_0134875297717253', phone: '13751715402', platform: 'mp',  daysAgo: 8,
+    picks: [0, [0,1,3], [1],       { city: '深圳', years: '4',  monthly: '25' }, '继续保持!'] },
 ];
 
 createApp({
@@ -445,9 +460,17 @@ createApp({
         survey.value.questions.forEach(function (q, qi) {
           const pick = d.picks[qi];
           if (q.type === 'single') {
-            ans[qi] = { option: q.options[pick] || q.options[0], tags: (qi === 3 ? (d.tagsQ4 || []) : []), extraText: '' };
+            ans[qi] = { option: q.options[pick] || q.options[0], tags: (d.tagsByQ && d.tagsByQ[qi]) || [], extraText: '' };
           } else if (q.type === 'multi') {
-            ans[qi] = { options: (pick || []).map(function (idx) { return q.options[idx]; }), extraText: '' };
+            ans[qi] = {
+              options: (pick || []).map(function (idx) { return q.options[idx]; }),
+              extraText: (d.extraTextByQ && d.extraTextByQ[qi]) || '',
+            };
+          } else if (q.type === 'text' && q.fields) {
+            // 多字段填空(如商户信息):pick 是 { city,years,monthly } 对象;缺值补空串
+            const obj = {};
+            q.fields.forEach(function (f) { obj[f.key] = (pick && pick[f.key]) || ''; });
+            ans[qi] = obj;
           } else {
             ans[qi] = pick || '';
           }
@@ -543,6 +566,13 @@ createApp({
         if (a.extraText) html += '<div style="margin-top:4px;color:#475569">"'+ a.extraText +'"</div>';
         return html;
       }
+      // text 多字段(如商户信息)
+      if (q.type === 'text' && q.fields) {
+        return q.fields.map(function (f) {
+          var v = (a && a[f.key]) || '—';
+          return '<div style="margin:2px 0">' + f.label + ':<b style="color:#1f2937">' + v + '</b></div>';
+        }).join('');
+      }
       return '<div style="color:#475569">"' + (a || '—') + '"</div>';
     }
 
@@ -573,7 +603,8 @@ createApp({
           const a = s.answers && s.answers[qi];
           if (!a) { row.push(''); return; }
           if (q.type === 'single') row.push(a.option + (a.tags && a.tags.length ? '[' + a.tags.join(';') + ']' : '') + (a.extraText ? '|' + a.extraText : ''));
-          else if (q.type === 'multi') row.push((a.options || []).join(';'));
+          else if (q.type === 'multi') row.push((a.options || []).join(';') + (a.extraText ? '|' + a.extraText : ''));
+          else if (q.type === 'text' && q.fields) row.push(q.fields.map(function (f) { return f.label + ':' + ((a && a[f.key]) || ''); }).join(' | '));
           else row.push(a || '');
         });
         rows.push(row);

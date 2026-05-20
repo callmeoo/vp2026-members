@@ -67,8 +67,9 @@
     <div class="q-title">
       <span class="q-no">Q{{ qi + 1 }}.</span>
       <span class="flex-1">{{ q.text }}</span>
-      <span class="q-type-tag" :class="typeTag(q.type)">{{ typeLabel(q.type) }}</span>
+      <span v-if="!q.hideTypeTag && q.type !== 'text'" class="q-type-tag" :class="typeTag(q.type)">{{ typeLabel(q.type) }}</span>
     </div>
+    <div v-if="q.hint" style="margin-top:10px;font-size:13px;color:#64748b;line-height:1.7;background:#f8fafc;border-left:3px solid #a78bfa;padding:10px 14px;border-radius:0 6px 6px 0">{{ q.hint }}</div>
 
     <div v-if="q.type === 'single'" class="opt-list">
       <div v-for="opt in q.options" :key="opt"
@@ -88,6 +89,17 @@
       </div>
     </div>
 
+    <!-- 文本 · 多字段(商户信息这类题) -->
+    <div v-else-if="q.type === 'text' && q.fields" class="mt-3 flex flex-col gap-3">
+      <div v-for="f in q.fields" :key="f.key" class="flex items-center gap-3">
+        <span class="text-slate-600 flex-shrink-0" style="min-width:260px;font-size:13px">{{ f.label }}</span>
+        <input type="text" :placeholder="f.placeholder || '请输入'" :maxlength="f.maxLength || undefined"
+               v-model="answers[qi][f.key]"
+               class="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-[14px] text-slate-800 focus:border-purple-500 focus:outline-none" style="min-width:0">
+      </div>
+    </div>
+
+    <!-- 文本 · 单字段 -->
     <div v-else-if="q.type === 'text'" class="mt-3" style="position:relative">
       <textarea class="ta" v-model="answers[qi]" :maxlength="q.maxLength || undefined" :placeholder="q.placeholder || '请输入'"></textarea>
       <div v-if="q.maxLength" style="position:absolute;right:12px;bottom:10px;font-size:12px;color:#94a3b8;pointer-events:none;background:rgba(255,255,255,.9);padding:0 6px;border-radius:3px">
@@ -96,8 +108,8 @@
     </div>
 
     <div v-if="needFollowUp(q, qi)" class="followup">
-      <div class="hint">{{ followUpHint(q, qi) }}</div>
-      <div class="chip-grid">
+      <div v-if="!(q.followUp && q.followUp.triggerOptions)" class="hint">{{ followUpHint(q, qi) }}</div>
+      <div v-if="followUpTags(q, qi).length" class="chip-grid">
         <div v-for="t in followUpTags(q, qi)" :key="t"
              class="chip" :class="{ on: isTagSelected(qi, t) }"
              @click="toggleTag(qi, t)">{{ t }}</div>
@@ -107,14 +119,14 @@
   </div>
 
   <div class="submit-bar">
-    <span class="text-slate-500 text-sm">提交问卷后获得 <b class="text-purple-600">+2 积分</b>;所有回答匿名仅用于产品改进。</span>
+    <span class="text-slate-500 text-sm">提交问卷后获得 <b class="text-purple-600">+2 积分</b></span>
     <button class="submit-btn" :disabled="!canSubmit" @click="submit">{{ canSubmit ? '提交问卷' : '请完成所有题目' }}</button>
   </div>
 
-</div>
-</div>
+  <div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
 
-<div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
+</div>
+</div>
 
 <!-- 需求点说明浮动按钮 + 弹出面板 -->
 <button style="position:fixed;left:12px;top:56px;background:#7c3aed;color:#fff;border:none;padding:8px 14px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;z-index:200;box-shadow:0 3px 12px rgba(124,58,237,.45);display:flex;align-items:center;gap:6px" onclick="toggleSpec()">需求说明<span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block;flex-shrink:0"></span></button>
@@ -159,6 +171,12 @@ createApp({
       survey.questions.forEach(function (q, i) {
         if (q.type === 'single') answers[i] = { option: '', tags: [], extraText: '' };
         else if (q.type === 'multi') answers[i] = { options: [], extraText: '' };
+        else if (q.type === 'text' && q.fields) {
+          // 多字段填空(如商户信息):answers[i] = { city:'', years:'', monthly:'' }
+          var obj = {};
+          q.fields.forEach(function (f) { obj[f.key] = ''; });
+          answers[i] = obj;
+        }
         else answers[i] = '';
       });
     }
@@ -182,7 +200,14 @@ createApp({
     function needFollowUp(q, qi) {
       if (!q.followUp) return false;
       if (q.type === 'single') return !!(answers[qi] && answers[qi].option);
-      if (q.type === 'multi')  return !!(answers[qi] && answers[qi].options && answers[qi].options.length);
+      if (q.type === 'multi') {
+        const opts = (answers[qi] && answers[qi].options) || [];
+        if (!opts.length) return false;
+        // triggerOptions:仅当勾选指定选项才展开(如 Q3 通知方式只在勾「其他」时展开)
+        const trig = q.followUp.triggerOptions;
+        if (trig && trig.length) return opts.some(function (o) { return trig.indexOf(o) !== -1; });
+        return true;
+      }
       return false;
     }
     function followUpTags(q, qi) {
@@ -192,6 +217,11 @@ createApp({
     }
     function followUpHint(q, qi) {
       if (q.type === 'single' && answers[qi].option) return '关于「' + answers[qi].option + '」,以下哪些方面是？';
+      if (q.type === 'multi' && q.followUp && q.followUp.triggerOptions) {
+        const opts = (answers[qi] && answers[qi].options) || [];
+        const matched = q.followUp.triggerOptions.filter(function (t) { return opts.indexOf(t) !== -1; });
+        if (matched.length) return '您选择了「' + matched.join('、') + '」,请补充说明:';
+      }
       return '请补充说明';
     }
     function isTagSelected(qi, t) {

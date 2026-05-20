@@ -49,6 +49,7 @@
   .prd-body .tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11.5px; font-weight: 500; }
   .prd-body .tag-todo { background: #fef3c7; color: #92400e; }
   .prd-body .tag-risk { background: #fee2e2; color: #991b1b; }
+  .prd-body .tag-done { background: #dcfce7; color: #166534; text-decoration: line-through; }
 
   /* 原始需求 Word · 内联展示样式(模拟 Word 排版) */
   .word-doc { max-width: 880px; margin: 0 auto; padding: 32px 48px; background: #fff; color: #1f2937; font-size: 14px; line-height: 1.85; font-family: "PingFang SC", "Microsoft YaHei", "SimSun", serif; }
@@ -249,7 +250,7 @@
                 <td>参与平台投票 / 问卷 / 调研</td>
                 <td>2 积分/次</td>
                 <td></td>
-                <td><span class="word-red">第一期一定做?问卷内容待定</span></td>
+                <td>第一期一定做。问卷内容已确认（2026-05-20 同步），见 <code>shared/survey-config.js</code></td>
                 <td><span class="word-red">回退机制：无</span></td>
               </tr>
               <tr>
@@ -483,7 +484,7 @@
             <table>
               <thead><tr><th style="width:60px">#</th><th>议题</th><th style="width:120px">责任方</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>调研问卷表单</td><td><span class="tag tag-todo">需求方</span></td></tr>
+                <tr><td>1</td><td><span style="text-decoration:line-through;color:#64748b">调研问卷表单</span>(2026-05-20 已确认,见 <code>shared/survey-config.js</code>)</td><td><span class="tag tag-done">已完成</span></td></tr>
                 <tr><td>2</td><td>转发朋友圈公开分享是否可实现</td><td><span class="tag tag-risk">技术</span></td></tr>
                 <tr><td>3</td><td>积分商城商品列表</td><td><span class="tag tag-todo">业务方</span></td></tr>
                 <tr><td>4</td><td>数据服务可查询清单</td><td><span class="tag tag-todo">业务方</span></td></tr>

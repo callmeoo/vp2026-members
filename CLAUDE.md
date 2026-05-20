@@ -111,7 +111,11 @@
   - `recommendedTasks` — 推荐任务(含 `dailyMax`，`t_vote` 跳 `survey.html`)
   - `redeemableRewards` — 商城商品/权益卡
   - `qaList` — Q&A 常见问题(app/landing.html 与 pc/member-intro.html 共用，改这里两端同步)
-- **`shared/survey-config.js` → `window.SURVEY_CONFIGS` / `SURVEY_CONFIG`**:调研问卷库,active 标记当前对外发放的问卷;`SURVEY_CONFIG` = active 一份,`SURVEY_CONFIGS` 是全部历史问卷数组(BMS 后台用)。题目支持 `single / multi / text`,可在每题加 `followUp.tagsByOption` 触发「选完展开补充」。
+- **`shared/survey-config.js` → `window.SURVEY_CONFIGS` / `SURVEY_CONFIG`**:调研问卷库,active 标记当前对外发放的问卷;`SURVEY_CONFIG` = active 一份,`SURVEY_CONFIGS` 是全部历史问卷数组(BMS 后台用)。题目支持 `single / multi / text` 三种题型,扩展字段(详见文件顶部注释):
+  - `followUp.tagsByOption`(single) / `followUp.tags`(multi) — 选完后展开 chip 标签 + 补充文本框
+  - `followUp.triggerOptions:['其他']`(multi) — 仅勾选指定选项时才展开补充框(用于「其他」补充场景,模板层自动隐藏 hint 提示行,只留输入框)
+  - `text` 题加 `fields:[{key,label,placeholder,maxLength}]` 渲染为多字段并排填空(如「商户信息」题),`answers[qi]` 是 `{[key]:value}` 对象;模板层 `text` 类一律不显示右上「简述」标签
+  - 题级 `hideTypeTag:true` 隐藏类型标签 / `hint:'...'` 在题面下方展示一段引导文案(紫色左边线提示卡)
 - **`shared/reserve-price-logic.js`**:导出 `ReservePriceLogic` (50 积分 / V2+ 免费) + `HistoryPriceLogic` (100 积分 / V1+ 免费),两者同形,API:`canView(levelCode, carId)` / `getCoins()` / `exchange(carId, carTitle)` / `getUnlockedIds()`。
 - **`shared/recommended-tasks.js`**:推荐任务 Vue 全局组件 `RecommendedTasksComponent`,处理 t_verify / t_deposit / t_vote 的登录拦截 + 跳转。
 - **配色**(按 V 编号位置固定，与等级名解耦): V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`
