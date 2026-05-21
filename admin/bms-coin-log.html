@@ -183,6 +183,10 @@
               </select>
             </div>
           </div>
+          <div class="flex items-center justify-end" style="color:#f56c6c;font-size:12px;line-height:1.4;">
+            <i data-lucide="info" class="w-3.5 h-3.5 mr-1"></i>
+            <span>导出时姓名和手机号掩码展示</span>
+          </div>
           <div class="flex items-center col-span-2">
             <span class="el-label" style="width:80px">发生时间：</span>
             <div class="el-input flex-1"><input id="filterDateFrom" type="date" /></div>
@@ -192,7 +196,7 @@
           <div class="flex items-center col-span-2 justify-end gap-2">
             <button class="el-btn" onclick="resetFilter()"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>重置</button>
             <button class="el-btn el-btn-primary" onclick="doFilter()"><i data-lucide="search" class="w-3.5 h-3.5"></i>查询</button>
-            <button class="el-btn">导出</button>
+            <button class="el-btn" onclick="doExport()"><i data-lucide="download" class="w-3.5 h-3.5"></i>导出</button>
           </div>
         </div>
       </div>
@@ -311,6 +315,70 @@
     return "tag tag-blue";
   };
   const levelColor = (code) => window.MEMBER_CONFIG.getLevelByCode(code).color;
+
+  function maskName(name) {
+    if (!name) return "";
+    const chars = [...name];
+    if (chars.length <= 1) return name;
+    if (chars.length === 2) return chars[0] + "*";
+    return chars[0] + "*".repeat(chars.length - 2) + chars[chars.length - 1];
+  }
+  function maskPhone(phone) {
+    if (!phone) return "";
+    if (phone.includes("*")) return phone;
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 7) return phone;
+    return digits.slice(0, 3) + "****" + digits.slice(-4);
+  }
+
+  function getCurrentFilteredLogs() {
+    const user     = document.getElementById("filterUser").value.trim().toLowerCase();
+    const type     = document.getElementById("filterType").value;
+    const src      = document.getElementById("filterSrc").value;
+    const dateFrom = document.getElementById("filterDateFrom").value;
+    const dateTo   = document.getElementById("filterDateTo").value;
+    return logs.filter(l => {
+      if (user && !l.user.toLowerCase().includes(user) && !l.phone.includes(user)) return false;
+      if (type !== "全部" && l.type !== type) return false;
+      if (src  !== "全部" && l.src  !== src)  return false;
+      const d = l.time.slice(0, 10);
+      if (dateFrom && d < dateFrom) return false;
+      if (dateTo   && d > dateTo)   return false;
+      return true;
+    });
+  }
+
+  function doExport() {
+    const data = getCurrentFilteredLogs();
+    if (data.length === 0) { showRuleAlert && showRuleAlert("当前筛选无数据可导出"); return; }
+    const headers = ["流水号", "用户姓名", "绑定手机号", "类型", "行为", "变动积分", "到期时间", "发生时间", "备注"];
+    const csvEscape = (v) => {
+      const s = String(v == null ? "" : v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = data.map(l => [
+      l.sn,
+      maskName(l.user),
+      maskPhone(l.phone),
+      l.type,
+      l.src,
+      (l.delta > 0 ? "+" : "") + l.delta,
+      l.expire,
+      l.time,
+      l.note
+    ].map(csvEscape).join(","));
+    const csv = "﻿" + headers.join(",") + "\n" + rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `积分流水_${stamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   renderLogs(logs);
   lucide.createIcons();

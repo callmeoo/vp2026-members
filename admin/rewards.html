@@ -282,7 +282,10 @@
       </div>
       <div class="form-row">
         <label>商品编码</label>
-        <input class="ant-input" v-model="form.code" placeholder="系统唯一编码，留空自动生成">
+        <div>
+          <input class="ant-input" v-model="form.code" readonly disabled :placeholder="editingIdx === -1 ? '保存后系统自动生成' : ''" style="background:#f5f7fa;cursor:not-allowed;color:#909399">
+          <div class="hint">系统自动生成，不支持填写；修改商品后编码不变，作为商品唯一标识</div>
+        </div>
       </div>
       <div class="form-row">
         <label>积分价 <span class="text-rose-500">*</span></label>
@@ -340,6 +343,7 @@
     <div class="modal-body" style="line-height:1.9;font-size:13px;color:#303133">
       <ol style="margin:0;padding-left:18px;list-style:decimal;display:flex;flex-direction:column;gap:10px">
         <li>积分商城兑换内容数据来自本页配置。</li>
+        <li><strong>商品编码</strong>：不支持填写，由系统自动生成。修改商品信息时编码不会变化，作为商品的唯一标识用于流水、兑换记录等关联查询。</li>
         <li><strong>库存不足（库存 = 0）</strong>：前端商城仍展示该商品，但标记「已售罄」状态，兑换按钮置灰不可点击。不做隐藏处理，保留展示让商户感知到该权益存在。</li>
         <li><strong>编辑逻辑</strong>：点击「编辑」打开编辑弹窗，可修改商品名称、积分价格、库存数量、适用范围等字段，保存后立即生效。编辑不改变上下架状态。</li>
         <li><strong>下架逻辑</strong>：点击「下架」将商品状态变为「已下架」，前端商城立即隐藏该商品（无论库存是否充足）。已下架商品可重新上架，也可在下架状态下编辑内容。</li>
