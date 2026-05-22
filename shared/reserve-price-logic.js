@@ -2,8 +2,8 @@
  * 保留价 / 历史成交价 查看逻辑 · PC 与 App 共享
  *
  * 两个对象同形:ReservePriceLogic / HistoryPriceLogic
- *   - ReservePriceLogic: 50 积分,V2/V3 免费
- *   - HistoryPriceLogic: 100 积分,V1/V2/V3 免费
+ *   - ReservePriceLogic: 50 积分,V1/V2/V3 免费(仅 V0 需兑换)
+ *   - HistoryPriceLogic: 100 积分,V1/V2/V3 免费(仅 V0 需兑换)
  *
  * 共享 localStorage,PC 与 App 数据互通:
  *   chevip_user_coins              余额
@@ -64,7 +64,7 @@
   window.ReservePriceLogic = buildLogic({
     cost: 50,
     unlockedKey: 'chevip_unlocked_reserve_ids',
-    freeLevels: ['V2', 'V3'],
+    freeLevels: ['V1', 'V2', 'V3'],
     recordType: 'reserve_price',
     typeName: '保留价查询',
   });

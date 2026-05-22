@@ -663,7 +663,7 @@
     </div>
   </div>
 
-  <!-- ============== 保留价 · 锁定提示弹窗(V0/V1) ============== -->
+  <!-- ============== 保留价 · 锁定提示弹窗(V0) ============== -->
   <div v-if="reserveModal === 'lock'" class="modal-mask" @click.self="reserveModal = null">
     <div class="modal-box" style="width: 360px; padding: 32px 28px 24px;">
       <div class="modal-close" @click="reserveModal = null"><i data-lucide="x" class="w-5 h-5"></i></div>
@@ -671,7 +671,7 @@
         <div class="lock-circle">
           <i data-lucide="lock" class="w-7 h-7"></i>
         </div>
-        <div class="text-[15px] text-slate-700 my-5">V2 及以上可查看车辆保留价</div>
+        <div class="text-[15px] text-slate-700 my-5">V1 及以上可查看车辆保留价</div>
         <div class="flex items-center gap-3 w-full">
           <button class="btn-modal-ghost flex-1" @click="reserveModal = null">我知道了</button>
           <button class="btn-modal-primary flex-1" @click="onClickExchange">积分兑换</button>
@@ -711,7 +711,7 @@
     <i data-lucide="check-circle" class="w-4 h-4"></i>{{ toastMsg }}
   </div>
 
-  <!-- ============== 保留价 · 展示弹窗(V2/V3) ============== -->
+  <!-- ============== 保留价 · 展示弹窗(V1/V2/V3 或已兑换) ============== -->
   <div v-if="reserveModal === 'show'" class="modal-mask" @click.self="reserveModal = null">
     <div class="modal-box" style="width: 380px; padding: 36px 28px 24px;">
       <div class="modal-close" @click="reserveModal = null"><i data-lucide="x" class="w-5 h-5"></i></div>
@@ -856,10 +856,10 @@ createApp({
     const historyUnlockedIds = ref(HPL.getUnlockedIds());
     const toastMsg = ref('');
 
-    // V2+ 或已为本车积分兑换过保留价 → 可查看
+    // V1+ 或已为本车积分兑换过保留价 → 可查看
     const LEVEL_NAMES = { V0: '普通', V1: '金卡', V2: '白金', V3: '钻石' };
     const canViewReserve = computed(() =>
-      ['V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
+      ['V1','V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
     );
     // V1+ 或已为本车积分兑换过历史成交价 → 可查看
     const canViewHistory = computed(() =>
@@ -1197,7 +1197,7 @@ createApp({
     </div>
     <div style="padding:12px 14px;font-size:13px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li><b style="color:#1e293b">查看保留价</b><br>入口固定展示在出价区，不随车辆状态（预展中 / 竞价中 / 已成交 / 已流拍）变化。是否可查看由权益判定：① 对应等级（V2 / V3）享有此项权益的用户，点击即可查看；② V0 / V1 等级用户可消耗 50 积分对单台车进行兑换，兑换后在权益有效期内反复查看，无需再次扣减。</li>
+        <li><b style="color:#1e293b">查看保留价</b><br>入口固定展示在出价区，不随车辆状态（预展中 / 竞价中 / 已成交 / 已流拍）变化。是否可查看由权益判定：① V1 / V2 / V3 享有此项权益的用户，点击即可查看；② 仅 V0 等级用户需消耗 50 积分对单台车进行兑换，兑换后在权益有效期内反复查看，无需再次扣减。</li>
         <li><b style="color:#1e293b">历史成交行情</b><br>入口固定展示在出价区，不随车辆状态变化。是否可查看由权益判定：① V1 / V2 / V3 享有「行情查询」权益的用户，点击即可查看本车同车系历史成交记录；② V0 等级用户可消耗 100 积分对单台车进行兑换，兑换后在权益有效期内反复查看，无需再次扣减；③ 之前付费购买了带「行情查询」权益的会员卡用户，在卡片有效期内可查看。</li>
         <li><b style="color:#1e293b">登录拦截</b><br>查看保留价、查看历史成交价均需登录后才可查看。未登录时移动端两个入口仍展示(PC端仅登录后可见)，点击跳转至登录页；登录后回到当前页，需<b>再次点击</b>该入口才会展开查看 / 兑换流程，不自动展开。</li>
         <li><b style="color:#1e293b">演示切换（评审专用）</b><br>右下角浮窗以 4 行 Mock 切换组织——登录态 / 等级 / 积分兑换权益（保留价查询 ↔ 历史成交价）/ 积分场景（积分足 ↔ 积分不足）。「积分不足」会根据当前选中权益自动设为对应的不足值（保留价：30 / 历史：80），「积分足」统一设为 200，配合权益入口即可演示锁定弹窗 + 确认兑换按钮 disabled 的完整链路。其中历史行情仅车辆详情页有入口，出价页不提供。</li>

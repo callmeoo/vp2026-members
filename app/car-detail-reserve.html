@@ -269,14 +269,14 @@
     </div>
   </div>
 
-  <!-- ========== 锁定提示弹窗(V0/V1) ========== -->
+  <!-- ========== 锁定提示弹窗(V0) ========== -->
   <div v-if="reserveModal === 'lock'" class="modal-mask" @click.self="reserveModal = null">
     <div class="modal-card">
       <div class="px-5 pt-5 pb-2 text-center">
         <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
           <i data-lucide="lock" class="w-6 h-6"></i>
         </div>
-        <div class="text-[15px] font-semibold text-slate-800 mb-1">V2 及以上可查看车辆保留价</div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">V1 及以上可查看车辆保留价</div>
         <div class="text-[12px] text-slate-500">当前等级不支持直接查看，可使用积分兑换</div>
       </div>
       <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
@@ -315,7 +315,7 @@
     </div>
   </div>
 
-  <!-- ========== 保留价展示弹窗(V2/V3 或已兑换) ========== -->
+  <!-- ========== 保留价展示弹窗(V1/V2/V3 或已兑换) ========== -->
   <div v-if="reserveModal === 'show'" class="modal-mask" @click.self="reserveModal = null">
     <div class="modal-card">
       <div class="px-5 pt-6 pb-5 text-center">
@@ -490,9 +490,9 @@ createApp({
       { title:'宝骏 330 2016款 1.5L 手动舒适型', plate:'沪A', regDate:'2015-07', mileage:'54.64万公里', city:'广东·广州市', price:'0.0533', date:'07-18' }
     ];
 
-    // V2+ 或已为本车积分兑换过 → 可查看
+    // V1+ 或已为本车积分兑换过 → 可查看
     const canViewReserve = computed(() =>
-      ['V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
+      ['V1','V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
     );
     // V1+ 或已为本车积分兑换过 → 可查看
     const canViewHistory = computed(() =>
@@ -626,7 +626,7 @@ createApp({
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:12px">
-        <li><b style="color:#1e293b">保留价查看</b><br>V2 及以上等级直接展示保留价；V0/V1 展示积分兑换入口（50 积分），兑换后在权益有效期内反复查看，无需再次扣减。</li>
+        <li><b style="color:#1e293b">保留价查看</b><br>V1 及以上等级直接展示保留价；仅 V0 展示积分兑换入口（50 积分），兑换后在权益有效期内反复查看，无需再次扣减。</li>
         <li><b style="color:#1e293b">历史成交行情</b><br>V1 及以上等级直接查看本车同车系成交记录；V0 展示积分兑换入口（100 积分），兑换后在权益有效期内反复查看，无需再次扣减。该入口仅本详情页提供，竞价页（car-bid.html）不展示。</li>
         <li><b style="color:#1e293b">登录拦截</b><br>查看保留价、查看历史成交价均需登录后才可查看。未登录时移动端两个入口仍展示(PC端仅登录后可见)，点击跳转至登录页；登录后回到当前页，需<b>再次点击</b>该入口才会展开查看 / 兑换流程，不自动展开。</li>
         <li><b style="color:#1e293b">跨页状态同步</b><br>仅保留价跨页同步——在竞价页（car-bid.html）已查看或已兑换保留价的，返回本详情页同步展示，无需重复兑换。历史行情解锁状态独立持久化，竞价页无该入口。</li>

@@ -224,14 +224,14 @@
     </div>
   </div>
 
-  <!-- ========== 锁定提示弹窗(V0/V1) ========== -->
+  <!-- ========== 锁定提示弹窗(V0) ========== -->
   <div v-if="reserveModal === 'lock'" class="modal-mask" @click.self="reserveModal = null">
     <div class="modal-card">
       <div class="px-5 pt-5 pb-2 text-center">
         <div class="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center text-amber-600 mb-3">
           <i data-lucide="lock" class="w-6 h-6"></i>
         </div>
-        <div class="text-[15px] font-semibold text-slate-800 mb-1">V2 及以上可查看车辆保留价</div>
+        <div class="text-[15px] font-semibold text-slate-800 mb-1">V1 及以上可查看车辆保留价</div>
         <div class="text-[12px] text-slate-500">当前等级不支持直接查看，可使用积分兑换</div>
       </div>
       <div class="px-4 pb-4 pt-3 grid grid-cols-2 gap-2">
@@ -273,7 +273,7 @@
     </div>
   </div>
 
-  <!-- ========== 保留价展示弹窗(V2/V3 或已兑换) ========== -->
+  <!-- ========== 保留价展示弹窗(V1/V2/V3 或已兑换) ========== -->
   <div v-if="reserveModal === 'show'" class="modal-mask" @click.self="reserveModal = null">
     <div class="modal-card">
       <div class="px-5 pt-6 pb-5 text-center">
@@ -331,7 +331,7 @@ createApp({
     const RESERVE_UNLOCK_COST = RPL.COST;
 
     const canViewReserve = computed(() =>
-      ['V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
+      ['V1','V2','V3'].includes(levelCode.value) || unlockedIds.value.includes(carId)
     );
 
     const totalPrice = computed(() => {
@@ -408,8 +408,8 @@ createApp({
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>出价积分奖励：有效出价 1 台计 1 次，+10 积分/台，上不封顶；积分在车辆竞价结束后发放。</li>
-        <li>保留价查看：V2+ 直接展示，V0/V1 积分兑换（50 积分）。本页已查看或兑换过的，返回车辆详情页同步展示，无需重复兑换，共用 localStorage key: chevip_unlocked_reserve_ids。</li>
-        <li>保留价查看演示（评审专用）：底部演示栏可切换 V0~V3 身份；V2/V3 时出价区直接展示保留价金额；V0/V1 时点击「查看保留价」可进入积分兑换流程（50 积分），兑换成功后价格内联显示，刷新仍保留（localStorage 持久化）；点「重置」可恢复初始状态。</li>
+        <li>保留价查看：V1+ 直接展示，V0 积分兑换（50 积分）。本页已查看或兑换过的，返回车辆详情页同步展示，无需重复兑换，共用 localStorage key: chevip_unlocked_reserve_ids。</li>
+        <li>保留价查看演示（评审专用）：底部演示栏可切换 V0~V3 身份；V1/V2/V3 时出价区直接展示保留价金额；V0 时点击「查看保留价」可进入积分兑换流程（50 积分），兑换成功后价格内联显示，刷新仍保留（localStorage 持久化）；点「重置」可恢复初始状态。</li>
       </ol>
     </div>
   </div>

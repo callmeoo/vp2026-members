@@ -647,7 +647,8 @@
           <li>积分概览：当前余额 / 今年累计获得 / 已使用 / 30 天内到期</li>
           <li>积分流水明细(获取 / 消耗 / 过期 / 手动调整)+ 余额追溯</li>
           <li>已兑换商品记录</li>
-          <li>支持手动调整积分(发放 / 扣减)，用于运营特殊场景</li>
+          <li>支持手动调整积分(新增 / 扣减)，用于运营特殊场景</li>
+          <li><strong class="text-rose-600">非买家用户不展示「会员等级」与「积分」Tab</strong>：会员等级与积分体系仅对买家生效，「卖家」角色登入用户详情时 Tab 栏自动隐去这两项,避免无效入口</li>
         </ul>
       </div>
       <div>
@@ -697,7 +698,9 @@ createApp({
     function toggleGroup(g) { openGroup.value = openGroup.value === g ? '' : g; }
 
     const activeTab = ref('basic');
-    const tabs = [
+    // 「会员等级」/「积分」仅对买家(含双边)开放,卖家角色直接从 Tab 栏隐去
+    const BUYER_ONLY = ['level', 'coin'];
+    const ALL_TABS = [
       { key:'basic',   label:'基础信息' },
       { key:'auth',    label:'实名认证信息' },
       { key:'bank',    label:'银行卡信息' },
@@ -706,6 +709,14 @@ createApp({
       { key:'coin',    label:'积分' },
       { key:'tag',     label:'客户标签' }
     ];
+    const tabs = computed(() => {
+      if (role === '卖家') return ALL_TABS.filter(t => BUYER_ONLY.indexOf(t.key) === -1);
+      return ALL_TABS;
+    });
+    // 兜底:若 URL 带的 activeTab 在卖家场景不可见,回退到 basic
+    watch(tabs, (list) => {
+      if (!list.find(t => t.key === activeTab.value)) activeTab.value = 'basic';
+    }, { immediate: true });
 
     const userStatus = ref('normal');
     const trajOpen = ref(true);

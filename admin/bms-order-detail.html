@@ -678,8 +678,6 @@ createApp({
     const usedBenefits = computed(() => {
       if (mockUsageMode.value === 'none') return [];
       return [
-        { label:'保留价查询',   desc:'本单出价前已使用保留价查询 1 次' },
-        { label:'历史行情查询', desc:'查询本车源历史成交数据 2 次' },
         { label:'无理由退车',   desc:'本单已使用买家无理由退车权益',     tag:{ cls:'mb-tag-violet', text:'权益' } }
       ];
     });
