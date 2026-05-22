@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>保证金提取 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 24px; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  .topbar { background: #fff; }
+  .nav { background: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 30; }
+  .nav-title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; color: #1f2937; }
+  .nav-back, .nav-side { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: #1f2937; }
+
+  /* 区块 */
+  .section { background: #fff; padding: 16px; margin-top: 10px; }
+  .section-title { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px; }
+
+  /* 提取方式分组 */
+  .extract-group { margin-top: 12px; }
+  .extract-group:first-child { margin-top: 0; }
+  .extract-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .extract-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center; color: #fff;
+    flex-shrink: 0;
+  }
+  .extract-icon.wechat { background: #22c55e; }
+  .extract-icon.balance { background: #f59e0b; }
+  .extract-label { font-size: 14px; color: #1f2937; font-weight: 600; }
+
+  .extract-list { background: #f7f8fa; border-radius: 8px; overflow: hidden; }
+  .extract-row {
+    display: flex; align-items: center;
+    padding: 14px 12px;
+    border-bottom: 1px solid #eef0f3;
+    cursor: pointer; user-select: none;
+  }
+  .extract-row:last-child { border-bottom: none; }
+  .row-date { font-size: 13px; color: #475569; flex: 0 0 96px; }
+  .row-amount { font-size: 15px; color: #1f2937; font-weight: 700; flex: 1; }
+  .row-fee { font-size: 12px; color: #94a3b8; margin-right: 14px; flex-shrink: 0; }
+  .row-radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid #cbd5e1; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .extract-row.checked .row-radio { background: #ef4444; border-color: #ef4444; }
+  .extract-row.checked .row-radio::after {
+    content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%;
+  }
+
+  /* 合计 */
+  .summary-row { display: flex; align-items: center; justify-content: flex-end; padding: 14px 16px 4px; gap: 6px; }
+  .summary-row .label { font-size: 14px; color: #1f2937; }
+  .summary-row .val { font-size: 20px; color: #ef4444; font-weight: 700; }
+  .summary-fee { font-size: 12px; color: #94a3b8; padding: 0 16px 14px; text-align: right; }
+
+  /* 提交按钮 */
+  .submit-area { padding: 6px 16px 0; }
+  .btn-submit {
+    width: 100%; height: 48px; border-radius: 999px; border: none;
+    font-size: 16px; font-weight: 600; color: #fff; cursor: pointer; transition: all .12s;
+  }
+  .btn-submit.enabled { background: linear-gradient(90deg, #f97316, #ef4444); }
+  .btn-submit.enabled:active { transform: scale(.98); }
+  .btn-submit.disabled { background: #fca5a5; cursor: not-allowed; }
+
+  /* 说明 */
+  .notice { background: #fff; padding: 16px; margin-top: 12px; }
+  .notice-title { color: #1f2937; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+  .notice ol { margin: 0; padding: 0; list-style: none; counter-reset: notice-li; }
+  .notice li { font-size: 12px; color: #475569; line-height: 1.75; margin-bottom: 8px; }
+  .notice li:last-child { margin-bottom: 0; }
+
+  /* toast 居中黑底白字 */
+  .toast {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: rgba(15,23,42,.92); color: #fff;
+    padding: 14px 20px; border-radius: 10px; font-size: 14px;
+    z-index: 9999; max-width: 280px; text-align: center; line-height: 1.6;
+  }
+
+  /* 等级保护提示弹框 */
+  .modal-mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9000; padding: 24px;
+  }
+  .modal-card { background: #fff; border-radius: 16px; width: 100%; max-width: 320px; overflow: hidden; }
+  .modal-body { padding: 22px 22px 18px; text-align: center; }
+  .modal-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #fef3c7; color: #f59e0b;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+  .modal-desc { font-size: 13px; color: #475569; line-height: 1.7; }
+  .modal-desc b { color: #7c3aed; font-weight: 700; }
+  .modal-foot { display: flex; border-top: 1px solid #f1f5f9; }
+  .modal-btn {
+    flex: 1; padding: 14px 0; font-size: 15px; background: none; border: none; cursor: pointer;
+  }
+  .modal-btn.cancel { color: #64748b; }
+  .modal-btn.confirm { color: #ef4444; font-weight: 600; }
+  .modal-btn + .modal-btn { border-left: 1px solid #f1f5f9; }
+  .modal-btn:active { background: #f8fafc; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <div class="topbar flex items-center justify-between px-5 py-2 text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <div class="nav">
+    <button type="button" class="nav-back" @click="back"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+    <div class="nav-title">保证金提取</div>
+    <div class="nav-side"></div>
+  </div>
+
+  <!-- 申请金额 -->
+  <div class="section">
+    <div class="section-title">申请金额</div>
+
+    <!-- 提取至微信 -->
+    <div v-if="wechatDeposits.length" class="extract-group">
+      <div class="extract-header">
+        <span class="extract-icon wechat"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></span>
+        <span class="extract-label">提取至微信</span>
+      </div>
+      <div class="extract-list">
+        <div v-for="d in wechatDeposits" :key="d.id"
+             :class="['extract-row', d.checked ? 'checked' : '']"
+             @click="toggleDeposit(d)">
+          <span class="row-date">{{ d.date }}</span>
+          <span class="row-amount">{{ d.amount.toLocaleString() }}元</span>
+          <span class="row-fee">{{ d.fee }}元手续费</span>
+          <span class="row-radio"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 提取至可用余额 -->
+    <div v-if="balanceDeposits.length" class="extract-group">
+      <div class="extract-header">
+        <span class="extract-icon balance"><i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5"></i></span>
+        <span class="extract-label">提取至可用余额</span>
+      </div>
+      <div class="extract-list">
+        <div v-for="d in balanceDeposits" :key="d.id"
+             :class="['extract-row', d.checked ? 'checked' : '']"
+             @click="toggleDeposit(d)">
+          <span class="row-date">{{ d.date }}</span>
+          <span class="row-amount">{{ d.amount.toLocaleString() }}元</span>
+          <span class="row-fee">{{ d.fee }}元手续费</span>
+          <span class="row-radio"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 合计 -->
+  <div class="section" style="padding-top:6px;padding-bottom:6px">
+    <div class="summary-row">
+      <span class="label">合计：</span>
+      <span class="val">{{ totalAmount.toLocaleString() }} 元</span>
+    </div>
+    <div class="summary-fee">平台手续费：{{ totalFee }}元</div>
+
+    <div class="submit-area">
+      <button :class="['btn-submit', canSubmit ? 'enabled' : 'disabled']" :disabled="!canSubmit" @click="onSubmitClick">申请提取</button>
+    </div>
+  </div>
+
+  <!-- 保证金提取说明 -->
+  <div class="notice">
+    <div class="notice-title">保证金提取说明：</div>
+    <ol>
+      <li>1.发起保证金提取申请后，平台将会在2-4个工作日内完成打款，若有疑问可咨询在线客服。</li>
+      <li>2.保证金仅支持原路提现，即微信先充值的保证金原路提现至原微信支付账户，开卡金额的保证金原路提取至可用余额。</li>
+      <li>3.保证金已有关联成交订单，订单完结后发起提取，可减免提取手续费；保证金未有关联成交订单时发起提取，需收取提取手续费，具体请以页面提示为准。</li>
+      <li>4.保证金提取时可合并多笔保证金发起提取申请，提取手续费按上述第3点标准单笔核算。</li>
+    </ol>
+  </div>
+
+</div>
+
+<!-- 等级保护提示弹框 -->
+<div v-if="showLevelModal" class="modal-mask" @click.self="showLevelModal = false">
+  <div class="modal-card">
+    <div class="modal-body">
+      <div class="modal-icon"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+      <div class="modal-title">确认提取</div>
+      <div class="modal-desc">
+        提取后您的账户总金额将低于 <b>¥2,000</b>，<br>
+        下月起您的 <b>{{ userLevel }}</b> 等级与对应权益将自动失效，是否确认提取？
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-btn cancel" @click="showLevelModal = false">取消</button>
+      <button class="modal-btn confirm" @click="confirmSubmit">确认提取</button>
+    </div>
+  </div>
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+
+<!-- Demo 切换面板(仅 md+ 展示) -->
+<div class="hidden md:block fixed top-4 right-4 z-50">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[160px]">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+    </div>
+    <div class="grid grid-cols-2 gap-1.5">
+      <button v-for="lv in LEVELS" :key="lv.code"
+              @click="setLevel(lv.code)"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', userLevel === lv.code ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        {{ lv.code }}
+      </button>
+    </div>
+  </div>
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 mt-2 w-[160px]">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>余额场景</span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <button @click="lowBalanceMode = false"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', !lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        正常余额
+      </button>
+      <button @click="lowBalanceMode = true"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        低余额场景
+      </button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2 leading-tight">低余额下勾选保证金提取可触发等级失效提示</div>
+  </div>
+</div>
+
+<div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script src="../shared/reserve-cars.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+const LEVELS = [
+  { code: 'V0' }, { code: 'V1' }, { code: 'V2' }, { code: 'V3' }
+];
+
+// 数据源:正常 / 低余额 两套
+function getDataset(low) {
+  if (low) {
+    return {
+      availableBalance: 500,
+      frozenBalance: 0,
+      frozenDeposit: 0,
+      wechatDeposits: [
+        { id: 'w1', channel: 'wechat', date: '2024-05-09', amount: 1000, fee: 8, checked: false }
+      ],
+      balanceDeposits: [
+        { id: 'b1', channel: 'balance', date: '2024-05-13', amount: 1000, fee: 8, checked: false }
+      ]
+    };
+  }
+  return {
+    availableBalance: 139251697.94,
+    frozenBalance: 3631.00,
+    frozenDeposit: 170500.00,
+    wechatDeposits: [
+      { id: 'w1', channel: 'wechat', date: '2024-05-09', amount: 2000, fee: 8, checked: false },
+      { id: 'w2', channel: 'wechat', date: '2024-05-09', amount: 2000, fee: 8, checked: false },
+      { id: 'w3', channel: 'wechat', date: '2024-05-09', amount: 2000, fee: 0, checked: false }
+    ],
+    balanceDeposits: [
+      { id: 'b1', channel: 'balance', date: '2024-05-13', amount: 2000, fee: 8, checked: false }
+    ]
+  };
+}
+
+createApp({
+  setup() {
+    const stored = window.VPUser && window.VPUser.get();
+    const userLevel = ref(stored && stored.level ? stored.level : 'V2');
+    const lowBalanceMode = ref(false);
+
+    const initial = getDataset(false);
+    const availableBalance = ref(initial.availableBalance);
+    const frozenBalance = ref(initial.frozenBalance);
+    const frozenDeposit = ref(initial.frozenDeposit);
+    const wechatDeposits = ref(initial.wechatDeposits);
+    const balanceDeposits = ref(initial.balanceDeposits);
+
+    watch(lowBalanceMode, (low) => {
+      const d = getDataset(low);
+      availableBalance.value = d.availableBalance;
+      frozenBalance.value = d.frozenBalance;
+      frozenDeposit.value = d.frozenDeposit;
+      wechatDeposits.value = d.wechatDeposits;
+      balanceDeposits.value = d.balanceDeposits;
+    });
+
+    const allDeposits = computed(() => [...wechatDeposits.value, ...balanceDeposits.value]);
+    const availableDepositTotal = computed(() => allDeposits.value.reduce((s, d) => s + d.amount, 0));
+    const accountTotal = computed(() =>
+      availableBalance.value + frozenBalance.value + availableDepositTotal.value + frozenDeposit.value
+    );
+
+    const toastMsg = ref('');
+    const showLevelModal = ref(false);
+
+    const checkedDeposits = computed(() => allDeposits.value.filter(d => d.checked));
+    const totalAmount = computed(() => checkedDeposits.value.reduce((s, d) => s + d.amount, 0));
+    const totalFee = computed(() => checkedDeposits.value.reduce((s, d) => s + d.fee, 0));
+    const canSubmit = computed(() => checkedDeposits.value.length > 0);
+
+    function needLevelWarning() {
+      if (userLevel.value === 'V0') return false;
+      const after = accountTotal.value - totalAmount.value;
+      return after < 2000;
+    }
+
+    function toggleDeposit(d) { d.checked = !d.checked; }
+
+    function setLevel(code) {
+      userLevel.value = code;
+      if (window.VPUser) window.VPUser.set(code);
+    }
+
+    function back() {
+      if (window.smartBack) { smartBack('account.html'); return; }
+      window.history.back();
+    }
+
+    function showToast(msg) {
+      toastMsg.value = msg;
+      setTimeout(() => { toastMsg.value = ''; }, 2400);
+    }
+
+    function onSubmitClick() {
+      if (!canSubmit.value) return;
+      if (needLevelWarning()) {
+        showLevelModal.value = true;
+        return;
+      }
+      doSubmit();
+    }
+
+    function confirmSubmit() {
+      showLevelModal.value = false;
+      doSubmit();
+    }
+
+    function doSubmit() {
+      showToast('提交申请后，审核预计需10个工作日，审批通过后可到帐您绑定的银行账户');
+      allDeposits.value.forEach(d => d.checked = false);
+    }
+
+    watch([wechatDeposits, balanceDeposits], () => nextTick(() => lucide.createIcons()), { deep: true });
+    watch([toastMsg, showLevelModal, lowBalanceMode, userLevel], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return {
+      LEVELS, userLevel, lowBalanceMode,
+      wechatDeposits, balanceDeposits,
+      toastMsg, totalAmount, totalFee, canSubmit, showLevelModal,
+      toggleDeposit, setLevel, back, onSubmitClick, confirmSubmit
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

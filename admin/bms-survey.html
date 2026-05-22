@@ -318,10 +318,7 @@
     </div>
     <div style="padding:12px 20px;border-top:1px solid #ebeef5;display:flex;justify-content:space-between;align-items:center;gap:8px">
       <span class="text-[12px] text-slate-400">仅本份提交的答题明细</span>
-      <div class="flex items-center gap-2">
-        <button class="el-btn el-btn-primary" @click="exportSingleCsv(detail)"><i data-lucide="download" class="w-3.5 h-3.5"></i>导出 CSV</button>
-        <button class="el-btn" @click="detail = null">关闭</button>
-      </div>
+      <button class="el-btn" @click="detail = null">关闭</button>
     </div>
   </div>
 </div>

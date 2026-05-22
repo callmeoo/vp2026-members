@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>专用账号 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 24px; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  /* 顶部状态/导航 */
+  .topbar { background: #fff; }
+  .nav { background: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 30; }
+  .nav-title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; color: #1f2937; }
+  .nav-back, .nav-side { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: #1f2937; }
+
+  /* 账户总览卡 */
+  .overview-wrap { padding: 14px 14px 0; }
+  .overview-card {
+    background: linear-gradient(135deg, #8290c9 0%, #6b7bb8 50%, #5a6aa6 100%);
+    border-radius: 14px;
+    padding: 16px 18px 18px;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(90,106,166,.25);
+  }
+  .overview-title { font-size: 13px; opacity: .9; margin-bottom: 10px; font-weight: 500; }
+  .balance-row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .balance-label { font-size: 12px; opacity: .85; margin-bottom: 3px; }
+  .balance-value { font-size: 26px; font-weight: 700; line-height: 1.15; letter-spacing: -.5px; }
+  .balance-actions { display: flex; gap: 8px; padding-bottom: 4px; }
+  .balance-btn {
+    background: rgba(255,255,255,.92);
+    color: #5a6aa6;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+  }
+  .balance-frozen { font-size: 11px; opacity: .82; margin-top: 6px; }
+  .overview-divider { border-top: 1px dashed rgba(255,255,255,.25); margin: 14px 0; }
+
+  /* 绑定银行卡 */
+  .bank-section { padding: 12px 14px 0; }
+  .bank-card { background: #fff; border-radius: 12px; padding: 14px 16px; }
+  .bank-header { display: flex; align-items: center; justify-content: space-between; }
+  .bank-title { font-size: 14px; color: #1f2937; font-weight: 600; }
+  .bank-tip { font-size: 11px; color: #94a3b8; }
+  .bank-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f1f5f9; }
+  .bank-logo { width: 36px; height: 36px; border-radius: 8px; background: #d4302c; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .bank-name { flex: 1; font-size: 14px; color: #1f2937; }
+  .bank-card-no { font-size: 14px; color: #1f2937; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <!-- Status bar -->
+  <div class="topbar flex items-center justify-between px-5 py-2 text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <button type="button" class="nav-back" @click="back"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+    <div class="nav-title">专用账号</div>
+    <div class="nav-side"><i data-lucide="help-circle" class="w-5 h-5 text-slate-500"></i></div>
+  </div>
+
+  <!-- 账户总览 -->
+  <div class="overview-wrap">
+    <div class="overview-card">
+      <div class="overview-title">账户总览（元）</div>
+
+      <div class="balance-row">
+        <div>
+          <div class="balance-label">可用余额</div>
+          <div class="balance-value">{{ formatCN(availableBalance) }}</div>
+        </div>
+        <div class="balance-actions">
+          <a href="withdraw-balance.html" class="balance-btn">提现</a>
+          <a href="recharge.html" class="balance-btn">充值</a>
+        </div>
+      </div>
+      <div class="balance-frozen">已冻结 {{ formatCN(frozenBalance) }}</div>
+
+      <div class="overview-divider"></div>
+
+      <div class="balance-row">
+        <div>
+          <div class="balance-label">可用保证金</div>
+          <div class="balance-value">{{ formatCN(availableDeposit) }}</div>
+        </div>
+        <div class="balance-actions">
+          <a href="withdraw-deposit.html" class="balance-btn">提取</a>
+          <a href="recharge.html" class="balance-btn">充值</a>
+        </div>
+      </div>
+      <div class="balance-frozen">已冻结 {{ formatCN(frozenDeposit) }}</div>
+    </div>
+  </div>
+
+  <!-- 绑定银行卡 -->
+  <div class="bank-section">
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-title">绑定银行卡</span>
+        <span class="bank-tip">可用余额提现申请通过后可到账至此卡</span>
+      </div>
+      <div class="bank-row">
+        <span class="bank-logo">中</span>
+        <span class="bank-name">中信银行</span>
+        <span class="bank-card-no">**** 5445</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script>
+const { createApp, ref, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const availableBalance = ref(139251697.94);
+    const frozenBalance = ref(3631.00);
+    const availableDeposit = ref(73500.00);
+    const frozenDeposit = ref(170500.00);
+
+    function formatCN(num) {
+      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function back() {
+      if (window.smartBack) { smartBack('profile-loggedin.html'); return; }
+      window.history.back();
+    }
+
+    onMounted(() => lucide.createIcons());
+
+    return { availableBalance, frozenBalance, availableDeposit, frozenDeposit, formatCN, back };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

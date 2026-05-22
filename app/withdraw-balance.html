@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>提现 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; }
+  .phone-shell { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 24px; display: flex; flex-direction: column; }
+  @media (min-width: 768px) {
+    body { background: #f5f5f7; padding: 24px 0; }
+    .phone-shell { border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+  }
+  [v-cloak] { display: none; }
+
+  .topbar { background: #fff; }
+  .nav { background: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 30; }
+  .nav-title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; color: #1f2937; }
+  .nav-back, .nav-side { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: #1f2937; }
+
+  /* 表单行 */
+  .form-block { background: #fff; }
+  .form-row { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #f1f5f9; min-height: 56px; }
+  .form-row:last-child { border-bottom: none; }
+  .form-label { width: 88px; font-size: 14px; color: #1f2937; flex-shrink: 0; }
+  .form-val { flex: 1; font-size: 14px; color: #1f2937; }
+  .form-val.muted { color: #94a3b8; text-align: right; }
+  .form-tip { font-size: 12px; color: #94a3b8; text-align: right; }
+
+  /* 金额输入 */
+  .amount-row { padding: 18px 16px 8px; background: #fff; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9; }
+  .amount-symbol { font-size: 28px; color: #1f2937; margin-right: 10px; font-weight: 500; }
+  .amount-input {
+    flex: 1; border: none; outline: none; font-size: 20px; color: #1f2937;
+    font-weight: 600; background: transparent; padding: 6px 0;
+  }
+  .amount-input::placeholder { color: #d4d4d8; font-weight: 500; }
+  .amount-all { color: #3b82f6; font-size: 14px; font-weight: 500; padding: 6px 4px; cursor: pointer; flex-shrink: 0; }
+  .amount-error { padding: 8px 16px 16px; background: #fff; font-size: 12px; color: #f97316; display: flex; align-items: center; gap: 4px; }
+
+  /* 提交 */
+  .submit-area { padding: 16px; margin-top: auto; }
+  .btn-submit {
+    width: 100%; height: 48px; border-radius: 999px; border: none;
+    font-size: 16px; font-weight: 600; color: #fff; cursor: pointer; transition: all .12s;
+  }
+  .btn-submit.enabled { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+  .btn-submit.enabled:active { transform: scale(.98); }
+  .btn-submit.disabled { background: #cbd5e1; cursor: not-allowed; }
+  .submit-tip { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 14px; line-height: 1.6; padding: 0 8px; }
+
+  /* toast 居中黑底白字 */
+  .toast {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: rgba(15,23,42,.92); color: #fff;
+    padding: 14px 20px; border-radius: 10px; font-size: 14px;
+    z-index: 9999; max-width: 280px; text-align: center; line-height: 1.6;
+  }
+
+  /* 等级保护提示弹框 */
+  .modal-mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9000; padding: 24px;
+  }
+  .modal-card { background: #fff; border-radius: 16px; width: 100%; max-width: 320px; overflow: hidden; }
+  .modal-body { padding: 22px 22px 18px; text-align: center; }
+  .modal-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #fef3c7; color: #f59e0b;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+  .modal-desc { font-size: 13px; color: #475569; line-height: 1.7; }
+  .modal-desc b { color: #7c3aed; font-weight: 700; }
+  .modal-foot { display: flex; border-top: 1px solid #f1f5f9; }
+  .modal-btn {
+    flex: 1; padding: 14px 0; font-size: 15px; background: none; border: none; cursor: pointer;
+  }
+  .modal-btn.cancel { color: #64748b; }
+  .modal-btn.confirm { color: #2563eb; font-weight: 600; }
+  .modal-btn + .modal-btn { border-left: 1px solid #f1f5f9; }
+  .modal-btn:active { background: #f8fafc; }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+<div class="phone-shell">
+
+  <div class="topbar flex items-center justify-between px-5 py-2 text-slate-800 text-sm">
+    <span>9:41</span>
+    <span class="flex items-center gap-1"><i data-lucide="signal" class="w-3.5 h-3.5"></i><i data-lucide="wifi" class="w-3.5 h-3.5"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+  </div>
+
+  <div class="nav">
+    <button type="button" class="nav-back" @click="back"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+    <div class="nav-title">提现</div>
+    <div class="nav-side"></div>
+  </div>
+
+  <!-- 到账账户 -->
+  <div class="form-block" style="margin-top:10px">
+    <div class="form-row">
+      <span class="form-label">到账账户</span>
+      <span class="form-val" style="text-align:right">中信银行(5445)</span>
+    </div>
+    <div class="form-row">
+      <span class="form-label">提现金额</span>
+      <span class="form-tip" style="flex:1">可用余额 ¥{{ formatCN(availableBalance) }}</span>
+    </div>
+  </div>
+
+  <!-- 金额输入 -->
+  <div class="form-block">
+    <div class="amount-row">
+      <span class="amount-symbol">¥</span>
+      <input v-model="amountInput" type="number" class="amount-input" placeholder="输入提现金额" inputmode="decimal">
+      <span class="amount-all" @click="fillAll">全部</span>
+    </div>
+    <div v-if="showError" class="amount-error">
+      <i data-lucide="alert-circle" class="w-3 h-3"></i>
+      <span>{{ errorMsg }}</span>
+    </div>
+  </div>
+
+  <!-- 备注 -->
+  <div class="form-block" style="margin-top:10px">
+    <div class="form-row">
+      <span class="form-label">备注</span>
+      <input v-model="remark" type="text" class="form-val" style="border:none;outline:none;text-align:right" placeholder="请输入" maxlength="50">
+    </div>
+  </div>
+
+  <!-- 提交 -->
+  <div class="submit-area">
+    <button :class="['btn-submit', canSubmit ? 'enabled' : 'disabled']" :disabled="!canSubmit" @click="onSubmitClick">提现</button>
+    <div class="submit-tip">提交申请后，审核预计需10个工作日，审批通过后可到帐您绑定的<br>银行账户</div>
+  </div>
+
+</div>
+
+<!-- 等级保护提示弹框 -->
+<div v-if="showLevelModal" class="modal-mask" @click.self="showLevelModal = false">
+  <div class="modal-card">
+    <div class="modal-body">
+      <div class="modal-icon"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+      <div class="modal-title">确认提现</div>
+      <div class="modal-desc">
+        提现后您的账户总金额将低于 <b>¥2,000</b>，<br>
+        下月起您的 <b>{{ userLevel }}</b> 等级与对应权益将自动失效，是否确认提现？
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-btn cancel" @click="showLevelModal = false">取消</button>
+      <button class="modal-btn confirm" @click="confirmSubmit">确认提现</button>
+    </div>
+  </div>
+</div>
+
+<div class="hidden md:block fixed top-4 left-4 z-50">
+  <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+</div>
+
+<!-- Demo 切换面板(仅 md+ 展示) -->
+<div class="hidden md:block fixed top-4 right-4 z-50">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[160px]">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+    </div>
+    <div class="grid grid-cols-2 gap-1.5">
+      <button v-for="lv in LEVELS" :key="lv.code"
+              @click="setLevel(lv.code)"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', userLevel === lv.code ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        {{ lv.code }}
+      </button>
+    </div>
+  </div>
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 mt-2 w-[160px]">
+    <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
+      <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>余额场景</span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <button @click="lowBalanceMode = false"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', !lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        正常余额
+      </button>
+      <button @click="lowBalanceMode = true"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        低余额(2500元)
+      </button>
+    </div>
+    <div class="text-[10px] text-slate-400 mt-2 leading-tight">输入 ≥501 提现可触发等级失效提示</div>
+  </div>
+</div>
+
+<div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
+</div><!-- /#app -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="_smart-back.js"></script>
+<script src="../shared/reserve-cars.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+const LEVELS = [
+  { code: 'V0' }, { code: 'V1' }, { code: 'V2' }, { code: 'V3' }
+];
+
+createApp({
+  setup() {
+    // 用户等级:优先读 vp_user，没有则默认 V2(便于评审看到触发流程)
+    const stored = window.VPUser && window.VPUser.get();
+    const userLevel = ref(stored && stored.level ? stored.level : 'V2');
+    const lowBalanceMode = ref(false);
+
+    // 账户金额(低余额演示场景下，可用余额 2500 / 其余 0)
+    const availableBalance = computed(() => lowBalanceMode.value ? 2500 : 139251697.94);
+    const frozenBalance = computed(() => lowBalanceMode.value ? 0 : 3631.00);
+    const availableDeposit = computed(() => lowBalanceMode.value ? 0 : 73500.00);
+    const frozenDeposit = computed(() => lowBalanceMode.value ? 0 : 170500.00);
+    const accountTotal = computed(() =>
+      availableBalance.value + frozenBalance.value + availableDeposit.value + frozenDeposit.value
+    );
+
+    const amountInput = ref('');
+    const remark = ref('');
+    const toastMsg = ref('');
+    const touched = ref(false);
+    const showLevelModal = ref(false);
+
+    const numAmount = computed(() => parseFloat(amountInput.value) || 0);
+    const showError = computed(() => touched.value && numAmount.value <= 0);
+    const errorMsg = computed(() => {
+      if (numAmount.value <= 0) return '输入的金额必须大于0';
+      if (numAmount.value > availableBalance.value) return '提现金额不能超过可用余额';
+      return '';
+    });
+    const canSubmit = computed(() => numAmount.value > 0 && numAmount.value <= availableBalance.value);
+
+    // V1-V3 用户提现后账户总金额 < 2000，需要二次确认
+    function needLevelWarning() {
+      if (userLevel.value === 'V0') return false;
+      const after = accountTotal.value - numAmount.value;
+      return after < 2000;
+    }
+
+    function formatCN(num) {
+      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function setLevel(code) {
+      userLevel.value = code;
+      if (window.VPUser) window.VPUser.set(code);
+    }
+
+    function fillAll() {
+      amountInput.value = availableBalance.value.toFixed(2);
+      touched.value = true;
+    }
+
+    function back() {
+      if (window.smartBack) { smartBack('account.html'); return; }
+      window.history.back();
+    }
+
+    function showToast(msg) {
+      toastMsg.value = msg;
+      setTimeout(() => { toastMsg.value = ''; }, 2400);
+    }
+
+    function onSubmitClick() {
+      if (!canSubmit.value) return;
+      if (needLevelWarning()) {
+        showLevelModal.value = true;
+        return;
+      }
+      doSubmit();
+    }
+
+    function confirmSubmit() {
+      showLevelModal.value = false;
+      doSubmit();
+    }
+
+    function doSubmit() {
+      showToast('提交申请后，审核预计需10个工作日，审批通过后可到帐您绑定的银行账户');
+      amountInput.value = '';
+      remark.value = '';
+      touched.value = false;
+    }
+
+    watch(amountInput, () => { touched.value = true; nextTick(() => lucide.createIcons()); });
+    watch([toastMsg, showLevelModal, lowBalanceMode, userLevel], () => nextTick(() => lucide.createIcons()));
+    onMounted(() => lucide.createIcons());
+
+    return {
+      LEVELS, userLevel, lowBalanceMode,
+      availableBalance, amountInput, remark, toastMsg,
+      showError, errorMsg, canSubmit, showLevelModal,
+      formatCN, setLevel, fillAll, back, onSubmitClick, confirmSubmit
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
