@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>可用余额提现 · 唯普汽车</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="common.css">
+<style>
+[v-cloak] { display: none; }
+body { background: #f3f4f6; min-height: 100vh; }
+.page-backdrop {
+  min-height: 100vh; background: linear-gradient(180deg, #ececec 0%, #d8d8d8 100%);
+  display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+}
+.bg-hint { color: #94a3b8; font-size: 13px; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+  <div class="page-backdrop">
+    <div class="bg-hint">PC 个人中心 · 可用余额提现弹框 Demo（关闭后自动重开，便于演示）</div>
+  </div>
+
+  <withdraw-balance-modal :visible="visible" :show-demo-panel="true" @close="onClose"></withdraw-balance-modal>
+
+  <div class="fixed top-4 left-4 z-50">
+    <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
+  </div>
+
+  <!-- 需求点说明(z 高于 mask 9000) -->
+  <div class="fixed bottom-4 left-4 max-w-[320px]" style="z-index:9050;border:1px solid #a78bfa;background:#faf5ff;border-radius:8px;padding:12px 14px;box-shadow:0 6px 18px rgba(124,58,237,.12)">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;color:#7c3aed;font-size:13px;font-weight:600">
+      <i data-lucide="alert-circle" class="w-4 h-4"></i><span>需求点 · 可用余额提现</span>
+    </div>
+    <ol style="font-size:12px;color:#475569;line-height:1.75;margin:0;padding-left:18px">
+      <li>用户发起提现，系统计算「账户总额 − 本次提现金额」。</li>
+      <li>若计算结果 <b style="color:#ef4444">&lt; 2000 元</b> 且用户等级为 V1-V3，弹「确认提现」提示当前等级与权益将于下月起失效，用户确认后才走提现流程。</li>
+      <li>V0 用户直接提交，不弹二次确认。</li>
+    </ol>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../shared/reserve-cars.js"></script>
+<script src="_withdraw-modals.js"></script>
+<script>
+const { createApp, ref, onMounted, nextTick } = Vue;
+createApp({
+  setup() {
+    const visible = ref(true);
+    function onClose() {
+      visible.value = false;
+      setTimeout(() => { visible.value = true; nextTick(() => lucide.createIcons()); }, 80);
+    }
+    onMounted(() => lucide.createIcons());
+    return { visible, onClose };
+  }
+})
+.component('withdraw-balance-modal', window.WithdrawBalanceModal)
+.mount('#app');
+</script>
+</body>
+</html>

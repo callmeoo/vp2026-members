@@ -165,6 +165,18 @@
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
 
+<!-- 需求点说明(仅 md+ 展示) -->
+<div class="hidden md:block fixed bottom-4 left-4 z-50 max-w-[320px]" style="border:1px solid #a78bfa;background:#faf5ff;border-radius:8px;padding:12px 14px;box-shadow:0 6px 18px rgba(124,58,237,.12)">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;color:#7c3aed;font-size:13px;font-weight:600">
+    <i data-lucide="alert-circle" class="w-4 h-4"></i><span>需求点 · 可用余额提现</span>
+  </div>
+  <ol style="font-size:12px;color:#475569;line-height:1.75;margin:0;padding-left:18px">
+    <li>用户发起提现，系统计算「账户总额 − 本次提现金额」。</li>
+    <li>若计算结果 <b style="color:#ef4444">&lt; 2000 元</b> 且用户等级为 V1-V3，弹「确认提现」提示当前等级与权益将于下月起失效，确认后才走提现流程。</li>
+    <li>V0 用户直接提交，不弹二次确认。</li>
+  </ol>
+</div>
+
 <!-- Demo 切换面板(仅 md+ 展示) -->
 <div class="hidden md:block fixed top-4 right-4 z-50">
   <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[160px]">

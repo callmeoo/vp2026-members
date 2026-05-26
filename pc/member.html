@@ -280,8 +280,8 @@
                 <div class="acct-label-sm">可用余额</div>
                 <div class="acct-amount">139,648,697.94<span class="acct-amount-unit">元</span></div>
                 <div class="acct-actions">
-                  <span class="acct-link">充值</span>
-                  <span class="acct-link">提现</span>
+                  <a href="recharge.html" class="acct-link">充值</a>
+                  <span class="acct-link" @click="showWithdrawBalance = true">提现</span>
                 </div>
               </div>
               <div class="acct-item">
@@ -289,7 +289,7 @@
                 <div class="acct-amount">75,500.00<span class="acct-amount-unit">元</span></div>
                 <div class="acct-actions">
                   <a href="recharge.html" class="acct-link">充值</a>
-                  <span class="acct-link">提取</span>
+                  <span class="acct-link" @click="showWithdrawDeposit = true">提取</span>
                 </div>
               </div>
             </div>
@@ -409,6 +409,10 @@
 
   <div v-html="footer"></div>
 
+  <!-- 提现 + 提取 弹框 -->
+  <withdraw-balance-modal :visible="showWithdrawBalance" @close="showWithdrawBalance = false"></withdraw-balance-modal>
+  <withdraw-deposit-modal :visible="showWithdrawDeposit" @close="showWithdrawDeposit = false"></withdraw-deposit-modal>
+
   <!-- 模拟等级切换 · Demo -->
   <div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
     <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
@@ -429,6 +433,8 @@
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="../shared/member-config.js"></script>
+<script src="../shared/reserve-cars.js"></script>
+<script src="_withdraw-modals.js"></script>
 <script>
 const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
@@ -437,6 +443,10 @@ createApp({
     const CFG = window.MEMBER_CONFIG;
     const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 20 };
     const currentDeals = ref(6);
+
+    // 提现 / 提取 弹框开关
+    const showWithdrawBalance = ref(false);
+    const showWithdrawDeposit = ref(false);
     const currentLv = computed(() => CFG.getLevelByDeals(currentDeals.value));
 
     const nextLv = computed(() => {
@@ -513,10 +523,14 @@ createApp({
       CFG, currentLv, currentDeals,
       nextLv, needDeals, progress, progressText,
       allBenefits, simulateLevel, watchedCars,
+      showWithdrawBalance, showWithdrawDeposit,
       header, footer
     };
   }
-}).mount('#app');
+})
+.component('withdraw-balance-modal', window.WithdrawBalanceModal)
+.component('withdraw-deposit-modal', window.WithdrawDepositModal)
+.mount('#app');
 </script>
 
 <!-- 需求点说明浮动按钮 -->
@@ -534,6 +548,20 @@ createApp({
         <li>可享权益网格：6 项权益按当前等级展示解锁 / 未解锁状态，已解锁高亮、未解锁灰色叠加锁图标；积分兑换权益按当前等级显示对应比例（V0 1:1 / V1 95 折 / V2 8 折），随等级切换实时刷新。</li>
         <li>我的资产模块（新增）：左侧专用账号展示可用余额 / 可用保证金及充值 / 提现 / 提取入口；右侧上方为积分（余额 + 「50 积分将在 15 天内过期」提醒 + 去兑换商城按钮 + 积分明细 / 如何赚积分快捷链接），下方并排展示优惠券 / 权益卡张数；左侧边栏额外提供「积分商城 / 积分明细 / 赚积分」常驻快捷入口。</li>
         <li>等级模拟切换（评审专用）：右上角浮窗可一键切换 V0~V3 身份，等级卡、权益网格、成长进度同步联动；仅评审环境显示，不进生产。</li>
+      </ol>
+      <div style="margin:18px -14px 14px;border-top:1px dashed #cbd5e1"></div>
+      <div style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:10px;padding:6px 10px;background:#faf5ff;border-left:3px solid #7c3aed;border-radius:2px">提现 / 提取功能说明（弹框）</div>
+      <div style="font-size:13px;font-weight:600;color:#7c3aed;margin:0 0 6px">一、可用余额提现（弹框）</div>
+      <ol style="margin:0 0 14px;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
+        <li>用户发起提现，系统计算「账户总额 − 本次提现金额」。</li>
+        <li>若计算结果 <b style="color:#ef4444">&lt; 2000 元</b> 且用户等级为 V1-V3，弹「确认提现」提示当前等级与权益将于下月起失效，确认后才走提现流程。</li>
+        <li>V0 用户直接提交，不弹二次确认。</li>
+      </ol>
+      <div style="font-size:13px;font-weight:600;color:#7c3aed;margin-bottom:6px">二、可用保证金提取（弹框）</div>
+      <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
+        <li><b style="color:#22c55e">提取至微信</b>：钱真正出账，影响账户总额。提取后账户总额 <b style="color:#ef4444">&lt; 2000 元</b> 且用户为 V1-V3 → 弹「确认提取」提示等级失效，确认后才提取。</li>
+        <li><b style="color:#f59e0b">提取至可用余额</b>：站内转账（保证金 → 可用余额），账户总额不变，<b>不弹框</b>，直接提交。</li>
+        <li>仅按勾选项中「微信」金额合计判定；V0 用户不提示。</li>
       </ol>
     </div>
   </div>

@@ -108,13 +108,38 @@
   .rnd-spec ol { margin: 0; padding-left: 18px; list-style: decimal; color:#303133; font-size: 13px; line-height: 1.9; }
   .rnd-spec ol li { margin-bottom: 4px; }
   /* 限时活动卡片 */
-  .limited-card { background:#fafafa; border:1px solid #ebeef5; border-radius:6px; padding:14px 16px; }
-  .limited-card + .limited-card { margin-top:16px; }
+  .limited-list { display:flex; flex-direction:column; }
+  .limited-card { background:#fff; border:1px solid #ebeef5; border-radius:6px; padding:14px 16px; margin-bottom:16px; }
+  .limited-card:last-child { margin-bottom:0; }
+  .limited-card.is-active { background:#f6ffed; border-color:#b7eb8f; }
+  .limited-card.is-pending { background:#f5fbff; border-color:#bae0ff; }
+  .limited-card.is-expired { background:#fafafa; border-color:#ebeef5; opacity:.85; }
+  /* 生命周期 Tab */
+  .lifecycle-tabs { display:flex; gap:4px; border-bottom:1px solid #ebeef5; margin-bottom:16px; }
+  .lifecycle-tab { display:inline-flex; align-items:center; gap:6px; padding:0 18px; height:36px; font-size:13px; color:#606266; cursor:pointer; border-radius:4px 4px 0 0; border:1px solid transparent; border-bottom:none; margin-bottom:-1px; }
+  .lifecycle-tab:hover { color:#1677ff; }
+  .lifecycle-tab.active { background:#fff; color:#1677ff; border-color:#ebeef5 #ebeef5 #fff; font-weight:500; }
+  .lifecycle-tab .count { font-size:11px; color:#c0c4cc; }
+  .lifecycle-tab.active .count { color:#1677ff; }
   .limited-card .card-head { display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
-  .limited-card .card-actions { margin-left:auto; display:flex; gap:8px; }
+  .limited-card .card-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+  .status-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:10px; font-size:11px; line-height:1.6; }
+  .status-badge.active { background:#e6f7e6; border:1px solid #95de64; color:#389e0d; }
+  .status-badge.pending { background:#e6f4ff; border:1px solid #91caff; color:#0958d9; }
+  .status-badge.ended { background:#f5f5f5; border:1px solid #d9d9d9; color:#909399; }
+  .status-badge.off { background:#fafafa; border:1px solid #ebeef5; color:#909399; }
+  .status-badge.conflict { background:#fdf6ec; border:1px solid #f5dab1; color:#b88230; }
   .add-activity-btn { width:100%; border:1px dashed #d9d9d9; background:#fff; color:#1677ff; padding:10px; border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:16px; }
   .add-activity-btn:hover { border-color:#1677ff; background:#f5fbff; }
   .add-activity-btn:disabled { color:#c0c4cc; cursor:not-allowed; background:#fafafa; border-color:#ebeef5; }
+  /* 限时活动 - 顶部规则说明卡 */
+  .rule-tip-card { background:#f5fbff; border:1px solid #bae0ff; border-radius:8px; padding:14px 18px; margin-bottom:18px; }
+  .rule-tip-card h5 { font-size:13px; font-weight:600; color:#0958d9; display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .rule-tip-card ol { margin:0; padding-left:18px; list-style:decimal; color:#303133; font-size:12.5px; line-height:1.85; }
+  .rule-tip-card ol li { margin-bottom:2px; }
+  .rule-tip-card .key { color:#0958d9; font-weight:500; }
+  .rule-tip-card.collapsed h5 { margin-bottom:0; }
+  .rule-tip-card .chevron-toggle { transition: transform .2s; }
   /* 日志分页 */
   .log-pager { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:14px 0 0; color:#606266; font-size:13px; }
   .log-pager .pager-btn { min-width:28px; height:28px; padding:0 6px; border-radius:2px; background:#f4f4f5; color:#606266; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; font-size:12px; }
@@ -225,75 +250,127 @@
           <!-- 限时活动：支持多活动配置 -->
           <template v-if="currentType.key === 'limited'">
             <div class="p-6">
-              <div v-for="(act, idx) in limitedActivities" :key="act.id" class="limited-card">
-                <div class="card-head">
-                  <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:13px;color:#606266;white-space:nowrap">活动名称</span>
-                    <input class="ant-input" v-model="act.activityName" :disabled="!editMode" maxlength="50" placeholder="如：五一假期双倍积分活动" style="width:200px">
-                  </div>
-                  <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:13px;color:#606266;white-space:nowrap">活动开始时间</span>
-                    <input class="ant-input" type="date" v-model="act.startDate" :disabled="!editMode" style="width:150px">
-                  </div>
-                  <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:13px;color:#606266;white-space:nowrap">活动结束时间</span>
-                    <input class="ant-input" type="date" v-model="act.endDate" :disabled="!editMode" style="width:150px">
-                  </div>
-                  <span v-if="activeActivityId === act.id" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;background:#e6f4ff;border:1px solid #91caff;color:#0958d9;font-size:11px">
-                    <i data-lucide="zap" class="w-3 h-3"></i>当前生效
+              <!-- 限时活动 · 规则说明卡（可折叠）-->
+              <div class="rule-tip-card" :class="{ collapsed: !rulesExpanded }">
+                <h5 @click="rulesExpanded = !rulesExpanded" style="cursor:pointer;justify-content:space-between">
+                  <span style="display:inline-flex;align-items:center;gap:6px"><i data-lucide="info" class="w-4 h-4"></i>限时活动规则</span>
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#0958d9;font-weight:400">
+                    {{ rulesExpanded ? '收起' : '展开' }}
+                    <span class="chevron-toggle" :style="{ transform: rulesExpanded ? 'rotate(180deg)' : '' }" style="display:inline-flex">
+                      <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                    </span>
                   </span>
-                  <span v-else-if="isInActivityPeriod(act)" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;background:#fdf6ec;border:1px solid #f5dab1;color:#b88230;font-size:11px">
-                    重叠 · 不展示
-                  </span>
-                  <div class="card-actions">
-                    <button v-if="limitedActivities.length > 1" @click="removeLimitedActivity(act.id)" :disabled="!editMode" style="color:#f56c6c;font-size:12px;cursor:pointer;background:none;border:none;padding:4px 8px" :style="{ opacity: editMode ? 1 : 0.4, cursor: editMode ? 'pointer' : 'not-allowed' }">删除活动</button>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
-                  <span style="font-size:13px;color:#606266;white-space:nowrap">前台任务说明</span>
-                  <input class="ant-input" v-model="act.frontDesc" :disabled="!editMode" maxlength="100" placeholder="前台展示，最多 100 字" style="flex:1">
-                </div>
-                <table class="rule-table" style="margin-top:14px">
-                  <thead>
-                    <tr>
-                      <th style="width:22%">具体行为</th>
-                      <th style="width:150px">积分值</th>
-                      <th>规则说明</th>
-                      <th style="width:80px;text-align:center">状态</th>
-                      <th style="width:70px;text-align:center">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="it in act.items" :key="act.id + '-' + it.id">
-                      <td>
-                        <select class="ant-input" v-model="it.action" :disabled="!editMode" style="max-width:180px">
-                          <option>活动出价多倍积分</option>
-                          <option>活动成交多倍积分</option>
-                        </select>
-                      </td>
-                      <td><input class="ant-input" v-model="it.coin" :disabled="!editMode" style="max-width:140px"></td>
-                      <td style="color:#606266">{{ it.desc || '—' }}</td>
-                      <td style="text-align:center">
-                        <label class="switch"><input type="checkbox" v-model="it.enabled"><span class="slider"></span></label>
-                      </td>
-                      <td style="text-align:center">
-                        <button @click="removeLimitedItem(act.id, it.id)" :disabled="!editMode" style="color:#f56c6c;font-size:12px;background:none;border:none" :style="{ opacity: editMode ? 1 : 0.4, cursor: editMode ? 'pointer' : 'not-allowed' }">删除</button>
-                      </td>
-                    </tr>
-                    <tr v-if="act.items.length === 0">
-                      <td colspan="5" style="padding:24px 0;text-align:center;color:#909399">该活动暂无行为规则</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div v-if="editMode" style="margin-top:8px">
-                  <button @click="addLimitedItem(act.id)" style="font-size:12px;color:#1677ff;background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px">
-                    <i data-lucide="plus" class="w-3 h-3"></i>新增行为
-                  </button>
+                </h5>
+                <ol v-show="rulesExpanded">
+                  <li><strong>状态定义</strong>（按系统当日时间自动判定，精确到自然日）：
+                    <ol style="margin-top:4px;padding-left:18px;list-style:lower-alpha;line-height:1.8">
+                      <li><span class="key">进行中</span>：起止时间均已配置 <strong>且</strong> <code>startDate ≤ today ≤ endDate</code>。首日（today=startDate）与末日（today=endDate）均算进行中。</li>
+                      <li><span class="key">待生效</span>：起止时间均已配置 <strong>且</strong> <code>today &lt; startDate</code>（已配置未到生效日）。</li>
+                      <li><span class="key">已过期</span>：endDate 已配置 <strong>且</strong> <code>today &gt; endDate</code>。</li>
+                    </ol>
+                  </li>
+                  <li><strong>状态切换</strong>由系统时间自动驱动，无需人工操作：<code>待生效 →(startDate 当日 0:00)→ 进行中 →(endDate 次日 0:00)→ 已过期</code>。</li>
+                  <li><strong>保存校验</strong>：① 必须填写完整起止时间；② <code>startDate ≤ endDate</code>；③ 「进行中 + 待生效」所有活动的时间区间<span class="key">两两不可有交集</span>（已过期不参与校验）。任一校验失败，拒绝保存并 toast 提示。</li>
+                  <li><strong>前台展示规则</strong>：仅展示<span class="key">已启用 + 进行中</span>的活动；<span class="key">同一时间最多 1 个活动展示</span>（由上述"时间不交集"规则自动保证）；待生效活动<strong>不</strong>提前预热展示，到 startDate 当日才出现；已过期活动自动下架。</li>
+                  <li><strong>后台处理</strong>：已过期活动<span class="key">仅可查阅与删除，不可编辑</span>；删除前会有 2 次确认弹框，防误删。</li>
+                  <li><strong>新增活动</strong>：默认落到「待生效」Tab 并进入编辑态，可在 Tab 内与其他待生效活动一起查看以核对时间。</li>
+                </ol>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                <div style="font-size:12px;color:#909399">共 {{ limitedActivities.length }} 个活动</div>
+                <button class="ant-btn-primary" @click="addLimitedActivity" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;padding:5px 14px">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>新增活动
+                </button>
+              </div>
+              <!-- 生命周期 Tab -->
+              <div class="lifecycle-tabs">
+                <div v-for="lt in lifecycleTabs" :key="lt.key"
+                     :class="['lifecycle-tab', { active: lifecycleTab === lt.key }]"
+                     @click="lifecycleTab = lt.key; limitedPage = 1">
+                  {{ lt.label }}<span class="count">({{ lt.count }})</span>
                 </div>
               </div>
-              <button class="add-activity-btn" :disabled="!editMode" @click="addLimitedActivity">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>新增活动
-              </button>
+              <div class="limited-list">
+                <div v-for="act in currentLifecycleActs" :key="act.id" v-show="visibleActIds.includes(act.id)" class="limited-card" :class="'is-' + activityStatus(act).code">
+                  <div class="card-head">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:13px;color:#606266;white-space:nowrap">活动名称</span>
+                      <input class="ant-input" v-model="act.activityName" :disabled="!act._editing" maxlength="50" placeholder="如：五一假期双倍积分活动" style="width:200px">
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:13px;color:#606266;white-space:nowrap">活动开始时间</span>
+                      <input class="ant-input" type="date" v-model="act.startDate" :disabled="!act._editing" style="width:150px">
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:13px;color:#606266;white-space:nowrap">活动结束时间</span>
+                      <input class="ant-input" type="date" v-model="act.endDate" :disabled="!act._editing" style="width:150px">
+                    </div>
+                    <div class="card-actions">
+                      <template v-if="activityStatus(act).code !== 'expired'">
+                        <template v-if="!act._editing">
+                          <button @click="startEditAct(act)" class="ant-btn-primary" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:4px 10px">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>编辑
+                          </button>
+                        </template>
+                        <template v-else>
+                          <button @click="cancelEditAct(act)" class="ant-btn" style="font-size:12px;padding:4px 10px">取消</button>
+                          <button @click="saveEditAct(act)" class="ant-btn-primary" style="font-size:12px;padding:4px 10px">保存</button>
+                        </template>
+                      </template>
+                      <button @click="askRemoveActivity(act)" style="color:#f56c6c;font-size:12px;cursor:pointer;background:none;border:none;padding:4px 8px;margin-left:6px">删除活动</button>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
+                    <span style="font-size:13px;color:#606266;white-space:nowrap">前台任务说明</span>
+                    <input class="ant-input" v-model="act.frontDesc" :disabled="!act._editing" maxlength="100" placeholder="前台展示，最多 100 字" style="flex:1">
+                  </div>
+                  <table class="rule-table" style="margin-top:14px">
+                    <thead>
+                      <tr>
+                        <th style="width:22%">具体行为</th>
+                        <th style="width:150px">积分值</th>
+                        <th>规则说明</th>
+                        <th style="width:80px;text-align:center">状态</th>
+                        <th style="width:70px;text-align:center">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="it in act.items" :key="act.id + '-' + it.id">
+                        <td>
+                          <select class="ant-input" v-model="it.action" :disabled="!act._editing" style="max-width:180px">
+                            <option>活动出价多倍积分</option>
+                            <option>活动成交多倍积分</option>
+                          </select>
+                        </td>
+                        <td><input class="ant-input" v-model="it.coin" :disabled="!act._editing" style="max-width:140px"></td>
+                        <td style="color:#606266">{{ it.desc || '—' }}</td>
+                        <td style="text-align:center">
+                          <label class="switch"><input type="checkbox" v-model="it.enabled" :disabled="activityStatus(act).code === 'expired'"><span class="slider"></span></label>
+                        </td>
+                        <td style="text-align:center">
+                          <button @click="removeLimitedItem(act.id, it.id)" :disabled="!act._editing" style="color:#f56c6c;font-size:12px;background:none;border:none" :style="{ opacity: act._editing ? 1 : 0.4, cursor: act._editing ? 'pointer' : 'not-allowed' }">删除</button>
+                        </td>
+                      </tr>
+                      <tr v-if="act.items.length === 0">
+                        <td colspan="5" style="padding:24px 0;text-align:center;color:#909399">该活动暂无行为规则</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div v-if="currentLifecycleActs.length === 0" style="padding:60px 0;text-align:center;color:#c0c4cc;font-size:13px">
+                  当前 Tab 下暂无活动
+                </div>
+              </div>
+              <!-- 限时活动 · 分页器（每 Tab 内独立分页）-->
+              <div v-if="limitedTotalPages > 1" class="log-pager">
+                <span style="margin-right:8px;color:#909399">共 {{ currentLifecycleActs.length }} 条</span>
+                <button class="pager-btn" :disabled="limitedPage <= 1" @click="limitedPage--">‹</button>
+                <template v-for="p in limitedPageList" :key="p">
+                  <span v-if="p === '...'" style="color:#909399;padding:0 4px">...</span>
+                  <button v-else class="pager-btn" :class="{ active: p === limitedPage }" @click="limitedPage = p">{{ p }}</button>
+                </template>
+                <button class="pager-btn" :disabled="limitedPage >= limitedTotalPages" @click="limitedPage++">›</button>
+              </div>
             </div>
           </template>
 
@@ -339,7 +416,7 @@
               </table>
             </div>
           </template>
-          <div class="save-bar">
+          <div class="save-bar" v-if="currentType.key !== 'limited'">
             <div style="display:flex;align-items:center;gap:14px">
               <div class="time">最后更新：{{ currentType.updatedAt }}</div>
               <div v-if="!editMode" style="font-size:12px;color:#909399;border-left:1px solid #ebeef5;padding-left:14px;display:flex;align-items:center;gap:4px">
@@ -446,9 +523,47 @@
               <li><strong>数值 / 说明字段修改</strong>：点击「编辑」进入编辑模式后方可修改，修改完成后点击「保存」写入并立即生效；点击「取消」放弃本次修改并退出编辑模式。切换子分类（交易类 / 行为活动类 / 限时活动类）时自动退出编辑模式。</li>
               <li><strong>保存提示</strong>：点击「保存」后配置直接生效，页面自动退出编辑模式，顶部显示「保存成功」toast 提示。</li>
               <li><strong>字段同步至前端</strong>：「活动名称」「前台任务说明」「活动开始时间」「活动结束时间」需对应展示在推荐任务副标题中，让用户在商户端任务列表中看到完整活动信息。</li>
-              <li><strong>限时活动支持多活动并存配置</strong>：本页可在「限时活动类」tab 下添加任意数量的活动，每个活动独立配置「活动名称 / 开始时间 / 结束时间 / 前台任务说明」以及内部的「具体行为 + 积分值 + 状态」列表。<br>
-                <strong>新增交互</strong>：进入编辑模式后，活动列表底部出现「+ 新增活动」按钮，点击在当前位置追加一个空白活动卡片；卡片右上角「删除活动」可整体移除该活动；活动内行为列表也支持「+ 新增行为 / 删除」单条操作。新增 / 删除 / 字段修改均需点击右下「保存」后写入并立即生效，「取消」放弃修改。</li>
-              <li><strong>前端仅展示 1 个有效活动</strong>：当 APP / PC 商户端读取限时活动时，仅取「当前时间在活动起止区间内」且至少一条行为为「启用」状态的活动；<strong>若多个活动期重叠，优先展示开始时间最早的那一个</strong>，其余活动当期不展示（页面上以「重叠 · 不展示」标识，便于运营核对）。当前生效活动会标注「当前生效」蓝色徽标。</li>
+              <li><strong>限时活动支持多活动并存配置</strong>：本页可在「限时活动类」tab 下持续添加活动，每个活动独立配置「活动名称 / 开始时间 / 结束时间 / 前台任务说明」以及内部的「具体行为 + 积分值 + 状态」列表。<br>
+                <strong>新增交互</strong>：顶部右侧「+ 新增活动」按钮无需进入编辑模式即可点击；新增的活动自动归入「待生效」Tab、置顶显示并进入编辑态，方便与其他待生效活动一并核对时间；每个活动卡片右上角有独立「编辑 / 取消 / 保存」与「删除活动」按钮，编辑互不影响。</li>
+              <li><strong>生命周期 Tab 与状态定义</strong>（按系统当日时间自动判定，精确到自然日）：
+                <ol style="margin-top:6px;padding-left:18px;list-style:lower-alpha;line-height:1.8">
+                  <li><strong>进行中（Active）</strong>：起止时间均已配置 <strong>且</strong> <code>startDate ≤ today ≤ endDate</code>。
+                    <ul style="list-style:disc;padding-left:18px;margin:4px 0">
+                      <li>包含起止日全天（首日 today=startDate / 末日 today=endDate 均视为进行中）。</li>
+                      <li>同一时间至多 1 个进行中活动（由「时间不交集」规则强制保证）。</li>
+                    </ul>
+                  </li>
+                  <li><strong>待生效（Pending）</strong>：起止时间均已配置 <strong>且</strong> <code>today &lt; startDate</code>（已配置未到生效日）。</li>
+                  <li><strong>已过期（Expired）</strong>：endDate 已配置 <strong>且</strong> <code>today &gt; endDate</code>。
+                    <ul style="list-style:disc;padding-left:18px;margin:4px 0">
+                      <li>endDate 次日 0:00 起，进行中活动自动转为已过期。</li>
+                    </ul>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>状态切换路径</strong>：<code>待生效 →(startDate 当日 0:00)→ 进行中 →(endDate 次日 0:00)→ 已过期</code>。状态切换全由系统时间自动驱动，无需人工干预；运营修改起止时间后，状态会随保存立即重新评估。</li>
+              <li><strong>保存校验</strong>（拒绝保存的硬条件）：
+                <ol style="margin-top:6px;padding-left:18px;list-style:lower-alpha;line-height:1.8">
+                  <li>必须填写完整的开始时间与结束时间；</li>
+                  <li><code>startDate ≤ endDate</code>，反向时间禁止；</li>
+                  <li>「进行中 + 待生效」所有活动的时间区间<strong>两两不可有交集</strong>（已过期活动不参与校验）。任一条件不满足，弹 toast 提示并保留编辑态。</li>
+                </ol>
+              </li>
+              <li><strong>前台展示规则</strong>（商户端 APP / PC）：
+                <ol style="margin-top:6px;padding-left:18px;list-style:lower-alpha;line-height:1.8">
+                  <li>前台仅展示<strong>「已启用 + 进行中」</strong>的活动 —— 即配置完整、未被删除、且处于进行中状态的活动；</li>
+                  <li><strong>同一时间前台仅 1 个活动展示</strong>。该限制由「进行中 + 待生效不交集」规则自动保证，不会出现并发活动；</li>
+                  <li>「待生效」活动<strong>不</strong>提前预热展示，必须等到 <code>startDate</code> 当日才在前台出现；</li>
+                  <li>「已过期」活动自动从前台下架，不再展示。</li>
+                </ol>
+              </li>
+              <li><strong>已过期活动后台处理</strong>：
+                <ol style="margin-top:6px;padding-left:18px;list-style:lower-alpha;line-height:1.8">
+                  <li>已过期活动在「已过期」Tab 中仅可查阅，<strong>所有字段禁用编辑</strong>（名称、时间、前台说明、行为条目均不可改）；</li>
+                  <li>支持<strong>整体删除</strong>，删除时<strong>2 次确认弹框</strong>（第 1 步展示活动详情确认对象，第 2 步红色按钮警示永久删除）；</li>
+                  <li>已过期活动不可"复活"——如需相同配置请新建活动。</li>
+                </ol>
+              </li>
               <li><strong>操作日志分页</strong>：操作日志列表支持分页查看，每页可在 <strong>20 / 40 / 60 / 100</strong> 条之间切换；切换页大小后自动跳回首页，便于按时间倒序查阅历史变更。</li>
               <li><strong>黑名单用户不发放积分</strong>：被加入「异常账号黑名单」的用户，无论触发任何积分获取行为（交易、出价、转发、投票等），系统一律不发放积分；移出黑名单后恢复正常发放，黑名单期间漏发的积分<strong>不补发</strong>。</li>
               <li><strong>操作日志记录范围</strong>：本页所有配置变更均自动写入「操作日志」tab，便于追溯审计。覆盖：①「积分发放规则」中各条规则的<strong>新增 / 删除 / 修改 / 状态开关切换</strong>（含交易类 / 行为活动类 / 限时活动类，限时活动包括活动整体的<strong>新增 / 删除</strong>与活动内行为条目的增减）；②「风控反作弊」功能开关的<strong>开启 / 关闭</strong>及阈值调整；③ 黑名单账号的<strong>加入与移除</strong>（记录操作人、被操作账号、原因）。</li>
@@ -581,6 +696,56 @@
   </div>
 </div>
 
+<!-- 删除活动 · 第一次确认 -->
+<div v-if="removeActStep === 1" class="modal-mask" @click.self="cancelRemoveAct">
+  <div class="modal-box" style="width:440px">
+    <div class="modal-head">
+      确认删除活动
+      <span class="close" @click="cancelRemoveAct"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="flex items-start gap-3">
+        <i data-lucide="alert-triangle" class="w-5 h-5" style="color:#f97316;flex-shrink:0;margin-top:2px"></i>
+        <div class="text-sm" style="color:#303133">
+          <div>确定要删除以下活动？此操作<strong style="color:#f56c6c">无法撤销</strong>。</div>
+          <div v-if="pendingRemoveAct" class="mt-2 p-2 rounded" style="background:#fafafa;border:1px solid #ebeef5">
+            <div><span class="text-slate-400 text-xs">活动名称：</span>{{ pendingRemoveAct.activityName || '（未命名）' }}</div>
+            <div><span class="text-slate-400 text-xs">活动时间：</span>{{ pendingRemoveAct.startDate || '—' }} ~ {{ pendingRemoveAct.endDate || '—' }}</div>
+            <div><span class="text-slate-400 text-xs">前台说明：</span>{{ pendingRemoveAct.frontDesc || '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="ant-btn" @click="cancelRemoveAct">取消</button>
+      <button class="ant-btn-primary" style="background:#f56c6c;border-color:#f56c6c" @click="removeActStep = 2">下一步</button>
+    </div>
+  </div>
+</div>
+
+<!-- 删除活动 · 第二次确认 -->
+<div v-if="removeActStep === 2" class="modal-mask" @click.self="cancelRemoveAct">
+  <div class="modal-box" style="width:440px">
+    <div class="modal-head">
+      最后确认 · 删除活动
+      <span class="close" @click="cancelRemoveAct"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="flex items-start gap-3">
+        <i data-lucide="alert-octagon" class="w-5 h-5" style="color:#f56c6c;flex-shrink:0;margin-top:2px"></i>
+        <div class="text-sm" style="color:#303133">
+          <div>此操作将<strong style="color:#f56c6c">永久删除</strong>该活动及其所有行为规则配置，<strong>不可恢复</strong>。</div>
+          <div class="mt-2 text-xs text-slate-500">如确认删除，请点击下方红色按钮。</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="ant-btn" @click="cancelRemoveAct">取消</button>
+      <button class="ant-btn-primary" style="background:#f56c6c;border-color:#f56c6c" @click="confirmRemoveAct">确认永久删除</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div v-if="toastVisible" class="toast">
   <i data-lucide="check-circle" class="w-4 h-4" style="color:#52c41a;flex-shrink:0"></i>{{ toastMsg }}
@@ -670,23 +835,132 @@ createApp({
       enabled: true
     });
     const limitedActivities = reactive([
+      // 进行中
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '月度专享双倍积分',
+        startDate: '2026-05-20', endDate: '2026-05-31',
+        frontDesc: '5 月专享，出价 / 成交均得双倍积分',
+        _editing: false,
+        items: [ newLimitedItem('活动出价多倍积分'), newLimitedItem('活动成交多倍积分') ]
+      },
+      // 待生效
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '端午假期双倍积分',
+        startDate: '2026-06-19', endDate: '2026-06-22',
+        frontDesc: '端午假期专属，出价积分翻倍',
+        _editing: false,
+        items: [ newLimitedItem('活动出价多倍积分') ]
+      },
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '中秋成交三倍积分',
+        startDate: '2026-09-15', endDate: '2026-09-18',
+        frontDesc: '中秋假期成交即享 3 倍积分',
+        _editing: false,
+        items: [ newLimitedItem('活动成交多倍积分', 3) ]
+      },
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '国庆出价双倍积分',
+        startDate: '2026-10-01', endDate: '2026-10-07',
+        frontDesc: '国庆 7 天，出价积分翻倍',
+        _editing: false,
+        items: [ newLimitedItem('活动出价多倍积分') ]
+      },
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '双 11 全民出价节',
+        startDate: '2026-11-08', endDate: '2026-11-13',
+        frontDesc: '双 11 大促，出价 × 2 / 成交 × 2',
+        _editing: false,
+        items: [ newLimitedItem('活动出价多倍积分'), newLimitedItem('活动成交多倍积分') ]
+      },
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '双 12 年终冲刺',
+        startDate: '2026-12-10', endDate: '2026-12-15',
+        frontDesc: '年终冲刺，出价积分翻倍',
+        _editing: false,
+        items: [ newLimitedItem('活动出价多倍积分') ]
+      },
+      // 已过期
       {
         id: 'act_' + (++limitedSeq),
         activityName: '五一假期双倍积分活动',
         startDate: '2026-05-01', endDate: '2026-05-07',
-        frontDesc: '',
+        frontDesc: '五一假期专属翻倍奖励',
+        _editing: false,
+        items: [ newLimitedItem('活动出价多倍积分'), newLimitedItem('活动成交多倍积分') ]
+      },
+      {
+        id: 'act_' + (++limitedSeq),
+        activityName: '春节双倍积分活动',
+        startDate: '2026-02-09', endDate: '2026-02-15',
+        frontDesc: '春节专属翻倍奖励',
+        _editing: false,
         items: [ newLimitedItem('活动出价多倍积分'), newLimitedItem('活动成交多倍积分') ]
       }
     ]);
-    // 当前生效活动：取「今天在活动期内」的活动；若多个重叠，按 startDate 升序选第一个
+    // 今天日期(YYYY-MM-DD)
     const today = new Date().toISOString().slice(0, 10);
     const isInActivityPeriod = (act) => act && act.startDate && act.endDate && act.startDate <= today && today <= act.endDate;
-    const activeActivityId = computed(() => {
-      const inRange = limitedActivities.filter(a => a.items.some(i => i.enabled) && isInActivityPeriod(a));
-      if (inRange.length === 0) return null;
-      inRange.sort((a, b) => a.startDate.localeCompare(b.startDate));
-      return inRange[0].id;
+    // 单活动生命周期状态：active(进行中) / pending(待生效) / expired(已过期)
+    function activityStatus(act) {
+      if (act.endDate && today > act.endDate)              return { code: 'expired', label: '已过期' };
+      if (!act.startDate || !act.endDate)                  return { code: 'pending', label: '待生效' };
+      if (today < act.startDate)                           return { code: 'pending', label: '待生效' };
+      if (act.startDate <= today && today <= act.endDate)  return { code: 'active',  label: '进行中' };
+      return { code: 'pending', label: '待生效' };
+    }
+    // 规则说明卡折叠
+    const rulesExpanded = ref(true);
+    // 限时活动分页（每 Tab 内一页 5 条）
+    const limitedPageSize = ref(5);
+    const limitedPage = ref(1);
+    // 生命周期 Tab
+    const lifecycleTab = ref('active');
+    const expiredActs  = computed(() => limitedActivities.filter(a => activityStatus(a).code === 'expired'));
+    const activeActs   = computed(() => limitedActivities.filter(a => activityStatus(a).code === 'active'));
+    const pendingActs  = computed(() => limitedActivities.filter(a => activityStatus(a).code === 'pending'));
+    const lifecycleTabs = computed(() => [
+      { key:'active',  label:'进行中',  count: activeActs.value.length },
+      { key:'pending', label:'待生效',  count: pendingActs.value.length },
+      { key:'expired', label:'已过期',  count: expiredActs.value.length }
+    ]);
+    const currentLifecycleActs = computed(() => {
+      const list = lifecycleTab.value === 'active' ? activeActs.value
+                 : lifecycleTab.value === 'pending' ? pendingActs.value
+                 : expiredActs.value;
+      // 已过期按结束时间倒序（最近过期在前）；进行中/待生效按开始时间升序，无日期（新建中）置顶以便与其他活动同时可见
+      const sorted = [...list].sort((a, b) => {
+        if (lifecycleTab.value === 'expired') return (b.endDate || '').localeCompare(a.endDate || '');
+        const aHas = !!a.startDate, bHas = !!b.startDate;
+        if (aHas && !bHas) return 1;
+        if (!aHas && bHas) return -1;
+        return (a.startDate || '').localeCompare(b.startDate || '');
+      });
+      return sorted;
     });
+    const limitedTotalPages = computed(() => Math.max(1, Math.ceil(currentLifecycleActs.value.length / limitedPageSize.value)));
+    const visibleActIds = computed(() => {
+      const start = (limitedPage.value - 1) * limitedPageSize.value;
+      return currentLifecycleActs.value.slice(start, start + limitedPageSize.value).map(a => a.id);
+    });
+    const limitedPageList = computed(() => {
+      const total = limitedTotalPages.value;
+      const cur = limitedPage.value;
+      if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+      if (cur <= 4) return [1, 2, 3, 4, 5, '...', total];
+      if (cur >= total - 3) return [1, '...', total-4, total-3, total-2, total-1, total];
+      return [1, '...', cur-1, cur, cur+1, '...', total];
+    });
+    // 区间是否重叠
+    const isRangeOverlap = (a, b) => {
+      if (!a.startDate || !a.endDate || !b.startDate || !b.endDate) return false;
+      return !(a.endDate < b.startDate || a.startDate > b.endDate);
+    };
 
     const defaultUpdatedAt = {
       deal:     '2026-04-10 14:22',
@@ -710,12 +984,80 @@ createApp({
         activityName: '',
         startDate: '', endDate: '',
         frontDesc: '',
+        _editing: true,
         items: [ newLimitedItem('活动出价多倍积分'), newLimitedItem('活动成交多倍积分') ]
       });
+      // 新增活动归入「待生效」tab，新卡片置顶 + 第 1 页，便于与其他待生效活动一起核对时间
+      lifecycleTab.value = 'pending';
+      limitedPage.value = 1;
     }
-    function removeLimitedActivity(actId) {
-      const idx = limitedActivities.findIndex(a => a.id === actId);
-      if (idx >= 0) limitedActivities.splice(idx, 1);
+    // 单活动卡片编辑：进入 / 取消 / 保存
+    const editSnapshots = new Map();
+    function startEditAct(act) {
+      editSnapshots.set(act.id, JSON.parse(JSON.stringify({
+        activityName: act.activityName, startDate: act.startDate, endDate: act.endDate,
+        frontDesc: act.frontDesc, items: act.items
+      })));
+      act._editing = true;
+    }
+    function cancelEditAct(act) {
+      const snap = editSnapshots.get(act.id);
+      if (snap) {
+        act.activityName = snap.activityName;
+        act.startDate = snap.startDate;
+        act.endDate = snap.endDate;
+        act.frontDesc = snap.frontDesc;
+        act.items.splice(0, act.items.length, ...snap.items);
+        editSnapshots.delete(act.id);
+      }
+      act._editing = false;
+    }
+    function saveEditAct(act) {
+      if (!act.startDate || !act.endDate) {
+        showToast('请填写完整的活动开始 / 结束时间');
+        return;
+      }
+      if (act.startDate > act.endDate) {
+        showToast('开始时间不可晚于结束时间');
+        return;
+      }
+      // 进行中 + 待生效 活动时间两两不可有交集（已过期的不参与校验）
+      const overlap = limitedActivities.some(a => {
+        if (a.id === act.id) return false;
+        const aCode = activityStatus(a).code;
+        if (aCode === 'expired') return false;
+        return isRangeOverlap(a, act);
+      });
+      if (overlap) {
+        showToast('保存失败：活动时间与其他活跃活动有交集');
+        return;
+      }
+      editSnapshots.delete(act.id);
+      act._editing = false;
+      showToast('保存成功');
+    }
+    // 删除活动 · 2 次确认
+    const removeActStep = ref(0); // 0=关闭 / 1=第一次确认 / 2=第二次确认
+    const pendingRemoveAct = ref(null);
+    function askRemoveActivity(act) {
+      pendingRemoveAct.value = act;
+      removeActStep.value = 1;
+    }
+    function cancelRemoveAct() {
+      removeActStep.value = 0;
+      pendingRemoveAct.value = null;
+    }
+    function confirmRemoveAct() {
+      const act = pendingRemoveAct.value;
+      if (act) {
+        const idx = limitedActivities.findIndex(a => a.id === act.id);
+        if (idx >= 0) limitedActivities.splice(idx, 1);
+      }
+      removeActStep.value = 0;
+      pendingRemoveAct.value = null;
+      showToast('活动已删除');
+      // 如当前页超出，回退一页
+      nextTick(() => { if (limitedPage.value > limitedTotalPages.value) limitedPage.value = limitedTotalPages.value; });
     }
 
     const earning = reactive(typeDefs.map(t => ({
@@ -867,14 +1209,22 @@ createApp({
 
     onMounted(async () => { await nextTick(); lucide.createIcons(); });
     watch(activeType, () => { editMode.value = false; });
-    watch([activeTab, activeType, editMode, blacklistModalOpen, confirmRemoveOpen, toastVisible, logPage, logPageSize], async () => { await nextTick(); lucide.createIcons(); });
+    watch([activeTab, activeType, editMode, blacklistModalOpen, confirmRemoveOpen, toastVisible, logPage, logPageSize, lifecycleTab, limitedPage, removeActStep], async () => { await nextTick(); lucide.createIcons(); });
     watch(() => limitedActivities.length, async () => { await nextTick(); lucide.createIcons(); });
+    // 切 lifecycleTab 时重置分页
+    watch(lifecycleTab, () => { limitedPage.value = 1; });
+    // 当前页超过总页数时回退（删除导致页数减少时使用）
+    watch(limitedTotalPages, (total) => { if (limitedPage.value > total) limitedPage.value = total; });
 
     return { tabs, activeTab, activeType, editMode, enterEdit, cancelEdit, saveEdit,
              toastMsg, toastVisible,
              earning, currentType, risk, logs,
-             limitedActivities, activeActivityId, isInActivityPeriod,
-             addLimitedActivity, removeLimitedActivity, addLimitedItem, removeLimitedItem,
+             limitedActivities, isInActivityPeriod, activityStatus,
+             rulesExpanded, limitedPage, limitedPageSize, limitedTotalPages, visibleActIds, limitedPageList,
+             lifecycleTab, lifecycleTabs, currentLifecycleActs,
+             startEditAct, cancelEditAct, saveEditAct,
+             addLimitedActivity, addLimitedItem, removeLimitedItem,
+             removeActStep, pendingRemoveAct, askRemoveActivity, cancelRemoveAct, confirmRemoveAct,
              logPageSize, logPage, logTotalPages, pagedLogs, logPageList,
              blacklistModalOpen, blacklistForm, userSuggestions, showSuggest, pickUser, onKeywordInput,
              openAddBlacklist, closeBlacklistModal, submitBlacklist,

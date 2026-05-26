@@ -221,8 +221,20 @@
   <a href="../index.html" class="px-4 py-2 bg-white rounded-full shadow-lg text-sm text-slate-700 hover:bg-slate-50">← 返回 Demo 导航</a>
 </div>
 
-<!-- Demo 切换面板(仅 md+ 展示) -->
-<div class="hidden md:block fixed top-4 right-4 z-50">
+<!-- 需求点说明(仅 md+ 展示) -->
+<div class="hidden md:block fixed bottom-4 left-4 z-50 max-w-[340px]" style="border:1px solid #a78bfa;background:#faf5ff;border-radius:8px;padding:12px 14px;box-shadow:0 6px 18px rgba(124,58,237,.12)">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;color:#7c3aed;font-size:13px;font-weight:600">
+    <i data-lucide="alert-circle" class="w-4 h-4"></i><span>需求点 · 保证金提取</span>
+  </div>
+  <ol style="font-size:12px;color:#475569;line-height:1.75;margin:0;padding-left:18px">
+    <li><b style="color:#22c55e">提取至微信</b>：钱真正出账，影响账户总额。提取后账户总额 <b style="color:#ef4444">&lt; 2000 元</b> 且用户为 V1-V3 → 弹「确认提取」提示等级失效，确认后才提取。</li>
+    <li><b style="color:#f59e0b">提取至可用余额</b>：站内转账（保证金 → 可用余额），账户总额不变，<b>不弹框</b>，直接提交。</li>
+    <li>仅按勾选项中的「微信」金额合计判定；V0 用户不提示。</li>
+  </ol>
+</div>
+
+<!-- Demo 切换面板(仅 md+ 展示;若只勾「可用余额」项则隐藏,因为站内转账不触发等级提示,demo 不适用) -->
+<div v-if="!balanceOnlyChecked" class="hidden md:block fixed top-4 right-4 z-50">
   <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[160px]">
     <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
       <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
@@ -249,7 +261,7 @@
         低余额场景
       </button>
     </div>
-    <div class="text-[10px] text-slate-400 mt-2 leading-tight">低余额下勾选保证金提取可触发等级失效提示</div>
+    <div class="text-[10px] text-slate-400 mt-2 leading-tight">勾选「微信」项 + 低余额 触发提示;<br>纯「可用余额」项不影响、不弹框</div>
   </div>
 </div>
 
@@ -331,11 +343,20 @@ createApp({
     const totalAmount = computed(() => checkedDeposits.value.reduce((s, d) => s + d.amount, 0));
     const totalFee = computed(() => checkedDeposits.value.reduce((s, d) => s + d.fee, 0));
     const canSubmit = computed(() => checkedDeposits.value.length > 0);
+    // 只勾「可用余额」项时隐藏 demo 演示面板(站内转账,demo 不适用)
+    const balanceOnlyChecked = computed(() => {
+      const w = wechatDeposits.value.some(d => d.checked);
+      const b = balanceDeposits.value.some(d => d.checked);
+      return b && !w;
+    });
 
     function needLevelWarning() {
       if (userLevel.value === 'V0') return false;
-      const after = accountTotal.value - totalAmount.value;
-      return after < 2000;
+      // 仅微信渠道是真出账(钱离开平台账户),影响账户总额;
+      // 提取至可用余额属于站内转账(保证金→可用余额),不影响账户总额、不提示
+      const wechatOut = wechatDeposits.value.filter(d => d.checked).reduce((s, d) => s + d.amount, 0);
+      if (wechatOut <= 0) return false;
+      return (accountTotal.value - wechatOut) < 2000;
     }
 
     function toggleDeposit(d) { d.checked = !d.checked; }
@@ -380,7 +401,7 @@ createApp({
 
     return {
       LEVELS, userLevel, lowBalanceMode,
-      wechatDeposits, balanceDeposits,
+      wechatDeposits, balanceDeposits, balanceOnlyChecked,
       toastMsg, totalAmount, totalFee, canSubmit, showLevelModal,
       toggleDeposit, setLevel, back, onSubmitClick, confirmSubmit
     };

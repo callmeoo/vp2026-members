@@ -75,6 +75,10 @@
 │   ├─ home.html / sources.html / reserved.html / auction.html / special.html
 │   ├─ car-detail.html        # 含保留价/历史成交行情积分兑换闭环
 │   ├─ member.html / member-intro.html / coins.html / mall.html / orders.html
+│   ├─ account.html           # 专用账号(三联卡:可用余额/可用保证金/绑定银行卡)+ 流水/冻结明细 + 需求点说明
+│   ├─ withdraw-balance.html  # 可用余额提现弹框 demo 独立预览页(关后自动重开)
+│   ├─ withdraw-deposit.html  # 保证金提取弹框 demo 独立预览页
+│   ├─ _withdraw-modals.js    # 提现 + 保证金提取弹框共享组件(WithdrawBalanceModal / WithdrawDepositModal)
 │   ├─ card-pack.html         # 我的卡包(权益+优惠券)
 │   ├─ recharge.html / survey.html
 │   └─ common.css / _partials.js
@@ -118,12 +122,24 @@
   - 题级 `hideTypeTag:true` 隐藏类型标签 / `hint:'...'` 在题面下方展示一段引导文案(紫色左边线提示卡)
 - **`shared/reserve-price-logic.js`**:导出 `ReservePriceLogic` (50 积分 / V2+ 免费) + `HistoryPriceLogic` (100 积分 / V1+ 免费),两者同形,API:`canView(levelCode, carId)` / `getCoins()` / `exchange(carId, carTitle)` / `getUnlockedIds()`。
 - **`shared/recommended-tasks.js`**:推荐任务 Vue 全局组件 `RecommendedTasksComponent`,处理 t_verify / t_deposit / t_vote 的登录拦截 + 跳转。
+- **`pc/_withdraw-modals.js`**(物理位置在 pc/ 下,但被 account.html + 两个独立 demo 页共用):导出两个 Vue 组件 `WithdrawBalanceModal`(提现) / `WithdrawDepositModal`(保证金提取),内置「演示面板 + 等级失效二次确认 + toast」。`needLevelWarning()` 关键差异:**提现**按 `accountTotal - 提现金额 < 2000` 触发;**保证金提取**只看勾选项中的**微信渠道**合计金额(`accountTotal - wechatOut < 2000`),提取至可用余额是站内转账不触发。Demo 面板/需求点卡 `z-index` 必须 ≥ 9050(mask 是 9000,否则点击被 mask 拦截直接关弹框);弹框 `visible` 翻 true 时要重置 deposit dataset,避免上次关闭后所有项都未勾选导致 demo 失效。
 - **配色**(按 V 编号位置固定，与等级名解耦): V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`
 - **积分**: 1 积分 = 0.1 元;有效期 12 个自然月，按 `获得月 + 12 月` 滚动到期
 - **等级门槛**: V0 帐户 < 2000 且近 3 月无成交 / V1 ≥ 2000 且 1-3 台 / V2 ≥ 2000 且 4-14 台 / V3 ≥ 2000 且 ≥ 15 台
 
 #### 业务规则
-- **「无理由退车」权益**: V3 钻石专享，**车辆中标后 24 小时内可申请**，超时即使有权益也无法使用。所有相关页面(BMS 申请售后、APP/PC 售后申请)都需要在 UI 显示这个有效期，且支持「未超期 / 超 24h」演示切换。
+- **「无理由退车」权益**: V3 钻石专享，**车辆中标后 24 小时内可申请**(BMS 后台代发起不受 24h 限制,仅看权益本身有效期)。所有相关页面(BMS 申请售后、APP/PC 售后申请)都需要在 UI 显示这个有效期，且支持「未超期 / 超 24h」演示切换。
+- **无理由退车资金分配**(原 2000 元全归一方调整为 1200+800 拆分,与汇和及业务负责人确认 + 唯普财务回复):
+  - 广物汽贸 + 垫款主体 = 汇和/门店账号 → 1200 元归汇和,800 元归唯普新收益
+  - 广物汽贸 + 其他垫款主体 → 1200 元归唯普云,800 元归唯普新收益
+  - 非广物汽贸 → 800 元归唯普汽车,1200 元归门店
+  - BMS 代发起时若操作员人工分配款项,以人工为准;否则按以上规则。
+  - 原图(企微聊天截图)归档:`docs/images/aftersale-rule-{new,old,qa}.png`,引用见 `index.html` 需求说明章节 4.4。
+- **提现/提取等级失效弹框**(`pc/_withdraw-modals.js` 共享 + `app/withdraw-balance.html`/`app/withdraw-deposit.html` 独立实现):
+  - **可用余额提现**:`accountTotal - 提现金额 < 2000` 且用户 V1-V3 → 弹「确认提现」二次确认;V0 直接提交。
+  - **保证金提取至微信**:钱真出账,影响 accountTotal;扣除微信合计后 < 2000 且 V1-V3 → 弹「确认提取」。
+  - **保证金提取至可用余额**:站内转账(保证金→可用余额),不影响 accountTotal,**不弹框**,直接提交。
+  - PC 共享组件的 demo 面板默认展示;**保证金提取**弹框中,若用户只勾「可用余额」项(纯站内转账场景),demo 演示面板自动隐藏(`balanceOnlyChecked` computed)。移动端 `app/withdraw-deposit.html` 同步。
 - **保留价查询权益**:V1/V2/V3 直接查看;仅 V0 消耗 50 积分对单车兑换,有效期内反复查看。pc/car-detail.html + app/car-detail-reserve.html 入口。
 - **历史成交行情权益**:V1/V2/V3 直接查看;V0 消耗 100 积分对单车兑换,有效期内反复查看。**仅车辆详情页有入口,出价页 (car-bid) 不展示**。
 - **登录拦截**:`查看保留价` / `历史成交价` / `调研问卷` 均需登录后才可使用。未登录点击 → 跳 `login.html?from=<page>.html`;登录回跳后需**再次点击**入口才打开,不自动展开。
@@ -146,6 +162,7 @@
 - **列表→详情 跳转**: 参照 `bms-orders.html` 模式——整行可点击，行内 `<a>` 保留原生行为，详情参数用 URLSearchParams 透传。
 - **PC 个人中心专属 nav header**: `pc/member.html` / `pc/coins.html` / `pc/mall.html` / `pc/orders.html` 不使用 `PC_COMMON.renderHeader()`(那是车源浏览 nav)，而是各自内联拼一个含「我的首页 / 我的交易 / 专用账号 / 会员中心 / 我的信息」5 项的 nav,active 项随当前页变化。
 - **演示切换面板**: 涉及多状态展示的演示页(如 `pc/mall.html` 等级折扣切换、`bms-order-detail.html` 权益使用 / 24h 过期切换)，右上角浮窗或 Tab 行右侧加 demo toggle 按钮，**只为评审用**，不进生产。
+- **弹框上方浮层 z-index 陷阱**(踩过多次): 公共弹框 mask 普遍用 `z-index:9000`,Tailwind 的 `z-50` 实际值才 50,所以 demo 面板/需求点卡用 `z-50` 时**视觉上能看见(mask 半透明)但点击会被 mask 拦截**,触发 `@click.self="close"` 关弹框。规范:浮在 mask 上的演示/说明面板一律 `style="z-index:9050"`(高于 mask 9000,低于二次确认弹框 9100)。`pc/_withdraw-modals.js` + `pc/withdraw-balance.html` + `pc/withdraw-deposit.html` 已遵循。
 - **「需求点说明」按钮**(评审专用): BMS 后台多个详情/列表页(bms-orders / bms-order-detail / bms-users / bms-user-detail / bms-sales-buyer-detail / fnc-wallet-log)在 tab 行右侧或表格上方加紫色「需求点说明」按钮，点击弹出 modal 列出当前页本期改造点。统一样式：`border:#a78bfa; bg:#faf5ff; color:#7c3aed`。
   - **红点规范(必须)**:按钮右上角常驻红点，不可消失，用于引导评审人员第一眼注意到需求说明入口。写法：button 加 `position:relative`，内部末尾追加：
     ```html
@@ -246,6 +263,9 @@
 | 改调研问卷内容 / 加新问卷 | `shared/survey-config.js`(SURVEYS 数组,active:true 切换发放问卷) |
 | 改保留价/历史成交价兑换逻辑 | `shared/reserve-price-logic.js`(同时影响 PC + APP 详情页) |
 | 改推荐任务路由/登录拦截 | `shared/recommended-tasks.js` |
+| 改提现/保证金提取弹框 PC 共享逻辑 | `pc/_withdraw-modals.js`(同时影响 account.html + 两个 demo 页) |
+| 改提现/保证金提取移动端 | `app/withdraw-balance.html` / `app/withdraw-deposit.html`(独立实现,等级失效逻辑要与 PC 共享组件保持一致) |
+| 改无理由退车资金分配规则 | 文档:`index.html` 需求说明章节 4(`prdActive==='cAfs'`);UI:`admin/bms-order-detail.html` 申请售后表单 |
 | 看调研问卷结果 + 导 CSV | `admin/bms-survey.html`(按 surveyId 切换,自带 mock 填充) |
 | 新增 BMS 后台页 | `admin/bms-*.html` + sidebar 模板复用 + `index.html` 导航卡 |
 | 新增 FNC 后台页 | `admin/fnc-*.html` + 同 fnc 风格 sidebar + `index.html` 导航卡 |

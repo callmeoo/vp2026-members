@@ -448,7 +448,117 @@
             </ul>
           </div>
 
-          <!-- 4. 历史数据处理 -->
+          <!-- 4. 无理由退车权益 -->
+          <div v-if="prdActive === 'cAfs'" class="prd-body">
+            <h3>4.1 权益概览</h3>
+            <ul>
+              <li><strong>专享等级</strong>：V3 钻石用户专享，每个会员周期 1 次。</li>
+              <li><strong>使用时效</strong>：商户端发起 — 车辆中标后 <strong>24 小时内</strong> 可申请；BMS 后台发起 — 不受 24h 限制，仅看权益本身有效期。</li>
+              <li><strong>付款状态</strong>：未付款 / 已付款均可使用。</li>
+              <li><strong>驳回归还</strong>：售后申请单被驳回时，本次已扣减的权益次数自动回滚 (+1)。</li>
+            </ul>
+
+            <!-- 子 tab -->
+            <div class="sub-row" style="display:flex;gap:6px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin:14px 0 10px">
+              <div class="sub-tab" :class="{ active: afsSubTab === 'frontend' }" @click="afsSubTab = 'frontend'">前端发起（移动端 + PC 端）</div>
+              <div class="sub-tab" :class="{ active: afsSubTab === 'bms' }" @click="afsSubTab = 'bms'">后台 BMS 发起</div>
+            </div>
+
+            <!-- 子 tab 1: 前端发起 -->
+            <div v-if="afsSubTab === 'frontend'">
+              <h3>4.2 发起入口</h3>
+              <ul>
+                <li><strong>入口</strong>：商户端 APP / PC 端「我的交易 → 待支付 / 已成交订单」→ 申请售后页 → 勾选「买家无理由退车权益」。</li>
+              </ul>
+
+              <h3>4.3 资金分配规则</h3>
+              <p>使用无理由退车权益后，<strong>原应由买家承担的 2000 元扣罚由平台（唯普）承担</strong>，但具体归属各方仍按以下规则拆分（与汇和及业务负责人确认后的版本）：</p>
+              <table>
+                <thead>
+                  <tr><th style="width:42%">订单归属</th><th style="width:58%">资金分配（共 2000 元）</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>广物汽贸 + 垫款主体 = 汇和 / 门店账号</td>
+                    <td>1200 元 → 汇和；800 元 → 唯普新收益</td>
+                  </tr>
+                  <tr>
+                    <td>广物汽贸 + 其他垫款主体</td>
+                    <td>1200 元 → 唯普云；800 元 → 唯普新收益</td>
+                  </tr>
+                  <tr>
+                    <td>非广物汽贸</td>
+                    <td>800 元 → 唯普汽车；1200 元 → 门店</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h3>4.4 规则确认过程</h3>
+              <p style="margin-bottom:4px;font-weight:600;color:#475569">① 新规则（与汇和及业务负责人确认）</p>
+              <p style="color:#64748b;font-size:12.5px;margin-top:0">交易平台侧发起的买家违约仲裁，规则统一调整为「2000 元 → 1200 + 800 拆分」，对应到 3 种订单归属，详见上表。</p>
+              <img src="docs/images/aftersale-rule-new.png" alt="附图1 · 新规则确认" style="max-width:520px;width:100%;border:1px solid #e2e8f0;border-radius:6px;margin:6px 0 14px;box-shadow:0 2px 6px rgba(0,0,0,.06)">
+
+              <p style="margin-bottom:4px;font-weight:600;color:#475569">② 系统原规则（技术提供）</p>
+              <p style="color:#64748b;font-size:12.5px;margin-top:0">原规则为「2000 元全归一方」，本次调整把广物汽贸两条规则拆出 800 给唯普；非广物汽贸保持不变。</p>
+              <img src="docs/images/aftersale-rule-old.png" alt="附图2 · 系统原规则" style="max-width:520px;width:100%;border:1px solid #e2e8f0;border-radius:6px;margin:6px 0 14px;box-shadow:0 2px 6px rgba(0,0,0,.06)">
+
+              <p style="margin-bottom:4px;font-weight:600;color:#475569">③ 唯普财务回复</p>
+              <p style="color:#64748b;font-size:12.5px;margin-top:0">财务确认两条调整通过；同时要求<strong>前端规则与后端 BMS 规则保持一致</strong>。</p>
+              <img src="docs/images/aftersale-rule-qa.png" alt="附图3 · 财务回复" style="max-width:520px;width:100%;border:1px solid #e2e8f0;border-radius:6px;margin:6px 0 14px;box-shadow:0 2px 6px rgba(0,0,0,.06)">
+            </div>
+
+            <!-- 子 tab 2: 后台 BMS 发起 -->
+            <div v-if="afsSubTab === 'bms'">
+              <h3>4.2 发起入口</h3>
+              <ul>
+                <li>BMS 后台「订单详情」→「申请售后」→ 表单的「款项」与「附件」之间，紧挨「款项」下方展示「买家无理由退车权益」勾选项。</li>
+                <li>触发条件与商户端一致：类型 = 售后类 且 原因 = 买家违约类 且 处理结果 = 直接退车，三项同时满足才展示。</li>
+                <li>剩余次数 = 0 时整体不展示。</li>
+              </ul>
+
+              <h3>4.3 BMS 特殊规则</h3>
+              <ul>
+                <li><strong>不限 24h 时效</strong>：BMS 后台代发起<strong>不受订单中标后 24h 限制</strong>，只看权益本身的发放/过期日期。与商户端「订单中标后 24h 内可申请」是两件事。</li>
+                <li><strong>付款状态不影响</strong>：未付款 / 已付款均可使用。</li>
+                <li><strong>驳回归还</strong>：售后申请单被驳回时，本次已扣减的权益次数自动回滚 (+1)。</li>
+                <li><strong>本单使用权益区</strong>：订单详情页新增「本单使用的权益」区域，展示已使用的权益清单（保留价查询 / 历史行情查询 / 无理由退车 — 有则增加，无则展示 -）；未使用时显示「本单未使用等级权益」。</li>
+              </ul>
+
+              <h3>4.4 资金分配（与前端一致）</h3>
+              <p>BMS 代为发起售后、已选用无理由退车权益且<strong>未自定义款项分配</strong>时，资金按以下规则自动处理（与前端规则保持一致）：</p>
+              <table>
+                <thead>
+                  <tr><th style="width:42%">订单归属</th><th style="width:58%">资金分配（共 2000 元）</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>广物汽贸 + 垫款主体 = 汇和 / 门店账号</td>
+                    <td>1200 元 → 汇和；800 元 → 唯普新收益</td>
+                  </tr>
+                  <tr>
+                    <td>广物汽贸 + 其他垫款主体</td>
+                    <td>1200 元 → 唯普云；800 元 → 唯普新收益</td>
+                  </tr>
+                  <tr>
+                    <td>非广物汽贸</td>
+                    <td>800 元 → 唯普汽车；1200 元 → 门店</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="callout">
+                <strong>操作员手动分配优先</strong>：若操作员对款项进行了人工分配，按操作员实际执行结果为准，系统不再覆盖。
+              </div>
+              <p style="font-size:12.5px;color:#64748b">补偿来源：唯普从自身收益（唯普新收益）中划拨 1200 元给门店 / 汇和或其他利益方；唯普端实际承担 = 划拨 1200 + 留存 800 = 全额 2000。</p>
+
+              <h3>4.5 关联页面</h3>
+              <ul>
+                <li><a href="admin/bms-order-detail.html" target="_blank" rel="noopener"><code>admin/bms-order-detail.html</code></a> — 详情页与申请售后表单</li>
+                <li><a href="admin/bms-aftersale-approval-list.html" target="_blank" rel="noopener"><code>admin/bms-aftersale-approval-list.html</code></a> — 企微审批</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 5. 历史数据处理 -->
           <div v-if="prdActive === 'c4'" class="prd-body">
             <ol style="padding-left:22px;margin:6px 0;list-style:decimal">
               <li>
@@ -542,12 +652,11 @@
                 { title: '登录页',             file: 'app/login.html',  hidden: true },
                 { title: '个人中心(已登录)',  file: 'app/profile-loggedin.html' },
                 { title: '设置页',             file: 'app/settings.html', hidden: true },
-                { title: '专用账号',           file: 'app/account.html' },
+                { title: '专用账号(提现入口)', file: 'app/account.html' },
                 { title: '可用余额提现',       file: 'app/withdraw-balance.html' },
                 { title: '保证金提取',         file: 'app/withdraw-deposit.html' },
                 { title: '我的订单(买到的车)-待支付入口', file: 'app/won-orders.html' },
                 { title: '订单详情',           file: 'app/won-order-detail.html' },
-                { title: '充值保证金',         file: 'app/recharge.html' },
                 { title: '调研问卷',           file: 'app/survey.html' },
                 { title: '申请售后',           file: 'app/aftersale-apply.html' },
                 { title: '售后审批列表',       file: 'app/aftersale-approval-list.html' },
@@ -581,7 +690,7 @@
                 { title: '积分兑换',     file: 'pc/mall.html' },
                 { title: '我的交易-买到的车(待支付-无理由退车权益)', file: 'pc/orders.html' },
                 { title: '我的交易-我的卡包', file: 'pc/card-pack.html' },
-                { title: '充值保证金',     file: 'pc/recharge.html' },
+                { title: '专用账户(提现入口)', file: 'pc/account.html' },
                 { title: '调研问卷',       file: 'pc/survey.html' },
               ],
             },
@@ -658,11 +767,13 @@
         { key: 'c1', title: '会员等级和权益' },
         { key: 'c2', title: '积分商城' },
         { key: 'c3', title: '客户端消耗逻辑' },
+        { key: 'cAfs', title: '无理由退车权益' },
         { key: 'c4', title: '历史数据处理' },
         { key: 'c6', title: '创新部数据查询' },
         { key: 'c5', title: '待确认清单' },
       ];
       const prdActive = ref('c1');
+      const afsSubTab = ref('frontend');
 
       // 读取 shared/member-config.js，驱动需求说明·积分商城章节
       const memberCfg = window.MEMBER_CONFIG || {};
@@ -682,7 +793,7 @@
       watch([active, subActive, prdActive], refresh);
       onMounted(refresh);
 
-      return { tabs, active, subActive, currentTab, tabCount, visibleItems, wordFile, prdChapters, prdActive, coinConfig, coinGroups, rewards };
+      return { tabs, active, subActive, currentTab, tabCount, visibleItems, wordFile, prdChapters, prdActive, afsSubTab, coinConfig, coinGroups, rewards };
     },
   }).mount('#app');
 </script>

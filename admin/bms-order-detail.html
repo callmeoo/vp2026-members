@@ -458,6 +458,22 @@
           </div>
         </div>
       </div>
+      <!-- 买家无理由退车权益：仅当 售后类 + 买家违约类 + 直接退车 + 剩余>0 + 未过期 时展示 -->
+      <div v-if="showNoReasonBenefit" class="benefit-bar">
+        <i data-lucide="shield-check" class="w-5 h-5 b-icon"></i>
+        <div class="flex-1">
+          <div class="b-title">
+            买家「无理由退车权益」
+            <span class="b-remain">剩余 {{ noReasonRemain }} 次</span>
+          </div>
+          <div class="b-validity">权益有效期：<strong>{{ noReasonValidFrom }}</strong> 至 <strong>{{ noReasonValidTo }}</strong></div>
+          <div class="b-validity">因使用无理由退车权益，原买家扣罚金额由平台(唯普)承担。</div>
+        </div>
+        <label class="fm-checkbox">
+          <input type="checkbox" v-model="applyForm.useNoReason" @change="onToggleNoReason" /> 使用
+        </label>
+      </div>
+
       <div class="fm-row">
         <div class="fm-label">附件：<br /><span style="font-size:11px;color:#909399">最多20张</span></div>
         <div class="fm-ctrl">
@@ -475,29 +491,6 @@
       <div class="fm-row">
         <div class="fm-label">处理方案：</div>
         <div class="fm-ctrl"><textarea class="fm-textarea" v-model="applyForm.plan" maxlength="500"></textarea></div>
-      </div>
-
-      <div :class="['benefit-bar', { disabled: !noReasonUsable }]">
-        <i data-lucide="shield-check" class="w-5 h-5 b-icon"></i>
-        <div class="flex-1">
-          <div class="b-title">
-            买家「无理由退车权益」
-            <span v-if="noReasonRemain > 0 && !noReasonValidity.expired" class="b-remain">剩余 {{ noReasonRemain }} 次</span>
-            <span v-else-if="noReasonValidity.expired" class="b-remain" style="background:#fef2f2;color:#dc2626;border-color:#fecaca">已超期 · 不可使用</span>
-            <span v-else class="b-remain" style="background:#f4f4f5;color:#909399;border-color:#e9e9eb">已用完</span>
-          </div>
-          <div class="b-validity">
-            有效期： <strong>{{ noReasonValidity.start }}</strong> 至 <strong>{{ noReasonValidity.end }}</strong> · 中标后 24h 内可申请，超时即使有权益也无法使用
-          </div>
-        </div>
-        <div class="flex flex-col items-end gap-1.5">
-          <label class="fm-checkbox" :style="!noReasonUsable ? 'cursor:not-allowed;opacity:.5' : ''">
-            <input type="checkbox" v-model="applyForm.useNoReason" @change="onToggleNoReason" :disabled="!noReasonUsable" /> 使用
-          </label>
-          <button class="demo-toggle" style="font-size:11px;padding:1px 8px" @click="noReasonExpiredDemo = !noReasonExpiredDemo">
-            演示： {{ noReasonExpiredDemo ? '切回有效' : '切到超期' }}
-          </button>
-        </div>
       </div>
 
       <div class="fm-row">
@@ -606,13 +599,17 @@
       </div>
       <div>
         <div class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>4. 售后增加「使用无理由退车权益入口」
+          <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>4. 申请售后 ·「买家无理由退车权益」勾选
         </div>
         <ul class="list-disc pl-6 space-y-1">
-          <li>申请售后弹窗加「买家无理由退车权益」勾选项</li>
-          <li>展示剩余次数 + 有效期(中标后 24h 内可用)，超时不可勾选</li>
-          <li>勾选后由系统自动提示发起人调整退车款项，并在审批流和订单详情中标记「已使用无理由退车权益」</li>
-          <li>通过 BMS 代为发起售后、已选用无理由退车权益且未自定义款项分配时，资金处理逻辑：唯普从自身收益（唯普新收益）中划拨 1200 元补偿给门店；若操作员人工进行了款项分配，则按操作员执行为准。</li>
+          <li><b>触发条件</b>：类型 = 售后类 且 原因 = 买家违约类 且 处理结果 = 直接退车，三项同时满足时才在「款项」与「附件」之间展示勾选项，不满足不展示</li>
+          <li><b>位置</b>：紧挨「款项」下方、「附件」上方（原放在表单末尾，已调整）</li>
+          <li><b>说明文案</b>：权益条上展示「权益有效期：起 ~ 止」；当前日期超过权益有效期时，权益条整体不展示。副文案为「因使用无理由退车权益，原买家扣罚金额由平台(唯普)承担。」</li>
+          <li><b>剩余次数</b>：剩余次数为 0 时，权益条整体不展示</li>
+          <li><b>驳回归还</b>：售后申请单被驳回时，本次已扣减的无理由退车权益自动恢复至买家账户（次数 +1 回滚）</li>
+          <li><b>BMS 不限时效</b>：BMS 后台代为发起的无理由退车权益<b>不受订单 24h 内可申请的限制</b>，只需展示<b>权益本身的有效期</b>（即权益的发放/过期日期），与「订单中标后 24h 内可申请」的商户端时效是两件事</li>
+          <li><b>付款状态不影响</b>：无论订单处于「未付款」还是「已付款」状态，都可以使用无理由退车权益</li>
+          <li>BMS 代为发起售后、已选用无理由退车权益且未自定义款项分配时，资金处理逻辑：唯普从自身收益（唯普新收益）中划拨 1200 元补偿给门店/汇和或其他利益方；若操作员人工进行了款项分配，则按操作员执行为准</li>
         </ul>
       </div>
     </div>
@@ -686,16 +683,14 @@ createApp({
 
     // 售后
     const noReasonRemain = ref(1);
-    // 无理由退车权益：中标(竞价结束)后 24 小时内可申请，超时不可使用(即使有权益)
-    // 演示用 expiredDemo 切换两种状态，因 demo 数据 deal 是过去日期，实际肯定已过期
-    const noReasonExpiredDemo = ref(false);
-    const noReasonValidity = computed(() => {
-      const dt = new Date(deal.replace(' ', 'T') + ':00');
-      const end = new Date(dt.getTime() + 24 * 3600 * 1000);
-      const f = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      return { start: f(dt), end: f(end), expired: noReasonExpiredDemo.value };
+    // 权益本身的有效期(发放/过期日期);BMS 不受订单 24h 限制,只看权益是否在有效期
+    const noReasonValidFrom = '2026-01-01';
+    const noReasonValidTo = '2026-12-31';
+    const noReasonExpired = computed(() => {
+      const today = new Date();
+      const end = new Date(noReasonValidTo + 'T23:59:59');
+      return today > end;
     });
-    const noReasonUsable = computed(() => noReasonRemain.value > 0 && !noReasonValidity.value.expired);
     const showApplyAfs = ref(false);
     const viewAfs = ref(null);
     const baseInfo = computed(() => `车牌：${plate};成交日期：${deal.split(' ')[0]};门店：${store};业务员：${seller};买受人：${buyer}。`);
@@ -719,35 +714,25 @@ createApp({
 
     const applyForm = reactive({ type:'售后类', reason:'', result:'直接退车', duty:'', desc:'', plan:'', useNoReason:false });
 
+    // 仅当 售后类 + 买家违约类 + 直接退车 + 剩余次数>0 + 权益未过期 时,展示权益条
+    const showNoReasonBenefit = computed(() =>
+      applyForm.type === '售后类' &&
+      (applyForm.reason || '').startsWith('买家违约类') &&
+      applyForm.result === '直接退车' &&
+      noReasonRemain.value > 0 &&
+      !noReasonExpired.value
+    );
+    // 触发条件不满足时,自动取消勾选(防止条件切走后误带权益使用标记)
+    watch(showNoReasonBenefit, (ok) => { if (!ok) applyForm.useNoReason = false; });
+
     function openApplyAfs() {
       Object.assign(applyForm, { type:'售后类', reason:'', result:'直接退车', duty:'', desc:'', plan:'', useNoReason:false });
       showApplyAfs.value = true;
     }
 
-    // 勾选/取消「买家无理由退车权益」时的联动
-    // - 勾选：预填售后类型/结果/责任方/原因，在 情况说明 追加一行权益声明
-    // - 取消：移除该行权益声明(保留用户手动输入的其他内容)
-    const NO_REASON_DESC = '【已使用买家"无理由退车权益"】买家行使权益申请退车。';
-    function onToggleNoReason() {
-      if (applyForm.useNoReason) {
-        applyForm.type = '售后类';
-        applyForm.result = '直接退车';
-        applyForm.duty = '买家';
-        if (!applyForm.reason) applyForm.reason = '买家违约类-买家反悔';
-        if (!applyForm.desc.includes(NO_REASON_DESC)) {
-          applyForm.desc = (applyForm.desc ? applyForm.desc + '\n' : '') + NO_REASON_DESC;
-        }
-      } else {
-        // 取消勾选：把前面注入的声明行去掉(同时清掉可能的前导换行)
-        if (applyForm.desc) {
-          applyForm.desc = applyForm.desc
-            .replace('\n' + NO_REASON_DESC, '')
-            .replace(NO_REASON_DESC + '\n', '')
-            .replace(NO_REASON_DESC, '')
-            .replace(/^\n+/, '');
-        }
-      }
-    }
+    // 勾选/取消「买家无理由退车权益」: 不再追加/移除情况说明文案,
+    // 也不再预填表单字段(因为触发条件已经要求三项都满足)
+    function onToggleNoReason() {}
 
     function submitAfs() {
       if (applyForm.useNoReason) noReasonRemain.value = Math.max(0, noReasonRemain.value - 1);
@@ -788,13 +773,13 @@ createApp({
       document.addEventListener('click', () => { showMore.value = false; });
     });
     const showSpec = ref(false);
-    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode, noReasonExpiredDemo, showSpec], () => nextTick(() => lucide.createIcons()));
+    watch([showApplyAfs, viewAfs, activeTab, mockUsageMode, showSpec], () => nextTick(() => lucide.createIcons()));
 
     return {
       plate, model, deal, total, price, fee, seller, buyer, buyerCoins, lv, coinYuan,
       statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits, mockUsageMode,
       showMore, showCompTip, activeTab, tabs,
-      noReasonRemain, noReasonValidity, noReasonUsable, noReasonExpiredDemo, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
+      noReasonRemain, noReasonValidFrom, noReasonValidTo, showNoReasonBenefit, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
       openApplyAfs, onToggleNoReason, submitAfs, openViewAfs, openApprovalList, stepCls, fmt, showSpec
     };
   }
