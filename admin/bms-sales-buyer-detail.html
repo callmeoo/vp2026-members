@@ -516,9 +516,9 @@ createApp({
 
     const coinLedger = [
       { at:"2026-04-18 14:23", type:"add",    amt:+50,  src:"完成车辆交易",     ref:"车牌：粤AT1014",         note:"成交奖励" },
-      { at:"2026-04-02 10:21", type:"deduct", amt:-100, src:"兑换商品",         ref:"数据查询优惠券 10 元",  note:"" },
+      { at:"2026-04-02 10:21", type:"deduct", amt:-380, src:"兑换商品",         ref:"综合报告（柠檬查）",  note:"" },
       { at:"2026-03-20 15:12", type:"add",    amt:+50,  src:"完成车辆交易",     ref:"车牌：粤B12345",         note:"成交奖励" },
-      { at:"2026-03-19 16:45", type:"deduct", amt:-50,  src:"兑换商品",         ref:"数据查询优惠券 5 元",   note:"" },
+      { at:"2026-03-19 16:45", type:"deduct", amt:-280, src:"兑换商品",         ref:"出险报告（车信盟）",   note:"" },
       { at:"2026-03-15 09:12", type:"add",    amt:+10,  src:"有效出价参与竞拍", ref:"车牌：粤B12345",         note:"出价 +10" },
       { at:"2026-02-27 15:14", type:"add",    amt:+50,  src:"完成车辆交易",     ref:"车牌：湘A77K9Z",         note:"成交奖励" },
       { at:"2026-02-08 11:12", type:"deduct", amt:-500, src:"兑换商品",         ref:"综合服务费 50 元券",    note:"" },
@@ -536,8 +536,8 @@ createApp({
     })();
 
     const rewardRecords = [
-      { name:"数据查询优惠券 10 元", coin:100, time:"2026-04-02 10:21", status:"已使用", statusCls:"gray" },
-      { name:"数据查询优惠券 5 元",  coin:50,  time:"2026-03-19 16:45", status:"使用中", statusCls:"green" },
+      { name:"综合报告（柠檬查）", coin:380, time:"2026-04-02 10:21", status:"已使用", statusCls:"gray" },
+      { name:"出险报告（车信盟）",  coin:280,  time:"2026-03-19 16:45", status:"使用中", statusCls:"green" },
       { name:"综合服务费 50 元券",   coin:500, time:"2026-02-08 11:12", status:"已过期", statusCls:"gray" },
       { name:"过户费减免 100 元券",  coin:500, time:"2026-01-22 09:03", status:"已使用", statusCls:"gray" }
     ];

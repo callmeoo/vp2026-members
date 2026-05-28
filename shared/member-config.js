@@ -149,8 +149,11 @@
     redeemableRewards: [
       { id: 'r_compfee_50',        name: '综合服务费 50 元券',       desc: '限平台成交车辆(非报废车)',                                        coin: 500, scope: '所有等级商户', icon: 'percent',      validityDays: 30, restriction: '综合服务费直减 50 元;限平台成交车辆，报废车不可用。' },
       { id: 'r_servicecenter_100', name: '服务中心消费 100 元券',    desc: '限非平台成交车辆，在南沙、白云、佛山、东莞服务中心办理过户服务', coin: 500, scope: '所有等级商户', icon: 'building-2',   validityDays: 30, restriction: '服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' },
-      { id: 'r_dataquery_5',       name: '数据查询服务优惠券 5 元',  desc: '优惠券不可叠加使用',                                              coin: 50,  scope: '所有等级商户', icon: 'shield-alert', validityDays: 30, restriction: '数据查询服务直减 5 元;不可叠加使用。' },
-      { id: 'r_dataquery_10',      name: '数据查询服务优惠券 10 元', desc: '优惠券不可叠加使用',                                              coin: 100, scope: '所有等级商户', icon: 'car-front',    validityDays: 30, restriction: '数据查询服务直减 10 元;不可叠加使用。' }
+      { id: 'r_svc_insurance', name: '出险报告（车信盟）', desc: '车信盟出险/事故记录报告',                                          coin: 280, scope: '所有等级商户', icon: 'shield-alert',     validityDays: 30, restriction: '车信盟·出险/事故记录报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { id: 'r_svc_maintain',  name: '维保报告（唯车转）', desc: '唯车转维修保养记录报告',                                          coin: 200, scope: '所有等级商户', icon: 'wrench',           validityDays: 30, restriction: '唯车转·维修保养记录报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { id: 'r_svc_battery',   name: '电池报告（唯车转）', desc: '唯车转三电检测报告',                                              coin: 300, scope: '所有等级商户', icon: 'battery-charging', validityDays: 30, restriction: '唯车转·三电检测报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { id: 'r_svc_mileage',   name: '里程报告（唯车转）', desc: '唯车转里程校验报告',                                              coin: 180, scope: '所有等级商户', icon: 'gauge',            validityDays: 30, restriction: '唯车转·里程校验报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { id: 'r_svc_overall',   name: '综合报告（柠檬查）', desc: '柠檬查车辆综合检测报告',                                          coin: 380, scope: '所有等级商户', icon: 'file-search',      validityDays: 30, restriction: '柠檬查·车辆综合检测报告查询；按次核销，不同类型数据报告可叠加使用。' }
     ],
 
     // ─────────────────────────────────────────────

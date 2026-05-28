@@ -357,7 +357,7 @@
       <div style="margin-bottom:14px">
         <div style="font-weight:700;color:#1677ff;margin-bottom:6px">二、已派发优惠券 tab</div>
         <ol style="margin:0;padding-left:20px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px">
-          <li>新增会员权益和积分商城商品关联的：保留价查询券、历史成交行情券、数据查询优惠券(5/10/15/20/30/50 元)、综合服务费减免券、服务中心消费券 100 元。</li>
+          <li>新增会员权益和积分商城商品关联的：保留价查询券、历史成交行情券、数据查询服务次卡(出险/维保/电池/里程/综合报告)、综合服务费减免券、服务中心消费券 100 元。</li>
           <li>服务中心消费券：可通过操作项「<strong>使用</strong>」人工进行核销。</li>
           <li>保留价查询券、历史成交行情券：<span style="color:#ef4444;font-weight:600">等级权益上线后优惠券状态默认「已使用」</span>；使用积分兑换的这 2 项权益也默认「已使用」。</li>
         </ol>
@@ -368,11 +368,11 @@
         <ol style="margin:0;padding-left:20px;list-style-type:decimal;display:flex;flex-direction:column;gap:6px">
           <li><strong>新增弹框</strong>
             <ol style="margin:6px 0 0;padding-left:18px;list-style-type:lower-alpha;display:flex;flex-direction:column;gap:4px">
-              <li>优惠券类型对应新增会员权益和积分商城商品关联的：保留价查询券、历史成交行情券、数据查询优惠券(5/10/15/20/30/50 元)、综合服务费减免券、服务中心消费券 100 元;<span style="color:#ef4444;font-weight:600">新增类后端维护，BMS 优惠券新增弹框类，优惠券类型不可见</span>。</li>
+              <li>优惠券类型对应新增会员权益和积分商城商品关联的：保留价查询券、历史成交行情券、数据查询服务次卡(出险/维保/电池/里程/综合报告)、综合服务费减免券、服务中心消费券 100 元;<span style="color:#ef4444;font-weight:600">新增类后端维护，BMS 优惠券新增弹框类，优惠券类型不可见</span>。</li>
               <li>优惠券来源：<span style="color:#ef4444;font-weight:600">新增「会员权益」和「积分兑换」2 类</span>。</li>
             </ol>
           </li>
-          <li>会员权益和积分商城商品关联的：保留价查询券、历史成交行情券、数据查询优惠券(5/10/15/20/30/50 元)、综合服务费减免券、服务中心消费券 100 元。</li>
+          <li>会员权益和积分商城商品关联的：保留价查询券、历史成交行情券、数据查询服务次卡(出险/维保/电池/里程/综合报告)、综合服务费减免券、服务中心消费券 100 元。</li>
         </ol>
       </div>
     </div>
@@ -473,7 +473,7 @@ createApp({
     const addSourceOpts = ['会员权益', '积分兑换'];
     const sourceCodes = reactive({});
     const sourceForm = reactive({ name: '', code: '' });
-    const typeOpts = ['交易佣金抵扣', '数据查询权益', '数据查询优惠券', '综合服务费减免', '服务中心消费', '保留价查询', '历史成交行情'];
+    const typeOpts = ['交易佣金抵扣', '数据查询权益', '数据查询服务次卡', '综合服务费减免', '服务中心消费', '保留价查询', '历史成交行情'];
 
     function emptyForm() {
       return { name:'', type:'', source:'', startAt:'', endAt:'', usage:'', duration:'', quantity:100, intro:'' };
@@ -489,8 +489,8 @@ createApp({
       { account:'m_0134875297717253', phone:'13751715402', name:'何艺亨', coupon:'500元直减券',  code:'340800377134', source:'赠送券',   status:'已使用', gainAt:'2026-03-10 10:05:14', expireAt:'2026-04-10 10:05:14', value:500, plate:'粤A9ZK58' },
       { account:'m_0134875297717253', phone:'13751715402', name:'何艺亨', coupon:'500元直减券',  code:'210784776948', source:'赠送券',   status:'已使用', gainAt:'2026-03-10 10:05:03', expireAt:'2026-04-10 10:05:03', value:500, plate:'粤TV594V' },
       { account:'m_8821093746102587', phone:'13921045672', name:'陈伟铭', coupon:'综合服务费减免券 50 元', code:'675219384055', source:'积分兑换', status:'未使用', gainAt:'2026-04-28 09:42:17', expireAt:'2026-05-28 23:59:59', value:50,  plate:'' },
-      { account:'m_8821093746102587', phone:'13921045672', name:'陈伟铭', coupon:'数据查询优惠券 10 元',   code:'300681264627', source:'积分兑换', status:'未使用', gainAt:'2026-04-15 10:32:11', expireAt:'2026-10-15 23:59:59', value:10,  plate:'' },
-      { account:'m_5532117809334551', phone:'18602345987', name:'林晓玥', coupon:'数据查询优惠券 5 元',    code:'300681264628', source:'积分兑换', status:'未使用', gainAt:'2026-04-10 09:18:42', expireAt:'2026-05-10 23:59:59', value:5,   plate:'' },
+      { account:'m_8821093746102587', phone:'13921045672', name:'陈伟铭', coupon:'综合报告（柠檬查）',   code:'300681264627', source:'积分兑换', status:'未使用', gainAt:'2026-04-15 10:32:11', expireAt:'2026-10-15 23:59:59', value:38,  plate:'' },
+      { account:'m_5532117809334551', phone:'18602345987', name:'林晓玥', coupon:'出险报告（车信盟）',    code:'300681264628', source:'积分兑换', status:'未使用', gainAt:'2026-04-10 09:18:42', expireAt:'2026-05-10 23:59:59', value:28,   plate:'' },
       { account:'m_5532117809334551', phone:'18602345987', name:'林晓玥', coupon:'保留价查询权益',         code:'391047825639', source:'积分兑换', status:'已使用', gainAt:'2026-04-22 14:30:00', expireAt:'2026-05-22 23:59:59', value:50,  plate:'' },
       { account:'m_7733019458876402', phone:'17782046125', name:'赵蕾',   coupon:'历史成交行情权益',       code:'482937165048', source:'积分兑换', status:'已使用', gainAt:'2026-04-25 10:08:32', expireAt:'2026-05-25 23:59:59', value:100, plate:'' },
     ]);
@@ -502,10 +502,11 @@ createApp({
       { name:'1000元直减券',          type:'交易佣金抵扣', startAt:'2026-01-21', endAt:'2026-01-22', source:'赠送券',   code:'赠送券2026',   value:1000, duration:'3天',    usage:'订单支付', orderScope:'拍卖大厅', carScope:'全部' },
       { name:'保留价查询权益',         type:'数据查询权益', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'RESERVE_PRICE',     value:50,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
       { name:'历史成交行情权益',       type:'数据查询权益', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'HISTORY_PRICE',     value:100,  duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
-      { name:'数据查询优惠券 5 元',    type:'数据查询优惠券', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'DATA_QUERY_5',      value:5,    duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
-      { name:'数据查询优惠券 10 元',   type:'数据查询优惠券', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'DATA_QUERY_10',     value:10,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
-      { name:'数据查询优惠券 15 元',   type:'数据查询优惠券', startAt:'2026-05-01', endAt:'2026-05-31',   source:'积分兑换', code:'DATA_QUERY_15',     value:15,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
-      { name:'数据查询优惠券 20 元',   type:'数据查询优惠券', startAt:'2026-05-01', endAt:'2026-05-31',   source:'积分兑换', code:'DATA_QUERY_20',     value:20,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'出险报告（车信盟）', type:'数据查询服务次卡', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'SVCCARD_INSURANCE', value:28,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'维保报告（唯车转）', type:'数据查询服务次卡', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'SVCCARD_MAINTAIN',  value:20,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'电池报告（唯车转）', type:'数据查询服务次卡', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'SVCCARD_BATTERY',   value:30,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'里程报告（唯车转）', type:'数据查询服务次卡', startAt:'2026-05-01', endAt:'2026-05-31',   source:'积分兑换', code:'SVCCARD_MILEAGE',   value:18,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
+      { name:'综合报告（柠檬查）', type:'数据查询服务次卡', startAt:'2026-05-01', endAt:'2026-05-31',   source:'积分兑换', code:'SVCCARD_OVERALL',   value:38,   duration:'30天',   usage:'数据查询', orderScope:'-',        carScope:'平台车源' },
       { name:'综合服务费减免券 50 元', type:'综合服务费减免', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'COMPFEE_50',        value:50,   duration:'30天',   usage:'订单支付', orderScope:'平台成交', carScope:'非报废车' },
       { name:'服务中心消费券 100 元',  type:'服务中心消费', startAt:'2026-04-01', endAt:'2026-05-01',   source:'积分兑换', code:'SERVICECENTER_100', value:100,  duration:'30天',   usage:'服务费抵扣', orderScope:'非平台成交', carScope:'指定服务中心' },
     ]);

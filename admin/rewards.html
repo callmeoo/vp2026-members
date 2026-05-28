@@ -169,7 +169,7 @@
             <label class="text-xs text-slate-500 block mb-1">类型</label>
             <select class="ant-input" v-model="filters.type">
               <option value="">全部</option>
-              <option v-for="t in productTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+              <option v-for="t in visibleProductTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
             </select>
           </div>
           <div>
@@ -266,8 +266,18 @@
         <label>商品类型 <span class="text-rose-500">*</span></label>
         <select class="ant-input" v-model="form.productType">
           <option value="">请选择</option>
-          <option v-for="t in productTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+          <option v-for="t in visibleProductTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
         </select>
+      </div>
+      <div class="form-row" v-if="currentTypeSubTypes.length > 0">
+        <label>使用性质 <span class="text-rose-500">*</span></label>
+        <div>
+          <select class="ant-input" v-model="form.subType">
+            <option value="">请选择</option>
+            <option v-for="st in currentTypeSubTypes" :key="st.name" :value="st.name">{{ st.name }}</option>
+          </select>
+          <div class="hint" v-if="currentSubType">标准价 {{ currentSubType.price }} 元 ≈ {{ currentSubType.coin }} 积分；选择后自动带出名称与积分价</div>
+        </div>
       </div>
       <div class="form-row" v-if="currentTypeDenominations.length > 0">
         <label>面额 <span class="text-rose-500">*</span></label>
@@ -343,6 +353,7 @@
     <div class="modal-body" style="line-height:1.9;font-size:13px;color:#303133">
       <ol style="margin:0;padding-left:18px;list-style:decimal;display:flex;flex-direction:column;gap:10px">
         <li>积分商城兑换内容数据来自本页配置。</li>
+        <li><strong>渠道适配调整</strong>：因当前对接渠道<strong>仅支持「数据查询服务次卡」、不支持通用优惠券</strong>，<span style="color:#dc2626;font-weight:600">「数据查询优惠券」已隐藏、对外不可见</span>（数据保留、未删除，后续可恢复）。新增「数据查询服务次卡」商品类型，其二级类型及对应积分为：出险报告（车信盟）280、维保报告（唯车转）200、电池报告（唯车转）300、里程报告（唯车转）180、综合报告（柠檬查）380。</li>
         <li><strong>商品编码</strong>：不支持填写，由系统自动生成。修改商品信息时编码不会变化，作为商品的唯一标识用于流水、兑换记录等关联查询。</li>
         <li><strong>库存不足（库存 = 0）</strong>：前端商城仍展示该商品，但标记「已售罄」状态，兑换按钮置灰不可点击。不做隐藏处理，保留展示让商户感知到该权益存在。</li>
         <li><strong>编辑逻辑</strong>：点击「编辑」打开编辑弹窗，可修改商品名称、积分价格、库存数量、适用范围等字段，保存后立即生效。编辑不改变上下架状态。</li>
@@ -352,11 +363,12 @@
           <table style="width:100%;margin-top:8px;border-collapse:collapse;font-size:12px">
             <thead><tr style="background:#f7f8fa"><th style="border:1px solid #eaedf3;padding:6px 8px;text-align:left;width:34%">商品</th><th style="border:1px solid #eaedf3;padding:6px 8px;text-align:left">限制说明</th></tr></thead>
             <tbody>
+              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">数据查询服务次卡</td><td style="border:1px solid #eaedf3;padding:6px 8px">数据查询服务次卡按次核销，每次对应一类数据报告；不同类型的数据报告可叠加使用</td></tr>
               <tr><td style="border:1px solid #eaedf3;padding:6px 8px">保留价查询</td><td style="border:1px solid #eaedf3;padding:6px 8px">有保留价车辆保留价查询</td></tr>
               <tr><td style="border:1px solid #eaedf3;padding:6px 8px">历史行情查询</td><td style="border:1px solid #eaedf3;padding:6px 8px">平台历史成交数据查询</td></tr>
               <tr><td style="border:1px solid #eaedf3;padding:6px 8px">综合服务费</td><td style="border:1px solid #eaedf3;padding:6px 8px">限平台成交车辆，报废车不可用</td></tr>
               <tr><td style="border:1px solid #eaedf3;padding:6px 8px">服务中心消费券</td><td style="border:1px solid #eaedf3;padding:6px 8px">适用于非平台成交车辆，在唯普南沙服务中心、唯普白云服务中心、广物佛山二手车中心、唯普东莞服务中心办理过户服务</td></tr>
-              <tr><td style="border:1px solid #eaedf3;padding:6px 8px">数据查询服务优惠券</td><td style="border:1px solid #eaedf3;padding:6px 8px">优惠券不可叠加使用</td></tr>
+              <tr style="color:#9ca3af"><td style="border:1px solid #eaedf3;padding:6px 8px">数据查询服务优惠券 <span style="font-size:10px;padding:0 4px;border:1px solid #d1d5db;border-radius:3px">已隐藏</span></td><td style="border:1px solid #eaedf3;padding:6px 8px">优惠券不可叠加使用（渠道不支持，已对外隐藏）</td></tr>
             </tbody>
           </table>
         </li>
@@ -383,15 +395,25 @@ const { createApp, reactive, ref, computed, onMounted, watch, nextTick } = Vue;
 createApp({
   setup() {
     const productTypes = [
-      { value: 'DATA_QUERY_COUPON', label: '数据查询优惠券',   denominations: [5, 10, 15, 20, 30, 50] },
+      // 数据查询服务次卡:渠道仅支持数据查询服务次卡(不支持通用优惠券),二级类型为各类数据报告
+      { value: 'SERVICE_CARD',      label: '数据查询服务次卡',         denominations: [], subTypes: [
+          { name:'出险报告（车信盟）', price:28, coin:280 },
+          { name:'维保报告（唯车转）', price:20, coin:200 },
+          { name:'电池报告（唯车转）', price:30, coin:300 },
+          { name:'里程报告（唯车转）', price:18, coin:180 },
+          { name:'综合报告（柠檬查）', price:38, coin:380 },
+      ] },
       { value: 'RESERVE_PRICE',     label: '保留价查询权益',   denominations: [] },
       { value: 'HISTORY_PRICE',     label: '历史成交行情权益', denominations: [] },
       { value: 'COMPFEE_COUPON',    label: '综合服务费减免券', denominations: [50, 100] },
       { value: 'SERVICE_COUPON',    label: '服务中心消费券',   denominations: [50, 100] },
+      // 渠道不支持通用优惠券,数据查询优惠券对外隐藏(数据保留,不删除)
+      { value: 'DATA_QUERY_COUPON', label: '数据查询优惠券',   denominations: [5, 10, 15, 20, 30, 50], hidden: true },
     ];
 
     // 商品类型 → 限制说明 预设(由后台开发维护)
     const restrictionPresets = {
+      SERVICE_CARD:      '数据查询服务次卡按次核销，每次对应一类数据报告；不同类型的数据报告可叠加使用。',
       RESERVE_PRICE:     '有保留价车辆保留价查询',
       HISTORY_PRICE:     '平台历史成交数据查询',
       COMPFEE_COUPON:    '限平台成交车辆，报废车不可用',
@@ -400,6 +422,11 @@ createApp({
     };
 
     const products = reactive([
+      { code:'SVCCARD_INSURANCE', name:'出险报告（车信盟）',     icon:'shield-alert',     iconBg:'linear-gradient(135deg,#fb7185,#e11d48)', category:'数据查询', productType:'SERVICE_CARD', denomination:'', subType:'出险报告（车信盟）', coin:280, validityDays:30, stock:500, issued:86,  alertThreshold:20, status:'上架', restriction:'车信盟·出险/事故记录报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { code:'SVCCARD_MAINTAIN',  name:'维保报告（唯车转）',     icon:'wrench',           iconBg:'linear-gradient(135deg,#38bdf8,#0ea5e9)', category:'数据查询', productType:'SERVICE_CARD', denomination:'', subType:'维保报告（唯车转）', coin:200, validityDays:30, stock:500, issued:124, alertThreshold:20, status:'上架', restriction:'唯车转·维修保养记录报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { code:'SVCCARD_BATTERY',   name:'电池报告（唯车转）',     icon:'battery-charging', iconBg:'linear-gradient(135deg,#34d399,#10b981)', category:'数据查询', productType:'SERVICE_CARD', denomination:'', subType:'电池报告（唯车转）', coin:300, validityDays:30, stock:500, issued:45,  alertThreshold:20, status:'上架', restriction:'唯车转·三电检测报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { code:'SVCCARD_MILEAGE',   name:'里程报告（唯车转）',     icon:'gauge',            iconBg:'linear-gradient(135deg,#818cf8,#6366f1)', category:'数据查询', productType:'SERVICE_CARD', denomination:'', subType:'里程报告（唯车转）', coin:180, validityDays:30, stock:500, issued:67,  alertThreshold:20, status:'上架', restriction:'唯车转·里程校验报告查询；按次核销，不同类型数据报告可叠加使用。' },
+      { code:'SVCCARD_OVERALL',   name:'综合报告（柠檬查）',     icon:'file-search',      iconBg:'linear-gradient(135deg,#fbbf24,#f59e0b)', category:'数据查询', productType:'SERVICE_CARD', denomination:'', subType:'综合报告（柠檬查）', coin:380, validityDays:30, stock:12,  issued:210, alertThreshold:20, status:'上架', restriction:'柠檬查·车辆综合检测报告查询；按次核销，不同类型数据报告可叠加使用。' },
       { code:'COMPFEE_100',       name:'综合服务费减免券 100 元', icon:'percent',       iconBg:'linear-gradient(135deg,#f97316,#ea580c)', category:'交易折扣', productType:'COMPFEE_COUPON',      denomination:100, coin:1000,validityDays:30, stock:5,    issued:18,  alertThreshold:20, status:'上架', restriction:'限平台成交车辆，报废车不可用' },
       { code:'RESERVE_PRICE',     name:'保留价查询权益',         icon:'target',        iconBg:'linear-gradient(135deg,#e879f9,#ec4899)', category:'数据查询', productType:'RESERVE_PRICE',       denomination:'',  coin:50,  validityDays:30, stock:480,  issued:152, alertThreshold:20, status:'上架', restriction:'有保留价车辆保留价查询' },
       { code:'HISTORY_PRICE',     name:'历史成交行情权益',       icon:'line-chart',    iconBg:'linear-gradient(135deg,#fbbf24,#f97316)', category:'数据查询', productType:'HISTORY_PRICE',       denomination:'',  coin:100, validityDays:30, stock:480,  issued:0,   alertThreshold:20, status:'上架', restriction:'V1 及以上会员免兑可查;V0 兑换后可查看该车辆的同车系历史成交价。' },
@@ -409,11 +436,17 @@ createApp({
       { code:'SERVICECENTER_100', name:'服务中心消费券 100 元',   icon:'building-2',    iconBg:'linear-gradient(135deg,#60a5fa,#3b82f6)', category:'交易折扣', productType:'SERVICE_COUPON',      denomination:100, coin:500, validityDays:30, stock:200,  issued:0,   alertThreshold:20, status:'上架', restriction:'服务中心消费直减 100 元;限南沙、白云、佛山、东莞服务中心。' }
     ]);
 
+    // 隐藏类型(对外不可见)的商品不进列表与统计,数据仍保留在 products 中
+    const hiddenTypeValues = productTypes.filter(t => t.hidden).map(t => t.value);
+    const visibleProducts = computed(() => products.filter(p => !hiddenTypeValues.includes(p.productType)));
+    const visibleProductTypes = computed(() => productTypes.filter(t => !t.hidden));
+
     const stats = computed(() => {
-      const up = products.filter(p => p.status === '上架').length;
-      const down = products.filter(p => p.status === '已下架').length;
-      const low = products.filter(p => p.status === '上架' && p.stock <= (p.alertThreshold ?? 20)).length;
-      const issuedSum = products.reduce((s, p) => s + (p.issued || 0), 0);
+      const list = visibleProducts.value;
+      const up = list.filter(p => p.status === '上架').length;
+      const down = list.filter(p => p.status === '已下架').length;
+      const low = list.filter(p => p.status === '上架' && p.stock <= (p.alertThreshold ?? 20)).length;
+      const issuedSum = list.reduce((s, p) => s + (p.issued || 0), 0);
       return [
         { label:'上架中', value: up },
         { label:'已下架', value: down },
@@ -427,12 +460,12 @@ createApp({
 
     const categoryTagCls = (c) => ({ '数据查询':'tag-blue', '交易折扣':'tag-purple' })[c] || 'tag-default';
     const statusTagCls = (s) => ({ '上架':'tag-green', '已下架':'tag-default' })[s] || 'tag-default';
-    const typeTagCls = (v) => ({ 'DATA_QUERY_COUPON':'tag-blue', 'RESERVE_PRICE':'tag-purple', 'COMPFEE_COUPON':'tag-orange', 'SERVICE_COUPON':'tag-cyan' })[v] || 'tag-default';
+    const typeTagCls = (v) => ({ 'DATA_QUERY_COUPON':'tag-blue', 'RESERVE_PRICE':'tag-purple', 'COMPFEE_COUPON':'tag-orange', 'SERVICE_COUPON':'tag-cyan', 'SERVICE_CARD':'tag-green' })[v] || 'tag-default';
     const typeLabel = (v) => (productTypes.find(t => t.value === v) || {}).label || '';
     // 库存 ≤ 阈值 触发告警(上架商品才标红)
     const isLowStock = (p) => p.status === '上架' && p.stock <= (p.alertThreshold ?? 20);
 
-    const filteredProducts = computed(() => products.filter(p => {
+    const filteredProducts = computed(() => visibleProducts.value.filter(p => {
       if (filters.keyword) {
         const kl = filters.keyword.trim().toLowerCase();
         if (!p.name.toLowerCase().includes(kl) && !p.code.toLowerCase().includes(kl)) return false;
@@ -449,7 +482,7 @@ createApp({
     const modalOpen = ref(false);
     const editingIdx = ref(-1);
     const blankForm = () => ({
-      code: '', name: '', productType: '', denomination: '',
+      code: '', name: '', productType: '', denomination: '', subType: '',
       coin: 200, validityDays: 30, stock: 100, alertThreshold: 20, status: '上架',
       restriction: '',
       icon: 'gift', iconBg: 'linear-gradient(135deg,#38bdf8,#3b82f6)'
@@ -458,6 +491,11 @@ createApp({
       const t = productTypes.find(t => t.value === form.productType);
       return t ? t.denominations : [];
     });
+    const currentTypeSubTypes = computed(() => {
+      const t = productTypes.find(t => t.value === form.productType);
+      return t && t.subTypes ? t.subTypes : [];
+    });
+    const currentSubType = computed(() => currentTypeSubTypes.value.find(s => s.name === form.subType) || null);
     const form = reactive(blankForm());
     const openAdd = async () => {
       Object.assign(form, blankForm());
@@ -486,10 +524,16 @@ createApp({
       }
       modalOpen.value = false;
     };
-    watch([() => form.productType, () => form.denomination], () => {
+    watch([() => form.productType, () => form.denomination, () => form.subType], () => {
       if (editingIdx.value !== -1) return;
       const t = productTypes.find(t => t.value === form.productType);
       if (!t) return;
+      // 数据查询服务次卡:选二级类型后自动带出名称与积分价
+      if (t.subTypes && t.subTypes.length > 0) {
+        const st = t.subTypes.find(s => s.name === form.subType);
+        if (st) { form.name = st.name; form.coin = st.coin; }
+        return;
+      }
       if (t.denominations.length > 0 && form.denomination) {
         form.name = `${t.label} ${form.denomination}元`;
       } else if (t.denominations.length === 0 && form.productType) {
@@ -513,7 +557,7 @@ createApp({
     return {
       stats, filters, resetFilter, products, filteredProducts,
       categoryTagCls, statusTagCls, typeTagCls, typeLabel, isLowStock, toggleStatus,
-      productTypes, currentTypeDenominations,
+      productTypes, visibleProductTypes, currentTypeDenominations, currentTypeSubTypes, currentSubType,
       modalOpen, editingIdx, form, openAdd, openEdit, closeModal, saveProduct,
       opsOpen, toggleOps, showSpec
     };
