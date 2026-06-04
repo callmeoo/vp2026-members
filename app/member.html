@@ -70,11 +70,11 @@
 
     <!-- Hero 大等级 + 进度 -->
     <div class="px-6 pb-8 flex items-end gap-6">
-      <div class="flex-none"><div class="lv-text text-[96px] leading-none">{{ selectedLv.short }}</div></div>
+      <div class="flex-none"><div class="lv-text text-[96px] leading-none">{{ currentLv.short }}</div></div>
       <div class="flex-1 text-white pb-3">
         <div class="text-xs text-indigo-200" v-html="heroMain"></div>
         <div class="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden max-w-[160px]">
-          <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 transition-all duration-300" :style="{ width: heroProgress + '%' }"></div>
+          <div class="h-full transition-all duration-300" :class="progLow ? 'bg-white/40' : 'bg-gradient-to-r from-amber-300 to-yellow-400'" :style="{ width: heroProgress + '%' }"></div>
         </div>
         <div class="text-[11px] mt-2 text-indigo-200">{{ heroDate }}</div>
       </div>
@@ -145,24 +145,38 @@
 
 <!-- 模拟用户等级 · 仅 Demo -->
 <div class="hidden md:block fixed top-4 right-4 z-50">
-  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[176px]">
     <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
-      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户身份</span>
+      <i data-lucide="users" class="w-3 h-3"></i><span>已生效等级 · 上月定级</span>
     </div>
     <div class="flex flex-col gap-1.5">
       <button v-for="lv in CFG.levels" :key="lv.code"
               @click="simulateLevel(lv.short)"
-              :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all min-w-[88px] text-left', currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-violet-400 scale-105' : 'opacity-80 hover:opacity-100']"
+              :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-full text-left', currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-violet-400 scale-105' : 'opacity-80 hover:opacity-100']"
               :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
         {{ lv.short }} · {{ lv.name }}
       </button>
     </div>
-    <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+    <div class="mt-2.5 pt-2.5 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">近 3 月成交（含本月）</div>
+      <div class="flex items-center justify-between">
+        <span class="cursor-pointer w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="currentDeals = Math.max(0, currentDeals - 1)"><i data-lucide="minus" class="w-3 h-3"></i></span>
+        <span class="text-sm font-bold text-slate-700">{{ currentDeals }} 台</span>
+        <span class="cursor-pointer w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="currentDeals = currentDeals + 1"><i data-lucide="plus" class="w-3 h-3"></i></span>
+      </div>
+    </div>
+    <div class="mt-2.5 pt-2.5 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">账户保证金</div>
+      <div class="flex gap-1.5">
+        <button @click="depositOk = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', depositOk ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">≥ 2000</button>
+        <button @click="depositOk = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !depositOk ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">&lt; 2000</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- 推荐任务 Mock 切换 · 仅 Demo -->
-<div class="hidden md:block fixed top-[270px] right-4 z-50">
+<div class="hidden md:block fixed top-[332px] right-4 z-50">
   <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[160px]">
     <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
       <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>推荐任务 Mock 切换</span>
@@ -201,12 +215,13 @@ const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 const app = createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
-    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 15 };
-    const currentDeals = ref(12);
-    const currentLv = computed(() => CFG.getLevelByDeals(currentDeals.value));
-    const currentIdx = computed(() => CFG.levels.indexOf(currentLv.value));
-    const selectedIdx = ref(currentIdx.value);
-    const selectedLv = computed(() => CFG.levels[selectedIdx.value]);
+    const DEALS_PRESET = { V0: 0, V1: 2, V2: 12, V3: 18 };
+    const lockedShort  = ref('V2');   // 已生效等级(上月 1 日定级结果),月中锁定不随台数变
+    const currentDeals = ref(12);     // 近 3 月成交台数(含本月,实时数据)
+    const depositOk    = ref(true);   // 账户保证金是否 ≥ 2000
+    const currentLv = computed(() => CFG.getLevelByCode(lockedShort.value));
+    const prog = computed(() => CFG.getLevelProgress(lockedShort.value, currentDeals.value, depositOk.value));
+    const progLow = computed(() => ['deposit-low', 'downgrade-warn'].includes(prog.value.kind));
     const hasActivity = ref(true);
     const verifyDone  = ref(false);
     const depositDone = ref(false);
@@ -237,48 +252,35 @@ const app = createApp({
     });
 
     function simulateLevel(short) {
+      lockedShort.value = short;
       currentDeals.value = DEALS_PRESET[short] ?? 0;
-      selectedIdx.value = currentIdx.value;
+      depositOk.value = true;
     }
 
-    const heroDate = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value, cur = currentIdx.value;
-      if (idx === cur) return lv.name + ' · 有效期至 2026-06-30';
-      if (idx < cur)   return '您已超越该等级 · ' + lv.name;
-      return '暂未达到 · ' + lv.name;
-    });
+    const heroDate = computed(() => currentLv.value.name + ' · 有效期至 2026-06-30');
     const heroMain = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value, cur = currentIdx.value, deals = currentDeals.value;
-      const bold = (s) => '<span class="text-white font-semibold">' + s + '</span>';
-      const base = '近 3 月成交 ' + bold(deals + ' 台');
-      if (idx === cur) {
-        const next = CFG.levels[idx + 1];
-        if (!next) return base;
-        const need = Math.max(0, next.threshold.dealsMin - deals);
-        return base + '，还需 ' + bold(need + ' 台') + ' 升 ' + bold(next.short);
+      const p = prog.value;
+      const b = (s) => '<span class="text-white font-semibold">' + s + '</span>';
+      if (p.kind === 'deposit-low') {
+        let t = '保证金充至 ' + b('2000 元') + ' 即可参与定级';
+        if (p.dealsLevelShort !== 'V0') t += '（近 3 月已成交 ' + b(p.deals + ' 台') + '，达标后可升 ' + b(p.dealsLevelShort) + '）';
+        return t;
       }
-      if (idx < cur) return bold(lv.name) + ' · 权益已自动升级';
-      const need = Math.max(0, (lv.threshold.dealsMin || 0) - deals);
-      return base + '，还需 ' + bold(need + ' 台') + ' 升 ' + bold(lv.short);
+      if (p.kind === 'downgrade-warn') return '保证金已低于 ' + b('2000 元') + '，' + b('7 月 1 日') + ' 将下调等级';
+      if (p.kind === 'pending')        return '已满足 ' + b(p.qualifiedShort + ' 条件') + ' · ' + b('7 月 1 日') + ' 自动升级';
+      if (p.kind === 'max')            return b('已达最高等级');
+      return '近 3 月成交 ' + b(p.deals + ' 台') + '，还差 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort);
     });
-    const heroProgress = computed(() => {
-      const idx = selectedIdx.value, lv = selectedLv.value, cur = currentIdx.value, deals = currentDeals.value;
-      if (idx === cur) {
-        const next = CFG.levels[idx + 1];
-        return next ? Math.min(100, Math.round(deals / next.threshold.dealsMin * 100)) : 100;
-      }
-      if (idx < cur) return 100;
-      return Math.min(100, Math.round(deals / lv.threshold.dealsMin * 100));
-    });
+    const heroProgress = computed(() => prog.value.percent);
 
     function back() { smartBack('profile-loggedin.html'); }
 
-    watch([currentDeals, selectedIdx, hasActivity, verifyDone, depositDone, voteDone], () => nextTick(() => window.lucide && lucide.createIcons()));
+    watch([currentDeals, lockedShort, depositOk, hasActivity, verifyDone, depositDone, voteDone], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      CFG, currentLv, currentDeals,
-      selectedLv, heroDate, heroMain, heroProgress,
+      CFG, currentLv, currentDeals, lockedShort, depositOk,
+      heroDate, heroMain, heroProgress, progLow,
       simulateLevel, back,
       allBenefits,
       hasActivity, verifyDone, depositDone, voteDone
@@ -299,7 +301,7 @@ app.mount('#app');
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li>等级进度：展示距下一等级还差 X 台成交；V3 为最高等级时进度区域改为「已达最高等级」，不显示进度条。</li>
+        <li>等级进度（月度统一定级）：会员等级每月 1 日统一定级，月中成交 / 保证金变化下月 1 日生效，当月不实时升降。进度区按状态展示：常规「还差 X 台升 V×」；当月已达更高门槛 →「已满足 V× 条件 · 下月 1 日自动升级」（待生效）；保证金 &lt; 2000 →「充至 2000 元参与定级」；V3 →「已达最高等级」。右上角 Demo 浮窗可切换已生效等级 / 成交台数 / 保证金，验证各状态。</li>
         <li>积分到期提醒：卡片展示最近 30 天内即将到期的积分汇总量；无到期积分时隐藏该提示行。</li>
         <li>可享权益：已解锁的权益正常展示，未解锁的置灰叠加锁图标；积分折扣按当前等级显示（V0/V1 = 1:1，V2 = 95折，V3 = 8折）。</li>
         <li>推荐任务 Mock 数据（页面右上角浮窗可切换演示状态，支持 4 个开关：实名认证 / 首充保证金 / 调研问卷 / 限时活动；本页默认已登录态，不含登录态开关）：

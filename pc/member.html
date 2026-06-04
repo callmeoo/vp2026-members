@@ -236,15 +236,12 @@
                 <span class="text-white/55 text-xs">会员有效期至 2026-06-30</span>
               </div>
               <div class="level-progress-bar">
-                <div class="level-progress-fill" :style="{ width: progress + '%' }"></div>
+                <div class="level-progress-fill" :style="{ width: prog.percent + '%', background: progLow ? 'rgba(255,255,255,.35)' : '' }"></div>
               </div>
-              <div class="text-white/70 text-xs mt-2" v-if="nextLv">
-                还需成交 <span class="text-white font-bold">{{ needDeals }}</span> 台升至
-                <span class="text-white font-bold">{{ nextLv.name }}</span>({{ nextLv.short }})
-              </div>
-              <div class="text-white/80 text-sm font-semibold mt-2" v-else>
+              <div class="text-white/80 text-sm font-semibold mt-2" v-if="prog.kind === 'max'">
                 <i data-lucide="award" class="w-4 h-4 inline -mt-0.5"></i> 已达最高会员等级
               </div>
+              <div class="text-white/70 text-xs mt-2" v-else v-html="statusSub"></div>
               <div class="mt-4 pt-4 border-t border-white/15 text-white/60 text-xs leading-relaxed">
                 <span class="font-semibold text-white/80 mr-1">等级门槛：</span>{{ currentLv.thresholdText }}
               </div>
@@ -414,20 +411,34 @@
   <withdraw-deposit-modal :visible="showWithdrawDeposit" @close="showWithdrawDeposit = false"></withdraw-deposit-modal>
 
   <!-- 模拟等级切换 · Demo -->
-  <div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3">
+  <div class="fixed top-[72px] right-4 z-50 bg-white rounded-xl shadow-xl border border-slate-200 p-3 w-[170px]">
     <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
-      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户等级</span>
+      <i data-lucide="users" class="w-3 h-3"></i><span>已生效等级 · 上月定级</span>
     </div>
     <div class="flex flex-col gap-1.5">
       <button v-for="lv in CFG.levels" :key="lv.code"
         @click="simulateLevel(lv.short)"
-        :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-[120px] text-left',
+        :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-full text-left',
           currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-slate-300 scale-[1.04]' : 'opacity-70 hover:opacity-100']"
         :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
         {{ lv.short }} · {{ lv.name }}
       </button>
     </div>
-    <div class="text-[10px] text-slate-400 mt-2">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+    <div class="mt-2.5 pt-2.5 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">近 3 月成交（含本月）</div>
+      <div class="flex items-center justify-between">
+        <span class="cursor-pointer w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="currentDeals = Math.max(0, currentDeals - 1)"><i data-lucide="minus" class="w-3 h-3"></i></span>
+        <span class="text-sm font-bold text-slate-700">{{ currentDeals }} 台</span>
+        <span class="cursor-pointer w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="currentDeals = currentDeals + 1"><i data-lucide="plus" class="w-3 h-3"></i></span>
+      </div>
+    </div>
+    <div class="mt-2.5 pt-2.5 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">账户保证金</div>
+      <div class="flex gap-1.5">
+        <button @click="depositOk = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', depositOk ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">≥ 2000</button>
+        <button @click="depositOk = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !depositOk ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">&lt; 2000</button>
+      </div>
+    </div>
   </div>
 </div><!-- /#app -->
 
@@ -441,28 +452,32 @@ const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 createApp({
   setup() {
     const CFG = window.MEMBER_CONFIG;
-    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 20 };
-    const currentDeals = ref(6);
+    const DEALS_PRESET = { V0: 0, V1: 2, V2: 12, V3: 20 };
+    const lockedShort  = ref('V2');   // 已生效等级(上月 1 日定级结果),月中锁定不随台数变
+    const currentDeals = ref(12);     // 近 3 月成交台数(含本月,实时数据)
+    const depositOk    = ref(true);   // 账户保证金是否 ≥ 2000
 
     // 提现 / 提取 弹框开关
     const showWithdrawBalance = ref(false);
     const showWithdrawDeposit = ref(false);
-    const currentLv = computed(() => CFG.getLevelByDeals(currentDeals.value));
+    const currentLv = computed(() => CFG.getLevelByCode(lockedShort.value));
+    const prog = computed(() => CFG.getLevelProgress(lockedShort.value, currentDeals.value, depositOk.value));
+    const progLow = computed(() => ['deposit-low', 'downgrade-warn'].includes(prog.value.kind));
 
-    const nextLv = computed(() => {
-      const idx = CFG.levels.indexOf(currentLv.value);
-      return CFG.levels[idx + 1] || null;
-    });
-    const needDeals = computed(() => {
-      if (!nextLv.value) return 0;
-      return Math.max(0, nextLv.value.threshold.dealsMin - currentDeals.value);
-    });
-    const progress = computed(() => {
-      if (!nextLv.value) return 100;
-      return Math.min(100, Math.round(currentDeals.value / nextLv.value.threshold.dealsMin * 100));
-    });
-    const progressText = computed(() => {
-      return '近 3 月成交 <strong>' + currentDeals.value + '</strong> 台';
+    const progressText = computed(() => '近 3 月成交 <strong>' + currentDeals.value + '</strong> 台');
+    // 进度副文案：按月度定级状态机渲染(还差 N 台 / 待生效 / 保证金引导 / 降级预警),max 走模板 award 行
+    const statusSub = computed(() => {
+      const p = prog.value;
+      const w = (s) => '<span class="text-white font-bold">' + s + '</span>';
+      if (p.kind === 'deposit-low') {
+        let t = '保证金充至 ' + w('2000 元') + ' 即可参与定级';
+        if (p.dealsLevelShort !== 'V0') t += '，达标后可升 ' + w(p.dealsLevelShort);
+        return t;
+      }
+      if (p.kind === 'downgrade-warn') return '保证金已低于 ' + w('2000 元') + '，' + w('7 月 1 日') + ' 将下调等级';
+      if (p.kind === 'pending')        return '已满足 ' + w(p.qualifiedShort + ' 条件') + ' · ' + w('7 月 1 日') + ' 自动升级';
+      const nx = CFG.getLevelByCode(p.nextShort);
+      return '还需成交 ' + w(p.need + ' 台') + ' 升至 ' + w(nx.name) + '(' + nx.short + ')';
     });
 
     // 所有等级权益并集，去重;积分兑换类只保留当前等级对应的那一项
@@ -489,7 +504,9 @@ createApp({
     });
 
     function simulateLevel(short) {
+      lockedShort.value = short;
       currentDeals.value = DEALS_PRESET[short] ?? 0;
+      depositOk.value = true;
     }
 
     const watchedCars = window.PC_COMMON.cars.filter((_, i) => [2, 5, 7].includes(i));
@@ -516,12 +533,12 @@ createApp({
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch([currentDeals], () => nextTick(() => lucide.createIcons()));
+    watch([currentDeals, lockedShort, depositOk], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      CFG, currentLv, currentDeals,
-      nextLv, needDeals, progress, progressText,
+      CFG, currentLv, currentDeals, lockedShort, depositOk,
+      prog, progLow, progressText, statusSub,
       allBenefits, simulateLevel, watchedCars,
       showWithdrawBalance, showWithdrawDeposit,
       header, footer
@@ -544,7 +561,7 @@ createApp({
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
         <li>我的首页 UI 进行版面调整，调整的样式见原型图。</li>
-        <li>会员等级卡：大字号 V0~V3 等级标识 + 等级名称，背景按等级动态配色（V0 灰 / V1 蓝 / V2 紫 / V3 金）；右侧展示近 3 月成交台数、升级进度条、距离下一等级所需台数及当前等级门槛说明，并标注会员有效期。</li>
+        <li>会员等级卡（月度统一定级）：大字号 V0~V3 等级标识 + 等级名称，背景按等级动态配色（V0 灰 / V1 蓝 / V2 紫 / V3 金）；右侧展示近 3 月成交台数、升级进度条与当前等级门槛，并标注会员有效期。等级每月 1 日统一定级、月中成交 / 保证金变化下月 1 日生效（不实时升降），进度文案按状态切换：常规「还需 X 台升 V×」；当月已达更高门槛「已满足 V× 条件 · 下月 1 日自动升级」；保证金 &lt; 2000「充至 2000 元参与定级」；保证金跌破 2000「下月 1 日将下调等级」；V3「已达最高等级」。右上 Demo 浮窗可切换已生效等级 / 成交台数 / 保证金，验证各状态。</li>
         <li>可享权益网格：6 项权益按当前等级展示解锁 / 未解锁状态，已解锁高亮、未解锁灰色叠加锁图标；积分兑换权益按当前等级显示对应比例（V0 1:1 / V1 95 折 / V2 8 折），随等级切换实时刷新。</li>
         <li>我的资产模块（新增）：左侧专用账号展示可用余额 / 可用保证金及充值 / 提现 / 提取入口；右侧上方为积分（余额 + 「50 积分将在 15 天内过期」提醒 + 去兑换商城按钮 + 积分明细 / 如何赚积分快捷链接），下方并排展示优惠券 / 权益卡张数；左侧边栏额外提供「积分商城 / 积分明细 / 赚积分」常驻快捷入口。</li>
         <li>等级模拟切换（评审专用）：右上角浮窗可一键切换 V0~V3 身份，等级卡、权益网格、成长进度同步联动；仅评审环境显示，不进生产。</li>
