@@ -387,9 +387,9 @@
             <div class="panel-section">
               <div class="metric-grid">
                 <div class="metric-card">
-                  <div class="m-lbl">本周期成交台数</div>
+                  <div class="m-lbl">近 3 月成交台数</div>
                   <div class="m-val accent">{{ deals }}<small>台</small></div>
-                  <div class="m-sub">门槛 {{ lv.threshold.dealsMin || 0 }} 台 · 已达标</div>
+                  <div class="m-sub">近 3 个自然月（含本月）滚动 · 每月 1 日据此评级</div>
                 </div>
                 <div class="metric-card">
                   <div class="m-lbl">距离下一等级</div>
@@ -408,6 +408,9 @@
                 <div class="prog-meta"><span>{{ lv.short }} · {{ lv.name }}</span><span>{{ nextLv.short }} · {{ nextLv.name }}</span></div>
                 <div class="prog-bar"><div class="prog-fill" :style="{ width: progressTo + '%' }"></div></div>
                 <div class="prog-meta"><span>已成交 {{ deals }} 台</span><span>门槛 {{ nextLv.threshold.dealsMin }} 台</span></div>
+                <div style="margin-top:10px;font-size:12px;color:#909399;line-height:1.6;background:#f4f4f5;border-radius:6px;padding:8px 10px">
+                  进度条为<b style="color:#606266">评级累计进度</b>：成交台数实时累加，但等级每月 1 日统一评定 —— 达到门槛后于<b style="color:#606266">次月 1 日生效</b>，当月不实时升级。
+                </div>
               </div>
             </div>
 
@@ -741,7 +744,7 @@ createApp({
     const lvIdx = lv ? CFG.levels.findIndex(x => x.code === lv.code) : -1;
     const nextLv = lvIdx >= 0 ? CFG.levels[lvIdx + 1] : null;
 
-    const dealsByLevel = { LV0:0, LV1:2, LV2:5, LV3:12 };
+    const dealsByLevel = { LV0:0, LV1:2, LV2:5, LV3:18 };
     const deals = lv ? (dealsByLevel[lv.code] || 0) : 0;
     const nextNeed = nextLv ? Math.max(0, nextLv.threshold.dealsMin - deals) : 0;
     const progressTo = nextLv ? Math.min(100, Math.round((deals / nextLv.threshold.dealsMin) * 100)) : 100;
@@ -753,12 +756,12 @@ createApp({
         { at:'2025-11-01', type:'周期评级', from:'V0', to:'V0', reason:'近 3 月无成交', op:'系统' }
       ],
       LV2:[
-        { at:'2026-02-01', type:'周期评级', from:'V1', to:'V2', reason:'近 3 月成交 5 台(门槛 3 台)', op:'系统' },
+        { at:'2026-02-01', type:'周期评级', from:'V1', to:'V2', reason:'近 3 月成交 5 台(门槛 4 台)', op:'系统' },
         { at:'2025-11-01', type:'周期评级', from:'V0', to:'V1', reason:'近 3 月成交 2 台', op:'系统' },
         { at:'2025-08-01', type:'注册', from:'-', to:'V0', reason:'新用户注册', op:'系统' }
       ],
       LV3:[
-        { at:'2026-02-01', type:'周期评级', from:'V2', to:'V3', reason:'近 3 月成交 12 台(门槛 10 台)', op:'系统' },
+        { at:'2026-02-01', type:'周期评级', from:'V2', to:'V3', reason:'近 3 月成交 16 台(门槛 15 台)', op:'系统' },
         { at:'2025-11-01', type:'周期评级', from:'V2', to:'V2', reason:'维持 V2(成交 5 台)', op:'系统' },
         { at:'2025-08-01', type:'周期评级', from:'V1', to:'V2', reason:'近 3 月成交 4 台', op:'系统' },
         { at:'2025-05-01', type:'周期评级', from:'V0', to:'V1', reason:'近 3 月成交 1 台', op:'系统' }
