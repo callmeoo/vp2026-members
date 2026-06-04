@@ -27,7 +27,7 @@
         color: '#94a3b8',
         gradient: ['#64748b', '#94a3b8'],
         threshold: { dealsMin: 0, dealsMax: 0, accountMin: 0, accountMax: 2000 },
-        thresholdText: '账户金额 < 2000 且近 3 个月无成交',
+        thresholdText: '账户金额 < 2000 或近 3 个月无成交',
         feature: '基础商户，无成交记录，平台行为少',
         benefits: [
           { id: 'coin_exchange_100', icon: 'coins',     label: '积分 1:1 兑换', desc: '按 1 积分 = 0.1 元等值兑换' },
