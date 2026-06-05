@@ -193,6 +193,7 @@
   // kind: deposit-low    保证金<2000 且 locked=V0 → 引导补足保证金参与定级
   //       downgrade-warn 保证金<2000 且 locked≥V1 → 月中保证金被提走,下月 1 日下调等级
   //       pending        保证金达标 且 按当前数据应得等级 > 已生效等级 → 待生效,下月 1 日自动升级
+  //       demote-warn    保证金达标 但 应得等级 < 已生效等级(成交下滑) → 保级预警,引导补足台数维持当前等级
   //       growing        保证金达标 且 未达下一级门槛 → 常规成长,还差 need 台
   //       max            已 V3 最高等级
   MEMBER_CONFIG.getLevelProgress = function (lockedShort, deals, depositOk) {
@@ -203,10 +204,11 @@
     var qualifiedIdx = depositOk ? levels.indexOf(dealsLevel) : 0;  // 叠加保证金门槛后的应得等级
     var need = next ? Math.max(0, next.threshold.dealsMin - deals) : 0;
     var percent = next ? Math.min(100, Math.round(deals / next.threshold.dealsMin * 100)) : 100;
-    var kind;
+    var kind, holdNeed = 0;
     if (!depositOk && lockedIdx === 0)      kind = 'deposit-low';
     else if (!depositOk)                    kind = 'downgrade-warn';
     else if (qualifiedIdx > lockedIdx)    { kind = 'pending'; percent = 100; }
+    else if (qualifiedIdx < lockedIdx)    { kind = 'demote-warn'; holdNeed = Math.max(0, levels[lockedIdx].threshold.dealsMin - deals); percent = Math.min(100, Math.round(deals / (levels[lockedIdx].threshold.dealsMin || 1) * 100)); }
     else if (next)                          kind = 'growing';
     else                                  { kind = 'max'; percent = 100; }
     return {
@@ -217,6 +219,7 @@
       dealsLevelShort: dealsLevel.short,           // 仅按台数的等级(保证金不足时用于"达标后可升 V×")
       deals: deals,
       need: need,
+      holdNeed: holdNeed,                          // demote-warn:保级(维持当前等级)还需台数
       percent: percent
     };
   };
