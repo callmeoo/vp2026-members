@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员等级定级逻辑 · 状态机</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body { background:#f6f7fb; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; }
+  .card { background:#fff; border:1px solid #eef0f4; border-radius:14px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .mermaid { display:flex; justify-content:center; }
+  .mermaid svg { max-width:100%; height:auto; }
+  table.tbl { width:100%; border-collapse:collapse; font-size:13px; }
+  table.tbl th { background:#f8fafc; color:#475569; font-weight:600; text-align:left; padding:9px 12px; border-bottom:1px solid #eef0f4; white-space:nowrap; }
+  table.tbl td { padding:9px 12px; border-bottom:1px solid #f4f6f9; color:#334155; vertical-align:top; }
+  .pill { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; color:#fff; }
+</style>
+</head>
+<body>
+<div id="app" class="max-w-[1080px] mx-auto px-5 py-6">
+
+  <!-- header -->
+  <div class="flex items-center justify-between mb-5">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center"><i data-lucide="git-branch" class="w-5 h-5 text-white"></i></div>
+      <div>
+        <div class="text-lg font-bold text-slate-800">会员等级定级逻辑 · 状态机</div>
+        <div class="text-xs text-slate-400">app / pc 会员中心进度文案统一逻辑 · 源码 shared/member-config.js → getLevelProgress()</div>
+      </div>
+    </div>
+    <a href="index.html" class="text-sm text-slate-500 hover:text-violet-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i>返回 Demo 导航</a>
+  </div>
+
+  <!-- 核心说明 -->
+  <div class="card p-4 mb-5 flex items-start gap-3" style="background:#faf5ff;border-color:#e9d5ff">
+    <i data-lucide="lightbulb" class="w-5 h-5 text-violet-500 flex-none mt-0.5"></i>
+    <div class="text-sm text-slate-600 leading-relaxed">
+      <b class="text-violet-700">一句话逻辑：</b>状态 = 「已生效等级」与「应得等级」的关系。
+      <span class="text-slate-500">「已生效等级」是上月 1 日定的（hero 大字，当月锁定）；「应得等级」是现在这一刻该定几级 ——
+      <b>账户总额 &lt; 2000 一票压到 V0</b>，否则按近 3 月成交台数（1-3=V1 / 4-14=V2 / ≥15=V3）。</span>
+    </div>
+  </div>
+
+  <!-- 交互验证器 -->
+  <div class="card p-5 mb-5">
+    <div class="flex items-center gap-2 mb-4">
+      <i data-lucide="sliders-horizontal" class="w-4 h-4 text-slate-500"></i>
+      <span class="font-bold text-slate-700">交互验证器</span>
+      <span class="text-xs text-slate-400">改下面三个输入，实时跑真正的 getLevelProgress()</span>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-5">
+      <!-- 已生效等级 -->
+      <div>
+        <div class="text-xs text-slate-400 mb-1.5">① 已生效等级（上月定）</div>
+        <div class="flex gap-1.5">
+          <button v-for="lv in levels" :key="lv.short" @click="lockedShort = lv.short"
+            :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', lockedShort===lv.short ? 'text-white shadow' : 'bg-slate-100 text-slate-500']"
+            :style="lockedShort===lv.short ? {background:lv.color} : {}">{{ lv.short }}</button>
+        </div>
+      </div>
+      <!-- 台数 -->
+      <div>
+        <div class="text-xs text-slate-400 mb-1.5">② 近 3 月成交台数（实时滚动）</div>
+        <div class="flex items-center gap-2">
+          <span class="cursor-pointer w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="deals = Math.max(0, deals-1)"><i data-lucide="minus" class="w-4 h-4"></i></span>
+          <div class="flex-1 text-center"><span class="text-2xl font-bold text-slate-800">{{ deals }}</span><span class="text-sm text-slate-400"> 台</span></div>
+          <span class="cursor-pointer w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="deals = deals+1"><i data-lucide="plus" class="w-4 h-4"></i></span>
+        </div>
+      </div>
+      <!-- 账户 -->
+      <div>
+        <div class="text-xs text-slate-400 mb-1.5">③ 账户总额</div>
+        <div class="flex gap-1.5">
+          <button @click="accountOk=true" :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', accountOk?'bg-emerald-500 text-white':'bg-slate-100 text-slate-500']">≥ 2000</button>
+          <button @click="accountOk=false" :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', !accountOk?'bg-rose-500 text-white':'bg-slate-100 text-slate-500']">&lt; 2000</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果 -->
+    <div class="rounded-xl p-4 flex flex-col md:flex-row md:items-center gap-4" :style="{ background: meta.color+'14', border:'1px solid '+meta.color+'33' }">
+      <div class="flex-none">
+        <span class="pill" :style="{ background: meta.color }"><i :data-lucide="meta.icon" class="w-3 h-3"></i>{{ meta.dir }} · {{ meta.name }}</span>
+        <div class="text-[11px] text-slate-400 mt-1.5">代码 kind：{{ prog.kind }}</div>
+      </div>
+      <div class="flex-1 md:border-l md:pl-4" style="border-color:#e5e7eb">
+        <div class="text-[11px] text-slate-400 mb-0.5">页面展示文案</div>
+        <div class="text-base font-semibold text-slate-800" v-html="caseText"></div>
+      </div>
+      <div class="flex-none text-xs text-slate-500 md:text-right md:border-l md:pl-4" style="border-color:#e5e7eb">
+        <div>应得等级：<b :style="{color: levelColor(prog.qualifiedShort)}">{{ prog.qualifiedShort }}</b></div>
+        <div class="mt-0.5">进度：<b>{{ prog.percent }}%</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 流程图 -->
+  <div class="card p-5 mb-5">
+    <div class="flex items-center gap-2 mb-3">
+      <i data-lucide="workflow" class="w-4 h-4 text-slate-500"></i>
+      <span class="font-bold text-slate-700">判断流程图</span>
+      <span class="text-xs text-slate-400">从上往下，命中即停</span>
+    </div>
+    <div v-pre>
+<pre class="mermaid">
+flowchart TD
+  A["输入：已生效等级 / 近3月成交台数 / 账户总额"] --> Q1{"账户总额 ≥ 2000 ?"}
+  Q1 -->|否| Q2{"已生效等级 ?"}
+  Q2 -->|V0| Q2a{"近3月台数 ≥ 1 ?"}
+  Q2a -->|是| S1a["入门受限<br/>账户满 2000 元可升 V×"]
+  Q2a -->|否| S1b["入门受限<br/>账户满 2000 元可参与评级"]
+  Q2 -->|V1~V3| S2["账户预警<br/>账户偏低，补足 2000 元可维持 V×"]
+  Q1 -->|是| C["应得等级 = 按台数定<br/>1-3→V1 / 4-14→V2 / ≥15→V3"]
+  C --> Q3{"应得 vs 已生效"}
+  Q3 -->|应得更高| S3["待升级<br/>已满足 V× 条件 · 下月1日自动升级"]
+  Q3 -->|应得更低| S4["保级预警<br/>再成交 N 台保级 V×"]
+  Q3 -->|相等·未到顶| S5["成长中<br/>还差 N 台升 V×"]
+  Q3 -->|相等·已V3| S6["已封顶<br/>已达最高等级"]
+  classDef up fill:#ecfdf5,stroke:#10b981,color:#065f46;
+  classDef hold fill:#eff6ff,stroke:#0ea5e9,color:#075985;
+  classDef top fill:#fffbeb,stroke:#f59e0b,color:#92400e;
+  classDef down fill:#fff7ed,stroke:#f97316,color:#9a3412;
+  classDef warn fill:#fef2f2,stroke:#ef4444,color:#991b1b;
+  classDef low fill:#f8fafc,stroke:#94a3b8,color:#475569;
+  class S3 up; class S5 hold; class S6 top; class S4 down; class S2 warn; class S1a,S1b low;
+</pre>
+    </div>
+  </div>
+
+  <!-- 状态对照表 -->
+  <div class="card p-5 mb-5 overflow-x-auto">
+    <div class="flex items-center gap-2 mb-3">
+      <i data-lucide="table-2" class="w-4 h-4 text-slate-500"></i>
+      <span class="font-bold text-slate-700">六状态对照表</span>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>方向</th><th>状态</th><th>触发条件</th><th>文案模板</th><th>N（台数）公式</th></tr></thead>
+      <tbody>
+        <tr v-for="r in rows" :key="r.kind">
+          <td><span class="text-xs font-bold" :style="{color:r.color}">{{ r.dir }}</span></td>
+          <td><span class="pill" :style="{background:r.color}">{{ r.name }}</span></td>
+          <td class="text-slate-500">{{ r.cond }}</td>
+          <td class="font-medium">{{ r.tpl }}</td>
+          <td class="text-slate-500">{{ r.formula }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-[11px] text-slate-400 mt-2">V× 指代：入门受限→台数对应级；账户预警/保级预警→已生效级；待升级→应得级；成长中→下一级。</div>
+  </div>
+
+  <!-- 测试用例 -->
+  <div class="card p-5 overflow-x-auto">
+    <div class="flex items-center gap-2 mb-3">
+      <i data-lucide="flask-conical" class="w-4 h-4 text-slate-500"></i>
+      <span class="font-bold text-slate-700">测试用例</span>
+      <span class="text-xs text-slate-400">点「套用」自动填到上面验证器</span>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>状态</th><th>已生效</th><th>近3月</th><th>账户</th><th>预期文案</th><th></th></tr></thead>
+      <tbody>
+        <tr v-for="c in cases" :key="c.name">
+          <td><span class="pill" :style="{background:c.color}">{{ c.name }}</span></td>
+          <td class="font-bold" :style="{color:levelColor(c.locked)}">{{ c.locked }}</td>
+          <td>{{ c.deals }} 台</td>
+          <td>{{ c.account ? '≥2000' : '＜2000' }}</td>
+          <td class="text-slate-600">{{ c.expect }}</td>
+          <td><button @click="applyCase(c)" class="text-xs font-semibold text-violet-600 border border-violet-200 rounded-md px-2.5 py-1 hover:bg-violet-50">套用</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center text-[11px] text-slate-400 mt-5">文案以 app 移动端为准；「下月 1 日」在 demo 页显示为当前月的下月 1 日。pc 桌面版个别文案更完整。</div>
+</div>
+
+<script src="shared/member-config.js"></script>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+const CFG = window.MEMBER_CONFIG;
+
+const KIND_META = {
+  'pending':        { name:'待升级',   dir:'升',     color:'#10b981', icon:'trending-up' },
+  'growing':        { name:'成长中',   dir:'稳',     color:'#0ea5e9', icon:'activity' },
+  'max':            { name:'已封顶',   dir:'稳',     color:'#f59e0b', icon:'crown' },
+  'demote-warn':    { name:'保级预警', dir:'降',     color:'#f97316', icon:'alert-triangle' },
+  'downgrade-warn': { name:'账户预警', dir:'降',     color:'#ef4444', icon:'wallet' },
+  'deposit-low':    { name:'入门受限', dir:'入门',   color:'#94a3b8', icon:'lock' },
+};
+
+// 与 app 移动端 heroMain 文案保持一致
+function buildText(p) {
+  const b = (s) => '<span class="text-violet-700">' + s + '</span>';
+  if (p.kind === 'deposit-low') return p.dealsLevelShort !== 'V0'
+    ? '账户满 ' + b('2000 元') + ' 可升 ' + b(p.dealsLevelShort)
+    : '账户满 ' + b('2000 元') + ' 可参与评级';
+  if (p.kind === 'downgrade-warn') return '账户偏低，补足 ' + b('2000 元') + ' 可维持 ' + b(p.lockedShort);
+  if (p.kind === 'pending')        return '已满足 ' + b(p.qualifiedShort + ' 条件') + ' · ' + b('下月 1 日') + ' 自动升级';
+  if (p.kind === 'demote-warn')    return '近 3 月成交 ' + b(p.deals + ' 台') + '，再成交 ' + b(p.holdNeed + ' 台') + ' 保级 ' + b(p.lockedShort);
+  if (p.kind === 'max')            return b('已达最高等级');
+  return '近 3 月成交 ' + b(p.deals + ' 台') + '，还差 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort);
+}
+
+createApp({
+  setup() {
+    const lockedShort = ref('V2');
+    const deals = ref(12);
+    const accountOk = ref(true);
+
+    const levels = CFG.levels.map(l => ({ short:l.short, color:l.gradient[0] }));
+    const levelColor = (short) => { const l = CFG.getLevelByCode(short); return l ? l.gradient[0] : '#94a3b8'; };
+
+    const prog = computed(() => CFG.getLevelProgress(lockedShort.value, deals.value, accountOk.value));
+    const meta = computed(() => KIND_META[prog.value.kind] || KIND_META['growing']);
+    const caseText = computed(() => buildText(prog.value));
+
+    const rows = [
+      { kind:'pending',        dir:'升',   name:'待升级',   color:'#10b981', cond:'账户达标 + 应得 > 已生效',     tpl:'已满足 V× 条件 · 下月 1 日自动升级', formula:'—' },
+      { kind:'growing',        dir:'稳',   name:'成长中',   color:'#0ea5e9', cond:'账户达标 + 应得 = 已生效（未到顶）', tpl:'近 3 月成交 X 台，还差 N 台升 V×', formula:'下一级门槛 − 台数' },
+      { kind:'max',            dir:'稳',   name:'已封顶',   color:'#f59e0b', cond:'账户达标 + 已生效 V3',          tpl:'已达最高等级', formula:'—' },
+      { kind:'demote-warn',    dir:'降',   name:'保级预警', color:'#f97316', cond:'账户达标 + 应得 < 已生效（成交下滑）', tpl:'近 3 月成交 X 台，再成交 N 台保级 V×', formula:'已生效门槛 − 台数' },
+      { kind:'downgrade-warn', dir:'降',   name:'账户预警', color:'#ef4444', cond:'账户 < 2000 + 已生效 V1~V3',    tpl:'账户偏低，补足 2000 元可维持 V×', formula:'—' },
+      { kind:'deposit-low',    dir:'入门', name:'入门受限', color:'#94a3b8', cond:'账户 < 2000 + 已生效 V0',       tpl:'账户满 2000 元可升 V× / 可参与评级', formula:'—' },
+    ];
+
+    const cases = [
+      { name:'待升级',   locked:'V2', deals:15, account:true,  color:'#10b981', expect:'已满足 V3 条件 · 下月 1 日自动升级' },
+      { name:'成长中',   locked:'V2', deals:12, account:true,  color:'#0ea5e9', expect:'近 3 月成交 12 台，还差 3 台升 V3' },
+      { name:'已封顶',   locked:'V3', deals:18, account:true,  color:'#f59e0b', expect:'已达最高等级' },
+      { name:'保级预警', locked:'V3', deals:8,  account:true,  color:'#f97316', expect:'近 3 月成交 8 台，再成交 7 台保级 V3' },
+      { name:'账户预警', locked:'V2', deals:12, account:false, color:'#ef4444', expect:'账户偏低，补足 2000 元可维持 V2' },
+      { name:'入门受限', locked:'V0', deals:12, account:false, color:'#94a3b8', expect:'账户满 2000 元可升 V2' },
+    ];
+    function applyCase(c) { lockedShort.value = c.locked; deals.value = c.deals; accountOk.value = c.account; }
+
+    watch([lockedShort, deals, accountOk], () => nextTick(() => window.lucide && lucide.createIcons()));
+    onMounted(() => {
+      lucide.createIcons();
+      try { mermaid.initialize({ startOnLoad:false, theme:'base', flowchart:{ curve:'basis' } }); mermaid.run(); } catch(e) {}
+    });
+
+    return { levels, lockedShort, deals, accountOk, prog, meta, caseText, levelColor, rows, cases, applyCase };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
