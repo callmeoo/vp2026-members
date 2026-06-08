@@ -73,16 +73,11 @@
             会员中心 <i data-lucide="chevron-right" class="w-3 h-3"></i>
           </div>
         </div>
-        <div class="relative z-10 mb-2 flex items-baseline justify-between">
-          <span class="text-[11px] text-indigo-200">近 3 月成交</span>
-          <span class="text-[12px] text-white">
-            <span class="text-amber-300 font-bold text-[15px]">{{ currentDeals }}</span>
-            <span class="opacity-70"> / {{ target }} 台</span>
-            <span v-if="nextLvShort" class="text-[10px] text-indigo-200 ml-2">升 {{ nextLvShort }}</span>
-          </span>
+        <div class="relative z-10 mb-2">
+          <span class="text-[12px] text-white" v-html="statusText"></span>
         </div>
         <div class="relative z-10 h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
-          <div class="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full transition-all duration-300" :style="{ width: progress + '%' }"></div>
+          <div class="h-full rounded-full transition-all duration-300" :class="progLow ? 'bg-white/40' : 'bg-gradient-to-r from-amber-300 to-yellow-400'" :style="{ width: prog.percent + '%' }"></div>
         </div>
       </a>
       <!-- 权益横滑独立区(不在 <a> 内)，避免触摸滑动被链接拦截 -->
@@ -214,19 +209,33 @@
 
 <!-- 模拟用户等级 · 仅 Demo(md+ 屏幕显示) -->
 <div class="hidden md:block fixed top-4 right-4 z-50">
-  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200">
+  <div class="bg-white rounded-xl shadow-lg px-3 py-2.5 border border-slate-200 w-[176px]">
     <div class="text-[11px] text-slate-400 mb-2 flex items-center gap-1.5">
-      <i data-lucide="users" class="w-3 h-3"></i><span>模拟用户身份</span>
+      <i data-lucide="users" class="w-3 h-3"></i><span>已生效等级 · 上月定级</span>
     </div>
     <div class="flex flex-col gap-1.5">
       <button v-for="lv in CFG.levels" :key="lv.code"
               @click="simulateLevel(lv.short)"
-              :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all min-w-[88px] text-left', currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-violet-400 scale-105' : 'opacity-80 hover:opacity-100']"
+              :class="['px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all w-full text-left', currentLv.code === lv.code ? 'ring-2 ring-offset-1 ring-violet-400 scale-105' : 'opacity-80 hover:opacity-100']"
               :style="{ background: 'linear-gradient(135deg,' + lv.gradient[0] + ',' + lv.gradient[1] + ')' }">
         {{ lv.short }} · {{ lv.name }}
       </button>
     </div>
-    <div class="text-[10px] text-slate-400 mt-2 leading-tight">近 3 月成交 <b class="text-slate-600">{{ currentDeals }}</b> 台</div>
+    <div class="mt-2.5 pt-2.5 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">近 3 月成交（含本月）</div>
+      <div class="flex items-center justify-between">
+        <span class="cursor-pointer w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="currentDeals = Math.max(0, currentDeals - 1)"><i data-lucide="minus" class="w-3 h-3"></i></span>
+        <span class="text-sm font-bold text-slate-700">{{ currentDeals }} 台</span>
+        <span class="cursor-pointer w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="currentDeals = currentDeals + 1"><i data-lucide="plus" class="w-3 h-3"></i></span>
+      </div>
+    </div>
+    <div class="mt-2.5 pt-2.5 border-t border-slate-100">
+      <div class="text-[10px] text-slate-400 mb-1.5">账户总额</div>
+      <div class="flex gap-1.5">
+        <button @click="accountOk = true"  :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', accountOk ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">≥ 2000</button>
+        <button @click="accountOk = false" :class="['flex-1 py-1 rounded text-[11px] font-bold transition-all', !accountOk ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">&lt; 2000</button>
+      </div>
+    </div>
   </div>
 </div>
 </div><!-- /#app -->
@@ -241,27 +250,28 @@ createApp({
     const CFG = window.MEMBER_CONFIG;
 
     // 演示用：每个等级假设的近 3 月成交台数
-    const DEALS_PRESET = { V0: 0, V1: 2, V2: 6, V3: 15 };
-    const currentLvShort = ref('V2');
+    const DEALS_PRESET = { V0: 0, V1: 2, V2: 12, V3: 18 };
+    const currentLvShort = ref('V2');   // 已生效等级(上月定,当月锁定)
+    const currentDeals = ref(12);       // 近 3 月成交台数(含本月,实时)
+    const accountOk = ref(true);        // 账户总额是否 ≥ 2000
     const isVerified = ref(true);
 
-    function simulateLevel(short) { currentLvShort.value = short; }
+    function simulateLevel(short) { currentLvShort.value = short; currentDeals.value = DEALS_PRESET[short] ?? 0; accountOk.value = true; }
 
     const currentLv = computed(() => CFG.getLevelByCode(currentLvShort.value));
-    const currentDeals = computed(() => DEALS_PRESET[currentLvShort.value]);
-    const target = computed(() => {
-      const idx = CFG.levels.indexOf(currentLv.value);
-      const next = CFG.levels[idx + 1];
-      return next ? next.threshold.dealsMin : currentDeals.value;
+    // 与 app/pc 会员中心共用 getLevelProgress(月度统一定级状态机),文案 / 进度保持一致
+    const prog = computed(() => CFG.getLevelProgress(currentLvShort.value, currentDeals.value, accountOk.value));
+    const progLow = computed(() => ['deposit-low', 'downgrade-warn'].includes(prog.value.kind));
+    const statusText = computed(() => {
+      const p = prog.value;
+      const b = (s) => '<span class="text-amber-300 font-bold">' + s + '</span>';
+      if (p.kind === 'deposit-low') return p.dealsLevelShort !== 'V0' ? '账户总额满 ' + b('2000 元') + ' 可升 ' + b(p.dealsLevelShort) : '账户总额满 ' + b('2000 元') + ' 可参与评级';
+      if (p.kind === 'downgrade-warn') return '账户总额满 ' + b('2000 元') + ' 可维持 ' + b(p.lockedShort);
+      if (p.kind === 'pending')        return '已满足 ' + b(p.qualifiedShort + ' 条件') + ' · ' + b('下月 1 日') + ' 自动升级';
+      if (p.kind === 'demote-warn')    return '近 3 月成交 ' + b(p.deals + ' 台') + '，再成交 ' + b(p.holdNeed + ' 台') + ' 保级 ' + b(p.lockedShort);
+      if (p.kind === 'max')            return b('已达最高等级');
+      return '近 3 月成交 ' + b(p.deals + ' 台') + '，还差 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort);
     });
-    const nextLvShort = computed(() => {
-      const idx = CFG.levels.indexOf(currentLv.value);
-      const next = CFG.levels[idx + 1];
-      return next ? next.short : '';
-    });
-    const progress = computed(() => target.value > 0
-      ? Math.min(100, Math.round(currentDeals.value / target.value * 100))
-      : 100);
 
     // 全部会员权益按固定顺序展示(历史数据 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无理由退车)
     // 积分兑换类(coin_exchange_*)视为同一项，展示当前等级具体文案(1:1 / 95 折 / 8 折)
@@ -316,11 +326,11 @@ createApp({
       { label:'联系客服', icon:'headphones' }
     ];
 
-    watch(currentLvShort, () => nextTick(() => window.lucide && lucide.createIcons()));
+    watch([currentLvShort, currentDeals, accountOk], () => nextTick(() => window.lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      CFG, isVerified, currentLv, currentLvShort, currentDeals, target, nextLvShort, progress,
+      CFG, isVerified, currentLv, currentLvShort, currentDeals, accountOk, prog, progLow, statusText,
       allBenefits, simulateLevel,
       bidMenu, orderMenu, serviceMenu
     };
@@ -338,7 +348,7 @@ createApp({
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li>等级 Banner：展示当前等级（V0~V3）、近 3 月成交台数与升级进度条；Banner 顶部（等级名 + 进度条区域）整体可点击，跳转会员中心（member.html）；下方权益横滑区不在可点击范围内，手势左右滑动不会误触发页面跳转。</li>
+        <li>等级 Banner：展示当前等级（V0~V3）与等级进度（接入会员中心同款月度统一定级状态机，6 态文案 + 账户总额维度一致，避免与 member.html 口径打架）；Banner 顶部（等级名 + 进度条区域）整体可点击，跳转会员中心（member.html）；下方权益横滑区不在可点击范围内，手势左右滑动不会误触发页面跳转。</li>
         <li>资产入口：积分→积分明细（coins.html）、权益卡→我的权益卡（my-rewards.html）、优惠券→优惠券列表；数值由接口实时返回，页面为 Mock 演示数据。</li>
         <li>资产入口「积分」区域（数字 + 文字）整体可点击，跳转积分明细页（coins.html）。</li>
         <li>等级模拟切换（评审专用）：右上角浮窗可切换 V0~V3 身份，等级 Banner、权益横滑、进度数据同步联动；仅桌面（md+ 宽度）显示，不进生产。</li>
