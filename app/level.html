@@ -51,17 +51,17 @@
     <div class="px-5 pb-8">
       <div class="relative">
         <div class="h-2.5 bg-white/15 rounded-full overflow-hidden">
-          <div class="h-full bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-400 rounded-full" style="width:100%"></div>
+          <div class="h-full bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-400 rounded-full" :style="{ width: Math.min(100, Math.round(currentDeals / 15 * 100)) + '%' }"></div>
         </div>
         <div class="flex items-start justify-between mt-1.5">
           <span class="text-[11px] text-indigo-300">0</span>
-          <div class="text-center absolute left-[30%] -translate-x-1/2">
+          <div class="text-center absolute left-[27%] -translate-x-1/2">
             <div class="w-px h-2 bg-indigo-300/50 mx-auto"></div>
-            <span class="text-[11px] text-white font-bold">3</span>
+            <span class="text-[11px] text-white font-bold">4</span>
             <div class="text-[10px] text-amber-200 font-medium">保级 V2</div>
           </div>
           <div class="text-right">
-            <span class="text-[11px] text-white font-bold">10</span>
+            <span class="text-[11px] text-white font-bold">15</span>
             <div class="text-[10px] text-amber-200 font-medium">升级 V3</div>
           </div>
         </div>
@@ -157,9 +157,9 @@ createApp({
     ];
 
     const qaList = [
-      { q:'等级体系介绍', table:true, a:'<p>唯普会员等级每月 1 日更新，是由用户最近 3 个自然月(不含本月)的累计成交台数决定。用户最近 3 个自然月(含本月)的累计成交台数达到更高等级门槛，即可实时升级。</p><p>每个等级可享受不同类型的权益，等级越高权益越丰富。</p>' },
+      { q:'等级体系介绍', table:true, a:'<p>唯普会员等级<strong>每月 1 日统一定级</strong>，由用户最近 3 个自然月的累计成交台数与当前账户总额(需 ≥ 2000 元)共同决定。当月内成交或账户总额的变化，将在<strong>下月 1 日</strong>定级时生效，当月等级保持不变。</p><p>每个等级可享受不同类型的权益，等级越高权益越丰富。</p>' },
       { q:'什么是成交台数?',   a:'<p>成交台数是用户最近 3 个自然月(含本月)在唯普平台<strong>已付款</strong>的车辆数量，且<strong>不含退车</strong>。</p><p>特别提示：仲裁退车将冲减对应的成交台数。</p>' },
-      { q:'会员等级变化规则', a:'<p>每月 1 日，系统将根据用户上一周期(本月前最近的 3 个自然月，不含本月)的累计成交台数进行定级。</p><p>达标则等级将更新。您可在会员等级页面查看最新的等级和对应的权益。</p><p><strong>注意：</strong>本月中，若您最近 3 个自然月(含本月)累计成交台数达到更高等级的门槛，将进行实时升级。但如月底时台数不足，则可能在下月 1 日降回对应等级。</p>' },
+      { q:'会员等级变化规则', a:'<p>会员等级<strong>每月 1 日统一定级</strong>，依据用户最近 3 个自然月的累计成交台数与当前账户总额(需 ≥ 2000 元)评定，定级结果在当月内保持不变。</p><p><strong>升级：</strong>当月中即使成交台数已达到更高等级门槛，等级也不会立即变动，将于<strong>下月 1 日</strong>统一升级；在此之前，会员页面会提前显示「已满足 V× 条件 · 下月 1 日自动升级」。</p><p><strong>降级：</strong>若账户总额低于 2000 元或成交台数不足，同样在下月 1 日统一下调。</p>' },
       { q:'如何查看会员等级权益?', a:'<p>您可在会员页面通过切换等级的方式查看各等级的权益，其中未达到的等级显示为未解锁状态。</p><p>会员等级越高，可享权益越丰富。</p>' },
       { q:'会员等级有效期多久?',   a:'<p>您的会员等级会在每月 1 日进行更新，更新后的等级有效期至当月最后一日。</p>' }
     ];
