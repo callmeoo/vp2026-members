@@ -112,7 +112,7 @@ flowchart TD
   Q1 -->|否| Q2{"已生效等级 ?"}
   Q2 -->|V0| Q2a{"近3月台数 ≥ 1 ?"}
   Q2a -->|是| S1a["入门受限<br/>账户总额满 2000 元可升 V×"]
-  Q2a -->|否| S1b["入门受限<br/>账户总额满 2000 元可参与评级"]
+  Q2a -->|否| S1b["入门受限<br/>账户总额满 2000 元 + 成交 N 台可升 V1"]
   Q2 -->|V1~V3| S2["账户预警<br/>账户总额满 2000 元可维持 V×"]
   Q1 -->|是| C["应得等级 = 按台数定<br/>1-3→V1 / 4-14→V2 / ≥15→V3"]
   C --> Q3{"应得 vs 已生效"}
@@ -196,7 +196,7 @@ function buildText(p) {
   const b = (s) => '<span class="text-violet-700">' + s + '</span>';
   if (p.kind === 'deposit-low') return p.dealsLevelShort !== 'V0'
     ? '账户总额满 ' + b('2000 元') + ' 可升 ' + b(p.dealsLevelShort)
-    : '账户总额满 ' + b('2000 元') + ' 可参与评级';
+    : '账户总额满 ' + b('2000 元') + '、成交 ' + b(p.need + ' 台') + ' 可升 ' + b(p.nextShort);
   if (p.kind === 'downgrade-warn') return '账户总额满 ' + b('2000 元') + ' 可维持 ' + b(p.lockedShort);
   if (p.kind === 'pending')        return '已满足 ' + b(p.qualifiedShort + ' 条件') + ' · ' + b('下月 1 日') + ' 自动升级';
   if (p.kind === 'demote-warn')    return '近 3 月成交 ' + b(p.deals + ' 台') + '，再成交 ' + b(p.holdNeed + ' 台') + ' 保级 ' + b(p.lockedShort);
@@ -223,7 +223,7 @@ createApp({
       { kind:'max',            dir:'稳',   name:'已封顶',   color:'#f59e0b', cond:'账户达标 + 已生效 V3',          tpl:'已达最高等级', formula:'—' },
       { kind:'demote-warn',    dir:'降',   name:'保级预警', color:'#f97316', cond:'账户达标 + 应得 < 已生效（成交下滑）', tpl:'近 3 月成交 X 台，再成交 N 台保级 V×', formula:'已生效门槛 − 台数' },
       { kind:'downgrade-warn', dir:'降',   name:'账户预警', color:'#ef4444', cond:'账户 < 2000 + 已生效 V1~V3',    tpl:'账户总额满 2000 元可维持 V×', formula:'—' },
-      { kind:'deposit-low',    dir:'入门', name:'入门受限', color:'#94a3b8', cond:'账户 < 2000 + 已生效 V0',       tpl:'账户总额满 2000 元可升 V× / 可参与评级', formula:'—' },
+      { kind:'deposit-low',    dir:'入门', name:'入门受限', color:'#94a3b8', cond:'账户 < 2000 + 已生效 V0',       tpl:'账户总额满 2000 元可升 V×；无成交则「满 2000 元 + 成交 N 台升 V1」', formula:'—' },
     ];
 
     const cases = [
