@@ -62,6 +62,7 @@
 ```
 /
 ├─ index.html                  # Demo 导航首页 + 需求说明 + Word 内联展示
+├─ level-flow.html             # 会员等级定级逻辑(状态机流程图 + 交互验证器,复用 getLevelProgress)
 ├─ app/                        # 商户端(手机) 原型
 │   ├─ home.html / landing.html / member.html / coins.html / level.html
 │   ├─ mall.html / my-rewards.html / coupons.html
@@ -264,6 +265,7 @@
 |---|---|
 | 改会员等级 / 权益 / 积分规则 / Q&A / 推荐任务 | `shared/member-config.js` |
 | 改等级进度文案 / 定级状态机(月度统一定级) | `shared/member-config.js → getLevelProgress`(6 态:growing/pending/demote-warn/deposit-low/downgrade-warn/max) + `app/member.html` / `pc/member.html` 进度区 |
+| 看等级定级逻辑 / 给研发讲状态机 | `level-flow.html`(mermaid 流程图 + 交互验证器 + 测试用例,从 demo 首页 app/pc 会员中心旁进) |
 | 改商城商品 / 数据查询服务次卡 | `shared/member-config.js → redeemableRewards`(联动商城/coins/bms-redeem-log) + `admin/rewards.html`(BMS 商品配置) |
 | 改调研问卷内容 / 加新问卷 | `shared/survey-config.js`(SURVEYS 数组,active:true 切换发放问卷) |
 | 改保留价/历史成交价兑换逻辑 | `shared/reserve-price-logic.js`(同时影响 PC + APP 详情页) |
