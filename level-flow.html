@@ -38,9 +38,8 @@
   <div class="card p-4 mb-5 flex items-start gap-3" style="background:#faf5ff;border-color:#e9d5ff">
     <i data-lucide="lightbulb" class="w-5 h-5 text-violet-500 flex-none mt-0.5"></i>
     <div class="text-sm text-slate-600 leading-relaxed">
-      <b class="text-violet-700">一句话逻辑：</b>状态 = 「已生效等级」与「应得等级」的关系。
-      <span class="text-slate-500">「已生效等级」是上月 1 日定的（hero 大字，当月锁定）；「应得等级」是现在这一刻该定几级 ——
-      <b>账户 &lt; 2000 一票压到 V0</b>，否则按近 3 月成交台数（1-3=V1 / 4-14=V2 / ≥15=V3）。</span>
+      <b class="text-violet-700">一句话逻辑：</b>账户 ≥ 2000 时看 <code>W = 前 2 月 + 当月成交台数</code> 落在「保级 / 冲下一级 / 已达标」哪一段，给「当月再成交 X 台…」；账户 &lt; 2000 则先提示（V0 充值升级 / V1-3 降级风险）。
+      <span class="text-slate-500">「已生效等级」= 上月 1 日定的（hero 大字，当月锁定）；门槛 V1≥1 / V2≥4 / V3≥15，X = 门槛 − W。</span>
     </div>
   </div>
 
@@ -64,7 +63,7 @@
       </div>
       <!-- 台数 -->
       <div>
-        <div class="text-xs text-slate-400 mb-1.5">② 近 3 月成交台数（实时滚动）</div>
+        <div class="text-xs text-slate-400 mb-1.5">② W = 前 2 月 + 当月成交台数</div>
         <div class="flex items-center gap-2">
           <span class="cursor-pointer w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="deals = Math.max(0, deals-1)"><i data-lucide="minus" class="w-4 h-4"></i></span>
           <div class="flex-1 text-center"><span class="text-2xl font-bold text-slate-800">{{ deals }}</span><span class="text-sm text-slate-400"> 台</span></div>
@@ -92,7 +91,7 @@
         <div class="text-base font-semibold text-slate-800" v-html="caseText"></div>
       </div>
       <div class="flex-none text-xs text-slate-500 md:text-right md:border-l md:pl-4" style="border-color:#e5e7eb">
-        <div>应得等级：<b :style="{color: levelColor(prog.qualifiedShort)}">{{ prog.qualifiedShort }}</b></div>
+        <div>W 对应级：<b :style="{color: levelColor(prog.qualifiedShort)}">{{ prog.qualifiedShort }}</b></div>
         <div class="mt-0.5">进度：<b>{{ prog.percent }}%</b></div>
       </div>
     </div>
@@ -131,7 +130,7 @@ flowchart TD
   <div class="card p-5 mb-5 overflow-x-auto">
     <div class="flex items-center gap-2 mb-3">
       <i data-lucide="table-2" class="w-4 h-4 text-slate-500"></i>
-      <span class="font-bold text-slate-700">六状态对照表</span>
+      <span class="font-bold text-slate-700">状态对照表（5 态）</span>
     </div>
     <table class="tbl">
       <thead><tr><th>方向</th><th>状态</th><th>触发条件</th><th>文案模板</th><th>N（台数）公式</th></tr></thead>
