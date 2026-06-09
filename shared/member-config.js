@@ -160,9 +160,9 @@
     // 五、Q&A 常见问题(移动端 landing 与 PC 端 member-intro 共用)
     // ─────────────────────────────────────────────
     qaList: [
-      { q: '等级体系介绍',           a: '<p>唯普会员等级<strong>每月 1 日统一定级</strong>，由用户最近 3 个自然月的累计成交台数与当前账户总额(需 ≥ 2000 元)共同决定。当月内成交或账户总额的变化，将在<strong>下月 1 日</strong>定级时生效，当月等级保持不变。</p><p>每个等级可享受不同类型的权益，等级越高权益越丰富。</p>' },
+      { q: '等级体系介绍',           a: '<p>唯普会员等级<strong>每月 1 日统一定级</strong>，由用户最近 3 个自然月的累计成交台数与当前账户(需 ≥ 2000 元)共同决定。当月内成交或账户的变化，将在<strong>下月 1 日</strong>定级时生效，当月等级保持不变。</p><p>每个等级可享受不同类型的权益，等级越高权益越丰富。</p>' },
       { q: '什么是成交台数?',        a: '<p>成交台数是用户最近 3 个自然月(含本月)在唯普平台<strong>已付款</strong>的车辆数量，且<strong>不含退车</strong>。</p><p>特别提示：仲裁退车将冲减对应的成交台数。</p>' },
-      { q: '会员等级变化规则',   a: '<p>会员等级<strong>每月 1 日统一定级</strong>，依据用户最近 3 个自然月的累计成交台数与当前账户总额(需 ≥ 2000 元)评定，定级结果在当月内保持不变。</p><p><strong>升级：</strong>当月中即使成交台数已达到更高等级门槛，等级也不会立即变动，将于<strong>下月 1 日</strong>统一升级；在此之前，会员页面会提前显示「已满足 V× 条件 · 下月 1 日自动升级」。</p><p><strong>降级：</strong>若账户总额低于 2000 元或成交台数不足，同样在下月 1 日统一下调。</p>' },
+      { q: '会员等级变化规则',   a: '<p>会员等级<strong>每月 1 日统一定级</strong>，依据用户最近 3 个自然月的累计成交台数与当前账户(需 ≥ 2000 元)评定，定级结果在当月内保持不变。</p><p><strong>升级：</strong>当月中即使成交台数已达到更高等级门槛，等级也不会立即变动，将于<strong>下月 1 日</strong>统一升级；在此之前，会员页面会提前显示「已满足 V× 条件 · 下月 1 日自动升级」。</p><p><strong>降级：</strong>若账户低于 2000 元或成交台数不足，同样在下月 1 日统一下调。</p>' },
       { q: '如何查看会员等级权益?',  a: '<p>您可在会员页面通过切换等级的方式查看各等级的权益，其中未达到的等级显示为未解锁状态。</p><p>会员等级越高，可享权益越丰富。</p>' },
       { q: '会员等级有效期多久?',    a: '<p>您的会员等级会在每月 1 日进行更新，更新后的等级有效期至当月最后一日。</p>' },
       { q: '积分有效期如何计算?',    a: '<p>积分自<strong>获得当月</strong>起 12 个自然月内有效，到期自动清零。例如 2026 年 4 月获得的积分，有效期至 2027 年 4 月 30 日。</p><p>建议定期登录积分明细页确认积分余额与到期情况，及时前往积分商城兑换使用。</p>' }
@@ -189,19 +189,19 @@
     return MEMBER_CONFIG.levels[0];
   };
   // 等级进度状态机(月度统一定级):等级每月 1 日统一定级,月中数据变化下月 1 日生效,不实时升降。
-  // 入参 lockedShort=已生效等级(上月 1 日定级结果) / deals=近 3 月成交台数(含本月) / accountOk=账户总额是否≥2000
-  // kind: deposit-low    账户总额<2000 且 locked=V0 → 引导补足账户总额参与定级
-  //       downgrade-warn 账户总额<2000 且 locked≥V1 → 月中账户总额跌破(如提现/提保证金),下月 1 日下调等级
-  //       pending        账户总额达标 且 按当前数据应得等级 > 已生效等级 → 待生效,下月 1 日自动升级
-  //       demote-warn    账户总额达标 但 应得等级 < 已生效等级(成交下滑) → 保级预警,引导补足台数维持当前等级
-  //       growing        账户总额达标 且 未达下一级门槛 → 常规成长,还差 need 台
+  // 入参 lockedShort=已生效等级(上月 1 日定级结果) / deals=近 3 月成交台数(含本月) / accountOk=账户是否≥2000
+  // kind: deposit-low    账户<2000 且 locked=V0 → 引导补足账户参与定级
+  //       downgrade-warn 账户<2000 且 locked≥V1 → 月中账户跌破(如提现/提保证金),下月 1 日下调等级
+  //       pending        账户达标 且 按当前数据应得等级 > 已生效等级 → 待生效,下月 1 日自动升级
+  //       demote-warn    账户达标 但 应得等级 < 已生效等级(成交下滑) → 保级预警,引导补足台数维持当前等级
+  //       growing        账户达标 且 未达下一级门槛 → 常规成长,还差 need 台
   //       max            已 V3 最高等级
   MEMBER_CONFIG.getLevelProgress = function (lockedShort, deals, accountOk) {
     var levels = MEMBER_CONFIG.levels;
     var lockedIdx = levels.indexOf(MEMBER_CONFIG.getLevelByCode(lockedShort));
     var next = levels[lockedIdx + 1] || null;
-    var dealsLevel = MEMBER_CONFIG.getLevelByDeals(deals);          // 仅按台数(忽略账户总额)的应得等级
-    var qualifiedIdx = accountOk ? levels.indexOf(dealsLevel) : 0;  // 叠加账户总额门槛后的应得等级
+    var dealsLevel = MEMBER_CONFIG.getLevelByDeals(deals);          // 仅按台数(忽略账户)的应得等级
+    var qualifiedIdx = accountOk ? levels.indexOf(dealsLevel) : 0;  // 叠加账户门槛后的应得等级
     var need = next ? Math.max(0, next.threshold.dealsMin - deals) : 0;
     var percent = next ? Math.min(100, Math.round(deals / next.threshold.dealsMin * 100)) : 100;
     var kind, holdNeed = 0;
@@ -216,7 +216,7 @@
       lockedShort: levels[lockedIdx].short,
       nextShort: next ? next.short : null,
       qualifiedShort: levels[qualifiedIdx].short,  // 待生效时将升到的等级
-      dealsLevelShort: dealsLevel.short,           // 仅按台数的等级(账户总额不足时用于"达标后可升 V×")
+      dealsLevelShort: dealsLevel.short,           // 仅按台数的等级(账户不足时用于"达标后可升 V×")
       deals: deals,
       need: need,
       holdNeed: holdNeed,                          // demote-warn:保级(维持当前等级)还需台数

@@ -361,7 +361,7 @@
           <!-- 1. 会员等级和权益 -->
           <div v-if="prdActive === 'c1'" class="prd-body">
             <h3>1.1 等级划分</h3>
-            <p>4 级会员：<code>V0 普通</code> / <code>V1 金卡</code> / <code>V2 白金</code> / <code>V3 钻石</code>。评定依据<strong>近 3 个自然月成交台数 + 账户总额</strong>，每月 1 日<strong>统一定级、当月锁定</strong>（口径详见「等级定级逻辑」章）。</p>
+            <p>4 级会员：<code>V0 普通</code> / <code>V1 金卡</code> / <code>V2 白金</code> / <code>V3 钻石</code>。评定依据<strong>近 3 个自然月成交台数 + 账户</strong>，每月 1 日<strong>统一定级、当月锁定</strong>（口径详见「等级定级逻辑」章）。</p>
             <p style="color:#dc2626;font-weight:700">成交台次定义变更：成交台次 = 统计周期内已付款的车辆台次，抛仲裁退车车辆。</p>
             <table>
               <thead><tr><th>等级</th><th>近 3 月成交</th><th>账户金额</th><th>典型权益</th></tr></thead>
@@ -389,9 +389,8 @@
           <!-- 等级定级逻辑(月度统一定级 · 状态机) -->
           <div v-if="prdActive === 'cLevel'" class="prd-body">
             <h3>定级口径（月度统一定级）</h3>
-            <p>会员等级<strong>每月 1 日统一定级</strong>，依据<strong>前 3 个完整自然月（不含当月）</strong>的累计成交台数 +<strong>当前账户总额（需 ≥ 2000 元）</strong>评定。例：6/1 定级看 3~5 月、7/1 看 4~6 月。</p>
-            <p style="color:#dc2626;font-weight:700">当月内成交 / 账户总额的变化，一律下月 1 日生效。</p>
-            <p><strong>V0 门槛为"或"</strong>：账户总额 &lt; 2000 <strong>或</strong> 近 3 月无成交，满足其一即 V0（账户 &lt; 2000 一票压 V0）；V1~V3 为"账户 ≥ 2000 <strong>且</strong> 对应台数"。</p>
+            <p>会员等级<strong>每月 1 日统一定级</strong>，依据<strong>前 3 个完整自然月（不含当月）</strong>的累计成交台数 +<strong>当前账户（需 ≥ 2000 元）</strong>评定。例：6/1 定级看 3~5 月、7/1 看 4~6 月。</p>
+            <p style="color:#dc2626;font-weight:700">当月内成交 / 账户的变化，一律下月 1 日生效。</p>
 
             <h3>会员页进度展示（6 状态机）</h3>
             <p>会员中心进度条 + 文案按"已生效等级 vs 应得等级"分 6 态展示。应得等级 = 账户 &lt; 2000 → V0，否则按近 3 月台数（1-3=V1 / 4-14=V2 / ≥15=V3）：</p>
@@ -402,8 +401,8 @@
                 <tr><td>稳</td><td>成长中</td><td>账户达标 + 应得 = 已生效（未到顶）</td><td>近 3 月成交 X 台，还差 N 台升 V×</td></tr>
                 <tr><td>稳</td><td>已封顶</td><td>账户达标 + 已 V3</td><td>已达最高等级</td></tr>
                 <tr><td>降</td><td>保级预警</td><td>账户达标 + 应得 &lt; 已生效（成交下滑）</td><td>近 3 月成交 X 台，再成交 N 台保级 V×</td></tr>
-                <tr><td>降</td><td>账户预警</td><td>账户 &lt; 2000 + 已生效 V1~V3</td><td>账户总额满 2000 元可维持 V×</td></tr>
-                <tr><td>入门</td><td>入门受限</td><td>账户 &lt; 2000 + 已生效 V0</td><td>账户总额满 2000 元可升 V×（无成交则「+ 成交 N 台升 V1」）</td></tr>
+                <tr><td>降</td><td>账户预警</td><td>账户 &lt; 2000 + 已生效 V1~V3</td><td>账户满 2000 元可维持 V×</td></tr>
+                <tr><td>入门</td><td>入门受限</td><td>账户 &lt; 2000 + 已生效 V0</td><td>账户满 2000 元可升 V×（无成交则「+ 成交 N 台升 V1」）</td></tr>
               </tbody>
             </table>
             <p>关键：hero 大字 = 上月定级结果，月中不随台数实时变；账户问题（入门受限 / 账户预警）进度条置灰，其余金色。</p>
