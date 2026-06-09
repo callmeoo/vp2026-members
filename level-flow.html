@@ -211,7 +211,7 @@ createApp({
     const caseText = computed(() => buildText(prog.value));
 
     const rows = [
-      { kind:'account-low', dir:'账户', name:'账户不足',     color:'#ef4444', cond:'账户 < 2000', tpl:'V1-3：当前账户不满 2000 元，下月 1 号有降级风险 ／ V0：充至 2000 元后可参与升级', formula:'—' },
+      { kind:'account-low', dir:'账户', name:'账户不足',     color:'#ef4444', cond:'账户 < 2000', tpl:'V1-3：当前账户不满 2000 元，下月 1 号有降级风险 ／ V0：当前账户不满 2000 元，充至 2000 元后可参与升级', formula:'—' },
       { kind:'keep-level',  dir:'降',   name:'保级',         color:'#f97316', cond:'账户达标 + W < 当前级门槛', tpl:'当月再成交 X 台可保级 V{当前级}，下月 1 号生效', formula:'当前级门槛 − W' },
       { kind:'to-next',     dir:'升',   name:'冲下一级',     color:'#0ea5e9', cond:'账户达标 + 当前级门槛 ≤ W < 下一级门槛', tpl:'当月再成交 X 台升 V{下一级}，下月 1 号生效', formula:'下一级门槛 − W' },
       { kind:'ready',       dir:'升',   name:'已达标待升级', color:'#10b981', cond:'账户达标 + W ≥ 下一级门槛', tpl:'已满足 V× 条件，下月 1 号自动升级', formula:'—' },
