@@ -147,7 +147,7 @@
 - **数据查询服务次卡**(积分商城商品): 5 种数据报告——出险报告(车信盟)280 / 维保报告(唯车转)200 / 电池报告(唯车转)300 / 里程报告(唯车转)180 / 综合报告(柠檬查)380 积分。**按次核销,不同类型报告可叠加使用**(同类不叠加)。因对接渠道仅支持次卡、不支持通用优惠券,原「数据查询优惠券」已在 `admin/rewards.html` 隐藏(类型加 `hidden:true`,数据保留不删除),全站对外统一展示为「数据查询服务次卡」。数据源:`shared/member-config.js → redeemableRewards`(驱动商城 mall / 积分流水 coins / 兑换记录 bms-redeem-log 按 reward id 联动) + `admin/rewards.html` products(BMS 配置,含隐藏的数据查询优惠券)。
 - **登录拦截**:`查看保留价` / `历史成交价` / `调研问卷` 均需登录后才可使用。未登录点击 → 跳 `login.html?from=<page>.html`;登录回跳后需**再次点击**入口才打开,不自动展开。
 - **售后使用无理由退车的钱包账单**: FNC 钱包账单流水摘要追加 `(无理由退车)` 后缀，**整行标红**(`color:#f56c6c`)，格式 `订单售后款项(无理由退车):{车牌号}` / `扣减订单售后款项(无理由退车):{车牌号}`。
-- **等级定级时机(月度统一定级 · 重要)**: 会员等级**每月 1 日统一定级**。**定级口径**:取**前 3 个完整自然月(不含当月)**累计成交台数 + 当前账户(需 ≥ 2000)评定,如 6/1 定级看 3-5 月、7/1 看 4-6 月,**当月内锁定不变**。**展示口径**:给用户/运营看的进度用「含当月的近 3 月滚动累计」——恰为下次定级的 3 月窗口(6 月内展示 4-6 月,6 月实时累加),随成交 +1、月底快照即为下月 1 日定级依据,故**进度条实时动、升降级次月 1 日生效**(两口径是同一窗口的不同时点,自洽;月中成交/账户变化一律下月 1 日生效,不实时升降;原 Q&A "实时升级"口径已废弃)。`shared/member-config.js → getLevelProgress(lockedShort, deals, accountOk)` 是 app/pc 两端共用状态机,返回 **6 态**:`growing`(还差 X 台升 V×) / `pending`(已达更高门槛待生效,「已满足 V× 条件 · 下月 1 日自动升级」) / `demote-warn`(成交下滑、应得低于已生效等级,正向「再成交 X 台保级 V×」**不写降级威胁**) / `deposit-low`(账户<2000 压在 V0,「充至 2000 参与定级」,台数已够补「达标后可升 V×」) / `downgrade-warn`(账户跌破 2000,V1-V3 预警下月下调) / `max`(V3 已最高)。关键:**已生效等级与实时台数解耦**——hero 大字 = 上月定级结果(`lockedShort`),不随当月台数实时变;`deposit-low`/`downgrade-warn` 进度条置灰,其余金色。
+- **等级定级时机(月度统一定级 · 重要)**: 会员等级**每月 1 日统一定级**,按「**前 2 个完整月 + 当月**成交台数(`W`,含当月可冲刺) + 账户 ≥ 2000」评定,下月 1 日生效、当月锁定(hero 大字=上月定级结果,不随当月台数变)。`shared/member-config.js → getLevelProgress(lockedShort, deals=W, accountOk)` 返回 **5 态**(账户达标后看 W 落「保级/冲级/已达标」哪段):`account-low`(账户<2000,页面按等级出文案——V0「充至 2000 元后可参与升级」/ V1-V3「下月 1 号有降级风险」) / `keep-level`(W<当前级门槛 → 保级「当月再成交 X 台可保级 V×,下月 1 号生效」) / `to-next`(够当前级未到下一级 →「当月再成交 X 台升 V下一级,下月 1 号生效」) / `ready`(W≥下一级门槛 →「已满足 V× 条件,下月 1 号自动升级」) / `max`(V3 已满 15 台,「已达最高等级」)。X=门槛−W;只有 `account-low` 进度条置灰,其余金色;文案可视化 + 测试用例见 `level-flow.html`。
 - **历史数据处理(7/1 上线日)**: 等级跑数 + 积分不追溯。系统对前 3 个月历史成交记录(抛成交退车) + 当前账户余额跑数，7/1 当天确定每个用户的等级与权益;积分从功能上线起正式计算，不补发。
 - **调研问卷**:从「推荐任务」→「参与平台投票 / 问卷 / 调研」→「去完成」进入 `survey.html`(app/pc 同一份 config)。需登录;提交得 +2 积分;**同一用户只能填一次**,提交后 `chevip_survey_done='1'`,推荐任务列表自动隐藏该任务。提交记录写 `chevip_survey_submissions`,BMS 「调研问卷结果」按 surveyId 聚合统计。
 - **跨页 demo state · localStorage 键清单**:
@@ -264,7 +264,7 @@
 | 任务 | 入口 |
 |---|---|
 | 改会员等级 / 权益 / 积分规则 / Q&A / 推荐任务 | `shared/member-config.js` |
-| 改等级进度文案 / 定级状态机(月度统一定级) | `shared/member-config.js → getLevelProgress`(6 态:growing/pending/demote-warn/deposit-low/downgrade-warn/max) + `app/member.html` / `pc/member.html` 进度区 |
+| 改等级进度文案 / 定级状态机(月度统一定级) | `shared/member-config.js → getLevelProgress`(5 态:account-low/keep-level/to-next/ready/max,看 W=前2月+当月台数落段) + `app/member.html` / `pc/member.html` / `app/profile-loggedin.html` 进度区 + `level-flow.html` |
 | 看等级定级逻辑 / 给研发讲状态机 | `level-flow.html`(mermaid 流程图 + 交互验证器 + 测试用例,从 demo 首页 app/pc 会员中心旁进) |
 | 改商城商品 / 数据查询服务次卡 | `shared/member-config.js → redeemableRewards`(联动商城/coins/bms-redeem-log) + `admin/rewards.html`(BMS 商品配置) |
 | 改调研问卷内容 / 加新问卷 | `shared/survey-config.js`(SURVEYS 数组,active:true 切换发放问卷) |

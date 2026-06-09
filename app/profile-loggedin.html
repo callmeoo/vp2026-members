@@ -261,16 +261,17 @@ createApp({
     const currentLv = computed(() => CFG.getLevelByCode(currentLvShort.value));
     // 与 app/pc 会员中心共用 getLevelProgress(月度统一定级状态机),文案 / 进度保持一致
     const prog = computed(() => CFG.getLevelProgress(currentLvShort.value, currentDeals.value, accountOk.value));
-    const progLow = computed(() => ['deposit-low', 'downgrade-warn'].includes(prog.value.kind));
+    const progLow = computed(() => prog.value.kind === 'account-low');
     const statusText = computed(() => {
       const p = prog.value;
       const b = (s) => '<span class="text-amber-300 font-bold">' + s + '</span>';
-      if (p.kind === 'deposit-low') return p.dealsLevelShort !== 'V0' ? '账户满 ' + b('2000 元') + ' 可升 ' + b(p.dealsLevelShort) : '账户满 ' + b('2000 元') + '、成交 ' + b(p.need + ' 台') + ' 可升 ' + b(p.nextShort);
-      if (p.kind === 'downgrade-warn') return '账户满 ' + b('2000 元') + ' 可维持 ' + b(p.lockedShort);
-      if (p.kind === 'pending')        return '已满足 ' + b(p.qualifiedShort + ' 条件') + ' · ' + b('下月 1 日') + ' 自动升级';
-      if (p.kind === 'demote-warn')    return '近 3 月成交 ' + b(p.deals + ' 台') + '，再成交 ' + b(p.holdNeed + ' 台') + ' 保级 ' + b(p.lockedShort);
-      if (p.kind === 'max')            return b('已达最高等级');
-      return '近 3 月成交 ' + b(p.deals + ' 台') + '，还差 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort);
+      if (p.kind === 'account-low') return p.lockedShort === 'V0'
+        ? '当前账户不满 ' + b('2000 元') + '，充至 ' + b('2000 元') + ' 后可参与升级'
+        : '当前账户不满 ' + b('2000 元') + '，' + b('下月 1 号') + ' 有降级风险';
+      if (p.kind === 'keep-level')  return '当月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
+      if (p.kind === 'ready')       return '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
+      if (p.kind === 'max')         return b('已达最高等级');
+      return '当月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
     });
 
     // 全部会员权益按固定顺序展示(历史数据 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无理由退车)

@@ -188,38 +188,38 @@
     }
     return MEMBER_CONFIG.levels[0];
   };
-  // 等级进度状态机(月度统一定级):等级每月 1 日统一定级,月中数据变化下月 1 日生效,不实时升降。
-  // 入参 lockedShort=已生效等级(上月 1 日定级结果) / deals=近 3 月成交台数(含本月) / accountOk=账户是否≥2000
-  // kind: deposit-low    账户<2000 且 locked=V0 → 引导补足账户参与定级
-  //       downgrade-warn 账户<2000 且 locked≥V1 → 月中账户跌破(如提现/提保证金),下月 1 日下调等级
-  //       pending        账户达标 且 按当前数据应得等级 > 已生效等级 → 待生效,下月 1 日自动升级
-  //       demote-warn    账户达标 但 应得等级 < 已生效等级(成交下滑) → 保级预警,引导补足台数维持当前等级
-  //       growing        账户达标 且 未达下一级门槛 → 常规成长,还差 need 台
-  //       max            已 V3 最高等级
+  // 等级进度状态机(月度统一定级 · 5 态):每月 1 日按「前2月+当月成交台数 + 账户≥2000」定级,下月 1 日生效。
+  // 入参 lockedShort=已生效等级 / deals=W(前2月+当月累计成交台数,含当月) / accountOk=账户是否≥2000
+  // kind(账户达标后看 W 落在"保级/冲级/已达标"哪段):
+  //   account-low  账户<2000 → 页面按 lockedShort 出文案(V0=充至2000可参与升级 / V1-V3=下月有降级风险)
+  //   keep-level   W < 当前等级门槛(成交下滑) → 保级,当月再成交 holdNeed 台
+  //   to-next      当前级门槛 ≤ W < 下一级门槛 → 冲下一级,当月再成交 need 台
+  //   ready        W ≥ 下一级门槛(当月已冲够) → 已达标待升级,下月 1 日自动升 qualifiedShort
+  //   max          已 V3 且 W ≥ 15 → 已封顶
   MEMBER_CONFIG.getLevelProgress = function (lockedShort, deals, accountOk) {
     var levels = MEMBER_CONFIG.levels;
     var lockedIdx = levels.indexOf(MEMBER_CONFIG.getLevelByCode(lockedShort));
     var next = levels[lockedIdx + 1] || null;
-    var dealsLevel = MEMBER_CONFIG.getLevelByDeals(deals);          // 仅按台数(忽略账户)的应得等级
-    var qualifiedIdx = accountOk ? levels.indexOf(dealsLevel) : 0;  // 叠加账户门槛后的应得等级
-    var need = next ? Math.max(0, next.threshold.dealsMin - deals) : 0;
-    var percent = next ? Math.min(100, Math.round(deals / next.threshold.dealsMin * 100)) : 100;
-    var kind, holdNeed = 0;
-    if (!accountOk && lockedIdx === 0)      kind = 'deposit-low';
-    else if (!accountOk)                    kind = 'downgrade-warn';
-    else if (qualifiedIdx > lockedIdx)    { kind = 'pending'; percent = 100; }
-    else if (qualifiedIdx < lockedIdx)    { kind = 'demote-warn'; holdNeed = Math.max(0, levels[lockedIdx].threshold.dealsMin - deals); percent = Math.min(100, Math.round(deals / (levels[lockedIdx].threshold.dealsMin || 1) * 100)); }
-    else if (next)                          kind = 'growing';
-    else                                  { kind = 'max'; percent = 100; }
+    var curMin = levels[lockedIdx].threshold.dealsMin || 0;       // 维持当前等级门槛
+    var dealsLevel = MEMBER_CONFIG.getLevelByDeals(deals);        // W 对应应得等级
+    var need = next ? Math.max(0, next.threshold.dealsMin - deals) : 0;   // 冲下一级还需
+    var holdNeed = Math.max(0, curMin - deals);                          // 保级还需
+    var denom = curMin || (next ? next.threshold.dealsMin : 1);
+    var kind, percent;
+    if (!accountOk)                            { kind = 'account-low'; percent = Math.min(100, Math.round(deals / denom * 100)); }
+    else if (deals < curMin)                   { kind = 'keep-level'; percent = Math.min(100, Math.round(deals / (curMin || 1) * 100)); }
+    else if (!next)                            { kind = 'max'; percent = 100; }
+    else if (deals >= next.threshold.dealsMin) { kind = 'ready'; percent = 100; }
+    else                                       { kind = 'to-next'; percent = Math.min(100, Math.round(deals / next.threshold.dealsMin * 100)); }
     return {
       kind: kind,
       lockedShort: levels[lockedIdx].short,
       nextShort: next ? next.short : null,
-      qualifiedShort: levels[qualifiedIdx].short,  // 待生效时将升到的等级
-      dealsLevelShort: dealsLevel.short,           // 仅按台数的等级(账户不足时用于"达标后可升 V×")
+      qualifiedShort: dealsLevel.short,            // ready 文案「已满足 V× 条件」用
+      dealsLevelShort: dealsLevel.short,
       deals: deals,
-      need: need,
-      holdNeed: holdNeed,                          // demote-warn:保级(维持当前等级)还需台数
+      need: need,                                  // to-next:当月再成交 need 台升下一级
+      holdNeed: holdNeed,                          // keep-level:当月再成交 holdNeed 台保级
       percent: percent
     };
   };
