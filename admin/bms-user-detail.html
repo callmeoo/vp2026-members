@@ -375,41 +375,11 @@
                   <div class="lv-short">{{ lv.short }}</div>
                   <div>
                     <div class="lv-name">{{ lv.name }}</div>
-                    <div class="lv-sub">{{ lv.thresholdText }}</div>
+                    <div class="lv-sub">{{ lv.thresholdText }}（展示的是当前账户金额和近 3 个月的交易量）</div>
                   </div>
                 </div>
                 <div class="lv-right">
                   <i data-lucide="crown" class="w-12 h-12" style="opacity:.35"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="panel-section">
-              <div class="metric-grid">
-                <div class="metric-card">
-                  <div class="m-lbl">近 3 月成交台数</div>
-                  <div class="m-val accent">{{ deals }}<small>台</small></div>
-                  <div class="m-sub">近 3 个自然月滚动（含本月）· 下月 1 日按完整自然月（不含当月）定级</div>
-                </div>
-                <div class="metric-card">
-                  <div class="m-lbl">距离下一等级</div>
-                  <div :class="['m-val', nextLv ? '' : 'warn']">
-                    {{ nextLv ? '还差 ' + nextNeed : '已最高级' }}<small>{{ nextLv ? '台' : '' }}</small>
-                  </div>
-                  <div class="m-sub">{{ nextLv ? '下一级： ' + nextLv.short + ' ' + nextLv.name : '当前已是平台最高等级 V3' }}</div>
-                </div>
-                <div class="metric-card">
-                  <div class="m-lbl">账户金额门槛</div>
-                  <div class="m-val">≥ {{ lv.threshold.accountMin || 0 }}<small>元</small></div>
-                  <div class="m-sub"><span style="color:#67c23a" class="inline-flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i>已满足</span>(总金额 {{ fmtMoney(total) }} 元)</div>
-                </div>
-              </div>
-              <div v-if="nextLv" style="margin-top:16px">
-                <div class="prog-meta"><span>{{ lv.short }} · {{ lv.name }}</span><span>{{ nextLv.short }} · {{ nextLv.name }}</span></div>
-                <div class="prog-bar"><div class="prog-fill" :style="{ width: progressTo + '%' }"></div></div>
-                <div class="prog-meta"><span>已成交 {{ deals }} 台</span><span>门槛 {{ nextLv.threshold.dealsMin }} 台</span></div>
-                <div style="margin-top:10px;font-size:12px;color:#909399;line-height:1.6;background:#f4f4f5;border-radius:6px;padding:8px 10px">
-                  进度条为<b style="color:#606266">评级累计进度</b>：成交台数实时累加，但等级每月 1 日统一评定 —— 达到门槛后于<b style="color:#606266">次月 1 日生效</b>，当月不实时升级。
                 </div>
               </div>
             </div>
