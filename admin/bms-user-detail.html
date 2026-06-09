@@ -616,7 +616,7 @@
         </div>
         <ul class="list-disc pl-6 space-y-1">
           <li>展示该用户的会员等级横幅 + 等级门槛（标注「展示当前账户金额和近 3 个月交易量」）</li>
-          <li><strong>会员进度提示</strong>：与会员中心「进度条上方文案」同一套 5 态逻辑（getLevelProgress）—— 账户不足 / 保级 / 冲下一级 / 已达标待升级 / 已封顶，文案如「当月再成交 X 台升 V×，下月 1 号生效」。</li>
+          <li><strong>会员进度提示</strong>：与会员中心「进度条上方文案」同一套 5 态逻辑（getLevelProgress）—— 账户不足 / 保级 / 冲下一级 / 已达标待升级 / 已封顶，文案如「本月再成交 X 台升 V×，下月 1 号生效」。</li>
           <li>等级变化历史（系统自动评级，不支持人工调整）+ 点击「查看等级规则」查看完整规则对比</li>
         </ul>
       </div>
@@ -735,10 +735,10 @@ createApp({
       if (!prog) return '';
       const p = prog;
       if (p.kind === 'account-low') return p.lockedShort === 'V0' ? '当前账户不满 2000 元，充至 2000 元后可参与升级' : '当前账户不满 2000 元，下月 1 号有降级风险';
-      if (p.kind === 'keep-level')  return '当月再成交 ' + p.holdNeed + ' 台可保级 ' + p.lockedShort + '，下月 1 号生效';
+      if (p.kind === 'keep-level')  return '本月再成交 ' + p.holdNeed + ' 台可保级 ' + p.lockedShort + '，下月 1 号生效';
       if (p.kind === 'ready')       return '已满足 ' + p.qualifiedShort + ' 条件，下月 1 号自动升级';
       if (p.kind === 'max')         return '已达最高等级';
-      return '当月再成交 ' + p.need + ' 台升 ' + p.nextShort + '，下月 1 号生效';
+      return '本月再成交 ' + p.need + ' 台升 ' + p.nextShort + '，下月 1 号生效';
     })();
 
     const historyMap = {

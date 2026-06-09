@@ -264,10 +264,10 @@ const app = createApp({
       if (p.kind === 'account-low') return p.lockedShort === 'V0'
         ? '当前账户不满 ' + b('2000 元') + '，充至 ' + b('2000 元') + ' 后可参与升级'
         : '当前账户不满 ' + b('2000 元') + '，' + b('下月 1 号') + ' 有降级风险';
-      if (p.kind === 'keep-level')  return '当月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
+      if (p.kind === 'keep-level')  return '本月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
       if (p.kind === 'ready')       return '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
       if (p.kind === 'max')         return b('已达最高等级');
-      return '当月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
+      return '本月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
     });
     const heroProgress = computed(() => prog.value.percent);
 
@@ -299,7 +299,7 @@ app.mount('#app');
     </div>
     <div style="padding:12px 14px;font-size:14px;color:#475569;line-height:1.85;overflow-y:auto;flex:1">
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
-        <li>等级进度（月度统一定级）：会员等级每月 1 日统一定级，月中成交 / 账户变化下月 1 日生效，当月不实时升降。进度区按状态展示：常规「还差 X 台升 V×」；当月已达更高门槛 →「已满足 V× 条件 · 下月 1 日自动升级」（待生效）；账户 &lt; 2000 →「账户满 2000 元可升 V×（无成交则『+ 成交 N 台升 V1』）」；账户跌破 2000（V1-V3）→「账户满 2000 元可维持 V×」；成交下滑（应得低于当前等级）→「再成交 X 台保级 V×」；V3 →「已达最高等级」。右上角 Demo 浮窗可切换已生效等级 / 成交台数 / 账户，验证各状态。</li>
+        <li>等级进度（月度统一定级）：会员等级每月 1 日统一定级，月中成交 / 账户变化下月 1 日生效，本月不实时升降。进度区按状态展示：常规「还差 X 台升 V×」；本月已达更高门槛 →「已满足 V× 条件 · 下月 1 日自动升级」（待生效）；账户 &lt; 2000 →「账户满 2000 元可升 V×（无成交则『+ 成交 N 台升 V1』）」；账户跌破 2000（V1-V3）→「账户满 2000 元可维持 V×」；成交下滑（应得低于当前等级）→「再成交 X 台保级 V×」；V3 →「已达最高等级」。右上角 Demo 浮窗可切换已生效等级 / 成交台数 / 账户，验证各状态。</li>
         <li>积分到期提醒：卡片展示最近 30 天内即将到期的积分汇总量；无到期积分时隐藏该提示行。</li>
         <li>可享权益：已解锁的权益正常展示，未解锁的置灰叠加锁图标；积分折扣按当前等级显示（V0/V1 = 1:1，V2 = 95折，V3 = 8折）。</li>
         <li>推荐任务 Mock 数据（页面右上角浮窗可切换演示状态，支持 4 个开关：实名认证 / 首充保证金 / 调研问卷 / 限时活动；本页默认已登录态，不含登录态开关）：

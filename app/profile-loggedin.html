@@ -251,7 +251,7 @@ createApp({
 
     // 演示用：每个等级假设的近 3 月成交台数
     const DEALS_PRESET = { V0: 0, V1: 2, V2: 12, V3: 18 };
-    const currentLvShort = ref('V2');   // 已生效等级(上月定,当月锁定)
+    const currentLvShort = ref('V2');   // 已生效等级(上月定,本月锁定)
     const currentDeals = ref(12);       // 近 3 月成交台数(含本月,实时)
     const accountOk = ref(true);        // 账户是否 ≥ 2000
     const isVerified = ref(true);
@@ -268,10 +268,10 @@ createApp({
       if (p.kind === 'account-low') return p.lockedShort === 'V0'
         ? '当前账户不满 ' + b('2000 元') + '，充至 ' + b('2000 元') + ' 后可参与升级'
         : '当前账户不满 ' + b('2000 元') + '，' + b('下月 1 号') + ' 有降级风险';
-      if (p.kind === 'keep-level')  return '当月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
+      if (p.kind === 'keep-level')  return '本月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
       if (p.kind === 'ready')       return '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
       if (p.kind === 'max')         return b('已达最高等级');
-      return '当月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
+      return '本月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
     });
 
     // 全部会员权益按固定顺序展示(历史数据 → 保留价 → 销售顾问 → 1V1 → 积分兑换 → 无理由退车)

@@ -38,8 +38,8 @@
   <div class="card p-4 mb-5 flex items-start gap-3" style="background:#faf5ff;border-color:#e9d5ff">
     <i data-lucide="lightbulb" class="w-5 h-5 text-violet-500 flex-none mt-0.5"></i>
     <div class="text-sm text-slate-600 leading-relaxed">
-      <b class="text-violet-700">一句话逻辑：</b>账户 ≥ 2000 时看 <code>W = 前 2 月 + 当月成交台数</code> 落在「保级 / 冲下一级 / 已达标」哪一段，给「当月再成交 X 台…」；账户 &lt; 2000 则先提示（V0 充值升级 / V1-3 降级风险）。
-      <span class="text-slate-500">「已生效等级」= 上月 1 日定的（hero 大字，当月锁定）；门槛 V1≥1 / V2≥4 / V3≥15，X = 门槛 − W。</span>
+      <b class="text-violet-700">一句话逻辑：</b>账户 ≥ 2000 时看 <code>W = 前 2 月 + 本月成交台数</code> 落在「保级 / 冲下一级 / 已达标」哪一段，给「本月再成交 X 台…」；账户 &lt; 2000 则先提示（V0 充值升级 / V1-3 降级风险）。
+      <span class="text-slate-500">「已生效等级」= 上月 1 日定的（hero 大字，本月锁定）；门槛 V1≥1 / V2≥4 / V3≥15，X = 门槛 − W。</span>
     </div>
   </div>
 
@@ -63,7 +63,7 @@
       </div>
       <!-- 台数 -->
       <div>
-        <div class="text-xs text-slate-400 mb-1.5">② W = 前 2 月 + 当月成交台数</div>
+        <div class="text-xs text-slate-400 mb-1.5">② W = 前 2 月 + 本月成交台数</div>
         <div class="flex items-center gap-2">
           <span class="cursor-pointer w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600" @click="deals = Math.max(0, deals-1)"><i data-lucide="minus" class="w-4 h-4"></i></span>
           <div class="flex-1 text-center"><span class="text-2xl font-bold text-slate-800">{{ deals }}</span><span class="text-sm text-slate-400"> 台</span></div>
@@ -107,13 +107,13 @@
     <div v-pre>
 <pre class="mermaid">
 flowchart TD
-  A["输入：已生效等级 / W = 前2月+当月成交台数 / 账户"] --> Q1{"账户 ≥ 2000 ?"}
+  A["输入：已生效等级 / W = 前2月+本月成交台数 / 账户"] --> Q1{"账户 ≥ 2000 ?"}
   Q1 -->|否| Q2{"已生效等级 ?"}
   Q2 -->|V0| S1["账户不足<br/>充至 2000 元后可参与升级"]
   Q2 -->|V1~V3| S2["账户不足<br/>下月 1 号有降级风险"]
   Q1 -->|是| Q3{"W 落在哪一段 ?"}
-  Q3 -->|低于当前级门槛| S3["保级<br/>当月再成交 X 台可保级 V当前级，下月1号生效"]
-  Q3 -->|够当前级·未到下一级| S4["冲下一级<br/>当月再成交 X 台升 V下一级，下月1号生效"]
+  Q3 -->|低于当前级门槛| S3["保级<br/>本月再成交 X 台可保级 V当前级，下月1号生效"]
+  Q3 -->|够当前级·未到下一级| S4["冲下一级<br/>本月再成交 X 台升 V下一级，下月1号生效"]
   Q3 -->|已达下一级门槛| S5["已达标待升级<br/>已满足 V× 条件，下月1号自动升级"]
   Q3 -->|已 V3·已满15台| S6["已封顶<br/>已达最高等级"]
   classDef low fill:#fef2f2,stroke:#ef4444,color:#991b1b;
@@ -191,10 +191,10 @@ function buildText(p) {
   if (p.kind === 'account-low') return p.lockedShort === 'V0'
     ? '当前账户不满 ' + b('2000 元') + '，充至 ' + b('2000 元') + ' 后可参与升级'
     : '当前账户不满 ' + b('2000 元') + '，' + b('下月 1 号') + ' 有降级风险';
-  if (p.kind === 'keep-level')  return '当月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
+  if (p.kind === 'keep-level')  return '本月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
   if (p.kind === 'ready')       return '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
   if (p.kind === 'max')         return b('已达最高等级');
-  return '当月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
+  return '本月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
 }
 
 createApp({
@@ -212,17 +212,17 @@ createApp({
 
     const rows = [
       { kind:'account-low', dir:'账户', name:'账户不足',     color:'#ef4444', cond:'账户 < 2000', tpl:'V1-3：当前账户不满 2000 元，下月 1 号有降级风险 ／ V0：当前账户不满 2000 元，充至 2000 元后可参与升级', formula:'—' },
-      { kind:'keep-level',  dir:'降',   name:'保级',         color:'#f97316', cond:'账户达标 + W < 当前级门槛', tpl:'当月再成交 X 台可保级 V{当前级}，下月 1 号生效', formula:'当前级门槛 − W' },
-      { kind:'to-next',     dir:'升',   name:'冲下一级',     color:'#0ea5e9', cond:'账户达标 + 当前级门槛 ≤ W < 下一级门槛', tpl:'当月再成交 X 台升 V{下一级}，下月 1 号生效', formula:'下一级门槛 − W' },
+      { kind:'keep-level',  dir:'降',   name:'保级',         color:'#f97316', cond:'账户达标 + W < 当前级门槛', tpl:'本月再成交 X 台可保级 V{当前级}，下月 1 号生效', formula:'当前级门槛 − W' },
+      { kind:'to-next',     dir:'升',   name:'冲下一级',     color:'#0ea5e9', cond:'账户达标 + 当前级门槛 ≤ W < 下一级门槛', tpl:'本月再成交 X 台升 V{下一级}，下月 1 号生效', formula:'下一级门槛 − W' },
       { kind:'ready',       dir:'升',   name:'已达标待升级', color:'#10b981', cond:'账户达标 + W ≥ 下一级门槛', tpl:'已满足 V× 条件，下月 1 号自动升级', formula:'—' },
       { kind:'max',         dir:'稳',   name:'已封顶',       color:'#f59e0b', cond:'账户达标 + 已 V3 且 W ≥ 15', tpl:'已达最高等级', formula:'—' },
     ];
 
     const cases = [
       { name:'已达标待升级', locked:'V2', deals:15, account:true,  color:'#10b981', expect:'已满足 V3 条件，下月 1 号自动升级' },
-      { name:'冲下一级',     locked:'V2', deals:12, account:true,  color:'#0ea5e9', expect:'当月再成交 3 台升 V3，下月 1 号生效' },
+      { name:'冲下一级',     locked:'V2', deals:12, account:true,  color:'#0ea5e9', expect:'本月再成交 3 台升 V3，下月 1 号生效' },
       { name:'已封顶',       locked:'V3', deals:18, account:true,  color:'#f59e0b', expect:'已达最高等级' },
-      { name:'保级',         locked:'V3', deals:8,  account:true,  color:'#f97316', expect:'当月再成交 7 台可保级 V3，下月 1 号生效' },
+      { name:'保级',         locked:'V3', deals:8,  account:true,  color:'#f97316', expect:'本月再成交 7 台可保级 V3，下月 1 号生效' },
       { name:'账户不足·V1-3', locked:'V2', deals:12, account:false, color:'#ef4444', expect:'当前账户不满 2000 元，下月 1 号有降级风险' },
       { name:'账户不足·V0',   locked:'V0', deals:0,  account:false, color:'#94a3b8', expect:'当前账户不满 2000 元，充至 2000 元后可参与升级' },
     ];
