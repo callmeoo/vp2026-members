@@ -393,7 +393,7 @@
             <p style="color:#dc2626;font-weight:700">当月内成交 / 账户的变化，一律下月 1 日生效。</p>
 
             <h3>会员进度条上方文案展示</h3>
-            <p>会员进度条<strong>上方的一行文案</strong>，按"已生效等级 vs 应得等级"分 6 态展示。涉及页面：移动端 <a href="app/member.html" target="_blank" rel="noopener">会员中心（app/member.html）</a>、<a href="app/profile-loggedin.html" target="_blank" rel="noopener">我的（app/profile-loggedin.html）</a>；PC 端 <a href="pc/member.html" target="_blank" rel="noopener">我的首页（pc/member.html）</a>。</p>
+            <p>会员进度条<strong>上方的一行文案</strong>，按 5 态展示（看 W 落段）。涉及页面：移动端 <a href="app/member.html" target="_blank" rel="noopener">会员中心（app/member.html）</a>、<a href="app/profile-loggedin.html" target="_blank" rel="noopener">我的（app/profile-loggedin.html）</a>；PC 端 <a href="pc/member.html" target="_blank" rel="noopener">我的首页（pc/member.html）</a>；BMS 后台 <a href="admin/bms-user-detail.html?level=V2" target="_blank" rel="noopener">用户详情 · 会员等级（admin/bms-user-detail.html）</a>。</p>
             <div style="display:flex;flex-wrap:wrap;gap:12px;margin:14px 0">
               <figure style="margin:0;width:220px;border:1px dashed #cbd5e1;border-radius:8px;padding:8px;background:#f8fafc;text-align:center">
                 <img src="docs/images/level-progress-app-member.png" alt="移动端·会员中心" style="width:100%;border-radius:4px;display:block" onerror="this.style.display='none'">
@@ -406,6 +406,10 @@
               <figure style="margin:0;flex:1 1 100%;border:1px dashed #cbd5e1;border-radius:8px;padding:8px;background:#f8fafc">
                 <img src="docs/images/level-progress-pc-member.png" alt="PC·我的首页" style="width:100%;border-radius:4px;display:block" onerror="this.style.display='none'">
                 <figcaption style="font-size:12px;color:#64748b;margin-top:6px;text-align:center">PC 端 · 我的首页 <code>pc/member.html</code></figcaption>
+              </figure>
+              <figure style="margin:0;flex:1 1 100%;border:1px dashed #cbd5e1;border-radius:8px;padding:8px;background:#f8fafc">
+                <img src="docs/images/level-progress-bms.png" alt="BMS·用户详情会员等级" style="width:100%;border-radius:4px;display:block" onerror="this.style.display='none'">
+                <figcaption style="font-size:12px;color:#64748b;margin-top:6px;text-align:center">BMS 后台 · 用户详情 · 会员等级 <code>admin/bms-user-detail.html</code></figcaption>
               </figure>
             </div>
 
@@ -506,6 +510,7 @@
             <ul>
               <li><strong>专享等级</strong>：V3 钻石用户专享，每个会员周期 1 次。</li>
               <li><strong>使用时效</strong>：商户端发起 — 车辆中标后 <strong>24 小时内</strong> 可申请；BMS 后台发起 — 不受 24h 限制，仅看权益本身有效期。</li>
+              <li><strong style="color:#dc2626">报废车除外</strong>：<strong style="color:#dc2626">报废车订单不能使用「无理由退车」权益</strong>（硬性限制，优先级高于 24h / 有效期）。<u>报废车仍可正常申请售后 / 退车</u>，只是不能用该权益抵扣 2000 元违约金，照常按规则扣罚。商户端售后申请页「权益抵扣」区置灰、不可勾选并提示「报废车不支持「无理由退车」权益」；BMS 申请售后勾选框禁用并红字提示。</li>
               <li><strong>付款状态</strong>：未付款 / 已付款均可使用。</li>
               <li><strong>驳回归还</strong>：售后申请单被驳回时，本次已扣减的权益次数自动回滚 (+1)。</li>
             </ul>

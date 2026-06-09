@@ -385,6 +385,16 @@
             </div>
 
             <div class="panel-section">
+              <div style="display:flex;align-items:flex-start;gap:9px;padding:11px 14px;background:#f0f9ff;border:1px solid #e0f2fe;border-radius:8px">
+                <i data-lucide="trending-up" class="w-4 h-4 text-sky-500" style="flex-shrink:0;margin-top:2px"></i>
+                <div>
+                  <div style="font-size:11px;color:#64748b;margin-bottom:2px">会员进度提示（同会员中心「进度条上方文案」逻辑 · 5 态状态机）</div>
+                  <div style="font-size:14px;font-weight:600;color:#0c4a6e">{{ statusText }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
               <div class="section-title">
                 <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
                 等级变化历史<span class="mini-label">· 系统自动评级</span>
@@ -605,9 +615,9 @@
           <span>会员等级 Tab</span>
         </div>
         <ul class="list-disc pl-6 space-y-1">
-          <li>展示该用户的会员等级横幅、等级门槛、近 3 月成交</li>
-          <li>距离下一等级进度条 + 等级变化历史(系统自动评级，不支持人工调整)</li>
-          <li>支持点击「查看等级规则」查看完整规则对比</li>
+          <li>展示该用户的会员等级横幅 + 等级门槛（标注「展示当前账户金额和近 3 个月交易量」）</li>
+          <li><strong>会员进度提示</strong>：与会员中心「进度条上方文案」同一套 5 态逻辑（getLevelProgress）—— 账户不足 / 保级 / 冲下一级 / 已达标待升级 / 已封顶，文案如「当月再成交 X 台升 V×，下月 1 号生效」。</li>
+          <li>等级变化历史（系统自动评级，不支持人工调整）+ 点击「查看等级规则」查看完整规则对比</li>
         </ul>
       </div>
       <div>
@@ -718,6 +728,18 @@ createApp({
     const deals = lv ? (dealsByLevel[lv.code] || 0) : 0;
     const nextNeed = nextLv ? Math.max(0, nextLv.threshold.dealsMin - deals) : 0;
     const progressTo = nextLv ? Math.min(100, Math.round((deals / nextLv.threshold.dealsMin) * 100)) : 100;
+    // 会员进度文案(同会员中心「进度条上方文案」· 5 态状态机)
+    const accountOk = (parseFloat(total) || 0) >= 2000;
+    const prog = lv ? CFG.getLevelProgress(lv.short, deals, accountOk) : null;
+    const statusText = (() => {
+      if (!prog) return '';
+      const p = prog;
+      if (p.kind === 'account-low') return p.lockedShort === 'V0' ? '当前账户不满 2000 元，充至 2000 元后可参与升级' : '当前账户不满 2000 元，下月 1 号有降级风险';
+      if (p.kind === 'keep-level')  return '当月再成交 ' + p.holdNeed + ' 台可保级 ' + p.lockedShort + '，下月 1 号生效';
+      if (p.kind === 'ready')       return '已满足 ' + p.qualifiedShort + ' 条件，下月 1 号自动升级';
+      if (p.kind === 'max')         return '已达最高等级';
+      return '当月再成交 ' + p.need + ' 台升 ' + p.nextShort + '，下月 1 号生效';
+    })();
 
     const historyMap = {
       LV0:[{ at:'2026-02-01', type:'周期评级', from:'-',  to:'V0', reason:'新用户评级', op:'系统' }],
@@ -838,7 +860,7 @@ createApp({
     return {
       CFG, code, name, phone, phoneFmt, total, certType, bankNo, role, levelCode, fmtMoney,
       openGroup, toggleGroup, tabs, activeTab, userStatus, trajOpen, traj,
-      lv, nextLv, nextNeed, progressTo, deals, history, levelColorOfCode,
+      lv, nextLv, nextNeed, progressTo, deals, statusText, history, levelColorOfCode,
       showRuleModal, dimGroupMap, benefitDims, getRuleCellBenefit, getRuleCellCls,
       balance, ledger, ledgerWithBalance, earned, consumed, expiringSoon, discountText, typeMap,
       coinModal, openCoinModal, closeCoinModal, submitCoinModal, showSpec
