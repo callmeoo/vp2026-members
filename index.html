@@ -189,7 +189,7 @@
 
           <p><strong>2、等级有效期与动态调整</strong></p>
           <ul>
-            <li>有效期：等级当月有效;</li>
+            <li>有效期：等级本月有效;</li>
             <li>等级确定规则：3 个月为一个评估周期，以周期内的交易台次来评级。例如：4.1 日取 1.1-3.31 日的总成交数据(不含退车)和账号总额(含保证金冻结);3 个月成交台次决定下一个月的等级。每月等级会有变动(原会员等级规则不变)</li>
             <li>动态调整：达标自动升级，未达标按规则保级 / 降级。</li>
           </ul>
@@ -361,7 +361,7 @@
           <!-- 1. 会员等级和权益 -->
           <div v-if="prdActive === 'c1'" class="prd-body">
             <h3>1.1 等级划分</h3>
-            <p>4 级会员：<code>V0 普通</code> / <code>V1 金卡</code> / <code>V2 白金</code> / <code>V3 钻石</code>。评定依据<strong>近 3 个自然月成交台数 + 账户</strong>，每月 1 日<strong>统一定级、当月锁定</strong>（口径详见「等级定级逻辑」章）。</p>
+            <p>4 级会员：<code>V0 普通</code> / <code>V1 金卡</code> / <code>V2 白金</code> / <code>V3 钻石</code>。评定依据<strong>近 3 个自然月成交台数 + 账户</strong>，每月 1 日<strong>统一定级、本月锁定</strong>（口径详见「等级定级逻辑」章）。</p>
             <p style="color:#dc2626;font-weight:700">成交台次定义变更：成交台次 = 统计周期内已付款的车辆台次，抛仲裁退车车辆。</p>
             <table>
               <thead><tr><th>等级</th><th>近 3 月成交</th><th>账户金额</th><th>典型权益</th></tr></thead>
@@ -380,8 +380,8 @@
             </ul>
             <h3>1.3 等级变更规则</h3>
             <ul>
-              <li>评估窗口：<strong>前 3 个完整自然月(不含当月)</strong>的有效成交台数(已付款，不含退车)。</li>
-              <li><strong>每月 1 日统一定级、当月锁定</strong>，月中数据变化下月 1 日生效、不实时升降(详见「等级定级逻辑」章)；历史优惠券不受等级变化影响。</li>
+              <li>评估窗口：<strong>前 3 个完整自然月(不含本月)</strong>的有效成交台数(已付款，不含退车)。</li>
+              <li><strong>每月 1 日统一定级、本月锁定</strong>，月中数据变化下月 1 日生效、不实时升降(详见「等级定级逻辑」章)；历史优惠券不受等级变化影响。</li>
               <li>变更产生审计日志，写入 <code>level_change_log</code>，后台「变更日志」tab 可查。</li>
             </ul>
           </div>
@@ -389,8 +389,8 @@
           <!-- 等级定级逻辑(月度统一定级 · 状态机) -->
           <div v-if="prdActive === 'cLevel'" class="prd-body">
             <h3>定级口径（月度统一定级）</h3>
-            <p>会员等级<strong>每月 1 日统一定级</strong>，依据<strong>前 3 个完整自然月（不含当月）</strong>的累计成交台数 +<strong>当前账户（需 ≥ 2000 元）</strong>评定。例：6/1 定级看 3~5 月、7/1 看 4~6 月。</p>
-            <p style="color:#dc2626;font-weight:700">当月内成交 / 账户的变化，一律下月 1 日生效。</p>
+            <p>会员等级<strong>每月 1 日统一定级</strong>，依据<strong>前 3 个完整自然月（不含本月）</strong>的累计成交台数 +<strong>当前账户（需 ≥ 2000 元）</strong>评定。例：6/1 定级看 3~5 月、7/1 看 4~6 月。</p>
+            <p style="color:#dc2626;font-weight:700">本月内成交 / 账户的变化，一律下月 1 日生效。</p>
 
             <h3>会员进度条上方文案展示</h3>
             <p>会员进度条<strong>上方的一行文案</strong>，按 5 态展示（看 W 落段）。涉及页面：移动端 <a href="app/member.html" target="_blank" rel="noopener">会员中心（app/member.html）</a>、<a href="app/profile-loggedin.html" target="_blank" rel="noopener">我的（app/profile-loggedin.html）</a>；PC 端 <a href="pc/member.html" target="_blank" rel="noopener">我的首页（pc/member.html）</a>；BMS 后台 <a href="admin/bms-user-detail.html?level=V2" target="_blank" rel="noopener">用户详情 · 会员等级（admin/bms-user-detail.html）</a>。</p>
@@ -413,24 +413,24 @@
               </figure>
             </div>
 
-            <p><strong>什么是「W」：</strong>文案的核心数是 <code>W = 前 2 个完整月 + 当月已成交</code>的累计台数（含当月，本月可冲刺）。<strong>账户 ≥ 2000</strong> 时，就看 W 落在「保级 / 冲下一级 / 已达标」哪一段；<strong>账户 &lt; 2000</strong> 则资金是硬门槛、先提示。「已生效等级」= 上月 1 日定的、当月锁定，即进度条左侧 hero 大字。</p>
+            <p><strong>什么是「W」：</strong>文案的核心数是 <code>W = 前 2 个完整月 + 本月已成交</code>的累计台数（含本月，可冲刺）。<strong>账户 ≥ 2000</strong> 时，就看 W 落在「保级 / 冲下一级 / 已达标」哪一段；<strong>账户 &lt; 2000</strong> 则资金是硬门槛、先提示。「已生效等级」= 上月 1 日定的、本月锁定，即进度条左侧 hero 大字。</p>
 
             <p><strong>判断逻辑（命中即停）：</strong></p>
             <pre style="background:#f8fafc;border:1px solid #eef0f4;border-radius:8px;padding:12px 14px;font-size:12.5px;line-height:1.75;overflow-x:auto;color:#334155;margin:8px 0">① 账户 &lt; 2000 ？
    ├ 已生效 V0      → 当前账户不满 2000 元，充至 2000 元后可参与升级
    └ 已生效 V1~V3   → 当前账户不满 2000 元，下月 1 号有降级风险
 
-② 账户 ≥ 2000 → 看 W（前2月+当月成交台数）落在哪段
-   ├ W 低于当前级门槛       → 保级：当月再成交 X 台可保级 V{当前级}，下月 1 号生效
-   ├ 够当前级·未到下一级    → 冲下一级：当月再成交 X 台升 V{下一级}，下月 1 号生效
+② 账户 ≥ 2000 → 看 W（前2月+本月成交台数）落在哪段
+   ├ W 低于当前级门槛       → 保级：本月再成交 X 台可保级 V{当前级}，下月 1 号生效
+   ├ 够当前级·未到下一级    → 冲下一级：本月再成交 X 台升 V{下一级}，下月 1 号生效
    ├ W 已达下一级门槛       → 已达标：已满足 V× 条件，下月 1 号自动升级
    └ 已 V3·W ≥ 15          → 已封顶：已达最高等级</pre>
             <table>
               <thead><tr><th>方向</th><th>状态</th><th>触发条件</th><th>展示文案</th></tr></thead>
               <tbody>
                 <tr><td>账户</td><td>账户不足</td><td>账户 &lt; 2000</td><td>V1-3：当前账户不满 2000 元，下月 1 号有降级风险 ／ V0：当前账户不满 2000 元，充至 2000 元后可参与升级</td></tr>
-                <tr><td>降</td><td>保级</td><td>账户达标 + W &lt; 当前级门槛</td><td>当月再成交 X 台可保级 V{当前级}，下月 1 号生效</td></tr>
-                <tr><td>升</td><td>冲下一级</td><td>账户达标 + 够当前级、未到下一级</td><td>当月再成交 X 台升 V{下一级}，下月 1 号生效</td></tr>
+                <tr><td>降</td><td>保级</td><td>账户达标 + W &lt; 当前级门槛</td><td>本月再成交 X 台可保级 V{当前级}，下月 1 号生效</td></tr>
+                <tr><td>升</td><td>冲下一级</td><td>账户达标 + 够当前级、未到下一级</td><td>本月再成交 X 台升 V{下一级}，下月 1 号生效</td></tr>
                 <tr><td>升</td><td>已达标待升级</td><td>账户达标 + W ≥ 下一级门槛</td><td>已满足 V× 条件，下月 1 号自动升级</td></tr>
                 <tr><td>稳</td><td>已封顶</td><td>账户达标 + 已 V3 且 W ≥ 15</td><td>已达最高等级</td></tr>
               </tbody>

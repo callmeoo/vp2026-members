@@ -31,7 +31,7 @@
 - **「商品」替代「权益卡」(UI 用词)**:用户面向的列名 / 弹窗标题 / 兑换按钮统一用「商品 / 商品兑换记录 / 商品名称」(因商城品类已扩展到优惠券、服务费券等，不只是权益卡)。`docs/PRD.md` 与 `redeemableRewards` 数据结构里的「权益卡」术语保留(产品定义未变)，只规范前端中文显示。
 - **数据查询类商品对外统一称「数据查询服务次卡」**:禁用旧称「数据查询优惠券」(对接渠道仅支持次卡,旧优惠券已隐藏下线,详见业务规则章节)。代码中的 `SERVICE_CARD` / `SVCCARD_*` / `r_svc_*` 等英文标识保留不动,只规范中文显示。
 
-### Lucide 图标 + Vue @click 陷阱(踩过多次，务必遵守)
+### Lucide 图标 + Vue 陷阱(踩过多次，务必遵守)
 **`@click` 不要直接绑在 `<i data-lucide="xxx">` 上**——`lucide.createIcons()` 会用 `<svg>` 替换 `<i>` 元素，绑在原 `<i>` 上的 Vue 事件随之销毁，表现就是按钮"点了没反应"。
 
 正确写法：把事件绑到外层 `<span>` / `<button>` 等不会被替换的元素：
@@ -48,6 +48,15 @@
 .row > * { pointer-events: none; }   /* 子元素不接收事件，直接冒泡到 row */
 ```
 参考案例：`app/aftersale-apply.html` 的 `.benefit-row`。
+
+**`v-if` / `v-else` 同理 → 不要直接放在 `<i data-lucide>` 上**:`lucide.createIcons()` 把 `<i>` 换成 `<svg>` 后,Vue 仍把已被替换/移除的旧 `<i>` 当 `v-if` 锚点;状态切换时对 `parentNode` 为 null 的旧节点做 `insertBefore` → 整片 patch 抛错(控制台刷 `Cannot read properties of null (reading 'insertBefore')`),症状是切换后 **DOM 半更新**(文案变了但 `:style`/相邻节点没变)。修法:条件移到外层稳定 `<span>`,能用 `v-show` 就别用 `v-if`(节点常驻 DOM,只切 display):
+```html
+<!-- 错误:lucide 替换 <i> 后,v-if 锚点失效 -->
+<i v-if="show" data-lucide="chevron-right"></i>
+<!-- 正确:外层 span + v-show,<i> 永不增删 -->
+<span v-show="show" class="inline-flex"><i data-lucide="chevron-right"></i></span>
+```
+参考案例:`app/aftersale-apply.html` 权益抵扣区 chevron(报废车/超时切换)。
 
 ---
 
@@ -131,6 +140,7 @@
 
 #### 业务规则
 - **「无理由退车」权益**: V3 钻石专享，**车辆中标后 24 小时内可申请**(BMS 后台代发起不受 24h 限制,仅看权益本身有效期)。所有相关页面(BMS 申请售后、APP/PC 售后申请)都需要在 UI 显示这个有效期，且支持「未超期 / 超 24h」演示切换。
+- **报废车不可使用无理由退车权益**(硬性限制,优先级高于 24h/有效期): 凡**报废车订单**一律不支持无理由退车权益。各界面表现:APP/PC 售后申请页权益区**置灰 + 红字「报废车不支持无理由退车权益」**(card 列表隐藏、强制不选中);BMS 申请售后权益条勾选框 **disabled + 红字提示**。三端均加「正常车 / 报废车」演示切换。需求点说明(app/aftersale-apply、pc/orders、admin/bms-order-detail)与 `index.html` 章节 4.1 同步列明此限制。报废车判定:前端走订单 `scrap` 字段(见 `pc/_partials.js`),BMS/APP 演示用 `isScrap` 切换。
 - **无理由退车资金分配**(原 2000 元全归一方调整为 1200+800 拆分,与汇和及业务负责人确认 + 唯普财务回复):
   - 广物汽贸 + 垫款主体 = 汇和/门店账号 → 1200 元归汇和/门店账号,800 元归唯普新收益
   - 广物汽贸 + 其他垫款主体 → 1200 元归唯普云,800 元归唯普新收益
@@ -147,7 +157,7 @@
 - **数据查询服务次卡**(积分商城商品): 5 种数据报告——出险报告(车信盟)280 / 维保报告(唯车转)200 / 电池报告(唯车转)300 / 里程报告(唯车转)180 / 综合报告(柠檬查)380 积分。**按次核销,不同类型报告可叠加使用**(同类不叠加)。因对接渠道仅支持次卡、不支持通用优惠券,原「数据查询优惠券」已在 `admin/rewards.html` 隐藏(类型加 `hidden:true`,数据保留不删除),全站对外统一展示为「数据查询服务次卡」。数据源:`shared/member-config.js → redeemableRewards`(驱动商城 mall / 积分流水 coins / 兑换记录 bms-redeem-log 按 reward id 联动) + `admin/rewards.html` products(BMS 配置,含隐藏的数据查询优惠券)。
 - **登录拦截**:`查看保留价` / `历史成交价` / `调研问卷` 均需登录后才可使用。未登录点击 → 跳 `login.html?from=<page>.html`;登录回跳后需**再次点击**入口才打开,不自动展开。
 - **售后使用无理由退车的钱包账单**: FNC 钱包账单流水摘要追加 `(无理由退车)` 后缀，**整行标红**(`color:#f56c6c`)，格式 `订单售后款项(无理由退车):{车牌号}` / `扣减订单售后款项(无理由退车):{车牌号}`。
-- **等级定级时机(月度统一定级 · 重要)**: 会员等级**每月 1 日统一定级**,按「**前 2 个完整月 + 当月**成交台数(`W`,含当月可冲刺) + 账户 ≥ 2000」评定,下月 1 日生效、当月锁定(hero 大字=上月定级结果,不随当月台数变)。`shared/member-config.js → getLevelProgress(lockedShort, deals=W, accountOk)` 返回 **5 态**(账户达标后看 W 落「保级/冲级/已达标」哪段):`account-low`(账户<2000,页面按等级出文案——V0「当前账户不满 2000 元，充至 2000 元后可参与升级」/ V1-V3「下月 1 号有降级风险」) / `keep-level`(W<当前级门槛 → 保级「当月再成交 X 台可保级 V×,下月 1 号生效」) / `to-next`(够当前级未到下一级 →「当月再成交 X 台升 V下一级,下月 1 号生效」) / `ready`(W≥下一级门槛 →「已满足 V× 条件,下月 1 号自动升级」) / `max`(V3 已满 15 台,「已达最高等级」)。X=门槛−W;只有 `account-low` 进度条置灰,其余金色;文案可视化 + 测试用例见 `level-flow.html`。
+- **等级定级时机(月度统一定级 · 重要)**: 会员等级**每月 1 日统一定级**,按「**前 2 个完整月 + 本月**成交台数(`W`,含本月可冲刺) + 账户 ≥ 2000」评定,下月 1 日生效、本月锁定(hero 大字=上月定级结果,不随本月台数变)。`shared/member-config.js → getLevelProgress(lockedShort, deals=W, accountOk)` 返回 **5 态**(账户达标后看 W 落「保级/冲级/已达标」哪段):`account-low`(账户<2000,页面按等级出文案——V0「当前账户不满 2000 元，充至 2000 元后可参与升级」/ V1-V3「下月 1 号有降级风险」) / `keep-level`(W<当前级门槛 → 保级「本月再成交 X 台可保级 V×,下月 1 号生效」) / `to-next`(够当前级未到下一级 →「本月再成交 X 台升 V下一级,下月 1 号生效」) / `ready`(W≥下一级门槛 →「已满足 V× 条件,下月 1 号自动升级」) / `max`(V3 已满 15 台,「已达最高等级」)。X=门槛−W;只有 `account-low` 进度条置灰,其余金色;文案可视化 + 测试用例见 `level-flow.html`。
 - **历史数据处理(7/1 上线日)**: 等级跑数 + 积分不追溯。系统对前 3 个月历史成交记录(抛成交退车) + 当前账户余额跑数，7/1 当天确定每个用户的等级与权益;积分从功能上线起正式计算，不补发。
 - **调研问卷**:从「推荐任务」→「参与平台投票 / 问卷 / 调研」→「去完成」进入 `survey.html`(app/pc 同一份 config)。需登录;提交得 +2 积分;**同一用户只能填一次**,提交后 `chevip_survey_done='1'`,推荐任务列表自动隐藏该任务。提交记录写 `chevip_survey_submissions`,BMS 「调研问卷结果」按 surveyId 聚合统计。
 - **跨页 demo state · localStorage 键清单**:
@@ -264,7 +274,7 @@
 | 任务 | 入口 |
 |---|---|
 | 改会员等级 / 权益 / 积分规则 / Q&A / 推荐任务 | `shared/member-config.js` |
-| 改等级进度文案 / 定级状态机(月度统一定级) | `shared/member-config.js → getLevelProgress`(5 态:account-low/keep-level/to-next/ready/max,看 W=前2月+当月台数落段) + `app/member.html` / `pc/member.html` / `app/profile-loggedin.html` 进度区 + `level-flow.html` |
+| 改等级进度文案 / 定级状态机(月度统一定级) | `shared/member-config.js → getLevelProgress`(5 态:account-low/keep-level/to-next/ready/max,看 W=前2月+本月台数落段) + `app/member.html` / `pc/member.html` / `app/profile-loggedin.html` 进度区 + `level-flow.html` |
 | 看等级定级逻辑 / 给研发讲状态机 | `level-flow.html`(mermaid 流程图 + 交互验证器 + 测试用例,从 demo 首页 app/pc 会员中心旁进) |
 | 改商城商品 / 数据查询服务次卡 | `shared/member-config.js → redeemableRewards`(联动商城/coins/bms-redeem-log) + `admin/rewards.html`(BMS 商品配置) |
 | 改调研问卷内容 / 加新问卷 | `shared/survey-config.js`(SURVEYS 数组,active:true 切换发放问卷) |

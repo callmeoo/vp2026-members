@@ -251,6 +251,7 @@
       <div v-if="showAfsSpec" style="background:#faf5ff;border-bottom:1px solid #e9d5ff;padding:14px 24px;font-size:13px;color:#475569;line-height:1.85">
         <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
           <li>无理由退车：V3 钻石专享，每定级周期限用 1 台；中标后 24 小时内有效，超时自动失效，使用入口置灰并提示原因。</li>
+          <li><span style="color:#dc2626;font-weight:600">报废车不可用</span>：报废车订单不支持「无理由退车」权益，权益抵扣区置灰、不可勾选并提示原因；报废车仍可正常申请售后，违约金照常扣罚。</li>
           <li>
             <div>交易平台侧发起的买家违约仲裁，过审后赔付规则统一调整为：</div>
             <div style="margin-top:6px;padding:8px 10px;background:#f8fafc;border-left:3px solid #a78bfa;border-radius:4px;font-size:13px;color:#475569;line-height:1.7">
@@ -293,24 +294,25 @@
           <div v-if="afsHasBenefit" style="margin-bottom: 20px;">
             <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
               权益抵扣
-              <span v-if="afsSelectedCard && !afsExpired" class="benefit-used-tag" style="font-size: 11px;">✦ 已选 1 张</span>
-              <span v-if="afsExpired" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">已超期 · 不可使用</span>
+              <span v-if="afsSelectedCard && !afsBlocked" class="benefit-used-tag" style="font-size: 11px;">✦ 已选 1 张</span>
+              <span v-if="afsBlocked" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">{{ afsBlockedTag }}</span>
               <!-- 演示切换 -->
               <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8;">
                 演示状态：
-                <button :class="['demo-btn', { active: afsHasBenefit && !afsExpired }]" @click.stop="afsHasBenefit = true; afsExpired = false; afsSelectedCard = refundCards[0]">有权益(未超期)</button>
-                <button :class="['demo-btn', { active: afsExpired }]" @click.stop="afsExpired = true; afsSelectedCard = null">已超24h</button>
-                <button :class="['demo-btn', { active: !afsHasBenefit }]" @click.stop="afsHasBenefit = false; afsExpired = false; afsSelectedCard = null">无权益</button>
+                <button :class="['demo-btn', { active: afsHasBenefit && !afsExpired && !afsScrap }]" @click.stop="afsHasBenefit = true; afsExpired = false; afsScrap = false; afsSelectedCard = refundCards[0]">有权益(未超期)</button>
+                <button :class="['demo-btn', { active: afsExpired }]" @click.stop="afsExpired = true; afsScrap = false; afsSelectedCard = null">已超24h</button>
+                <button :class="['demo-btn', { active: afsScrap }]" @click.stop="afsHasBenefit = true; afsScrap = true; afsExpired = false; afsSelectedCard = null">报废车</button>
+                <button :class="['demo-btn', { active: !afsHasBenefit }]" @click.stop="afsHasBenefit = false; afsExpired = false; afsScrap = false; afsSelectedCard = null">无权益</button>
               </span>
             </div>
             <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">
-              <template v-if="afsExpired">中标后已超 24 小时，「无理由退车」权益本单无法使用</template>
+              <template v-if="afsBlocked">{{ afsBlockedNote }}</template>
               <template v-else-if="afsSelectedCard">{{ afsSelectedCard.name }} · 中标后 24h 内可申请（{{ afsSelectedCard.source }}）</template>
               <template v-else>可使用「无理由退车」抵扣违约金，中标后 24h 内有效</template>
             </div>
 
             <!-- 权益卡选择 -->
-            <div v-if="!afsExpired">
+            <div v-if="!afsBlocked">
               <div v-for="c in refundCards" :key="c.id"
                 :class="['benefit-row', { selected: afsSelectedCard && afsSelectedCard.id === c.id }]"
                 @click="afsSelectedCard = c">
@@ -356,9 +358,10 @@
         <!-- 无权益时的演示切换入口 -->
         <div v-if="!afsHasBenefit" class="demo-switch">
           <span>演示状态：</span>
-          <button :class="['demo-btn', { active: afsHasBenefit && !afsExpired }]" @click="afsHasBenefit = true; afsExpired = false; afsSelectedCard = refundCards[0]">有权益(未超期)</button>
-          <button :class="['demo-btn', { active: afsExpired }]" @click="afsExpired = true; afsSelectedCard = null">已超24h</button>
-          <button :class="['demo-btn', { active: !afsHasBenefit }]" @click="afsHasBenefit = false; afsExpired = false; afsSelectedCard = null">无权益</button>
+          <button :class="['demo-btn', { active: afsHasBenefit && !afsExpired && !afsScrap }]" @click="afsHasBenefit = true; afsExpired = false; afsScrap = false; afsSelectedCard = refundCards[0]">有权益(未超期)</button>
+          <button :class="['demo-btn', { active: afsExpired }]" @click="afsExpired = true; afsScrap = false; afsSelectedCard = null">已超24h</button>
+          <button :class="['demo-btn', { active: afsScrap }]" @click="afsHasBenefit = true; afsScrap = true; afsExpired = false; afsSelectedCard = null">报废车</button>
+          <button :class="['demo-btn', { active: !afsHasBenefit }]" @click="afsHasBenefit = false; afsExpired = false; afsScrap = false; afsSelectedCard = null">无权益</button>
         </div>
       </div>
       <div class="modal-foot">
@@ -398,6 +401,7 @@
         <div style="font-size:12px;font-weight:700;color:#7c3aed;margin-bottom:10px">售后申请 · 无理由退车权益</div>
         <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:10px">
           <li>无理由退车：V3 钻石专享，每定级周期限用 1 台；中标后 24 小时内有效，超时自动失效，使用入口置灰并提示原因。</li>
+          <li><span style="color:#dc2626;font-weight:600">报废车不可用</span>：报废车订单不支持「无理由退车」权益，权益抵扣区置灰、不可勾选并提示原因；报废车仍可正常申请售后，违约金照常扣罚。</li>
           <li>
             <div>交易平台侧发起的买家违约仲裁，过审后赔付规则统一调整为：</div>
             <div style="margin-top:6px;padding:8px 10px;background:#f8fafc;border-left:3px solid #a78bfa;border-radius:4px;font-size:13px;color:#475569;line-height:1.7">
@@ -435,7 +439,14 @@ createApp({
     const afsReason = ref('');
     const afsHasBenefit = ref(true);
     const afsExpired = ref(false);
+    const afsScrap = ref(false);
     const afsSelectedCard = ref(null);
+    // 权益被禁用(超时 或 报废车)；报废车文案优先
+    const afsBlocked = computed(() => afsExpired.value || afsScrap.value);
+    const afsBlockedTag = computed(() => afsScrap.value ? '报废车 · 不可用' : '已超期 · 不可使用');
+    const afsBlockedNote = computed(() => afsScrap.value
+      ? '报废车不支持「无理由退车」权益，仍可正常申请售后，违约金照常扣罚'
+      : '中标后已超 24 小时，「无理由退车」权益本单无法使用');
 
     // 无理由退车权益卡
     const refundCards = [
@@ -474,12 +485,13 @@ createApp({
       afsOrder.value = { ...o, penalty: o.penalty || '2000' };
       afsReason.value = '';
       afsExpired.value = false;
+      afsScrap.value = !!o.scrap;            // 报废车订单默认带出「不可使用权益」态
       afsHasBenefit.value = true;
-      afsSelectedCard.value = refundCards[0];
+      afsSelectedCard.value = o.scrap ? null : refundCards[0];
     }
 
     function submitAfs() {
-      const usedBenefit = !!afsSelectedCard.value && !afsExpired.value;
+      const usedBenefit = !!afsSelectedCard.value && !afsExpired.value && !afsScrap.value;
       if (usedBenefit) {
         tipMsg.value = '已使用「无理由退车」权益（' + afsSelectedCard.value.source + '），违约金已全额抵扣为 ¥0。售后申请已提交。';
       } else {
@@ -541,13 +553,13 @@ createApp({
     })();
     const footer = window.PC_COMMON.renderFooter();
 
-    watch([payOrder, afsOrder, afsSelectedCard, afsExpired, afsHasBenefit], () => nextTick(() => lucide && lucide.createIcons()));
+    watch([payOrder, afsOrder, afsSelectedCard, afsExpired, afsHasBenefit, afsScrap], () => nextTick(() => lucide && lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
       tab, kw, orders, tipMsg,
       payOrder, payAgreed, openPay, confirmPay,
-      afsOrder, afsReason, afsHasBenefit, afsExpired, afsSelectedCard,
+      afsOrder, afsReason, afsHasBenefit, afsExpired, afsScrap, afsBlocked, afsBlockedTag, afsBlockedNote, afsSelectedCard,
       refundCards, openAfs, openAfsFromPay, submitAfs,
       showAfsSpec,
       header, footer

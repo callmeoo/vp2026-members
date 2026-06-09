@@ -458,19 +458,27 @@
           </div>
         </div>
       </div>
-      <!-- 买家无理由退车权益：仅当 售后类 + 买家违约类 + 直接退车 + 剩余>0 + 未过期 时展示 -->
-      <div v-if="showNoReasonBenefit" class="benefit-bar">
+      <!-- 买家无理由退车权益：仅当 售后类 + 买家违约类 + 直接退车 + 剩余>0 + 未过期 时展示；报废车订单展示为禁用态 -->
+      <div v-if="showNoReasonBenefit" class="benefit-bar" :style="isScrap ? 'opacity:.92' : ''">
         <i data-lucide="shield-check" class="w-5 h-5 b-icon"></i>
         <div class="flex-1">
           <div class="b-title">
             买家「无理由退车权益」
             <span class="b-remain">剩余 {{ noReasonRemain }} 次</span>
+            <span v-if="isScrap" style="margin-left:6px;font-size:11px;padding:1px 7px;border-radius:10px;background:#fef0f0;color:#f56c6c;border:1px solid #fde2e2;font-weight:600">报废车 · 不可使用</span>
           </div>
           <div class="b-validity">权益有效期：<strong>{{ noReasonValidFrom }}</strong> 至 <strong>{{ noReasonValidTo }}</strong></div>
-          <div class="b-validity">因使用无理由退车权益，原买家扣罚金额由平台(唯普)承担。</div>
+          <div v-if="isScrap" class="b-validity" style="color:#f56c6c">报废车不支持「无理由退车」权益，本单无法使用（仍可正常退车，违约金照常处理）。</div>
+          <div v-else class="b-validity">因使用无理由退车权益，原买家扣罚金额由平台(唯普)承担。</div>
+          <!-- 演示切换：正常车 / 报废车 -->
+          <div style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:11px;color:#909399">
+            演示：
+            <button type="button" @click="isScrap = false" :style="!isScrap ? 'background:#7c3aed;color:#fff;border-color:#7c3aed' : ''" style="padding:1px 8px;border:1px solid #e9d5ff;background:#faf5ff;color:#7c3aed;border-radius:100px;font-size:11px;cursor:pointer">正常车</button>
+            <button type="button" @click="isScrap = true" :style="isScrap ? 'background:#f56c6c;color:#fff;border-color:#f56c6c' : ''" style="padding:1px 8px;border:1px solid #fde2e2;background:#fef0f0;color:#f56c6c;border-radius:100px;font-size:11px;cursor:pointer">报废车</button>
+          </div>
         </div>
-        <label class="fm-checkbox">
-          <input type="checkbox" v-model="applyForm.useNoReason" /> 使用
+        <label class="fm-checkbox" :style="isScrap ? 'opacity:.5;cursor:not-allowed' : ''">
+          <input type="checkbox" v-model="applyForm.useNoReason" :disabled="isScrap" /> 使用
         </label>
       </div>
 
@@ -603,6 +611,7 @@
         </div>
         <ul class="list-disc pl-6 space-y-1">
           <li><b>触发条件</b>：类型 = 售后类 且 原因 = 买家违约类 且 处理结果 = 直接退车，三项同时满足时才在「款项」与「附件」之间展示勾选项，不满足不展示</li>
+          <li><b style="color:#dc2626">报废车不可用</b>：报废车订单不支持「无理由退车」权益，勾选框禁用并红字提示「报废车不支持无理由退车权益」；报废车仍可正常退车，违约金照常处理（硬性限制，优先级高于有效期 / 付款状态）</li>
           <li><b>位置</b>：紧挨「款项」下方、「附件」上方（原放在表单末尾，已调整）</li>
           <li><b>说明文案</b>：权益条上展示「权益有效期：起 ~ 止」；当前日期超过权益有效期时，权益条整体不展示。副文案为「因使用无理由退车权益，原买家扣罚金额由平台(唯普)承担。」</li>
           <li><b>剩余次数</b>：剩余次数为 0 时，权益条整体不展示</li>
@@ -724,6 +733,9 @@ createApp({
     );
     // 触发条件不满足时,自动取消勾选(防止条件切走后误带权益使用标记)
     watch(showNoReasonBenefit, (ok) => { if (!ok) applyForm.useNoReason = false; });
+    // 演示用：报废车订单不能使用「无理由退车」权益(硬性限制，仍可正常退车)；勾选框禁用并强制取消勾选
+    const isScrap = ref(false);
+    watch(isScrap, (v) => { if (v) applyForm.useNoReason = false; });
 
     function openApplyAfs() {
       Object.assign(applyForm, { type:'售后类', reason:'', result:'直接退车', duty:'', desc:'', plan:'', useNoReason:false, payments:[{ from:'', to:'', amount:'' }] });
@@ -793,7 +805,7 @@ createApp({
       plate, model, deal, total, price, fee, seller, buyer, buyerCoins, lv, coinYuan,
       statusText, isCompleted, coinRewardYuan, bidRewardYuan, coinExpireAt, usedBenefits, mockUsageMode,
       showMore, showCompTip, activeTab, tabs,
-      noReasonRemain, noReasonValidFrom, noReasonValidTo, showNoReasonBenefit, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
+      noReasonRemain, noReasonValidFrom, noReasonValidTo, showNoReasonBenefit, isScrap, showApplyAfs, viewAfs, baseInfo, reasons, afsList, applyForm,
       openApplyAfs, addPayment, removePayment, submitAfs, openViewAfs, openApprovalList, stepCls, fmt, showSpec
     };
   }
