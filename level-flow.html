@@ -114,7 +114,7 @@ flowchart TD
   Q1 -->|是| Q3{"W 落在哪一段 ?"}
   Q3 -->|低于当前级门槛| S3["保级<br/>本月再成交 X 台可保级 V当前级，下月1号生效"]
   Q3 -->|够当前级·未到下一级| S4["冲下一级<br/>本月再成交 X 台升 V下一级，下月1号生效"]
-  Q3 -->|已达下一级门槛| S5["已达标待升级<br/>已满足 V× 条件，下月1号自动升级"]
+  Q3 -->|已达下一级门槛| S5["已达标待升级<br/>已满足 V× 条件，本月再成交 X 台可直升更高一级，下月1号生效<br/>（应得级已是 V3：已满足 V3 条件，下月1号自动升级）"]
   Q3 -->|已 V3·已满15台| S6["已封顶<br/>已达最高等级"]
   classDef low fill:#fef2f2,stroke:#ef4444,color:#991b1b;
   classDef down fill:#fff7ed,stroke:#f97316,color:#9a3412;
@@ -192,7 +192,9 @@ function buildText(p) {
     ? '当前账户不满 ' + b('2000 元') + '，充至 ' + b('2000 元') + ' 后可参与升级'
     : '当前账户不满 ' + b('2000 元') + '，' + b('下月 1 号') + ' 有降级风险';
   if (p.kind === 'keep-level')  return '本月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
-  if (p.kind === 'ready')       return '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
+  if (p.kind === 'ready')       return p.aboveShort
+    ? '已满足 ' + b(p.qualifiedShort + ' 条件') + '，本月再成交 ' + b(p.aboveNeed + ' 台') + ' 可直升 ' + b(p.aboveShort) + '，' + b('下月 1 号') + ' 生效'
+    : '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
   if (p.kind === 'max')         return b('已达最高等级');
   return '本月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
 }
@@ -214,12 +216,13 @@ createApp({
       { kind:'account-low', dir:'账户', name:'账户不足',     color:'#ef4444', cond:'账户 < 2000', tpl:'V1-3：当前账户不满 2000 元，下月 1 号有降级风险 ／ V0：当前账户不满 2000 元，充至 2000 元后可参与升级', formula:'—' },
       { kind:'keep-level',  dir:'降',   name:'保级',         color:'#f97316', cond:'账户达标 + W < 当前级门槛', tpl:'本月再成交 X 台可保级 V{当前级}，下月 1 号生效', formula:'当前级门槛 − W' },
       { kind:'to-next',     dir:'升',   name:'冲下一级',     color:'#0ea5e9', cond:'账户达标 + 当前级门槛 ≤ W < 下一级门槛', tpl:'本月再成交 X 台升 V{下一级}，下月 1 号生效', formula:'下一级门槛 − W' },
-      { kind:'ready',       dir:'升',   name:'已达标待升级', color:'#10b981', cond:'账户达标 + W ≥ 下一级门槛', tpl:'已满足 V× 条件，下月 1 号自动升级', formula:'—' },
+      { kind:'ready',       dir:'升',   name:'已达标待升级', color:'#10b981', cond:'账户达标 + W ≥ 下一级门槛', tpl:'已满足 V{应得级} 条件，本月再成交 X 台可直升 V{更高一级}，下月 1 号生效；应得级已是 V3 → 已满足 V3 条件，下月 1 号自动升级', formula:'更高一级门槛 − W' },
       { kind:'max',         dir:'稳',   name:'已封顶',       color:'#f59e0b', cond:'账户达标 + 已 V3 且 W ≥ 15', tpl:'已达最高等级', formula:'—' },
     ];
 
     const cases = [
       { name:'已达标待升级', locked:'V2', deals:15, account:true,  color:'#10b981', expect:'已满足 V3 条件，下月 1 号自动升级' },
+      { name:'已达标·可再冲', locked:'V1', deals:14, account:true,  color:'#10b981', expect:'已满足 V2 条件，本月再成交 1 台可直升 V3，下月 1 号生效' },
       { name:'冲下一级',     locked:'V2', deals:12, account:true,  color:'#0ea5e9', expect:'本月再成交 3 台升 V3，下月 1 号生效' },
       { name:'已封顶',       locked:'V3', deals:18, account:true,  color:'#f59e0b', expect:'已达最高等级' },
       { name:'保级',         locked:'V3', deals:8,  account:true,  color:'#f97316', expect:'本月再成交 7 台可保级 V3，下月 1 号生效' },

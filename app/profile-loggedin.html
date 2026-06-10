@@ -269,7 +269,9 @@ createApp({
         ? '当前账户不满 ' + b('2000 元') + '，充至 ' + b('2000 元') + ' 后可参与升级'
         : '当前账户不满 ' + b('2000 元') + '，' + b('下月 1 号') + ' 有降级风险';
       if (p.kind === 'keep-level')  return '本月再成交 ' + b(p.holdNeed + ' 台') + ' 可保级 ' + b(p.lockedShort) + '，' + b('下月 1 号') + ' 生效';
-      if (p.kind === 'ready')       return '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
+      if (p.kind === 'ready')       return p.aboveShort
+        ? '已满足 ' + b(p.qualifiedShort + ' 条件') + '，本月再成交 ' + b(p.aboveNeed + ' 台') + ' 可直升 ' + b(p.aboveShort) + '，' + b('下月 1 号') + ' 生效'
+        : '已满足 ' + b(p.qualifiedShort + ' 条件') + '，' + b('下月 1 号') + ' 自动升级';
       if (p.kind === 'max')         return b('已达最高等级');
       return '本月再成交 ' + b(p.need + ' 台') + ' 升 ' + b(p.nextShort) + '，' + b('下月 1 号') + ' 生效';
     });

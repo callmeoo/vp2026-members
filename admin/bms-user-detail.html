@@ -736,7 +736,9 @@ createApp({
       const p = prog;
       if (p.kind === 'account-low') return p.lockedShort === 'V0' ? '当前账户不满 2000 元，充至 2000 元后可参与升级' : '当前账户不满 2000 元，下月 1 号有降级风险';
       if (p.kind === 'keep-level')  return '本月再成交 ' + p.holdNeed + ' 台可保级 ' + p.lockedShort + '，下月 1 号生效';
-      if (p.kind === 'ready')       return '已满足 ' + p.qualifiedShort + ' 条件，下月 1 号自动升级';
+      if (p.kind === 'ready')       return p.aboveShort
+        ? '已满足 ' + p.qualifiedShort + ' 条件，本月再成交 ' + p.aboveNeed + ' 台可直升 ' + p.aboveShort + '，下月 1 号生效'
+        : '已满足 ' + p.qualifiedShort + ' 条件，下月 1 号自动升级';
       if (p.kind === 'max')         return '已达最高等级';
       return '本月再成交 ' + p.need + ' 台升 ' + p.nextShort + '，下月 1 号生效';
     })();

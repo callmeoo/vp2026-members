@@ -162,7 +162,7 @@
     qaList: [
       { q: '等级体系介绍',           a: '<p>唯普会员等级<strong>每月 1 日统一定级</strong>，由用户最近 3 个自然月的累计成交台数与当前账户(需 ≥ 2000 元)共同决定。本月内成交或账户的变化，将在<strong>下月 1 日</strong>定级时生效，本月等级保持不变。</p><p>每个等级可享受不同类型的权益，等级越高权益越丰富。</p>' },
       { q: '什么是成交台数?',        a: '<p>成交台数是用户最近 3 个自然月(含本月)在唯普平台<strong>已付款</strong>的车辆数量，且<strong>不含退车</strong>。</p><p>特别提示：仲裁退车将冲减对应的成交台数。</p>' },
-      { q: '会员等级变化规则',   a: '<p>会员等级<strong>每月 1 日统一定级</strong>，依据用户最近 3 个自然月的累计成交台数与当前账户(需 ≥ 2000 元)评定，定级结果在本月内保持不变。</p><p><strong>升级：</strong>本月中即使成交台数已达到更高等级门槛，等级也不会立即变动，将于<strong>下月 1 日</strong>统一升级；在此之前，会员页面会提前显示「已满足 V× 条件 · 下月 1 日自动升级」。</p><p><strong>降级：</strong>若账户低于 2000 元或成交台数不足，同样在下月 1 日统一下调。</p>' },
+      { q: '会员等级变化规则',   a: '<p>会员等级<strong>每月 1 日统一定级</strong>，依据用户最近 3 个自然月的累计成交台数与当前账户(需 ≥ 2000 元)评定，定级结果在本月内保持不变。</p><p><strong>升级：</strong>本月中即使成交台数已达到更高等级门槛，等级也不会立即变动，将于<strong>下月 1 日</strong>统一升级；在此之前，会员页面会提前显示「已满足 V× 条件 · 下月 1 日自动升级」；若成交台数还可冲更高等级，会同步提示「本月再成交 X 台可直升 V×」。</p><p><strong>降级：</strong>若账户低于 2000 元或成交台数不足，同样在下月 1 日统一下调。</p>' },
       { q: '如何查看会员等级权益?',  a: '<p>您可在会员页面通过切换等级的方式查看各等级的权益，其中未达到的等级显示为未解锁状态。</p><p>会员等级越高，可享权益越丰富。</p>' },
       { q: '会员等级有效期多久?',    a: '<p>您的会员等级会在每月 1 日进行更新，更新后的等级有效期至本月最后一日。</p>' },
       { q: '积分有效期如何计算?',    a: '<p>积分自<strong>获得当月</strong>起 12 个自然月内有效，到期自动清零。例如 2026 年 4 月获得的积分，有效期至 2027 年 4 月 30 日。</p><p>建议定期登录积分明细页确认积分余额与到期情况，及时前往积分商城兑换使用。</p>' }
@@ -194,7 +194,8 @@
   //   account-low  账户<2000 → 页面按 lockedShort 出文案(V0=充至2000可参与升级 / V1-V3=下月有降级风险)
   //   keep-level   W < 当前等级门槛(成交下滑) → 保级,本月再成交 holdNeed 台
   //   to-next      当前级门槛 ≤ W < 下一级门槛 → 冲下一级,本月再成交 need 台
-  //   ready        W ≥ 下一级门槛(本月已冲够) → 已达标待升级,下月 1 日自动升 qualifiedShort
+  //   ready        W ≥ 下一级门槛(本月已冲够) → 已达标待升级,下月 1 日自动升 qualifiedShort;
+  //                qualifiedShort 未封顶时文案带「本月再成交 aboveNeed 台可直升 aboveShort」(压区间顶端时不漏冲刺窗口)
   //   max          已 V3 且 W ≥ 15 → 已封顶
   MEMBER_CONFIG.getLevelProgress = function (lockedShort, deals, accountOk) {
     var levels = MEMBER_CONFIG.levels;
@@ -204,6 +205,8 @@
     var dealsLevel = MEMBER_CONFIG.getLevelByDeals(deals);        // W 对应应得等级
     var need = next ? Math.max(0, next.threshold.dealsMin - deals) : 0;   // 冲下一级还需
     var holdNeed = Math.max(0, curMin - deals);                          // 保级还需
+    var above = levels[levels.indexOf(dealsLevel) + 1] || null;          // 应得级再上一级(ready 复合文案用)
+    var aboveNeed = above ? Math.max(0, above.threshold.dealsMin - deals) : 0;
     var denom = curMin || (next ? next.threshold.dealsMin : 1);
     var kind, percent;
     if (!accountOk)                            { kind = 'account-low'; percent = Math.min(100, Math.round(deals / denom * 100)); }
@@ -220,6 +223,8 @@
       deals: deals,
       need: need,                                  // to-next:本月再成交 need 台升下一级
       holdNeed: holdNeed,                          // keep-level:本月再成交 holdNeed 台保级
+      aboveShort: above ? above.short : null,      // ready:应得级未封顶时,可再冲的更高一级
+      aboveNeed: aboveNeed,                        // ready:本月再成交 aboveNeed 台可直升 aboveShort
       percent: percent
     };
   };
