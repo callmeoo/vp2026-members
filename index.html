@@ -546,7 +546,7 @@
                   </tr>
                   <tr>
                     <td>非广物汽贸</td>
-                    <td>800 元 → 唯普汽车；1200 元 → 门店</td>
+                    <td>800 元 → 唯普新收益；1200 元 → 门店</td>
                   </tr>
                 </tbody>
               </table>
@@ -563,6 +563,15 @@
               <p style="margin-bottom:4px;font-weight:600;color:#475569">③ 唯普财务回复</p>
               <p style="color:#64748b;font-size:12.5px;margin-top:0">财务确认两条调整通过；同时要求<strong>前端规则与后端 BMS 规则保持一致</strong>。</p>
               <img src="docs/images/aftersale-rule-qa.png" alt="附图3 · 财务回复" style="max-width:520px;width:100%;border:1px solid #e2e8f0;border-radius:6px;margin:6px 0 14px;box-shadow:0 2px 6px rgba(0,0,0,.06)">
+
+              <h3>4.5 售后「处理方案」文案</h3>
+              <p>买家端（移动端 + PC 端）发起的售后订单，售后单「处理方案」字段按<strong>是否使用无理由退车权益</strong>展示不同文案：</p>
+              <ul>
+                <li><strong>① 使用无理由退车权益</strong>：<span style="color:#dc2626;font-weight:600">买家使用无理由退车权益，违约金 1200 元由唯普新收益支出给 XXX（按订单实际情况，可能为汇和 / 门店 / 唯普云）。</span></li>
+                <li><strong>② 未使用无理由退车权益</strong>：扣罚买家 2000 元并关闭订单，其中 1200 元归属 XXX（按订单实际情况，可能为汇和 / 门店 / 唯普云），800 元归属唯普新收益。</li>
+              </ul>
+              <p style="margin-bottom:4px;font-weight:600;color:#475569">附图 · 处理方案文案示例</p>
+              <img src="docs/images/aftersale-dealtext.png" alt="附图 · 售后处理方案文案示例" style="max-width:364px;width:100%;border:1px solid #e2e8f0;border-radius:6px;margin:6px 0 14px;box-shadow:0 2px 6px rgba(0,0,0,.06)">
             </div>
 
             <!-- 子 tab 2: 后台 BMS 发起 -->
@@ -583,7 +592,7 @@
               </ul>
 
               <h3>4.4 资金分配（与前端一致）</h3>
-              <p>BMS 代为发起售后、已选用无理由退车权益且<strong>未自定义款项分配</strong>时，资金按以下规则自动处理（与前端规则保持一致）：</p>
+              <p>唯普从自身收益（唯普新收益）中划拨 <strong>1200 元</strong>补偿给门店 / 汇和或其他利益方，<strong>需系统自动带入款项，并支持修改</strong>；若操作员人工进行了款项分配，则按操作员执行为准。</p>
               <table>
                 <thead>
                   <tr><th style="width:42%">订单归属</th><th style="width:58%">资金分配（共 2000 元）</th></tr>
@@ -599,14 +608,10 @@
                   </tr>
                   <tr>
                     <td>非广物汽贸</td>
-                    <td>800 元 → 唯普汽车；1200 元 → 门店</td>
+                    <td>800 元 → 唯普新收益；1200 元 → 门店</td>
                   </tr>
                 </tbody>
               </table>
-              <div class="callout">
-                <strong>操作员手动分配优先</strong>：若操作员对款项进行了人工分配，按操作员实际执行结果为准，系统不再覆盖。
-              </div>
-              <p style="font-size:12.5px;color:#64748b">补偿来源：唯普从自身收益（唯普新收益）中划拨 1200 元给门店 / 汇和或其他利益方。</p>
 
               <h3>4.5 关联页面</h3>
               <ul>
