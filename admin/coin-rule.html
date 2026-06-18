@@ -326,7 +326,6 @@
                         <th style="width:22%">具体行为</th>
                         <th style="width:150px">积分倍率</th>
                         <th style="width:80px;text-align:center">状态</th>
-                        <th style="width:70px;text-align:center">操作</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -346,12 +345,9 @@
                         <td style="text-align:center">
                           <label class="switch"><input type="checkbox" v-model="it.enabled" :disabled="activityStatus(act).code === 'expired'"><span class="slider"></span></label>
                         </td>
-                        <td style="text-align:center">
-                          <button @click="removeLimitedItem(act.id, it.id)" :disabled="!act._editing" style="color:#f56c6c;font-size:12px;background:none;border:none" :style="{ opacity: act._editing ? 1 : 0.4, cursor: act._editing ? 'pointer' : 'not-allowed' }">删除</button>
-                        </td>
                       </tr>
                       <tr v-if="act.items.length === 0">
-                        <td colspan="4" style="padding:24px 0;text-align:center;color:#909399">该活动暂无行为规则</td>
+                        <td colspan="3" style="padding:24px 0;text-align:center;color:#909399">该活动暂无行为规则</td>
                       </tr>
                     </tbody>
                   </table>
@@ -565,7 +561,7 @@
               </li>
               <li><strong>操作日志分页</strong>：操作日志列表支持分页查看，每页可在 <strong>20 / 40 / 60 / 100</strong> 条之间切换；切换页大小后自动跳回首页，便于按时间倒序查阅历史变更。</li>
               <li><strong>黑名单用户不发放积分</strong>：被加入「异常账号黑名单」的用户，无论触发任何积分获取行为（交易、出价、转发、投票等），系统一律不发放积分；移出黑名单后恢复正常发放，黑名单期间漏发的积分<strong>不补发</strong>。</li>
-              <li><strong>操作日志记录范围</strong>：本页所有配置变更均自动写入「操作日志」tab，便于追溯审计。覆盖：①「积分发放规则」中各条规则的<strong>新增 / 删除 / 修改 / 状态开关切换</strong>（含交易类 / 行为活动类 / 限时活动类，限时活动包括活动整体的<strong>新增 / 删除</strong>与活动内行为条目的增减）；②「风控反作弊」功能开关的<strong>开启 / 关闭</strong>及阈值调整；③ 黑名单账号的<strong>加入与移除</strong>（记录操作人、被操作账号、原因）。</li>
+              <li><strong>操作日志记录范围</strong>：本页所有配置变更均自动写入「操作日志」tab，便于追溯审计。覆盖：①「积分发放规则」中各条规则的<strong>新增 / 删除 / 修改 / 状态开关切换</strong>（含交易类 / 行为活动类 / 限时活动类，限时活动包括活动整体的<strong>新增 / 删除</strong>与活动内行为的倍率 / 状态修改）；②「风控反作弊」功能开关的<strong>开启 / 关闭</strong>及阈值调整；③ 黑名单账号的<strong>加入与移除</strong>（记录操作人、被操作账号、原因）。</li>
             </ol>
           </div>
         </div>
