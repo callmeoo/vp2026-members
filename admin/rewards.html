@@ -309,7 +309,7 @@
         </div>
       </div>
       <div class="form-row">
-        <label>库存 <span class="text-rose-500">*</span></label>
+        <label>库存总量 <span class="text-rose-500">*</span></label>
         <input class="ant-input" type="number" min="1" v-model.number="form.stock" placeholder="剩余可兑换份数">
       </div>
       <div class="form-row">
@@ -514,7 +514,7 @@ createApp({
       if (!form.name.trim()) { alert('请填写商品名称'); return; }
       if (!form.coin || form.coin <= 0) { alert('请填写积分价'); return; }
       if (!form.validityDays || form.validityDays <= 0) { alert('请填写有效期(天)'); return; }
-      if (form.stock == null || form.stock === '' || form.stock <= 0) { alert('请填写库存'); return; }
+      if (form.stock == null || form.stock === '' || form.stock <= 0) { alert('请填写库存总量'); return; }
       const payload = { ...form };
       if (!payload.code) payload.code = 'P_' + Date.now();
       if (editingIdx.value === -1) {
