@@ -135,7 +135,7 @@
     // unit 为积分后缀(如 "/台" / "/次")，空表示纯数字
     recommendedTasks: [
       { id: 't_deal',     action: '车辆成交',                       points: 50, unit: '',    desc: '限非报废车，过户完成（资料回收完毕）后获得，售后退车退回', highlight: true },
-      { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '按出价台次计算，限非报废车',             highlight: true },
+      { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '限非报废车，按出价台次计算',             highlight: true },
       { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '一次性奖励', once: true },
       { id: 't_deposit',  action: '首充保证金',                     points: 5,  unit: '/次', desc: '一次性奖励', once: true },
       { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
