@@ -204,7 +204,7 @@
               <th class="text-center px-4 py-3 font-medium">类型</th>
               <th class="text-right px-4 py-3 font-medium">积分价</th>
               <th class="text-center px-4 py-3 font-medium">有效期(天)</th>
-              <th class="text-right px-4 py-3 font-medium">库存</th>
+              <th class="text-right px-4 py-3 font-medium">库存总量</th>
               <th class="text-right px-4 py-3 font-medium">已发放</th>
               <th class="text-center px-4 py-3 font-medium">状态</th>
               <th class="text-center px-4 py-3 font-medium">操作</th>
@@ -310,7 +310,7 @@
       </div>
       <div class="form-row">
         <label>库存总量 <span class="text-rose-500">*</span></label>
-        <input class="ant-input" type="number" min="1" v-model.number="form.stock" placeholder="剩余可兑换份数">
+        <input class="ant-input" type="number" min="1" v-model.number="form.stock" placeholder="商品总库存份数">
       </div>
       <div class="form-row">
         <label>告警阈值</label>
