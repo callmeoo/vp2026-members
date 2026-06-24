@@ -501,6 +501,7 @@ createApp({
 
     function openAfs(o) {
       afsOrder.value = { ...o, penalty: o.penalty || '2000' };
+      showAfsSpec.value = false;             // 每次打开都收起需求点说明,默认展示售后表单
       afsReason.value = '';
       afsExpired.value = false;
       afsScrap.value = !!o.scrap;            // 报废车订单默认带出「不可使用权益」态
