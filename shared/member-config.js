@@ -138,7 +138,7 @@
       { id: 't_bid',      action: '出价竞拍',                       points: 10, unit: '/台', desc: '非报废车每成功出价 1 台，计 1 次',             highlight: true },
       { id: 't_verify',   action: '首次实名认证',                   points: 5,  unit: '/次', desc: '首次完成实名认证后发放', once: true },
       { id: 't_deposit',  action: '首充保证金',                     points: 5,  unit: '/次', desc: '首次充值保证金后发放', once: true },
-      { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '' },
+      { id: 't_vote',     action: '参与平台投票 / 问卷 / 调研',     points: 2,  unit: '/次', desc: '完成后发放' },
       { id: 't_festival', action: '活动专属任务',                   points: 20, unit: '/台', desc: '以具体活动通知为准',                highlight: true,
         activityName: '国庆节双倍积分活动', activityPeriod: '2026.10.1 - 10.7', activityDesc: '活动期间出价积分翻 2 倍，成交积分翻 3 倍' }
     ],
