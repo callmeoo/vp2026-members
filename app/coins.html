@@ -258,7 +258,16 @@ app.mount('#app');
         <li>一次性任务（首次实名认证、首充保证金）及平台调研完成后，对应任务从「如何赚积分」列表中消失，不再展示；活动专属任务在活动截止后隐藏，无新活动时展示占位文案「以具体活动为准，敬请期待」。</li>
         <li>活动额外奖励：限时活动期间产生的出价 / 成交积分，在对应流水行末尾展示<span style="display:inline-block;margin:0 3px;padding:1px 6px;font-size:10px;font-weight:600;border-radius:3px;background:#fef3c7;color:#d97706;border:1px solid #fde68a">限时活动</span>标签，帮助用户识别该笔积分来源于活动加成。</li>
         <li>无活动期间默认文案：「如何赚积分」列表中的活动专属任务行统一显示占位文案「以具体活动为准，敬请期待」，右侧「去完成」按钮同步替换为置灰不可点击的「敬请期待」；后台「积分规则 - 限时活动类」存在进行中活动时，该任务行自动恢复正常展示。</li>
-        <li>推荐任务副标题读取后台「积分规则 - 前台任务说明」字段；当前默认值：车辆成交「限非报废车，过户完成（资料回收完毕）后获得，售后退车退回」、出价竞拍「限非报废车，按出价台次计算」、首次实名认证 / 首充保证金「一次性奖励」、参与平台问卷：无说明。</li>
+        <li>推荐任务副标题读取后台「积分规则 - 前台任务说明」字段。未配置时使用默认文案：
+          <table style="margin:6px 0 0;border-collapse:collapse;font-size:13px">
+            <tbody>
+              <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">车辆成交</td><td style="border:1px solid #e2e8f0;padding:4px 10px">非报废车完成过户后发放，售后退车将扣回</td></tr>
+              <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">出价竞拍</td><td style="border:1px solid #e2e8f0;padding:4px 10px">非报废车每成功出价 1 台，计 1 次</td></tr>
+              <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">首次实名认证</td><td style="border:1px solid #e2e8f0;padding:4px 10px">首次完成实名认证后发放</td></tr>
+              <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">首充保证金</td><td style="border:1px solid #e2e8f0;padding:4px 10px">首次充值保证金后发放</td></tr>
+            </tbody>
+          </table>
+        </li>
       </ol>
     </div>
   </div>

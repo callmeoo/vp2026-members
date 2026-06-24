@@ -501,7 +501,16 @@ app.mount('#app');
                 <li>注意：若出价积分或成交积分任一项未设置，对应描述项置空，不参与拼接。</li>
               </ul>
             </li>
-            <li>推荐任务副标题读取后台「积分规则 - 前台任务说明」字段；当前默认值：车辆成交「限非报废车，过户完成（资料回收完毕）后获得，售后退车退回」、出价竞拍「限非报废车，按出价台次计算」、首次实名认证 / 首充保证金「一次性奖励」、参与平台问卷：无说明。</li>
+            <li>推荐任务副标题读取后台「积分规则 - 前台任务说明」字段。未配置时使用默认文案：
+              <table style="margin:6px 0 0;border-collapse:collapse;font-size:13px">
+                <tbody>
+                  <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">车辆成交</td><td style="border:1px solid #e2e8f0;padding:4px 10px">非报废车完成过户后发放，售后退车将扣回</td></tr>
+                  <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">出价竞拍</td><td style="border:1px solid #e2e8f0;padding:4px 10px">非报废车每成功出价 1 台，计 1 次</td></tr>
+                  <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">首次实名认证</td><td style="border:1px solid #e2e8f0;padding:4px 10px">首次完成实名认证后发放</td></tr>
+                  <tr><td style="border:1px solid #e2e8f0;padding:4px 10px;white-space:nowrap;background:#f8fafc;font-weight:600">首充保证金</td><td style="border:1px solid #e2e8f0;padding:4px 10px">首次充值保证金后发放</td></tr>
+                </tbody>
+              </table>
+            </li>
           </ol>
         </li>
         <li>推荐任务交互跳转（统一封装于 shared/recommended-tasks.js，所有调用页生效）：
