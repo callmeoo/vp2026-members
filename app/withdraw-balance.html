@@ -171,7 +171,8 @@
     <i data-lucide="alert-circle" class="w-4 h-4"></i><span>需求点 · 可用余额提现</span>
   </div>
   <ol style="font-size:12px;color:#475569;line-height:1.75;margin:0;padding-left:18px">
-    <li>用户发起提现，系统计算「账户总额 − 本次提现金额」。</li>
+    <li>用户发起提现，系统计算「账户总额 − 审批中在途出账 − 本次提现金额」。</li>
+    <li><b style="color:#ef4444">在途出账</b>指已发起、审批中、即将离开平台的提现 / 提取微信，这笔钱不再算作可维持等级的资产（如：另一笔保证金提取微信审批中）。</li>
     <li>若计算结果 <b style="color:#ef4444">&lt; 2000 元</b> 且用户等级为 V1-V3，弹「确认提现」提示当前等级与权益将于下月起失效，确认后才走提现流程。</li>
     <li>V0 用户直接提交，不弹二次确认。</li>
   </ol>
@@ -196,16 +197,21 @@
       <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>余额场景</span>
     </div>
     <div class="flex flex-col gap-1.5">
-      <button @click="lowBalanceMode = false"
-              :class="['py-1 rounded text-[11px] font-bold transition-all', !lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+      <button @click="scene = 'normal'"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', scene === 'normal' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
         正常余额
       </button>
-      <button @click="lowBalanceMode = true"
-              :class="['py-1 rounded text-[11px] font-bold transition-all', lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+      <button @click="scene = 'low'"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', scene === 'low' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
         低余额(2500元)
       </button>
+      <button @click="scene = 'pending'"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', scene === 'pending' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        在途出账
+      </button>
     </div>
-    <div class="text-[10px] text-slate-400 mt-2 leading-tight">输入 ≥501 提现可触发等级失效提示</div>
+    <div v-if="scene === 'pending'" class="text-[10px] text-slate-400 mt-2 leading-tight">账户总额 4000(含 2000 提取微信在途)，提现 2000：旧口径剩 2000 不提示；新口径扣在途后为 0，提示</div>
+    <div v-else class="text-[10px] text-slate-400 mt-2 leading-tight">输入 ≥501 提现可触发等级失效提示</div>
   </div>
 </div>
 
@@ -227,13 +233,17 @@ createApp({
     // 用户等级:优先读 vp_user，没有则默认 V2(便于评审看到触发流程)
     const stored = window.VPUser && window.VPUser.get();
     const userLevel = ref(stored && stored.level ? stored.level : 'V2');
-    const lowBalanceMode = ref(false);
+    const scene = ref('normal');   // 'normal' | 'low' | 'pending'
+    const isLow = computed(() => scene.value === 'low');
+    const isPending = computed(() => scene.value === 'pending');
 
-    // 账户金额(低余额演示场景下，可用余额 2500 / 其余 0)
-    const availableBalance = computed(() => lowBalanceMode.value ? 2500 : 139251697.94);
-    const frozenBalance = computed(() => lowBalanceMode.value ? 0 : 3631.00);
-    const availableDeposit = computed(() => lowBalanceMode.value ? 0 : 73500.00);
-    const frozenDeposit = computed(() => lowBalanceMode.value ? 0 : 170500.00);
+    // 账户金额:低余额(可用余额 2500/其余 0);在途出账(可用余额 2000 + 2000 提取微信审批中,挂 frozenDeposit)
+    const availableBalance = computed(() => isLow.value ? 2500 : (isPending.value ? 2000 : 139251697.94));
+    const frozenBalance = computed(() => (isLow.value || isPending.value) ? 0 : 3631.00);
+    const availableDeposit = computed(() => (isLow.value || isPending.value) ? 0 : 73500.00);
+    const frozenDeposit = computed(() => isPending.value ? 2000 : (isLow.value ? 0 : 170500.00));
+    // 在途出账 = 已发起、审批中、即将离开平台的金额,不再算作可维持等级的资产
+    const pendingOut = computed(() => isPending.value ? 2000 : 0);
     const accountTotal = computed(() =>
       availableBalance.value + frozenBalance.value + availableDeposit.value + frozenDeposit.value
     );
@@ -256,7 +266,8 @@ createApp({
     // V1-V3 用户提现后账户总金额 < 2000，需要二次确认
     function needLevelWarning() {
       if (userLevel.value === 'V0') return false;
-      const after = accountTotal.value - numAmount.value;
+      // 先扣掉审批中、即将出账的在途金额,再扣本次提现
+      const after = accountTotal.value - pendingOut.value - numAmount.value;
       return after < 2000;
     }
 
@@ -306,11 +317,11 @@ createApp({
     }
 
     watch(amountInput, () => { touched.value = true; nextTick(() => lucide.createIcons()); });
-    watch([toastMsg, showLevelModal, lowBalanceMode, userLevel], () => nextTick(() => lucide.createIcons()));
+    watch([toastMsg, showLevelModal, scene, userLevel], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      LEVELS, userLevel, lowBalanceMode,
+      LEVELS, userLevel, scene,
       availableBalance, amountInput, remark, toastMsg,
       showError, errorMsg, canSubmit, showLevelModal,
       formatCN, setLevel, fillAll, back, onSubmitClick, confirmSubmit

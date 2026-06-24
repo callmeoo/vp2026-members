@@ -227,7 +227,8 @@
     <i data-lucide="alert-circle" class="w-4 h-4"></i><span>需求点 · 保证金提取</span>
   </div>
   <ol style="font-size:12px;color:#475569;line-height:1.75;margin:0;padding-left:18px">
-    <li><b style="color:#22c55e">提取至微信</b>：钱真正出账，影响账户总额。提取后账户总额 <b style="color:#ef4444">&lt; 2000 元</b> 且用户为 V1-V3 → 弹「确认提取」提示等级失效，确认后才提取。</li>
+    <li><b style="color:#22c55e">提取至微信</b>：钱真正出账，影响账户总额。判定「账户总额 − 审批中在途出账 − 本次提取微信」<b style="color:#ef4444">&lt; 2000 元</b> 且用户为 V1-V3 → 弹「确认提取」提示等级失效，确认后才提取。</li>
+    <li><b style="color:#ef4444">在途出账</b>：已发起、审批中、即将离开平台的提现 / 提取微信不再算资产（如另一笔提取微信审批中），再提一笔时要先扣掉。</li>
     <li><b style="color:#f59e0b">提取至可用余额</b>：站内转账（保证金 → 可用余额），账户总额不变，<b>不弹框</b>，直接提交。</li>
     <li>仅按勾选项中的「微信」金额合计判定；V0 用户不提示。</li>
   </ol>
@@ -252,16 +253,21 @@
       <i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>余额场景</span>
     </div>
     <div class="flex flex-col gap-1.5">
-      <button @click="lowBalanceMode = false"
-              :class="['py-1 rounded text-[11px] font-bold transition-all', !lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+      <button @click="scene = 'normal'"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', scene === 'normal' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
         正常余额
       </button>
-      <button @click="lowBalanceMode = true"
-              :class="['py-1 rounded text-[11px] font-bold transition-all', lowBalanceMode ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+      <button @click="scene = 'low'"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', scene === 'low' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
         低余额场景
       </button>
+      <button @click="scene = 'pending'"
+              :class="['py-1 rounded text-[11px] font-bold transition-all', scene === 'pending' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500']">
+        在途出账
+      </button>
     </div>
-    <div class="text-[10px] text-slate-400 mt-2 leading-tight">勾选「微信」项 + 低余额 触发提示;<br>纯「可用余额」项不影响、不弹框</div>
+    <div v-if="scene === 'pending'" class="text-[10px] text-slate-400 mt-2 leading-tight">账户总额 4000(含 2000 提取微信在途)，再提微信 2000：旧口径剩 2000 不提示；新口径扣在途后为 0，提示</div>
+    <div v-else class="text-[10px] text-slate-400 mt-2 leading-tight">勾选「微信」项 + 低余额 触发提示;<br>纯「可用余额」项不影响、不弹框</div>
   </div>
 </div>
 
@@ -278,13 +284,15 @@ const LEVELS = [
   { code: 'V0' }, { code: 'V1' }, { code: 'V2' }, { code: 'V3' }
 ];
 
-// 数据源:正常 / 低余额 两套
-function getDataset(low) {
-  if (low) {
+// 数据源:正常 / 低余额 / 在途出账 三套
+// pendingOut = 已发起、审批中、即将离开平台的金额(提现在途 + 提取微信在途),不计入可维持等级的资产
+function getDataset(scene) {
+  if (scene === 'low') {
     return {
       availableBalance: 500,
       frozenBalance: 0,
       frozenDeposit: 0,
+      pendingOut: 0,
       wechatDeposits: [
         { id: 'w1', channel: 'wechat', date: '2024-05-09', amount: 1000, fee: 8, checked: false }
       ],
@@ -293,10 +301,24 @@ function getDataset(low) {
       ]
     };
   }
+  if (scene === 'pending') {
+    // 账户总额 4000:可用余额 0 + 列表待提微信 2000 + 已有 2000 提取微信审批中(挂 frozenDeposit);pendingOut=2000
+    return {
+      availableBalance: 0,
+      frozenBalance: 0,
+      frozenDeposit: 2000,
+      pendingOut: 2000,
+      wechatDeposits: [
+        { id: 'w1', channel: 'wechat', date: '2024-05-09', amount: 2000, fee: 0, checked: true }
+      ],
+      balanceDeposits: []
+    };
+  }
   return {
     availableBalance: 139251697.94,
     frozenBalance: 3631.00,
     frozenDeposit: 170500.00,
+    pendingOut: 0,
     wechatDeposits: [
       { id: 'w1', channel: 'wechat', date: '2024-05-09', amount: 2000, fee: 8, checked: false },
       { id: 'w2', channel: 'wechat', date: '2024-05-09', amount: 2000, fee: 8, checked: false },
@@ -312,20 +334,22 @@ createApp({
   setup() {
     const stored = window.VPUser && window.VPUser.get();
     const userLevel = ref(stored && stored.level ? stored.level : 'V2');
-    const lowBalanceMode = ref(false);
+    const scene = ref('normal');   // 'normal' | 'low' | 'pending'
 
-    const initial = getDataset(false);
+    const initial = getDataset('normal');
     const availableBalance = ref(initial.availableBalance);
     const frozenBalance = ref(initial.frozenBalance);
     const frozenDeposit = ref(initial.frozenDeposit);
+    const pendingOut = ref(initial.pendingOut);
     const wechatDeposits = ref(initial.wechatDeposits);
     const balanceDeposits = ref(initial.balanceDeposits);
 
-    watch(lowBalanceMode, (low) => {
-      const d = getDataset(low);
+    watch(scene, (s) => {
+      const d = getDataset(s);
       availableBalance.value = d.availableBalance;
       frozenBalance.value = d.frozenBalance;
       frozenDeposit.value = d.frozenDeposit;
+      pendingOut.value = d.pendingOut;
       wechatDeposits.value = d.wechatDeposits;
       balanceDeposits.value = d.balanceDeposits;
     });
@@ -356,7 +380,8 @@ createApp({
       // 提取至可用余额属于站内转账(保证金→可用余额),不影响账户总额、不提示
       const wechatOut = wechatDeposits.value.filter(d => d.checked).reduce((s, d) => s + d.amount, 0);
       if (wechatOut <= 0) return false;
-      return (accountTotal.value - wechatOut) < 2000;
+      // 再扣掉已在审批中、即将出账的在途金额
+      return (accountTotal.value - pendingOut.value - wechatOut) < 2000;
     }
 
     function toggleDeposit(d) { d.checked = !d.checked; }
@@ -396,11 +421,11 @@ createApp({
     }
 
     watch([wechatDeposits, balanceDeposits], () => nextTick(() => lucide.createIcons()), { deep: true });
-    watch([toastMsg, showLevelModal, lowBalanceMode, userLevel], () => nextTick(() => lucide.createIcons()));
+    watch([toastMsg, showLevelModal, scene, userLevel], () => nextTick(() => lucide.createIcons()));
     onMounted(() => lucide.createIcons());
 
     return {
-      LEVELS, userLevel, lowBalanceMode,
+      LEVELS, userLevel, scene,
       wechatDeposits, balanceDeposits, balanceOnlyChecked,
       toastMsg, totalAmount, totalFee, canSubmit, showLevelModal,
       toggleDeposit, setLevel, back, onSubmitClick, confirmSubmit

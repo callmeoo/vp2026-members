@@ -7,7 +7,8 @@
  *
  * 触发逻辑(两个弹框一致):
  *   - V0 用户直接提交,不弹二次确认
- *   - V1-V3 用户且提交后账户总金额(可用余额+已冻结+可用保证金+已冻结保证金)<2000 元,弹「确认提现/提取」红色加粗确认
+ *   - V1-V3 用户且提交后「可维持等级金额」(账户总金额 − 审批中在途出账)<2000 元,弹「确认提现/提取」红色加粗确认
+ *     在途出账 = 已发起、审批中、即将离开平台的提现 / 提取微信(pendingOut),不再算作可维持等级的资产
  *   - 提交成功 → 居中黑底 toast「提交申请后,审核预计需10个工作日,审批通过后可到帐您绑定的银行账户」,2.4s 后消失
  *   - 等级读 window.VPUser.get().level,默认 V2(便于评审看触发流程);切换演示面板的等级会写回 vp_user
  */
@@ -100,30 +101,39 @@
     return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  // 共用账户数据(正常/低余额)
-  // 提现弹框单独看 availableBalance(低=2500 满足合计 ≥ 2000 但 ≤ 2500,输入 ≥ 501 即触发警告)
-  // 提取弹框看 availableBalance + availableDepositTotal,低场景 500 + 2000 = 2500,任意勾选都会跌破 2000
-  function getAccountSnapshot(low, opts) {
+  // 共用账户数据(scene: 'normal' 正常大额 / 'low' 低余额 / 'pending' 在途出账)
+  //   'low'     提现弹框看 availableBalance(2500,输入 ≥501 触发);提取弹框 500 + 列表 = 跌破 2000
+  //   'pending' 在途出账场景:账户总额 4000,其中 2000 是审批中(即将出账)的提取微信在途(pendingOut)。
+  //             用于验证「再提一笔时要扣掉已在途的钱」——旧口径不提示,新口径提示。
+  // pendingOut = 审批中即将离开平台的金额(提现在途 + 提取微信在途),不计入可维持等级的资产。
+  function getAccountSnapshot(scene, opts) {
     opts = opts || {};
-    if (low) {
+    if (scene === 'low') {
       return {
         availableBalance: opts.includeDeposits ? 500 : 2500,
-        frozenBalance: 0,
-        availableDeposit: 0,
-        frozenDeposit: 0
+        frozenBalance: 0, availableDeposit: 0, frozenDeposit: 0, pendingOut: 0
+      };
+    }
+    if (scene === 'pending') {
+      // 提现弹框:可用余额 2000 + 已有 2000 提取微信在途(挂在 frozenDeposit) = 总额 4000
+      // 提取弹框:可用余额 0 + 列表待提 2000 + 已有 2000 在途 = 总额 4000(列表金额另算入 accountTotal)
+      return {
+        availableBalance: opts.includeDeposits ? 0 : 2000,
+        frozenBalance: 0, availableDeposit: 0, frozenDeposit: 2000, pendingOut: 2000
       };
     }
     return {
       availableBalance: 139236697.94,
       frozenBalance: 3631.00,
       availableDeposit: 73500.00,
-      frozenDeposit: 170500.00
+      frozenDeposit: 170500.00,
+      pendingOut: 0
     };
   }
 
   // 保证金提取列表数据
-  function getDepositDataset(low) {
-    if (low) {
+  function getDepositDataset(scene) {
+    if (scene === 'low') {
       return {
         wechatDeposits: [
           { id: 'w1', date: '2023-10-07', amount: 1000, fee: 50, checked: false }
@@ -131,6 +141,15 @@
         balanceDeposits: [
           { id: 'b1', date: '2023-10-07', amount: 1000, fee: 0,  checked: false }
         ]
+      };
+    }
+    if (scene === 'pending') {
+      // 列表给一笔待提取的微信保证金 2000(默认勾选),配合 snapshot 的 2000 在途出账
+      return {
+        wechatDeposits: [
+          { id: 'w1', date: '2023-10-07', amount: 2000, fee: 0, checked: true }
+        ],
+        balanceDeposits: []
       };
     }
     return {
@@ -210,10 +229,12 @@
     <div class="wm-demo-panel">
       <div class="wm-demo-title"><i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>余额场景</span></div>
       <div class="wm-demo-list">
-        <button @click="lowBalanceMode = false" :class="['wm-demo-btn', !lowBalanceMode ? 'active' : '']">正常余额</button>
-        <button @click="lowBalanceMode = true" :class="['wm-demo-btn', lowBalanceMode ? 'active' : '']">低余额(2500元)</button>
+        <button @click="scene = 'normal'" :class="['wm-demo-btn', scene === 'normal' ? 'active' : '']">正常余额</button>
+        <button @click="scene = 'low'" :class="['wm-demo-btn', scene === 'low' ? 'active' : '']">低余额(2500元)</button>
+        <button @click="scene = 'pending'" :class="['wm-demo-btn', scene === 'pending' ? 'active' : '']">在途出账</button>
       </div>
-      <div class="wm-demo-hint">V1-V3 + 输入 ≥ 501 触发等级失效提示</div>
+      <div class="wm-demo-hint" v-if="scene === 'pending'">账户总额 4000(含 2000 提取微信在途)，提现 2000：旧口径剩 2000 不提示；新口径扣在途后为 0，提示</div>
+      <div class="wm-demo-hint" v-else>V1-V3 + 输入 ≥ 501 触发等级失效提示</div>
     </div>
   </div>
   <!-- toast -->
@@ -223,8 +244,8 @@
       const { ref, computed, watch, nextTick } = Vue;
       const stored = window.VPUser && window.VPUser.get();
       const userLevel = ref(stored && stored.level ? stored.level : 'V2');
-      const lowBalanceMode = ref(false);
-      const account = computed(() => getAccountSnapshot(lowBalanceMode.value));
+      const scene = ref('normal');
+      const account = computed(() => getAccountSnapshot(scene.value));
       const accountTotal = computed(() =>
         account.value.availableBalance + account.value.frozenBalance +
         account.value.availableDeposit + account.value.frozenDeposit
@@ -240,7 +261,8 @@
 
       function needLevelWarning() {
         if (userLevel.value === 'V0') return false;
-        return (accountTotal.value - numAmount.value) < 2000;
+        // 扣掉审批中、即将出账的在途金额(那笔钱已不属于可维持等级的资产)
+        return (accountTotal.value - account.value.pendingOut - numAmount.value) < 2000;
       }
       function setLevel(code) {
         userLevel.value = code;
@@ -270,11 +292,11 @@
       }
 
       watch(() => props.visible, (v) => { if (v) nextTick(() => window.lucide && lucide.createIcons()); });
-      watch([amountInput, toastMsg, showLevelModal, lowBalanceMode, userLevel], () =>
+      watch([amountInput, toastMsg, showLevelModal, scene, userLevel], () =>
         nextTick(() => window.lucide && lucide.createIcons()));
 
       return {
-        LEVELS, userLevel, lowBalanceMode, account,
+        LEVELS, userLevel, scene, account,
         amountInput, remark, toastMsg, canSubmit, showLevelModal,
         formatCN, setLevel, onClose, onSubmitClick, confirmSubmit
       };
@@ -371,10 +393,12 @@
     <div class="wm-demo-panel">
       <div class="wm-demo-title"><i data-lucide="sliders-horizontal" class="w-3 h-3"></i><span>余额场景</span></div>
       <div class="wm-demo-list">
-        <button @click="lowBalanceMode = false" :class="['wm-demo-btn', !lowBalanceMode ? 'active' : '']">正常余额</button>
-        <button @click="lowBalanceMode = true" :class="['wm-demo-btn', lowBalanceMode ? 'active' : '']">低余额场景</button>
+        <button @click="scene = 'normal'" :class="['wm-demo-btn', scene === 'normal' ? 'active' : '']">正常余额</button>
+        <button @click="scene = 'low'" :class="['wm-demo-btn', scene === 'low' ? 'active' : '']">低余额场景</button>
+        <button @click="scene = 'pending'" :class="['wm-demo-btn', scene === 'pending' ? 'active' : '']">在途出账</button>
       </div>
-      <div class="wm-demo-hint">勾选「微信」项 + 低余额 即可触发等级提示;<br>纯「可用余额」项不影响账户总额、不弹框</div>
+      <div class="wm-demo-hint" v-if="scene === 'pending'">账户总额 4000(含 2000 提取微信在途)，再提微信 2000：旧口径剩 2000 不提示；新口径扣在途后为 0，提示</div>
+      <div class="wm-demo-hint" v-else>勾选「微信」项 + 低余额 即可触发等级提示;<br>纯「可用余额」项不影响账户总额、不弹框</div>
     </div>
   </div>
   <div v-if="toastMsg" class="wm-toast">{{ toastMsg }}</div>
@@ -383,13 +407,13 @@
       const { ref, computed, watch, nextTick } = Vue;
       const stored = window.VPUser && window.VPUser.get();
       const userLevel = ref(stored && stored.level ? stored.level : 'V2');
-      const lowBalanceMode = ref(false);
+      const scene = ref('normal');
 
-      const initial = getDepositDataset(false);
+      const initial = getDepositDataset('normal');
       const wechatDeposits = ref(initial.wechatDeposits);
       const balanceDeposits = ref(initial.balanceDeposits);
 
-      const account = computed(() => getAccountSnapshot(lowBalanceMode.value, { includeDeposits: true }));
+      const account = computed(() => getAccountSnapshot(scene.value, { includeDeposits: true }));
       const allDeposits = computed(() => [...wechatDeposits.value, ...balanceDeposits.value]);
       const availableDepositTotal = computed(() => allDeposits.value.reduce((s, d) => s + d.amount, 0));
       const accountTotal = computed(() =>
@@ -397,8 +421,8 @@
         availableDepositTotal.value + account.value.frozenDeposit
       );
 
-      watch(lowBalanceMode, (low) => {
-        const d = getDepositDataset(low);
+      watch(scene, (s) => {
+        const d = getDepositDataset(s);
         wechatDeposits.value = d.wechatDeposits;
         balanceDeposits.value = d.balanceDeposits;
       });
@@ -422,7 +446,8 @@
         // 提取至可用余额属于站内转账(保证金→可用余额),不影响账户总额、不提示
         const wechatOut = wechatDeposits.value.filter(d => d.checked).reduce((s, d) => s + d.amount, 0);
         if (wechatOut <= 0) return false;
-        return (accountTotal.value - wechatOut) < 2000;
+        // 再扣掉已在审批中、即将出账的在途金额
+        return (accountTotal.value - account.value.pendingOut - wechatOut) < 2000;
       }
       function toggleDeposit(d) { d.checked = !d.checked; }
       function setLevel(code) {
@@ -453,18 +478,18 @@
       watch(() => props.visible, (v) => {
         if (v) {
           // 打开时重置数据集到初始 demo 状态(避免上一次关闭后所有项变成未勾选,demo 看上去废了)
-          const d = getDepositDataset(lowBalanceMode.value);
+          const d = getDepositDataset(scene.value);
           wechatDeposits.value = d.wechatDeposits;
           balanceDeposits.value = d.balanceDeposits;
           nextTick(() => window.lucide && lucide.createIcons());
         }
       });
       watch([wechatDeposits, balanceDeposits], () => nextTick(() => window.lucide && lucide.createIcons()), { deep: true });
-      watch([toastMsg, showLevelModal, lowBalanceMode, userLevel], () =>
+      watch([toastMsg, showLevelModal, scene, userLevel], () =>
         nextTick(() => window.lucide && lucide.createIcons()));
 
       return {
-        LEVELS, userLevel, lowBalanceMode,
+        LEVELS, userLevel, scene,
         wechatDeposits, balanceDeposits, balanceOnlyChecked,
         toastMsg, totalAmount, totalFee, canSubmit, showLevelModal,
         toggleDeposit, setLevel, onClose, onSubmitClick, confirmSubmit

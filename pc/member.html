@@ -570,15 +570,16 @@ createApp({
       <div style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:10px;padding:6px 10px;background:#faf5ff;border-left:3px solid #7c3aed;border-radius:2px">提现 / 提取功能说明（弹框）</div>
       <div style="font-size:13px;font-weight:600;color:#7c3aed;margin:0 0 6px">一、可用余额提现（弹框）</div>
       <ol style="margin:0 0 14px;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
-        <li>用户发起提现，系统计算「账户 − 本次提现金额」。</li>
+        <li>用户发起提现，系统计算「账户总额 − 审批中在途出账 − 本次提现金额」。</li>
+        <li><b style="color:#ef4444">在途出账</b>：已发起、审批中、即将离开平台的提现 / 提取微信不再算作可维持等级的资产，需先扣掉（如另一笔提取微信审批中）。</li>
         <li>若计算结果 <b style="color:#ef4444">&lt; 2000 元</b> 且用户等级为 V1-V3，弹「确认提现」提示当前等级与权益将于下月起失效，确认后才走提现流程。</li>
         <li>V0 用户直接提交，不弹二次确认。</li>
       </ol>
       <div style="font-size:13px;font-weight:600;color:#7c3aed;margin-bottom:6px">二、可用保证金提取（弹框）</div>
       <ol style="margin:0;padding-left:18px;list-style-type:decimal;display:flex;flex-direction:column;gap:8px">
-        <li><b style="color:#22c55e">提取至微信</b>：钱真正出账，影响账户。提取后账户 <b style="color:#ef4444">&lt; 2000 元</b> 且用户为 V1-V3 → 弹「确认提取」提示等级失效，确认后才提取。</li>
+        <li><b style="color:#22c55e">提取至微信</b>：钱真正出账，影响账户。判定「账户总额 − 审批中在途出账 − 本次提取微信」<b style="color:#ef4444">&lt; 2000 元</b> 且用户为 V1-V3 → 弹「确认提取」提示等级失效，确认后才提取。</li>
         <li><b style="color:#f59e0b">提取至可用余额</b>：站内转账（保证金 → 可用余额），账户不变，<b>不弹框</b>，直接提交。</li>
-        <li>仅按勾选项中「微信」金额合计判定；V0 用户不提示。</li>
+        <li>仅按勾选项中「微信」金额合计判定，并先扣掉已在审批中的在途出账；V0 用户不提示。</li>
       </ol>
     </div>
   </div>

@@ -133,7 +133,7 @@
   - 题级 `hideTypeTag:true` 隐藏类型标签 / `hint:'...'` 在题面下方展示一段引导文案(紫色左边线提示卡)
 - **`shared/reserve-price-logic.js`**:导出 `ReservePriceLogic` (50 积分 / V2+ 免费) + `HistoryPriceLogic` (100 积分 / V1+ 免费),两者同形,API:`canView(levelCode, carId)` / `getCoins()` / `exchange(carId, carTitle)` / `getUnlockedIds()`。
 - **`shared/recommended-tasks.js`**:推荐任务 Vue 全局组件 `RecommendedTasksComponent`,处理 t_verify / t_deposit / t_vote 的登录拦截 + 跳转。
-- **`pc/_withdraw-modals.js`**(物理位置在 pc/ 下,但被 account.html + 两个独立 demo 页共用):导出两个 Vue 组件 `WithdrawBalanceModal`(提现) / `WithdrawDepositModal`(保证金提取),内置「演示面板 + 等级失效二次确认 + toast」。`needLevelWarning()` 关键差异:**提现**按 `accountTotal - 提现金额 < 2000` 触发;**保证金提取**只看勾选项中的**微信渠道**合计金额(`accountTotal - wechatOut < 2000`),提取至可用余额是站内转账不触发。Demo 面板/需求点卡 `z-index` 必须 ≥ 9050(mask 是 9000,否则点击被 mask 拦截直接关弹框);弹框 `visible` 翻 true 时要重置 deposit dataset,避免上次关闭后所有项都未勾选导致 demo 失效。
+- **`pc/_withdraw-modals.js`**(物理位置在 pc/ 下,但被 account.html + 两个独立 demo 页共用):导出两个 Vue 组件 `WithdrawBalanceModal`(提现) / `WithdrawDepositModal`(保证金提取),内置「演示面板 + 等级失效二次确认 + toast」。`needLevelWarning()` 关键差异:**提现**按 `accountTotal - pendingOut - 提现金额 < 2000` 触发;**保证金提取**只看勾选项中的**微信渠道**合计金额(`accountTotal - pendingOut - wechatOut < 2000`),提取至可用余额是站内转账不触发。`pendingOut` = 已发起、审批中、即将离开平台的在途出账(提现在途 + 提取微信在途),不计入可维持等级的资产(见下「在途出账」业务规则)。demo 场景 `scene` 三态:`normal`/`low`/`pending`(在途出账,复现「已有 2000 提取微信审批中,再提 2000」场景)。Demo 面板/需求点卡 `z-index` 必须 ≥ 9050(mask 是 9000,否则点击被 mask 拦截直接关弹框);弹框 `visible` 翻 true 时要重置 deposit dataset,避免上次关闭后所有项都未勾选导致 demo 失效。
 - **配色**(按 V 编号位置固定，与等级名解耦): V0 灰 `#94a3b8` / V1 蓝 `#0ea5e9` / V2 紫 `#8b5cf6` / V3 金 `#f59e0b`
 - **积分**: 1 积分 = 0.1 元;有效期 12 个自然月，按 `获得月 + 12 月` 滚动到期
 - **等级门槛**(V0 为"或",V1-V3 为"且"): V0 帐户 < 2000 **或**近 3 月无成交 / V1 ≥ 2000 且 1-3 台 / V2 ≥ 2000 且 4-14 台 / V3 ≥ 2000 且 ≥ 15 台。V0 用"或"因 V1-V3 都要求"≥2000 且有成交",其补集即"<2000 或无成交"(德摩根),否则"账户<2000 但有成交"会无归属。
@@ -148,10 +148,11 @@
   - BMS 代发起时,系统自动带入款项(`auto` 标记,**支持人工改款项与责任方**),按买家付款状态分两种:**未付款** → 仅带「唯普(唯普新收益)→门店 1200」补偿;**已付款** → 先将已收款项**原路退回买家**(原路退回款项**置灰只读不可改**),再带 1200 补偿(仅补偿款可人工改)。操作员人工分配则以人工为准。演示见 `admin/bms-order-detail.html` 申请售后表单(未付款/已付款切换,款项 select 含 卖家/汇和)。
   - 原图(企微聊天截图)归档:`docs/images/aftersale-rule-{new,old,qa}.png`,引用见 `index.html` 需求说明章节 4.4。
 - **提现/提取等级失效弹框**(`pc/_withdraw-modals.js` 共享 + `app/withdraw-balance.html`/`app/withdraw-deposit.html` 独立实现):
-  - **可用余额提现**:`accountTotal - 提现金额 < 2000` 且用户 V1-V3 → 弹「确认提现」二次确认;V0 直接提交。
-  - **保证金提取至微信**:钱真出账,影响 accountTotal;扣除微信合计后 < 2000 且 V1-V3 → 弹「确认提取」。
+  - **可用余额提现**:`accountTotal - pendingOut - 提现金额 < 2000` 且用户 V1-V3 → 弹「确认提现」二次确认;V0 直接提交。
+  - **保证金提取至微信**:钱真出账,影响 accountTotal;`accountTotal - pendingOut - 微信合计 < 2000` 且 V1-V3 → 弹「确认提取」。
   - **保证金提取至可用余额**:站内转账(保证金→可用余额),不影响 accountTotal,**不弹框**,直接提交。
-  - PC 共享组件的 demo 面板默认展示;**保证金提取**弹框中,若用户只勾「可用余额」项(纯站内转账场景),demo 演示面板自动隐藏(`balanceOnlyChecked` computed)。移动端 `app/withdraw-deposit.html` 同步。
+  - **在途出账(`pendingOut`)**:维持等级看的是「沉淀在平台、尚未被申请提走」的钱。已发起、审批中、即将离开平台的提现 / 提取微信(此刻物理上还挂在「已冻结」里,但即将出账)**不再算作可维持等级的资产**,判定时要从 accountTotal 先扣掉,否则第二笔出账会因「冻结的在途钱仍被计入总额」而漏弹提示。订单担保类冻结(钱仍在平台沉淀)不扣。场景:微信保证金 2000 提取至微信审批中(冻结 2000)+ 可用余额 2000,再提 2000 → 两笔走完账户归 0,应提示。
+  - PC 共享组件的 demo 面板默认展示;**保证金提取**弹框中,若用户只勾「可用余额」项(纯站内转账场景),demo 演示面板自动隐藏(`balanceOnlyChecked` computed)。移动端 `app/withdraw-deposit.html` 同步。三端均加 `normal/low/pending` 三场景切换,`pending` 复现上述在途出账场景。
 - **保留价查询权益**:V1/V2/V3 直接查看;仅 V0 消耗 50 积分对单车兑换,有效期内反复查看。pc/car-detail.html + app/car-detail-reserve.html 入口。
 - **历史成交行情权益**:V1/V2/V3 直接查看;V0 消耗 100 积分对单车兑换,有效期内反复查看。**仅车辆详情页有入口,出价页 (car-bid) 不展示**。
 - **数据查询服务次卡**(积分商城商品): 5 种数据报告——出险报告(车信盟)280 / 维保报告(唯车转)200 / 电池报告(唯车转)300 / 里程报告(唯车转)180 / 综合报告(柠檬查)380 积分。**按次核销,不同类型报告可叠加使用**(同类不叠加)。因对接渠道仅支持次卡、不支持通用优惠券,原「数据查询优惠券」已在 `admin/rewards.html` 隐藏(类型加 `hidden:true`,数据保留不删除),全站对外统一展示为「数据查询服务次卡」。数据源:`shared/member-config.js → redeemableRewards`(驱动商城 mall / 积分流水 coins / 兑换记录 bms-redeem-log 按 reward id 联动) + `admin/rewards.html` products(BMS 配置,含隐藏的数据查询优惠券)。
