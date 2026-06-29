@@ -237,12 +237,33 @@
       </div>
       <p class="pl-3">售后使用「无理由退车」权益的订单，钱包账单流水摘要需追加无理由退车说明文案，便于财务人员快速识别。</p>
       <div class="mt-3 pl-3">
-        <div class="text-xs text-slate-400 mb-1">摘要格式：</div>
+        <div class="text-xs text-slate-400 mb-1">摘要格式（入账 / 出账）：</div>
         <code class="block px-3 py-2 bg-slate-50 border border-slate-200 rounded text-violet-600 text-[13px]">订单售后款项(无理由退车):{车牌号}</code>
+        <code class="block mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded text-violet-600 text-[13px]">扣减订单售后款项(无理由退车):{车牌号}</code>
       </div>
       <div class="mt-3 pl-3">
-        <div class="text-xs text-slate-400 mb-1">显示效果：</div>
+        <div class="text-xs text-slate-400 mb-1">显示效果（整行标红）：</div>
         <div class="px-3 py-2 bg-rose-50 border border-rose-100 rounded text-rose-500 text-[13px] font-medium">订单售后款项(无理由退车):粤EG3B98</div>
+        <div class="mt-1 px-3 py-2 bg-rose-50 border border-rose-100 rounded text-rose-500 text-[13px] font-medium">扣减订单售后款项(无理由退车):粤EG3B98</div>
+      </div>
+
+      <div class="font-semibold text-slate-800 mt-5 mb-2 flex items-center gap-2">
+        <span class="inline-block w-1 h-4 bg-violet-500 rounded"></span>无理由退车的钱包流水（两种案例）
+      </div>
+      <p class="pl-3">无理由退车的赔付责任<strong>由唯普承担</strong>：唯普从自身收益（唯普新收益）划拨 <strong>1200 元</strong>补偿给门店 / 汇和等利益方，<strong>买家不被扣减</strong>。据此分两种案例：</p>
+      <div class="mt-3 pl-3 space-y-3">
+        <div class="rounded-lg border border-violet-100 bg-violet-50 px-3 py-2.5">
+          <div class="font-semibold text-violet-700 mb-1.5">案例一 · 有赔付（已发起且产生补偿）→ 2 条配对流水</div>
+          <div class="space-y-1 text-[13px]">
+            <div class="flex justify-between px-2.5 py-1.5 bg-rose-50 border border-rose-100 rounded text-rose-500 font-medium"><span>唯普新收益　扣减订单售后款项(无理由退车):粤EG3B98</span><span>-1,200.00</span></div>
+            <div class="flex justify-between px-2.5 py-1.5 bg-rose-50 border border-rose-100 rounded text-rose-500 font-medium"><span>广州市长和…　订单售后款项(无理由退车):粤EG3B98</span><span>+1,200.00</span></div>
+          </div>
+          <div class="text-xs text-slate-400 mt-1.5">出 / 入各 1200 元、账平；门店收款方按订单实际归属（汇和 / 门店 / 唯普云）。</div>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+          <div class="font-semibold text-slate-700 mb-1">案例二 · 无赔付（BMS 待发起、未产生赔付）→ 不生成任何流水</div>
+          <div class="text-[13px] text-slate-500">BMS 已代为发起无理由退车，但本单<strong>无任何赔付金额</strong>时，钱包账单<strong>不产生流水</strong>，列表中不出现该订单记录。</div>
+        </div>
       </div>
     </div>
     <div class="px-6 py-3 border-t border-slate-100 flex justify-end">
@@ -262,30 +283,16 @@ createApp({
     const showSpec = ref(false);
     const showBizData = ref(false);
 
+    // 无理由退车权益使用案例：唯普从自身收益(唯普新收益)中划拨 1200 元补偿给门店，
+    // 仅产生这 2 条配对流水(出/入各 1200，账平)。买家无扣减，唯普全额承担。
     const rows = [
-      { userName:'广州市长和汽车销售服务...', userId:'gzch',
-        subId:'2306307114', subName:'广州市长和汽车销售服务有限公司', subBank:'3602****3955',
-        amount:'-1,200.00', time:'2026-05-04 14:15:06', memo:'提现：粤EG3B98',
-        serial:'6260504778752571393324', status:'已清算' },
-      { userName:'陈秋菊', userId:'m_1397784961350885',
-        subId:'2102249825', subName:'陈秋菊', subBank:'6230****3453',
-        amount:'+2,000.00', time:'2026-05-03 23:25:13', memo:'保证金-提取-用户m_1397784961350885:粤EG3B98',
-        serial:'6260503778219130145470', status:'已清算' },
-      { userName:'保证金托管', userId:'wpbzj',
-        subId:'2508010002', subName:'广东唯普汽车科技股份有限公司', subBank:'1095****5570',
-        amount:'-2,000.00', time:'2026-05-03 23:25:13', memo:'保证金-提取-用户m_1397784961350885:粤EG3B98',
-        serial:'6260503778219130145470', status:'已清算' },
       { userName:'唯普新收益', userId:'wpsy_231213',
         subId:'2310170784', subName:'广东唯普汽车科技股份有限公司', subBank:'8110****9857',
-        amount:'+800.00', time:'2026-05-03 23:25:13', memo:'订单售后款项(无理由退车):粤EG3B98',
+        amount:'-1,200.00', time:'2026-05-03 23:25:13', memo:'扣减订单售后款项(无理由退车):粤EG3B98',
         serial:'6260503778219130745531', status:'已清算', noReason:true },
       { userName:'广州市长和汽车销售服务...', userId:'gzch',
         subId:'2306307114', subName:'广州市长和汽车销售服务有限公司', subBank:'3602****3955',
         amount:'+1,200.00', time:'2026-05-03 23:25:13', memo:'订单售后款项(无理由退车):粤EG3B98',
-        serial:'6260503778219130745531', status:'已清算', noReason:true },
-      { userName:'陈秋菊', userId:'m_1397784961350885',
-        subId:'2102249825', subName:'陈秋菊', subBank:'6230****3453',
-        amount:'-2,000.00', time:'2026-05-03 23:25:13', memo:'扣减订单售后款项(无理由退车):粤EG3B98',
         serial:'6260503778219130745531', status:'已清算', noReason:true }
     ];
 
