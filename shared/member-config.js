@@ -105,7 +105,7 @@
         icon: 'wallet',
         items: [
           { id: 'deal', action: '完成车辆交易', coin: 50, unit: '积分', desc: '过户后可获得', icon: 'wallet' },
-          { id: 'bid',  action: '出价竞拍',     coin: 10, unit: '积分/台', desc: '出价 1 台获取积分 1 次，限非报废车', icon: 'gavel' }
+          { id: 'bid',  action: '出价竞拍',     coin: 10, unit: '积分/台', desc: '出价 1 台获取积分 1 次，限非报废车；竞价结束后发放', icon: 'gavel' }
         ]
       },
       {
@@ -113,7 +113,7 @@
         color: 'sky',
         icon: 'message-circle',
         items: [
-          { id: 'vote',        action: '参与平台投票 / 问卷 / 调研', coin: '5',   unit: '积分/次', desc: '视当期互动方案，回馈平台商户', icon: 'clipboard-list' },
+          { id: 'vote',        action: '参与平台投票 / 问卷 / 调研', coin: '5',   unit: '积分/次', desc: '视当期互动方案，回馈平台商户；提交调研问卷完成后发放', icon: 'clipboard-list' },
           { id: 'bank_verify', action: '首次充值保证金',              coin: '1-5', unit: '积分/次', desc: '一次性奖励，仅首次完善有效',   icon: 'credit-card' },
           { id: 'biz_verify',  action: '首次实名认证',                coin: '1-5', unit: '积分/次', desc: '一次性奖励，仅首次认证有效',   icon: 'badge-check' }
         ]
