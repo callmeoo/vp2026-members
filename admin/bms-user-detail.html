@@ -641,11 +641,19 @@
           <span>积分过期消息推送</span>
         </div>
         <ul class="list-disc pl-6 space-y-1">
-          <li>发送时机：积分过期前 <strong>10 天 / 7 天</strong>各发送 1 次短信提醒</li>
-          <li>短信内容：【唯普汽车】您有 X 积分将于 10 天后过期，请尽快登录唯车拍进行积分兑换。</li>
+          <li>发送时机：积分过期前 <strong>10 天 / 3 天</strong>各发送 1 次短信提醒</li>
+          <li>短信内容：【唯普汽车】您有 X 积分将于 <strong>N</strong> 天后过期，请尽快登录唯车拍进行积分兑换。（N 随发送时机动态取值：第一次 10 天、第二次 3 天）</li>
           <li>推送对象：买家用户</li>
           <li>推送手机：优先使用绑定手机号；如无绑定手机号，则使用联系手机号</li>
         </ul>
+        <div class="mt-3 rounded-lg bg-violet-50 border border-violet-100 px-3 py-2.5 text-[13px] leading-relaxed text-slate-700">
+          <div class="font-semibold text-violet-700 mb-1.5">发放颗粒度说明（按「过期日」聚合，不按每条流水）</div>
+          <p class="mb-1.5">积分按<strong>获得自然月</strong>计算有效期，同一个月获得的积分统一在 12 个月后那个月的<strong>月底</strong>过期。所以提醒以「过期日」为单位，而非每一笔积分流水。</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Q1·多条记录同一天过期：</strong>汇总发，<strong>1 条短信</strong>，X = 当日合计过期积分。与积分卡片「30 天内过期」用同一套汇总口径。</li>
+            <li><strong>Q2·两笔积分分两天获得、都将过期：</strong>看是否同一自然月——<strong>同月</strong>过期日相同 → 合并为 1 条；<strong>跨月</strong>过期日不同 → 各自在各自的 T-10 / T-3 触发，是两个日期的两批短信。即“合并与否取决于过期日是否相同，而非获得日。”</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="px-6 py-3 border-t border-slate-100 flex justify-end">
